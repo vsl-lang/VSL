@@ -4,9 +4,12 @@
   "description": "VSL written in Node",
   "main": "index.js",
   "scripts": {
-    "build": "npm run nearley && NODE_ENV=production babel src/ -d lib/ -s",
+    "build": "npm run nearley && NODE_ENV=production babel src/ -d lib/",
+    "dev": "npm run nearley && npm run babel",
+    "babel": "babel src/ -d lib/ -s",
+    "nearley": "mkdir -p lib/vsl/parser && nearleyc src/vsl/parser/grammar/parser.ne -o lib/vsl/parser/parser.js",
     "watch": "babel src/ -d lib/ -s --watch",
-    "nearley": "nearleyc src/vsl/parser/parser.ne -o lib/vsl/parser/parser.js",
+    "clean": "rm -r lib",
     "docs": "esdoc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,12 +24,15 @@
   },
   "homepage": "https://github.com/vsl-land/node-VSL#readme",
   "dependencies": {
+    "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
     "nearley": "^2.8.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-loop-optimizer": "^1.2.3",
+    "babel-plugin-wildcard": "^1.0.0",
     "babel-preset-flow": "^6.23.0",
     "esdoc": "^0.5.2"
   }

@@ -1,4 +1,4 @@
-import { VSLLexer } from '../vsl/lexer';
+import { VSLLexer } from '../vsl/parser/lexer';
 import { readFile } from 'fs-promise';
 
 async function VSLParse() {

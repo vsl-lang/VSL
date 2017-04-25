@@ -1,9 +1,21 @@
 'use strict';
 
-import Lexer from './lexer';
+import Tokenizer from './tokenizer';
 
 function noop () {}
 function passThrough (_, match) { return match; }
+function strip (character) {
+    return function transform (_, match) {
+        return match.replace(character, '');
+    }
+}
+const strip_ = strip('_');
+function slice (index) {
+    return function transform (_, match) {
+        return match.slice(index);
+    }
+}
+const slice1 = slice(1);
 
 export const VSLScope = {
     Normal: 1 << 0,
@@ -23,10 +35,11 @@ export const VSLTokenType = {
     Identifier: 7
 };
 
-export class VSLLexer extends Lexer {
+export class VSLTokenizer extends Tokenizer {
     constructor () {
         super([
-            ['[\\s\r\n]+',  noop],
+            ['[\r\n]+', function () { return '\n'; }],
+            ['[\\s]+', noop],
             ['//[^\r\n]+', noop],
             ['/\\*', self => {
                 self.variables.commentDepth++;
@@ -50,9 +63,11 @@ export class VSLLexer extends Lexer {
             ['\'', self => { self.begin(VSLScope.Normal); }, null, VSLScope.SingleQuotedString],
             ['\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],
             ['\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],
-            ['\\$?[a-zA-Z_][a-zA-Z0-9_]*', passThrough, VSLTokenType.SpecialIdentifier],
-            ['-?\\.[0-9_]+', passThrough, VSLTokenType.Integer],
-            ['-?[0-9][0-9_]*\\.?[0-9_]*', passThrough, VSLTokenType.Decimal],
+            ['\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],
+            ['-?\\.[0-9_]+', strip_, VSLTokenType.Decimal],
+            ['-?[0-9][0-9_]*\\.[0-9_]+', strip_, VSLTokenType.Decimal],
+            ['-?(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*', strip_, VSLTokenType.Integer],
+            ['-?[0-9][0-9_]*', strip_, VSLTokenType.Integer],
             ['/[^\/\*]([^\\/\r\n]|\\[^\r\n])+/[gmixc]*', passThrough, VSLTokenType.Regex],
             ['\\.\\.', passThrough],
             ['\\.', passThrough],
@@ -126,7 +141,8 @@ export class VSLLexer extends Lexer {
             ['enum', passThrough],
             ['if', passThrough],
             ['for', passThrough],
-            ['while', passThrough]
+            ['while', passThrough],
+            ['[a-zA-Z_][a-zA-Z0-9_]*', passThrough, VSLTokenType.Identifier],
         ], VSLScope.Normal)
         this.variables = {
             commentDepth: 0

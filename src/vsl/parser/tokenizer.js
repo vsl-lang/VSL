@@ -1,11 +1,9 @@
-'use strict';
-
 /**
- * Lexer class.
+ * Tokenizer class.
  */
-export default class Lexer {
+export default class Tokenizer {
     /**
-     * Creates a new Lexer object.
+     * Creates a new Tokenizer object.
      * @param {array} tokenMatchers An array of the escaped string form of a regex matching a token, a function to return a token given the matched text, the type of the returned token, and the scopes the regex should match in.
      * @param {number} scope Starting scope of the lexer
      */
@@ -38,7 +36,7 @@ export default class Lexer {
                         continue;
                     code = code.slice(matched.length);
                     if (typeof token !== 'undefined')
-                        tokens.push(type ? [token, type] : token);
+                        tokens.push(typeof type === 'undefined' ? token : [token, type]);
                     success = true;
                     break;
                 }
