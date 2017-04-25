@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/vsl/vsllexer.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/vsl-land/node-VSL" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/lexer.js~Lexer.html">Lexer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/vsllexer.js~VSLLexer.html">VSLLexer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLNodeNames">VSLNodeNames</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLNodeType">VSLNodeType</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLOperatorNames">VSLOperatorNames</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLOperatorType">VSLOperatorType</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLScope">VSLScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLTokenType">VSLTokenType</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/vsl/vsllexer.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+import Lexer from &apos;./lexer&apos;;
+
+function noop () {}
+function passThrough (_, match) { return match; }
+
+export const VSLScope = {
+    Normal: 1 &lt;&lt; 0,
+    Comment: 1 &lt;&lt; 1,
+    SingleQuotedString: 1 &lt;&lt; 2,
+    DoubleQuotedString: 1 &lt;&lt; 3
+};
+
+export const VSLTokenType = {
+    Integer: 0,
+    Decimal: 1,
+    String: 2,
+    Regex: 3,
+    SpecialArgument: 4,
+    SpecialLoop: 5,
+    SpecialIdentifier: 6,
+    Identifier: 7
+};
+
+export class VSLLexer extends Lexer {
+    constructor () {
+        super([
+            [&apos;[\\s\r\n]+&apos;,  noop],
+            [&apos;//[^\r\n]+&apos;, noop],
+            [&apos;/\\*&apos;, self =&gt; {
+                self.variables.commentDepth++;
+                self.begin(VSLScope.Comment);
+            }, null, VSLScope.Normal | VSLScope.Comment],
+            [&apos;(?:[^/*]|\\*[^/]|/[^*])+&apos;, noop, null, VSLScope.Comment],
+            [&apos;\\*/&apos;, self =&gt; {
+                self.variables.commentDepth--;
+                if (!self.variables.commentDepth)
+                    self.begin(VSLScope.Normal);
+            }, null, VSLScope.Comment],
+            [&apos;&quot;&apos;, self =&gt; {
+                self.begin(VSLScope.DoubleQuotedString);
+            }],
+            [&apos;\&apos;&apos;, self =&gt; {
+                self.begin(VSLScope.SingleQuotedString);
+            }],
+            [&apos;([^\\\\&quot;]|\\\\.)*&apos;, passThrough, VSLTokenType.String, VSLScope.DoubleQuotedString], // we have no escapes right?
+            [&apos;([^\\\\\&apos;]|\\\\.)*&apos;, passThrough, VSLTokenType.String, VSLScope.SingleQuotedString],
+            [&apos;&quot;&apos;, self =&gt; { self.begin(VSLScope.Normal); }, null, VSLScope.DoubleQuotedString],
+            [&apos;\&apos;&apos;, self =&gt; { self.begin(VSLScope.Normal); }, null, VSLScope.SingleQuotedString],
+            [&apos;\\$+[0-9]+&apos;, passThrough, VSLTokenType.SpecialArgument],
+            [&apos;\\$+_[0-9]+&apos;, passThrough, VSLTokenType.SpecialLoop],
+            [&apos;\\$?[a-zA-Z_][a-zA-Z0-9_]*&apos;, passThrough, VSLTokenType.SpecialIdentifier],
+            [&apos;-?\\.[0-9_]+&apos;, passThrough, VSLTokenType.Integer],
+            [&apos;-?[0-9][0-9_]*\\.?[0-9_]*&apos;, passThrough, VSLTokenType.Decimal],
+            [&apos;/[^\/\*]([^\\/\r\n]|\\[^\r\n])+/[gmixc]*&apos;, passThrough, VSLTokenType.Regex],
+            [&apos;\\.\\.&apos;, passThrough],
+            [&apos;\\.&apos;, passThrough],
+            [&apos;;&apos;, passThrough],
+            [&apos;:&apos;, passThrough],
+            [&apos;,&apos;, passThrough],
+            [&apos;\\+=&apos;, passThrough],
+            [&apos;-=&apos;, passThrough],
+            [&apos;\\*=&apos;, passThrough],
+            [&apos;/=&apos;, passThrough],
+            [&apos;%=&apos;, passThrough],
+            [&apos;\\*\\*=&apos;, passThrough],
+            [&apos;\\+&apos;, passThrough],
+            [&apos;-&apos;, passThrough],
+            [&apos;\\*&apos;, passThrough],
+            [&apos;/&apos;, passThrough],
+            [&apos;%&apos;, passThrough],
+            [&apos;\\*\\*&apos;, passThrough],
+            [&apos;&lt;&lt;=&apos;, passThrough],
+            [&apos;&gt;&gt;=&apos;, passThrough],
+            [&apos;&lt;&lt;&apos;, passThrough],
+            [&apos;&gt;&gt;&apos;, passThrough],
+            [&apos;==&apos;, passThrough],
+            [&apos;!=&apos;, passThrough],
+            [&apos;&lt;=&gt;&apos;, passThrough],
+            [&apos;&lt;=&apos;, passThrough],
+            [&apos;&gt;=&apos;, passThrough],
+            [&apos;&lt;&apos;, passThrough],
+            [&apos;&gt;&apos;, passThrough],
+            [&apos;=&apos;, passThrough],
+            [&apos;:=&apos;, passThrough],
+            [&apos;&amp;=&apos;, passThrough],
+            [&apos;|=&apos;, passThrough],
+            [&apos;^=&apos;, passThrough],
+            [&apos;&amp;&apos;, passThrough],
+            [&apos;|&apos;, passThrough],
+            [&apos;~&apos;, passThrough],
+            [&apos;^&apos;, passThrough],
+            [&apos;&amp;&amp;&apos;, passThrough],
+            [&apos;||&apos;, passThrough],
+            [&apos;!&apos;, passThrough],
+            [&apos;and&apos;, passThrough],
+            [&apos;or&apos;, passThrough],
+            [&apos;not&apos;, passThrough],
+            [&apos;xor&apos;, passThrough],
+            [&apos;::&apos;, passThrough],
+            [&apos;-&gt;&apos;, passThrough],
+            [&apos;:&gt;&apos;, passThrough],
+            [&apos;{&apos;, passThrough],
+            [&apos;}&apos;, passThrough],
+            [&apos;\\(&apos;, passThrough],
+            [&apos;\\)&apos;, passThrough],
+            [&apos;\\[&apos;, passThrough],
+            [&apos;\\]&apos;, passThrough],
+            [&apos;=&gt;&apos;, passThrough],
+            [&apos;var&apos;, passThrough],
+            [&apos;let&apos;, passThrough],
+            [&apos;final&apos;, passThrough],
+            [&apos;const&apos;, passThrough],
+            [&apos;is&apos;, passThrough],
+            [&apos;issub&apos;, passThrough],
+            [&apos;isinstance&apos;, passThrough],
+            [&apos;function&apos;, passThrough],
+            [&apos;fn&apos;, passThrough],
+            [&apos;class&apos;, passThrough],
+            [&apos;cls&apos;, passThrough],
+            [&apos;interface&apos;, passThrough],
+            [&apos;itf&apos;, passThrough],
+            [&apos;trait&apos;, passThrough],
+            [&apos;trt&apos;, passThrough],
+            [&apos;enum&apos;, passThrough],
+            [&apos;if&apos;, passThrough],
+            [&apos;for&apos;, passThrough],
+            [&apos;while&apos;, passThrough]
+        ], VSLScope.Normal)
+        this.variables = {
+            commentDepth: 0
+        };
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

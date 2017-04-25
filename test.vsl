@@ -1,0 +1,40 @@
+/*
+ * wait we don't have let or var yet, so we need to add those and final and const now?
+ * I guess
+ * so agreed syntax is (let|var|final|const) name [: type] = expr;?
+ * Ok i have two suggestion:
+ *   1. let is implicit strict type and var is like loose type
+ *   2. let & var are aliases, and `:=` is implicit strict type
+ *   hmm if we make let strict type then we have := free meaning good thing
+ *   ok 
+ */
+//test things
+/*
+fn foo {
+    //lol
+}
+fn foo(wat: string) {
+    //lul
+}
+if foo {}
+if (foo) 
+*/
+const gaot: string = /* /* nested block c omment inside expression */*/
+    "Downgaot";
+print "gaots naem is " + gaot;
+print "This is true: " + string + ( 1 + 1 ) + foo(all)(gaots)(are)(better)(than)(sheep);
+open "file.txt" write "GAOT > SHEP";
+//test right-associative operators
+string::number::string::number::bool::number::string::10;
+1 = 2 &= 3 += 4 *= 5 **= 6 -= 'yay';
+a = b = 1;
+//test multiline string
+'yay
+yay
+yay';
+//test regex wait we want it to be single line only right idk, dont matter
+///test regex with flags
+/g[ao]{2}t/gmi;
+// test if shift correctly
+dooooowwwwwwwnnnnnn
++ gaaaaoooooootttttt;

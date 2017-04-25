@@ -1,0 +1,11 @@
+{
+    "plugins": [ "loop-optimizer" ],
+    "presets": [
+        "flow",
+        ["env", {
+            "targets": {
+                "node": 4.2
+            }
+        }],
+    ]
+}
