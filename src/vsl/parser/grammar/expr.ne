@@ -1,27 +1,28 @@
 # Parses an expression
-# `Expression` maybe empty
+# `Expression` may be empty
 
 @{%
-var t = require('./nodes');
-var NodeTypes = require('./vsltokenizer').VSLTokenType;
-
-var integer = { test: x => x[1] === NodeTypes.Integer }
-var decimal = { test: x => x[1] === NodeTypes.Decimal }
-var string = { test: x => x[1] === NodeTypes.String }
-var identifier = { test: x => x[1] === NodeTypes.Identifier }
+var NodeTypes = require('./vsltokentype'),
+    integer = { test: x => x[1] === NodeTypes.Integer },
+    decimal = { test: x => x[1] === NodeTypes.Decimal },
+    string = { test: x => x[1] === NodeTypes.String },
+    identifier = { test: x => x[1] === NodeTypes.Identifier },
+    mid = d => d[0][0];
 %}
 
-@include "ws.ne"
 @builtin "postprocessors.ne"
+@include "ws.ne"
 
-Expression -> Property {% id %}
+CommandChain -> Expression:+ {% (d, l) => new t.CommandChain(d[0], l) %}
 
-# Properies
-Property -> propertyHead (_ propertyTail {% d => d[1] %}):* {% (d, l) => d[1].length === 0 ? d[0] : new t.PropertyExpression(d[0], d[1], l) %}
+Expression -> BinaryExpression {% id %}
 
-propertyHead -> Literal {% id %} | Identifier {% id %}
+# Properties
+Property -> propertyHead (_ propertyTail {% d => d[1] %}):* {% (d, l) => (d[1].length === 0 ? d[0] : new t.PropertyExpression(d[0], d[1], l)) %}
+
+propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" {% (d, l) => d[2] %}
 propertyTail -> "." _ Identifier {% d => d[2] %}
-    | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
+  | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
 
 Literal -> (%decimal {% id %} | %integer {% id %} | %string {% id %}) {% (d, l) => new t.Literal(d[0][0], l) %}
 
@@ -31,3 +32,40 @@ type -> delimited[Identifier, _ "." _]
 
 # Identifier
 Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], l) %}
+
+# Operators
+
+## TODO: for range if right side is range node throw error because range is non associative
+## should we have range step? 1..5..2 will give like [1, 3, 5]
+
+## Match a generic operator
+## This handles whitespace
+BinaryOp[self, ops, next] -> $self $ops _ $next {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0], l) %} | $next {% mid %}
+BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0], l) %} | $next {% mid %}
+
+# Top level assignment
+BinaryExpression -> Assign {% id %}
+
+Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | " | =" | "^="), Is] {% id %}
+Is -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
+Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
+Or -> BinaryOp[Or, ("||"), And]  {% id %}
+And -> BinaryOp[And, ("&&"), Shift]  {% id %}
+Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]  {% id %}
+Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
+Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
+Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
+Bitwise -> BinaryOp[Bitwise, ("&" | " | " | "^"), Chain]  {% id %}
+Chain -> BinaryOp[Chain, ("->" | ":>"), Range]  {% id %}
+Range -> Cast (".." | "...") _ Range {% (d, l) => new t.BinaryExpression(d[0], d[3], d[1][0], l) %} | Cast {% id %}
+Cast -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
+Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0], l) %} | Property {% id %}
+
+## TODO: check
+# Set -> "{" ArrayContents "}"
+# Tuple -> "(" ArrayContents ")"
+# Array -> "[" ArrayContents "]"
+# ArrayContents -> delimted[Expression:?]:?
+# Dictuple -> "(" DictionaryContents ")"
+# Dictionary -> "(" DictionaryContents ")"
+# DictionaryContents -> delimited[Identifier ":" Expression, ","]:?

@@ -1,5 +1,10 @@
 {
-    "plugins": [ "loop-optimizer", "wildcard", "add-module-exports" ],
+    "plugins": [
+        "loop-optimizer",
+        "wildcard",
+        "add-module-exports",
+        "transform-runtime"
+    ],
     "presets": [
         "flow",
         ["env", {

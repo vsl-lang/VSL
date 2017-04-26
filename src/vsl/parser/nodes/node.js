@@ -6,7 +6,8 @@ export default class Node {
      * Creates a new Node object.
      */
     constructor(position: Object) {
-        // this.position = position;
+        //this.position = position;
+        //TODO: get position from lexer
     }
     
     /**
@@ -27,31 +28,40 @@ export default class Node {
      * @param {string} padding String to add to the left of the tree
      * @return {string} Tree representation of this node.
      */
-    toString (padding: String='') {
-        // if (!node_names[this.type].size())
-        //     return padding + '"' + this.data + '"\n';
-        // let result = '';
-        // if (this.type === NodeType.BinaryExpression || this.type === NodeType.UnaryExpression)
-        //     result = result + padding + operator_names[this.operator_type] + '\n';
-        // else
-        //     result = result + padding + node_names[this.type] + '\n';
-        // if (padding.length >= 3) {
-        //     let last_chars = padding.slice(-1);
-        //     if (last_chars === '├')
-        //         padding = padding.slice(0, -1) + '│';
-        //     else if (last_chars === '└')
-        //         padding = padding.slice(0, -1) + ' ';
-        // }
-        // if (this.data)
-        //     result = result + padding + '└"' + this.data + '"\n';
-        // else if (this.children.length)) {
-        //     let new_padding = padding + '├';
-        //     for (let i = 0; i < this.children.length - 1; i++)
-        //         result += this.children[i].toString(new_padding);
-        //     new_padding = padding + '└';
-        //     let item = this.children[this.children.length - 1];
-        //     result += item.toString(new_padding);
-        // }
-        // return result;
+    toAST (padding: String='') {
+        let children = this.children;
+        if (this.unbox)
+            return padding + '"' + this.children + '"\n';
+        let result = '';
+        if (this.type === NodeType.BinaryExpression || this.type === NodeType.UnaryExpression)
+            result = result + padding + operator_names[this.operator_type] + '\n';
+        else
+            result = result + padding + this.constructor.name + '\n';
+        if (padding.length >= 3) {
+            let last_chars = padding.slice(-1);
+            if (last_chars === '├')
+                padding = padding.slice(0, -1) + '│';
+            else if (last_chars === '└')
+                padding = padding.slice(0, -1) + ' ';
+        }
+        if (typeof this.children === 'string')
+            result = result + padding + '└"' + this.children + '"\n';
+        else if (this.children.length !== 0) {
+            let new_padding = padding + '├';
+            for (let i = 0; i < this.children.length - 1; i++)
+                result += this.children[i].toAST(new_padding);
+            new_padding = padding + '└';
+            let item = this.children[this.children.length - 1];
+            result += item.toAST(new_padding);
+        }
+        return result;
+    }
+    
+    get children () {
+        throw 'NotImplementedError: Node class does not have children';
+    }
+    
+    get unbox () {
+        return false;
     }
 }

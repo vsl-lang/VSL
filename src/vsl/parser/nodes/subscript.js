@@ -14,8 +14,12 @@ export default class Subscript extends Node {
      * @param {Expression} expression the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor(expression: any, position: Object) {
+    constructor (expression: any, position: Object) {
         super(position);
         this.expression = expression;
+    }
+    
+    get children () {
+        return [expression];
     }
 }

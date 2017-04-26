@@ -15,8 +15,16 @@ export default class Identifier extends Node {
      * @param {string} identifier the identifier
      * @param {Object} position a position from nearley
      */
-    constructor(identifier: string, position: Object) {
+    constructor (identifier: string, position: Object) {
         super(position);
         this.identifier = identifier;
+    }
+    
+    get children () {
+        return identifier;
+    }
+    
+    get unbox () {
+        return true;
     }
 }

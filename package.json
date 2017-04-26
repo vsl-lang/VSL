@@ -2,7 +2,7 @@
   "name": "node-vsl",
   "version": "0.0.1",
   "description": "VSL written in Node",
-  "main": "index.js",
+  "main": "lib/cli/vs",
   "scripts": {
     "build": "npm run nearley && NODE_ENV=production babel src/ -d lib/",
     "dev": "npm run nearley && npm run babel",
@@ -16,6 +16,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vsl-land/node-VSL.git"
+  },
+  "bin": {
+    "vsl": "lib/cli/vsl"
   },
   "author": "somebody1234",
   "license": "MIT",

@@ -20,8 +20,16 @@ export default class Literal extends Node {
      * @param {String} literal the literal string value of the literal
      * @param {Object} position a position from nearley
      */
-    constructor(literal: string, position: Object) {
+    constructor (literal: string, position: Object) {
         super(position);
         this.literal = literal;
+    }
+    
+    get children () {
+        return literal;
+    }
+    
+    get unbox () {
+        return true;
     }
 }

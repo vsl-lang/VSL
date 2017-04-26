@@ -21,9 +21,13 @@ export default class PropertyExpression extends Node {
      * @param {Expression} expression the primary expression
      * @param {Object} position a position from nearley
      */
-    constructor(head: any, tail: any, position: Object) {
+    constructor (head: any, tail: any, position: Object) {
         super(position);
         this.head = head;
         this.tail = tail;
+    }
+    
+    get children () {
+        return [head, tail];
     }
 }
