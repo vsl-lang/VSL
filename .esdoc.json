@@ -1,4 +1,9 @@
 {
+    "title": "VSL",
+    
     "source": "./src",
-    "destination": "doc"
+    "destination": "doc",
+    "plugins": [{
+        "name": "esdoc-flow-plugin"
+    }]
 }

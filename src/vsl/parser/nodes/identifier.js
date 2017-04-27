@@ -17,6 +17,8 @@ export default class Identifier extends Node {
      */
     constructor (identifier: string, position: Object) {
         super(position);
+        
+        /** @type {string} */
         this.identifier = identifier;
     }
     

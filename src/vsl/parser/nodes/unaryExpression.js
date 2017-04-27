@@ -19,7 +19,10 @@ export default class UnaryExpression extends Node {
     constructor (expression: any, operator: string, position: Object) {
         super(position);
         
+        /** @type {Expression} */
         this.expression = expression;
+        
+        /** @type {string} */
         this.op = operator;
     }
     

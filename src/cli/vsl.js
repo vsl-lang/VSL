@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import VSLParser from '../vsl/parser/vslparser';
 import VSLTokenizer from '../vsl/parser/vsltokenizer';
+import VSLTransfomer from '../vsl/transform/vsltransformer';
 import readline from 'readline';
 import util from 'util';
 import colors from 'colors';
@@ -117,7 +118,7 @@ if (argv.p) {
     	}
     	display(result);
         prompt();
-    })
+    });
 }
 
 if (argv.t) {

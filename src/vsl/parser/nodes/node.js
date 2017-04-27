@@ -6,8 +6,9 @@ export default class Node {
      * Creates a new Node object.
      */
     constructor(position: Object) {
-        //this.position = position;
-        //TODO: get position from lexer
+        //ifndef DEBUG
+        // this.position = position;
+        //endif
     }
     
     /**
@@ -57,11 +58,11 @@ export default class Node {
         return result;
     }
     
-    get children () {
-        throw 'NotImplementedError: Node class does not have children';
-    }
-    
-    get unbox () {
-        return false;
+    /**
+     * Returns a node's children as an array in order
+     * 
+     */
+    get children ()  {
+        throw 'get children(): Must be overriden';
     }
 }

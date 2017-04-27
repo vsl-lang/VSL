@@ -5,11 +5,11 @@
 # parser/ for such information
 
 @{%
-var t = require('./nodes');
+const t = require('./nodes');
 %}
 
 @include "expr.ne"
 @include "codeBlock.ne"
 
 main -> CodeBlock[statement]
-statement -> Expression
+statement -> Expression {% id %}

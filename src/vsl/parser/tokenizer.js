@@ -5,22 +5,20 @@ export default class Tokenizer {
     //TODO: fix type of tokenmatchers in esdoc
     /**
      * Creates a new Tokenizer object.
-     * @param {(string|function(self: Tokenizer))[]} tokenMatchers An array of the escaped string form of a regex matching a token, a function to return a token given the matched text, the type of the returned token, and the scopes the regex should match in.
+     * @param {string[]|function(self: Tokenizer)[]} tokenMatchers An array of the escaped string form of a regex matching a token, a function to return a token given the matched text, the type of the returned token, and the scopes the regex should match in.
      * @param {number} scope Starting scope of the lexer
      */
-    constructor (tokenMatcherDict, scope=0) {
-        this.tokenMatcherDict = tokenMatcherDict;
-        for (let key in tokenMatcherDict)
-            tokenMatcherDict[key] = tokenMatcherDict[key].map(function (object) {
-                object[0] = new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
-                    '/': '/',
-                    '\r': 'r',
-                    '\n': 'n',
-                    '\t': 't'
-                }[match])));
-                return object;
-            });
-        this.tokenMatchers = tokenMatcherDict[scope];
+    constructor (tokenMatchers, scope=0) {
+        this.tokenMatchers = tokenMatchers.map(tokenMatcher => tokenMatcher.map(object => {
+            object[0] = new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
+                '/': '/',
+                '\r': 'r',
+                '\n': 'n',
+                '\t': 't'
+            }[match])).replace(/^[a-zA-Z]+$/, '$1\\s'));
+            return object;
+        }));
+        this.tokenMatcher = tokenMatchers[scope];
         this.scope = scope;
         this.variables = {};
     }
@@ -38,7 +36,7 @@ export default class Tokenizer {
             index = 0;
         while (code.length) {
             let success = false;
-            for (let [regex, onSuccess, type] of this.tokenMatchers) {
+            for (let [regex, onSuccess, type] of this.tokenMatcher) {
                 let match = regex.exec(code);
                 if (match) {
                     let matched = match[0],
@@ -67,6 +65,6 @@ export default class Tokenizer {
     
     begin (scope) {
         this.scope = scope;
-        this.tokenMatchers = this.tokenMatcherDict[scope];
+        this.tokenMatcher = this.tokenMatchers[scope];
     }
 }

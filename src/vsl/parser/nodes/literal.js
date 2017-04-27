@@ -17,19 +17,26 @@ export default class Literal extends Node {
     /**
      * Creates a wrapper for literals
      * 
-     * @param {String} literal the literal string value of the literal
-     * @param {Object} position a position from nearley
+     * @param {string} literal - the literal string value of the literal
+     * @param {number} type - The literal type as from a TokenType
+     * @param {Object} position - a position from nearley
      */
-    constructor (literal: string, position: Object) {
+    constructor (literal: string, type: number, position: Object) {
         super(position);
+        
+        /** @type {string} */
         this.literal = literal;
+        
+        /** @type {VSLTokenType} */
+        this.type = type;
     }
     
-    get children () {
-        return literal;
-    }
-    
-    get unbox () {
-        return true;
+    /**
+     * Returns all the child nodes
+     * @return empty array
+     * @override
+     */
+    children() {
+        return this.literal;
     }
 }

@@ -16,6 +16,8 @@ export default class Subscript extends Node {
      */
     constructor (expression: any, position: Object) {
         super(position);
+        
+        /** @type {Expression} */
         this.expression = expression;
     }
     

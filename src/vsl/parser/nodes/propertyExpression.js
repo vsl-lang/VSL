@@ -23,7 +23,11 @@ export default class PropertyExpression extends Node {
      */
     constructor (head: any, tail: any, position: Object) {
         super(position);
+        
+        /** @type {Expression} */
         this.head = head;
+        
+        /** @type {Identifier[]|Subscript[]|FunctionCall[]} */
         this.tail = tail;
     }
     

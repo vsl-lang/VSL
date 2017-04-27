@@ -11,12 +11,19 @@ export default class CommandChain extends Node {
      * @param {Expression[]} expression the primary expression
      * @param {Object} position a position from nearley
      */
-    constructor (expressions: array, position: Object) {
+    constructor (expressions: any[], position: Object) {
         super(position);
+        
+        /** @type {Expression[]} */
         this.expressions = expressions;
     }
     
-    get children () {
+    /**
+     * Returns all the child nodes
+     * @return empty array
+     * @override
+     */
+    children() {
         return expressions;
     }
 }

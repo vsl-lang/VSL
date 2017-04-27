@@ -12,15 +12,12 @@ export default class VSLParser {
     
     feed (string: string) {
         let tokens = this.tokenizer.tokenize(string);
-
-        if (tokens.tokens.length === 0)
-            return null;
         
         try {
             this.parser.feed(tokens.tokens);
         } catch(e) {
             let offset = e.offset;
-            if (!offset)
+            if (typeof offset === 'undefined')
                 throw e;
             this.error = tokens.indices[offset];
             return null;

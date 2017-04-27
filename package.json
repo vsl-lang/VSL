@@ -1,13 +1,13 @@
 {
-  "name": "node-vsl",
+  "name": "vsl",
   "version": "0.0.1",
-  "description": "VSL written in Node",
+  "description": "VSL: Versatile Scripting Language",
   "main": "lib/cli/vs",
   "scripts": {
     "build": "npm run nearley && NODE_ENV=production babel src/ -d lib/",
     "dev": "npm run nearley && npm run babel",
     "babel": "babel src/ -d lib/ -s",
-    "nearley": "mkdir -p lib/vsl/parser && nearleyc src/vsl/parser/grammar/parser.ne -o lib/vsl/parser/parser.js",
+    "nearley": "mkdir -p lib/vsl/parser && nearleyc src/vsl/parser/grammar/parser.ne -o lib/vsl/parser/parser.es6.js && babel lib/vsl/parser/parser.es6.js -o lib/vsl/parser/parser.js",
     "watch": "babel src/ -d lib/ -s --watch",
     "clean": "rm -r lib",
     "docs": "esdoc",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vsl-land/node-VSL.git"
+    "url": "git+https://github.com/vsl-lang/VSL.git"
   },
   "bin": {
     "vsl": "lib/cli/vsl"
@@ -23,9 +23,9 @@
   "author": "somebody1234",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vsl-land/node-VSL/issues"
+    "url": "https://github.com/vsl-lang/VSL/issues"
   },
-  "homepage": "https://github.com/vsl-land/node-VSL#readme",
+  "homepage": "https://github.com/vsl-lang/VSL#readme",
   "dependencies": {
     "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
@@ -37,6 +37,7 @@
     "babel-plugin-loop-optimizer": "^1.2.3",
     "babel-plugin-wildcard": "^1.0.0",
     "babel-preset-flow": "^6.23.0",
-    "esdoc": "^0.5.2"
+    "esdoc": "^0.5.2",
+    "esdoc-flow-plugin": "^1.0.0"
   }
 }

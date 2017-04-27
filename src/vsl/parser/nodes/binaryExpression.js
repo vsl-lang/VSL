@@ -20,13 +20,21 @@ export default class BinaryExpression extends Node {
     constructor (lhs: any, rhs: any, operator: string, position: Object) {
         super(position);
         
+        /** @type {Expression} */
         this.lhs = lhs;
+        /** @type {Expression} */
         this.rhs = rhs;
         
+        /** @type {string} */
         this.op = operator;
     }
     
-    get children () {
-        return [lhs, rhs, operator];
+    /**
+     * Returns all the child nodes
+     * @return empty array
+     * @override
+     */
+    children() {
+        return [this.op, lhs, rhs];
     }
 }
