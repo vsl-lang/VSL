@@ -2,20 +2,13 @@
 # `Expression` may be empty
 
 @{%
-const NodeTypes = require('./vsltokentype'),
-  freeze = Object.freeze,
-  integer = freeze({ test: x => x[1] === NodeTypes.Integer }),
-  decimal = freeze({ test: x => x[1] === NodeTypes.Decimal }),
-  string = freeze({ test: x => x[1] === NodeTypes.String }),
-  identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
-  mid = d => d[0][0],
-  literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
+  const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
   expr = (d, l) => new t.ExpressionStatement(d[0], l);
-//id = d => d[0].value || d[0];
 %}
 
 @builtin "postprocessors.ne"
 @include "ws.ne"
+@include "primitives.ne"
 
 CommandChain -> Expression:+ {% (d, l) => new t.CommandChain(d[0], l) %}
 
@@ -31,13 +24,12 @@ propertyTail -> "." _ Identifier {% d => d[2] %}
 Literal -> %decimal {% literal %}
   | %integer {% literal %}
   | %string {% literal %}
+  
+# Primitiveish Things
+FunctionHead -> ArgumentList (_ "->" _ type {% nth(3) %}):?
 
-# Types
-TypedIdentifier -> Identifier ":" type
-type -> delimited[Identifier, _ "." _] "?":?
-
-# Identifier
-Identifier -> %identifier {% (d, l) => new t.Identifier(d[0], l) %}
+ArgumentList -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}
+Argument -> TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {% (d, l) => new t.FunctionArgument(d[0], d[1], l) %}
 
 # Operators
 

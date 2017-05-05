@@ -28,7 +28,7 @@ export default class VSLTokenizer extends Tokenizer {
         let tokenMatchers = Array(VSLScope.MAX);
         tokenMatchers[VSLScope.Normal] = [
             ['(?:\\s|\\\\\\n)*[\r\n](?:\\s|\\\\\\n)*', (self, match) => {
-                self.newline(match.count(/(?:\r|\n|\r\n)/, match.match(/[ \t\v\f]*$/)[0].length - 1));
+                self.newline(match.match(/(?:\r|\n|\r\n)/).length, match.match(/[ \t\v\f]*$/)[0].length - 1);
                 return '\n';
             }],
             ['(?:\\s|\\\\\\n)+', noop],
@@ -47,6 +47,7 @@ export default class VSLTokenizer extends Tokenizer {
             ['(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*', strip_, VSLTokenType.Integer],
             ['[0-9][0-9_]*', strip_, VSLTokenType.Integer],
             ['/[^\/\*]([^\\/\r\n]|\\[^\r\n])+/[gmixc]*', passThrough, VSLTokenType.Regex],
+            ['\\.\\.\\.', passThrough],
             ['\\.\\.', passThrough],
             ['\\.', passThrough],
             [';', passThrough],
@@ -113,6 +114,8 @@ export default class VSLTokenizer extends Tokenizer {
             ['private', passThrough],
             ['readonly', passThrough],
             ['internal', passThrough],
+
+            ['inline', passThrough],
             
             ['is', passThrough],
             

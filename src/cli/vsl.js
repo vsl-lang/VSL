@@ -116,7 +116,7 @@ if (argv.r) {
     	if (typeof result === 'undefined')
     	    return prompt();
     	// check if got any tokens at all
-    	// i.e. skip if all comments or no imput
+    	// i.e. skip if all comments or no input
     	if (result.tokens && result.length < 1) {
     	    feeding = true;
     	    rl.setPrompt('>>>>>>>>>>>>> '.bold);

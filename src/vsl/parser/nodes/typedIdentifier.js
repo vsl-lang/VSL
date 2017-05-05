@@ -1,13 +1,10 @@
 import Node from './node';
 
 /**
- * Wraps a identifier.
- * 
- * Identifiers are specified by the tokenizer but this serves just as a class
- *  which is used for the parser
+ * Wraps a typed identifier.
  * 
  */
-export default class Identifier extends Node {
+export default class TypedIdentifier extends Node {
     
     /**
      * Creates an identifier
@@ -15,11 +12,12 @@ export default class Identifier extends Node {
      * @param {string} identifier the identifier
      * @param {Object} position a position from nearley
      */
-    constructor (identifier: string, position: Object) {
+    constructor (identifier: string, type: Type, position: Object) {
         super(position);
         
         /** @type {string} */
         this.identifier = identifier;
+        this.type = type;
     }
     
     get children () {

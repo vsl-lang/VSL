@@ -23,7 +23,7 @@ export default class Tokenizer {
                 '\r': 'r',
                 '\n': 'n',
                 '\t': 't'
-            }[match])).replace(/^[a-zA-Z]+$/, '$1\\s'));
+            }[match])).replace(/^[a-zA-Z]+$/, '$&(?=$|[^a-zA-Z0-9_])'));
             return object;
         }));
         this.tokenMatcher = tokenMatchers[scope];

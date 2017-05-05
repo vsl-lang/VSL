@@ -7,6 +7,14 @@
 @{%
 let t = require('./nodes');
 let lexer = new (require('./vsltokenizer'))();
+
+const NodeTypes = require('./vsltokentype'),
+  freeze = Object.freeze,
+  integer = freeze({ test: x => x[1] === NodeTypes.Integer }),
+  decimal = freeze({ test: x => x[1] === NodeTypes.Decimal }),
+  string = freeze({ test: x => x[1] === NodeTypes.String }),
+  identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
+  mid = d => d[0][0];
 %}
 
 @lexer lexer
@@ -16,6 +24,9 @@ let lexer = new (require('./vsltokenizer'))();
 @include "expr.ne"
 @include "codeBlock.ne"
 @include "ws.ne"
+@include "class.ne"
 
 main -> CodeBlock[statement] {% id %}
 statement -> Expression {% id %}
+    | ClassStatement[statement] {% id %}
+    | InterfaceStatement[statement] {% id %}
