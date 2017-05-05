@@ -6,9 +6,8 @@ export default class Node {
      * Creates a new Node object.
      */
     constructor(position: Object) {
-        //ifndef DEBUG
-        // this.position = position;
-        //endif
+        if (process.env["VSL_ENV"] != "dev_debug")
+            this.position = position;
     }
     
     /**
@@ -23,6 +22,14 @@ export default class Node {
      generate(generator: Generator) {
          throw new TypeError("generate(generator:) must be overriden");
      }
+    
+    /**
+     * Returns all the children of a node. The order must be consistent
+     * @type {?Node[]}
+     */
+    get children() {
+        throw new Error("Must implement Node#children");
+    }
     
     /**
      * Returns the string representation of the Node.
@@ -56,13 +63,5 @@ export default class Node {
             result += item.toAST(new_padding);
         }
         return result;
-    }
-    
-    /**
-     * Returns a node's children as an array in order
-     * 
-     */
-    get children ()  {
-        throw 'get children(): Must be overriden';
     }
 }

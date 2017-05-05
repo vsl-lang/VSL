@@ -31,7 +31,8 @@ export default class PropertyExpression extends Node {
         this.tail = tail;
     }
     
+    /** @override */
     get children () {
-        return [head, tail];
+        return ['head', 'tail'];
     }
 }

@@ -26,7 +26,8 @@ export default class UnaryExpression extends Node {
         this.op = operator;
     }
     
+    /** @override */
     get children () {
-        return [expression, operator];
+        return ['expression'];
     }
 }

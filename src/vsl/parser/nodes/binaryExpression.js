@@ -5,7 +5,7 @@ import Node from './node';
  * 
  * See Also: `UnaryExpression`
  * 
- * This matches any generic 
+ * This matches any generic binary expression.
  */
 export default class BinaryExpression extends Node {
     
@@ -17,24 +17,19 @@ export default class BinaryExpression extends Node {
      * @param {string} operator the operator for the expression
      * @param {Object} position a position from nearley
      */
-    constructor (lhs: any, rhs: any, operator: string, position: Object) {
+    constructor (lhs: Expression, rhs: Expression, operator: string, position: Object) {
         super(position);
         
         /** @type {Expression} */
         this.lhs = lhs;
         /** @type {Expression} */
         this.rhs = rhs;
-        
         /** @type {string} */
         this.op = operator;
     }
     
-    /**
-     * Returns all the child nodes
-     * @return empty array
-     * @override
-     */
-    children() {
-        return [this.op, lhs, rhs];
+    /** @override */
+    get children () {
+        return ['lhs', 'rhs'];
     }
 }

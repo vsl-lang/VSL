@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import VSLParser from '../vsl/parser/vslparser';
 import VSLTokenizer from '../vsl/parser/vsltokenizer';
-import VSLTransfomer from '../vsl/transform/vsltransformer';
+import VSLTransformer from '../vsl/transform/vsltransformer';
+
 import readline from 'readline';
 import util from 'util';
 import colors from 'colors';
@@ -19,6 +20,7 @@ const print = console.log,
             help: 'h',
             parserrepl: 'p',
             tokenizerrepl: 't',
+            transformrepl: 'r',
             code: 'c'
         },
         booleans: [
@@ -46,9 +48,8 @@ function feed (code) {
         if (result === null)
             return;
         print("Syntax Error".red + ": ");
-        print(
-            highlight(bound(code, parser.error)).join("\n")
-        );
+        //TODO: tokenizer now returns formatted error
+        print(parser.error.message);
     }
 }
 
@@ -66,6 +67,7 @@ Options:
 Debug REPLs:
     -p, --parserrepl    Start parser REPL
     -t, --tokenizerrepl Start tokenizer REPL
+    -r, --transformrepl Start parser -> VSLTransformer REPL
     -c, --code CODE     Parse CODE`) || exit();
 }
 
@@ -78,11 +80,52 @@ if (argv._.length)
 if (argv.code)
     display(feed(argv.code)) || exit();
 
-if (argv.p || argv.t)
+if (argv.p || argv.t || argv.r)
     rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
+
+if (argv.r) {
+    function prompt() {
+        rl.setPrompt('vsl:transform> '.red.bold);
+        rl.prompt();
+    }
+    prompt();
+    let feeding = false;
+    let transformer = new VSLTransformer();
+    rl.on('line', function (input) {
+        if (input === 'exit')
+    		exit(rl.close());
+        if (feeding === true) {
+            let result = feed(input);
+            if (typeof result === 'undefined') {
+                feeding = false;
+                prompt();
+            } else if (result.length > 0) {
+                feeding = false;
+                display(result);
+                prompt();
+            } else
+                rl.prompt();
+            return;
+        }
+        parser = new VSLParser();
+    	let result = feed(input);
+    	transformer.queue(result.results);
+    	if (typeof result === 'undefined')
+    	    return prompt();
+    	// check if got any tokens at all
+    	// i.e. skip if all comments or no imput
+    	if (result.tokens && result.length < 1) {
+    	    feeding = true;
+    	    rl.setPrompt('>>>>>>>>>>>>> '.bold);
+    	    return rl.prompt();
+    	}
+    	display(result);
+        prompt();
+    });
+}
 
 if (argv.p) {
     function prompt() {
@@ -111,7 +154,9 @@ if (argv.p) {
     	let result = feed(input);
     	if (typeof result === 'undefined')
     	    return prompt();
-    	if (result.length < 1) {
+    	// check if got any tokens at all
+    	// i.e. skip if all comments or no imput
+    	if (result.tokens && result.length < 1) {
     	    feeding = true;
     	    rl.setPrompt('>>>>>>>>>>> '.bold);
     	    return rl.prompt();
@@ -132,7 +177,7 @@ if (argv.t) {
     });
 }
 
-if (!argv.p && !argv.t) {
+if (!argv.p && !argv.t && !argv.r) {
     stdin.on('readable', function () {
         let chunk = process.stdin.read();
         if (chunk)

@@ -5,11 +5,17 @@
 # parser/ for such information
 
 @{%
-const t = require('./nodes');
+let t = require('./nodes');
+let lexer = new (require('./vsltokenizer'))();
 %}
+
+@lexer lexer
+@split false
+@has false
 
 @include "expr.ne"
 @include "codeBlock.ne"
+@include "ws.ne"
 
-main -> CodeBlock[statement]
+main -> CodeBlock[statement] {% id %}
 statement -> Expression {% id %}

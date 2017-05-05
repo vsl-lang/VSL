@@ -7,6 +7,6 @@ const VSLTokenType = Object.freeze({
     SpecialLoop: 5,
     SpecialIdentifier: 6,
     Identifier: 7
-});
+}); 
 
 export default VSLTokenType;

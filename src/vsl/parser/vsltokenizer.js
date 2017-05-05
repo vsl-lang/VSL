@@ -1,35 +1,44 @@
 import Tokenizer from './tokenizer';
 import VSLScope from './vslscope';
-import VSLTokenType from './vsltokentype'
+import VSLTokenType from './vsltokentype';
 
 function noop () {}
 function passThrough (_, match) { return match; }
 function strip (character) {
     return function transform (_, match) {
         return match.replace(character, '');
-    }
+    };
 }
 const strip_ = strip('_');
-function slice (index) {
+function slice (start, end) {
     return function transform (_, match) {
-        return match.slice(index);
-    }
+        return match.slice(start, end);
+    };
 }
 const slice1 = slice(1);
+const removeDelimiters = slice(1, -1);
 
+/**
+ * VSL-specific Tokenizer
+ * 
+ * This defines tokens for VSL. For further information see {@link Tokenizer}
+ */
 export default class VSLTokenizer extends Tokenizer {
     constructor () {
         let tokenMatchers = Array(VSLScope.MAX);
         tokenMatchers[VSLScope.Normal] = [
-            ['(?:\\s|\\\\\\n)*[\r\n](?:\\s|\\\\\\n)*', () => '\n'],
+            ['(?:\\s|\\\\\\n)*[\r\n](?:\\s|\\\\\\n)*', (self, match) => {
+                self.newline(match.count(/(?:\r|\n|\r\n)/, match.match(/[ \t\v\f]*$/)[0].length - 1));
+                return '\n';
+            }],
             ['(?:\\s|\\\\\\n)+', noop],
             ['//[^\r\n]+', noop],
             ['/\\*', self => {
                 self.variables.commentDepth++;
                 self.begin(VSLScope.Comment);
             }, null],
-            ['"', self => self.begin(VSLScope.DoubleQuotedString)],
-            ['\'', self => self.begin(VSLScope.SingleQuotedString)],
+            ['"(?:\\\\["bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^"\\\\])*"', removeDelimiters, VSLTokenType.String],
+            ["'(?:\\\\['bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^'\\\\])*'", removeDelimiters, VSLTokenType.String],
             ['\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],
             ['\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],
             ['\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],
@@ -132,14 +141,6 @@ export default class VSLTokenizer extends Tokenizer {
                 if (!self.variables.commentDepth)
                     self.begin(VSLScope.Normal);
             }]
-        ];
-        tokenMatchers[VSLScope.SingleQuotedString] = [
-            ['([^\\\\\']|\\\\.)*', passThrough, VSLTokenType.String],
-            ['\'', self => self.begin(VSLScope.Normal)]
-        ];
-        tokenMatchers[VSLScope.DoubleQuotedString] = [
-            ['([^\\\\"]|\\\\.)*', passThrough, VSLTokenType.String], //TODO: test with escapes
-            ['"', self => self.begin(VSLScope.Normal)]
         ];
         super(tokenMatchers, VSLScope.Normal);
         this.variables = {

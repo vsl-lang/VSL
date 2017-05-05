@@ -12,5 +12,8 @@
                 "node": 4.2
             }
         }],
+    ],
+    "ignore": [
+        "vsl/interpreter/integer_asm.js"
     ]
 }

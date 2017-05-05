@@ -31,12 +31,8 @@ export default class ExpressionStatement extends Node {
         this.expression = expression;
     }
     
-    /**
-     * Returns all the child nodes
-     * @return empty array
-     * @override
-     */
-    children() {
-        return expression;
+    /** @override */
+    get children() {
+        return ['expression'];
     }
 }

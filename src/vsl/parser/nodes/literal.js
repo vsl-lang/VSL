@@ -31,12 +31,8 @@ export default class Literal extends Node {
         this.type = type;
     }
     
-    /**
-     * Returns all the child nodes
-     * @return empty array
-     * @override
-     */
-    children() {
-        return this.literal;
+    /** @override */
+    get children() {
+        return null;
     }
 }

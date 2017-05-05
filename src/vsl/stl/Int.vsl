@@ -1,0 +1,19 @@
+public class Int: Comparable {
+
+    static func ==(lhs: Int, rhs: Int) -> Bool internal
+    static func >(lhs: Int, rhs: Int) -> Bool internal
+    static func <(lhs: Int, rhs: Int) -> Bool internal
+    
+    static func +(lhs: Int, rhs: Int) internal
+    static func -(lhs: Int, rhs: Int) internal
+    static func /(lhs: Int, rhs: Int) internal
+    static func *(lhs: Int, rhs: Int) internal
+    static func %(lhs: Int, rhs: Int) internal
+    
+    static func **(lhs: Int, rhs: Int) internal
+    
+    static func ^(lhs: Int, rhs: Int) internal
+    static func &(lhs: Int, rhs: Int) internal
+    static func |(lhs: Int, rhs: Int) internal
+    
+}

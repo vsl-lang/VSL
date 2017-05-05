@@ -22,6 +22,6 @@ export default class Subscript extends Node {
     }
     
     get children () {
-        return [expression];
+        return ['expression'];
     }
 }

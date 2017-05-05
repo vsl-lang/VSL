@@ -9,7 +9,9 @@ const NodeTypes = require('./vsltokentype'),
   string = freeze({ test: x => x[1] === NodeTypes.String }),
   identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
   mid = d => d[0][0],
+  literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
   expr = (d, l) => new t.ExpressionStatement(d[0], l);
+//id = d => d[0].value || d[0];
 %}
 
 @builtin "postprocessors.ne"
@@ -26,14 +28,16 @@ propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" 
 propertyTail -> "." _ Identifier {% d => d[2] %}
   | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
 
-Literal -> (%decimal {% id %} | %integer {% id %} | %string {% id %}) {% (d, l) => new t.Literal(d[0][0], d[0],[1], l) %}
+Literal -> %decimal {% literal %}
+  | %integer {% literal %}
+  | %string {% literal %}
 
 # Types
 TypedIdentifier -> Identifier ":" type
 type -> delimited[Identifier, _ "." _] "?":?
 
 # Identifier
-Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], l) %}
+Identifier -> %identifier {% (d, l) => new t.Identifier(d[0], l) %}
 
 # Operators
 
@@ -45,7 +49,7 @@ BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryEx
 # Top level assignment
 BinaryExpression -> Assign {% id %}
 
-Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | " | =" | "^="), Is] {% id %}
+Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
 Is -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
 Or -> BinaryOp[Or, ("||"), And]  {% id %}
@@ -63,7 +67,7 @@ Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpressio
 ## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
 ## what about assignment
 FunctionizedOperator -> "(" (
-  ==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
+  "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
     | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "->" | ":>"
     | ".." | "..." | "::"
 ) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0], l) %}
