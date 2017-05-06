@@ -9,6 +9,22 @@ export default class Node {
     constructor(position: Object) {
         //if (process.env["VSL_ENV"] != "dev_debug")
         //    this.position = position;
+        
+        /**
+         * If exists, references the closest scope. Use an ASTTool to perform
+         * variable lookups
+         * 
+         * @type {?CodeBlock}
+         */
+        this.parentScope = null;
+        
+        /**
+         * If exists, a transverser will set this to the parent node or wrapping
+         * container.
+         * 
+         * @type {?(Node | Node[])}
+         */
+        this.parentNode = null;
     }
     
     /**
@@ -34,7 +50,7 @@ export default class Node {
     
     /**
      * Specifies the field name which declares a variable.
-     * @type {bool}
+     * @type {?(Identifier | TypedIdentifier)}
      */
     get identifierPath() {
         return null;

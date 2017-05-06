@@ -26,14 +26,6 @@ export default class ScopeTransverser extends Transverser {
     
     /** @override */
     receivedNode(parent: Node | Node[], name: string) {
-        
-        console.log("-- Received Node --");
-        console.log("Parent: ", parent);
-        console.log("Name: ", name);
-        console.log("Node: ", parent[name]);
-        console.log("Scope: ", this.scope);
-        console.log("\n\n");
-        
         let node = parent[name];
         if (node === null) return;
         
@@ -46,13 +38,32 @@ export default class ScopeTransverser extends Transverser {
         let identifierPath = null;
         // Handle new identifier declarations
         if (identifierPath = node.identifierPath) {
-            let name = identifierPath.identifier;
-            let result = null;
-            
-            this.scope[this.scope.length - 1].scope.set(
-                name,
-                node
-            );
+            if (identifierPath instanceof t.TypedIdentifier) {
+                let id = identifierPath.identifier;
+                let name = id.identifier;
+                let type = id.type;
+                
+                // If type key is variable
+                let mutable = node.type === t.AssignmentType.Variable
+                
+                this.scope[this.scope.length - 1].scope.set(
+                    name,
+                    new Scope.Id(
+                        mutable,
+                        type,
+                        node
+                    )
+                );
+                
+            } else {
+                let name = identifierPath.identifier;
+                let result = null;
+                
+                this.scope[this.scope.length - 1].scope.set(
+                    name,
+                    node
+                );
+            }
         }
         
         node.parentScope = this.scope[this.scope.length - 1] || null;

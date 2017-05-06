@@ -19,15 +19,13 @@ export default class ASTTool {
      * If you aren't working with `Transformer` itself, you can ignore this and
      *  just read the function docs.
      * 
-     * @param {Node} fragment - The node upon which the ASTTool operates
      * @param {Node|Node[]} parent - The parent node or array
      * @param {name} - The key `fragment` represents within it's parent. If the
      *     `parent` is an array, then this should be a referencing integer.
+     * 
+     * @private
      */
-    constructor(fragment: Node, parent: Node | Node[], name: any) {
-        /** @private */
-        this.fragment = fragment;
-        
+    constructor(parent: Node | Node[], name: any) {
         /** @private */
         this.parent = parent;
         
@@ -38,6 +36,16 @@ export default class ASTTool {
         this.replacement = null;
     }
     
+    /**
+     * Access the nth parent. This transverses up the AST tree and if the parent
+     * could not be found, or another error occurs, this returns nil.
+     */
+    nthParent(n: number) {
+        n = n | 0;
+        let parent = this.parent[this.name];
+        while (n > 0 && (parent = parent.parentNode)) n--;
+        return parent;
+    }
     
     /**
      * Replaces the fragment with a new node.
@@ -52,6 +60,8 @@ export default class ASTTool {
      * @param {Node} with - the replacement node
      */
     replace(node: Node) {
+        node.parentScope = this.parent[this.name].parentScope;
+        nose.parentNode = this.parent;
         this.parent[this.name] = node;
     }
 }

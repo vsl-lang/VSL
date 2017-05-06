@@ -21,12 +21,10 @@ export default class Transverser {
             for (let i = 0; i < ast.length; i++) {
                 // If it's a node array. Then we also want to queue itself and queue
                 // the node itself so its children will be added.
-                if (ast[i] instanceof Node) {
-                    this.receivedNode(ast, i);
-                }
+                this.processNode(ast, i);
                 
                 // Requeue the further children
-                this.queue(ast[i]);
+                this.queue(ast[i], ast);
             }
          } else if (ast instanceof Node) {
              let children = ast.children, name, child;
@@ -36,17 +34,35 @@ export default class Transverser {
                     name = children[i]
                     child = ast[ name ];
                     
-                    if (child instanceof Node) {
-                        this.receivedNode(ast, name);
-                    }
+                    this.processNode(ast, name);
                     
-                    if (child != null) this.queue(child);
+                    if (child != null) this.queue(child, ast);
                 }
              }
          } else {
              if (process.env["VSL_ENV"] != "dev_debug") console.log(ast);
              throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
          }
+    }
+    
+    /**
+     * @private
+     */
+    processNode(parent: any, name: string) {
+        
+        if (process.env.VSL_ENV === "dev_debug") {
+            console.log("-- Received Node --");
+            console.log("Parent: ", parent);
+            console.log("Name: ", name);
+            console.log("Node: ", parent[name]);
+            console.log("Scope: ", this.scope);
+            console.log("\n\n");
+        }
+        
+        let node = parent[name];
+        if (node) node.parentNode = parent;
+        
+        if (node instanceof Node) this.receivedNode(parent, name);
     }
     
     /**

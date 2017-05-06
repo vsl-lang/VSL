@@ -1,4 +1,0 @@
-class A {
-    func b(x: T, y: T?) internal
-    func c(x: T, y: T?) internal
-}

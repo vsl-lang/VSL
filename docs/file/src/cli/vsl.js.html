@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/cli/vsl.js | VSL API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-doc.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/vsl-lang/VSL" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/parser</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/tokenizer.js~Tokenizer.html">Tokenizer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/vslparser.js~VSLParser.html">VSLParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/vsltokenizer.js~VSLTokenizer.html">VSLTokenizer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-highlight">highlight</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-bound">bound</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLScope">VSLScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-VSLTokenType">VSLTokenType</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/parser/nodes</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/assignmentStatement.js~AssignmentStatement.html">AssignmentStatement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/binaryExpression.js~BinaryExpression.html">BinaryExpression</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/classStatement.js~ClassStatement.html">ClassStatement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/codeBlock.js~CodeBlock.html">CodeBlock</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/commandChain.js~CommandChain.html">CommandChain</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/expressionStatement.js~ExpressionStatement.html">ExpressionStatement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionArgument.js~FunctionArgument.html">FunctionArgument</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionStatement.js~FunctionStatement.html">FunctionStatement</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionizedOperator.js~FunctionizedOperator.html">FunctionizedOperator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html">InternalMarker</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/literal.js~Literal.html">Literal</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/propertyExpression.js~PropertyExpression.html">PropertyExpression</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/subscript.js~Subscript.html">Subscript</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/type.js~Type.html">Type</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier.html">TypedIdentifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/unaryExpression.js~UnaryExpression.html">UnaryExpression</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-AssignmentType">AssignmentType</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/asttool.js~ASTTool.html">ASTTool</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformError.js~TransformError.html">TransformError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformation.js~Transformation.html">Transformation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformer.js~Transformer.html">Transformer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/passes</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression.html">FoldBinaryIntegerExpression</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange.html">FoldFiniteIntegerRange</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope.html">VerifyFunctionAccessScope</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/scope</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/id.js~Id.html">Id</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/type.js~Type.html">Type</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html">ScopeTransverser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/vsltransformer.js~VSLTransformer.html">VSLTransformer</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/cli/vsl.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">#!/usr/bin/env node
+import VSLParser from &apos;../vsl/parser/vslparser&apos;;
+import VSLTokenizer from &apos;../vsl/parser/vsltokenizer&apos;;
+import VSLTransformer from &apos;../vsl/transform/transformers/vsltransformer&apos;;
+
+import readline from &apos;readline&apos;;
+import util from &apos;util&apos;;
+import colors from &apos;colors&apos;;
+import { readFileSync } from &apos;fs&apos;;
+import minimist from &apos;minimist&apos;;
+import pjson from &apos;../../package.json&apos;;
+
+const print = console.log,
+    stdin = process.stdin,
+    argv = minimist(process.argv.slice(2),  {
+        alias: {
+            help: &apos;h&apos;,
+            parserrepl: &apos;p&apos;,
+            tokenizerrepl: &apos;t&apos;,
+            transformrepl: &apos;r&apos;,
+            code: &apos;c&apos;
+        },
+        booleans: [
+        ],
+        default: {
+        }
+    }),
+    tokenizer = new VSLTokenizer();
+
+let code = &apos;&apos;,
+    parser = new VSLParser(),
+    rl;
+
+stdin.setEncoding(&apos;utf-8&apos;);
+
+function display (output) {
+    print(util.inspect(output, {showHidden: false, depth: null, colors: true}));
+}
+
+function feed (code) {
+    let result;
+    if ((result = parser.feed(code))) {
+        return result;
+    } else {
+        if (result === null)
+            return;
+        print(&quot;Syntax Error&quot;.red + &quot;: &quot;);
+        //TODO: tokenizer now returns formatted error
+        print(parser.error.message);
+    }
+}
+
+function exit () {
+    process.exit();
+}
+
+function help () {
+    print(`VSL: Versatile Scripting Language, v${pjson.version}
+Usage: vsl PATH_TO_VSL_FILE
+
+Options:
+    -h, --help          Show help
+
+Debug REPLs:
+    -p, --parserrepl    Start parser REPL
+    -t, --tokenizerrepl Start tokenizer REPL
+    -r, --transformrepl Start parser -&gt; VSLTransformer REPL
+    -c, --code CODE     Parse CODE`) || exit();
+}
+
+if (argv.help)
+    help();
+
+if (argv._.length)
+    display(feed(readFileSync(argv._[0]))) || exit();
+
+if (argv.code)
+    display(feed(argv.code)) || exit();
+
+if (argv.p || argv.t || argv.r)
+    rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+if (argv.r) {
+    function prompt() {
+        rl.setPrompt(&apos;vsl:transform&gt; &apos;.red.bold);
+        rl.prompt();
+    }
+    prompt();
+    let feeding = false;
+    let transformer = new VSLTransformer();
+    rl.on(&apos;line&apos;, function (input) {
+        if (input === &apos;exit&apos;)
+    		exit(rl.close());
+        if (feeding === true) {
+            let result = feed(input);
+            if (typeof result === &apos;undefined&apos;) {
+                feeding = false;
+                prompt();
+            } else if (result.length &gt; 0) {
+                feeding = false;
+                display(result);
+                prompt();
+            } else
+                rl.prompt();
+            return;
+        }
+        parser = new VSLParser();
+    	let result = feed(input);
+    	transformer.queue(result.results);
+    	if (typeof result === &apos;undefined&apos;)
+    	    return prompt();
+    	// check if got any tokens at all
+    	// i.e. skip if all comments or no input
+    	if (result.tokens &amp;&amp; result.length &lt; 1) {
+    	    feeding = true;
+    	    rl.setPrompt(&apos;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; &apos;.bold);
+    	    return rl.prompt();
+    	}
+    	display(result);
+        prompt();
+    });
+}
+
+if (argv.p) {
+    function prompt() {
+        rl.setPrompt(&apos;vsl:parser&gt; &apos;.red.bold);
+        rl.prompt();
+    }
+    prompt();
+    let feeding = false;
+    rl.on(&apos;line&apos;, function (input) {
+        if (input === &apos;exit&apos;)
+    		exit(rl.close());
+        if (feeding === true) {
+            let result = feed(input);
+            if (typeof result === &apos;undefined&apos;) {
+                feeding = false;
+                prompt();
+            } else if (result.length &gt; 0) {
+                feeding = false;
+                display(result);
+                prompt();
+            } else
+                rl.prompt();
+            return;
+        }
+        parser = new VSLParser();
+    	let result = feed(input);
+    	if (typeof result === &apos;undefined&apos;)
+    	    return prompt();
+    	// check if got any tokens at all
+    	// i.e. skip if all comments or no imput
+    	if (result.tokens &amp;&amp; result.length &lt; 1) {
+    	    feeding = true;
+    	    rl.setPrompt(&apos;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; &apos;.bold);
+    	    return rl.prompt();
+    	}
+    	display(result);
+        prompt();
+    });
+}
+
+if (argv.t) {
+    rl.setPrompt(&apos;vsl:tokenizer&gt; &apos;.red.bold);
+    rl.prompt();
+    rl.on(&apos;line&apos;, function(input) {
+        if (input === &apos;exit&apos;)
+    		rl.close() || exit();
+    	display(tokenizer.tokenize(input));
+        rl.prompt();
+    });
+}
+
+if (!argv.p &amp;&amp; !argv.t &amp;&amp; !argv.r) {
+    stdin.on(&apos;readable&apos;, function () {
+        let chunk = process.stdin.read();
+        if (chunk)
+            code += chunk;
+        else if (!code)
+            help();
+        while ((chunk = process.stdin.read()))
+            code += chunk;
+    });
+    stdin.on(&apos;end&apos;, function () {
+        display(feed(code));
+        exit();
+    });
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

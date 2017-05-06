@@ -1,0 +1,108 @@
+p > code, li > code {
+    font-family: Menlo, Consolas, monospace;
+}
+
+h3 {
+    font-size: 1.2em;
+    background: none;
+    padding: none;
+}
+
+.layout-container > header {
+    border-bottom: none;
+    background: ;#F9F9F9;
+}
+
+.navigation {
+    background: #FCFCFC;
+    border: none;
+}
+
+pre.prettyprint, pre code.prettyprint, pre > code {
+    background: #F9F9F9;
+    font-size: 14px;
+    
+    font-family: Menlo, Consolas, monospace;
+    line-height: 20px;
+}
+
+pre.source-code {
+    padding: 8px;
+    font-size: 1em;
+    background: #f7f7f7;
+}
+
+table.summary thead {
+    background: none;
+    color: black;
+    
+}
+
+table.summary thead td {
+    font-weight: 300;
+    font-size: 1.2em;
+}
+
+table.summary td {
+    border: none;
+}
+
+table.summary tr:not(:last-child) {
+    border-bottom: 1px solid #F7F7F7;
+}
+
+table.summary tbody td:nth-child(1) {
+    font-weight: bold;
+    color: #666;
+}
+
+table.summary tbody td > div:nth-child(1) {
+    color: #666;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 0.9em;
+}
+
+table.params thead {
+    background: none;
+    font-size: 1em;
+    font-weight: 300;
+    color: #666;
+    border-bottom: 1px solid #F7F7F7
+}
+
+table.params tbody tr:not(:last-child) {
+    border-bottom: 1px solid #FAFAFA;
+}
+
+table.params td {
+    border: none;
+}
+
+table.params td[data-ice=type], table.params td[data-ice=name] {
+    color: #666;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 0.9em;
+}
+
+.content .detail > h3 {
+    background: #F7F7F7;
+    padding: 8px;
+    border-radius: 5px;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.import-path {
+    margin-bottom: 0.5em;
+    font-family: Menlo, Consolas, monospace;
+}
+
+.header-notice span {
+    display: none;
+}
+
+.navigation li span[data-ice=name] {
+    padding-left: 4px;
+    font-size: 1em;
+}

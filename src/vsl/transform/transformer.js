@@ -56,7 +56,7 @@ export default class Transformer extends Transverser {
         /** @private */
         this.time = null;
         
-        /** Queue of AST nodes to parse */
+        /** @private */
         this.nodeQueue = [];
     }
     
@@ -134,7 +134,6 @@ export default class Transformer extends Transverser {
             
             if (result === false) {
                 // Requeue with remaining transformations. Excluding current
-                debugger;
                 let queuedTransforms = passes.slice(i + 1);
                 if (queuedTransforms.length > 0)
                     this.transform(parent[name], parent, name, queuedTransforms);
@@ -152,7 +151,7 @@ export default class Transformer extends Transverser {
      */
     transform_once(ast: Node, parent: Node | Node[], name: any, pass: Transformation) {
         // Create the tool for modification
-        let astTool = new ASTTool(ast, parent, name);
+        let astTool = new ASTTool(parent, name);
         
         // Setup the transformation
         let transformation = new pass();

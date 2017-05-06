@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import VSLParser from '../vsl/parser/vslparser';
 import VSLTokenizer from '../vsl/parser/vsltokenizer';
-import VSLTransformer from '../vsl/transform/vsltransformer';
+import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 
 import readline from 'readline';
 import util from 'util';
@@ -9,9 +9,6 @@ import colors from 'colors';
 import { readFileSync } from 'fs';
 import minimist from 'minimist';
 import pjson from '../../package.json';
-
-import bound from './indicator';
-import highlight from './highlight';
 
 const print = console.log,
     stdin = process.stdin,

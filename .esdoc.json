@@ -4,7 +4,8 @@
         "classProperties": true
     },
     "source": "./src",
-    "destination": "doc",
+    "destination": "docs",
+    "styles": ["misc/doc.css"],
     "plugins": [
         { "name": "esdoc-flow-plugin" }
     ]

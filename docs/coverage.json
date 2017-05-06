@@ -1,0 +1,267 @@
+{
+  "coverage": "70.11%",
+  "expectCount": 174,
+  "actualCount": 122,
+  "files": {
+    "src/vsl/transform/asttool.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/assignmentStatement.js": {
+      "expectCount": 7,
+      "actualCount": 7,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/assignmentType.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/binaryExpression.js": {
+      "expectCount": 6,
+      "actualCount": 6,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/classStatement.js": {
+      "expectCount": 8,
+      "actualCount": 5,
+      "undocumentLines": [
+        22,
+        24,
+        23
+      ]
+    },
+    "src/vsl/parser/nodes/codeBlock.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/commandChain.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/expressionStatement.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/vsl/transform/passes/FoldBinaryIntegerExpression.js": {
+      "expectCount": 3,
+      "actualCount": 1,
+      "undocumentLines": [
+        53,
+        57
+      ]
+    },
+    "src/vsl/transform/passes/FoldFiniteIntegerRange.js": {
+      "expectCount": 3,
+      "actualCount": 1,
+      "undocumentLines": [
+        43,
+        47
+      ]
+    },
+    "src/vsl/parser/nodes/functionArgument.js": {
+      "expectCount": 5,
+      "actualCount": 3,
+      "undocumentLines": [
+        9,
+        14
+      ]
+    },
+    "src/vsl/parser/nodes/functionStatement.js": {
+      "expectCount": 9,
+      "actualCount": 5,
+      "undocumentLines": [
+        25,
+        24,
+        26,
+        27
+      ]
+    },
+    "src/vsl/parser/nodes/functionizedOperator.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/vsl/transform/scope/id.js": {
+      "expectCount": 5,
+      "actualCount": 2,
+      "undocumentLines": [
+        13,
+        15,
+        14
+      ]
+    },
+    "src/vsl/parser/nodes/identifier.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/internalMarker.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/literal.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/node.js": {
+      "expectCount": 8,
+      "actualCount": 8,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/propertyExpression.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/transform/transformers/scopetransverser.js": {
+      "expectCount": 4,
+      "actualCount": 2,
+      "undocumentLines": [
+        17,
+        24
+      ]
+    },
+    "src/vsl/parser/nodes/subscript.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/tokenizer.js": {
+      "expectCount": 20,
+      "actualCount": 6,
+      "undocumentLines": [
+        139,
+        32,
+        37,
+        133,
+        35,
+        36,
+        144,
+        33,
+        34,
+        40,
+        30,
+        29,
+        20,
+        31
+      ]
+    },
+    "src/vsl/transform/transformError.js": {
+      "expectCount": 4,
+      "actualCount": 1,
+      "undocumentLines": [
+        8,
+        10,
+        11
+      ]
+    },
+    "src/vsl/transform/transformation.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/transform/transformer.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/transform/transverser.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/nodes/type.js": {
+      "expectCount": 5,
+      "actualCount": 3,
+      "undocumentLines": [
+        9,
+        14
+      ]
+    },
+    "src/vsl/transform/scope/type.js": {
+      "expectCount": 4,
+      "actualCount": 2,
+      "undocumentLines": [
+        15,
+        16
+      ]
+    },
+    "src/vsl/parser/nodes/typedIdentifier.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        20
+      ]
+    },
+    "src/vsl/parser/nodes/unaryExpression.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/vslparser.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7,
+        10,
+        13,
+        9,
+        8
+      ]
+    },
+    "src/vsl/parser/vslscope.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        1
+      ]
+    },
+    "src/vsl/parser/vsltokentype.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        1
+      ]
+    },
+    "src/vsl/parser/vsltokenizer.js": {
+      "expectCount": 3,
+      "actualCount": 1,
+      "undocumentLines": [
+        29,
+        46
+      ]
+    },
+    "src/vsl/transform/transformers/vsltransformer.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        10
+      ]
+    },
+    "src/vsl/transform/passes/VerifyFunctionAccessScope.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        15
+      ]
+    },
+    "src/vsl/parser/indicator.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/vsl/parser/highlight.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    }
+  }
+}
