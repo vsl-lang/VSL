@@ -1,19 +1,189 @@
-VSLTokenizer {
-  tokenMatchers: ,
-  tokenMatcher: ,
-  scope: 0,
-  variables: { commentDepth: 0 },
-  code: '',
-  originalCode: '',
-  positions: 
-   [ { line: 0, column: 1, index: 1, length: 1 },
-     { line: 0, column: 2, index: 2, length: 1 },
-     { line: 0, column: 3, index: 3, length: 1 },
-     { line: 0, column: 4, index: 5, length: 1 },
-     { line: 0, column: 5, index: 6, length: 1 },
-     { line: 0, column: 6, index: 8, length: 1 },
-     { line: 0, column: 7, index: 9, length: 1 },
-     { line: 0, column: 8, index: 11, length: 1 } ],
-  index: 11,
-  line: 0,
-  column: 8 }
+[ CodeBlock {
+    statements: 
+     [ ClassStatement {
+         access: [ null, null ],
+         name: Identifier { identifier: 'A' },
+         superclasses: null,
+         statements: 
+          CodeBlock {
+            statements: 
+             [ FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'b' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } },
+               FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'c' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } } ],
+            scope: Map { _c: Map {} } } } ],
+    scope: Map { _c: Map {} } },
+  CodeBlock {
+    statements: 
+     [ ClassStatement {
+         access: [ null, null ],
+         name: Identifier { identifier: 'A' },
+         superclasses: null,
+         statements: 
+          CodeBlock {
+            statements: 
+             [ FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'b' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } },
+               FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'c' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } } ],
+            scope: Map { _c: Map {} } } } ],
+    scope: Map { _c: Map {} } },
+  CodeBlock {
+    statements: 
+     [ ClassStatement {
+         access: [ null, null ],
+         name: Identifier { identifier: 'A' },
+         superclasses: null,
+         statements: 
+          CodeBlock {
+            statements: 
+             [ FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'b' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } },
+               FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'c' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } } ],
+            scope: Map { _c: Map {} } } } ],
+    scope: Map { _c: Map {} } },
+  CodeBlock {
+    statements: 
+     [ ClassStatement {
+         access: [ null, null ],
+         name: Identifier { identifier: 'A' },
+         superclasses: null,
+         statements: 
+          CodeBlock {
+            statements: 
+             [ FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'b' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } },
+               FunctionStatement {
+                 access: [ null, null ],
+                 name: Identifier { identifier: 'c' },
+                 args: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'x' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: false } },
+                    defaultValue: null },
+                 returnType: 
+                  FunctionArgument {
+                    typedId: 
+                     TypedIdentifier {
+                       identifier: Identifier { identifier: 'y' },
+                       type: Type { path: [ Identifier { identifier: 'T' } ], optional: true } },
+                    defaultValue: null },
+                 statements: { value: 'internal' } } ],
+            scope: Map { _c: Map {} } } } ],
+    scope: Map { _c: Map {} } },
+  tokens: 33 ]

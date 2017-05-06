@@ -6,9 +6,19 @@ import Node from './node';
  */
 export default class FunctionStatement extends Node {
     
+    /**
+     * Constructs a generic function statement
+     * 
+     * @param {string[]} access - The access modifiers of the node
+     * @param {Identifier} name - The name of the given function
+     * @param {FunctionArgument[]} args - The arguments of the function
+     * @param {Type} returnType - The function's returnType.
+     * @param {Node[]} statements - The statements in the function body.
+     * @param {Object} position - a position from nearley
+     */
     constructor(
         access: string[],
-        name: string,
+        name: Identifier,
         args: FunctionArgument[],
         returnType: Type,
         statements: Node[],
@@ -24,7 +34,13 @@ export default class FunctionStatement extends Node {
         this.statements = statements;
     }
     
-    get children () {
-        return identifier;
+    /** @override */
+    get identifierPath() {
+        return this.name;
+    }
+    
+    /** @override */
+    get children() {
+        return ['name', 'args', 'returnType', 'statements'];
     }
 }

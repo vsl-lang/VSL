@@ -12,6 +12,6 @@ export default class VSLParser {
     
     feed(string: string) {
         let results = this.parser.feed(string);
-        return results;
+        return [results.results[0]];
     }
 }

@@ -1,4 +1,5 @@
 import Transformation from './transformation';
+import Transverser from './transverser';
 import ASTTool from './asttool';
 import Node from '../parser/nodes/node';
 
@@ -40,13 +41,15 @@ import Node from '../parser/nodes/node';
  * side-effects and be thread safe, concurrency may or may not be implemented in
  * any specific way.
  */
-export default class Transformer {
+export default class Transformer extends Transverser {
     
     /**
      * Creates a new Transformer with the given passes
      * @param {Transformation[]} passes - The given passes to setup
      */
     constructor(passes: Transformation[]) {
+        super();
+        
         /** @private */
         this.passes = passes;
         
@@ -74,54 +77,21 @@ export default class Transformer {
      * @param {any} ast - An AST as outputted by a `Parser`
      */
      queue(ast: any) {
-         // Recursively add all AST nodes in an array
-         if (ast instanceof Array) {
-            // And of course, 0-length arrays are contentless so can be
-            // ignored
-            if (ast.length === 0) return;
-            
-            let queueUpdated = false; 
-            
-            for (let i = 0; i < ast.length; i++) {
-                // If it's a node array. Then we also want to queue itself and queue
-                // the node itself so its children will be added.
-                if (ast[i] instanceof Node) {
-                    queueUpdated = true;
-                    this.appendNodeQueue(ast, i);
-                }
-                
-                // Requeue the further children
-                this.queue(ast[i]);
-            }
-            
-            if (queueUpdated) this.didUpdateQueue();
-         } else if (ast instanceof Node) {
-             let children = ast.children, name, child;
-             
-             if (children) {
-                for (let i = 0; i < children.length; i++) {
-                    name = children[i]
-                    child = ast[ name ];
-                    
-                    if (child instanceof Array)
-                        this.queue(child);
-                    else
-                        this.appendNodeQueue(ast, name);
-                }
-             }
-             
-             this.didUpdateQueue();
-         } else {
-             throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
-         }
+         super.queue(ast);
+     }
+     
+     /** @override */
+     receivedNode(parent: Node | Node[], name: string) {
+         this.appendNodeQueue(parent, name)
      }
      
      /**
       * Adds item to node queue
       * @private
       */
-    appendNodeQueue(parent, name) {
+    appendNodeQueue(parent: Node | Node[], name: string) {
         this.nodeQueue.push([ parent[name], parent, name ]);
+        this.didUpdateQueue()
     }
      
      /**
@@ -154,18 +124,20 @@ export default class Transformer {
         
         let t = process.hrtime();
         
-        for (let i = 0; i < this.passes.length; i++) {
+        for (let i = 0; i < passes.length; i++) {
             let result = this.transform_once(
                 ast,
                 parent,
                 name,
-                this.passes[i]
+                passes[i]
             );
             
-            if (result === true) {
+            if (result === false) {
                 // Requeue with remaining transformations. Excluding current
-                let queuedTransforms = this.passes.slice(i + 1);
-                this.transform(parent[name], parent, name, queuedTransforms);
+                debugger;
+                let queuedTransforms = passes.slice(i + 1);
+                if (queuedTransforms.length > 0)
+                    this.transform(parent[name], parent, name, queuedTransforms);
                 break;
             }
         }

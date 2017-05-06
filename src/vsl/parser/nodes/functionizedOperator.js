@@ -28,4 +28,9 @@ export default class FunctionizedOperator extends Node {
         /** @type {string} */
         this.operator = operator;
     }
+    
+    /** @override */
+    get children() {
+        return null;
+    }
 }

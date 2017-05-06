@@ -21,6 +21,7 @@ export default class Subscript extends Node {
         this.expression = expression;
     }
     
+    /** @override */
     get children () {
         return ['expression'];
     }

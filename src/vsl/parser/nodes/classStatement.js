@@ -6,10 +6,18 @@ import Node from './node';
  */
 export default class ClassStatement extends Node {
     
+    /**
+     * Constructs a generic function statement
+     * 
+     * @param {string[]} access - The access modifiers of the node
+     * @param {Identifier[]} superclass - The superclasses to inherit or implement
+     * @param {Node[]} statements - The class's body.
+     * @param {Object} position - a position from nearley
+     */
     constructor(
         access: string[],
-        name: string,
-        superclasses: Node[],
+        name: Identifier,
+        superclasses: Identifier[],
         statements: [],
         position: Object
     ) {
@@ -19,10 +27,16 @@ export default class ClassStatement extends Node {
         this.access = access;
         this.name = name;
         this.superclasses = superclasses;
-        this.statements = statements
+        this.statements = statements;
     }
     
-    get children () {
-        return identifier;
+    /** @override */
+    get identifierPath() {
+        return this.name;
+    }
+    
+    /** @override */
+    get children() {
+        return ['name', 'superclasses', 'statements'];
     }
 }

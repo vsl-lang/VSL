@@ -1,9 +1,11 @@
 {
     "title": "VSL",
-    
+    "experimentalProposal": {
+        "classProperties": true
+    },
     "source": "./src",
     "destination": "doc",
-    "plugins": [{
-        "name": "esdoc-flow-plugin"
-    }]
+    "plugins": [
+        { "name": "esdoc-flow-plugin" }
+    ]
 }

@@ -18,7 +18,8 @@ export default class Type extends Node {
         this.optional = optional;
     }
     
-    get children () {
-        return identifier;
+    /** @override */
+    get children() {
+        return null;
     }
 }

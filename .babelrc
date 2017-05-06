@@ -3,7 +3,8 @@
         "loop-optimizer",
         "wildcard",
         "add-module-exports",
-        "transform-runtime"
+        "transform-runtime",
+        "transform-class-properties"
     ],
     "presets": [
         "flow",

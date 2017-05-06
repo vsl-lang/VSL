@@ -2,6 +2,7 @@
  * Node class for AST.
  */
 export default class Node {
+    
     /**
      * Creates a new Node object.
      */
@@ -29,6 +30,14 @@ export default class Node {
      */
     get children() {
         throw new Error("Must implement Node#children");
+    }
+    
+    /**
+     * Specifies the field name which declares a variable.
+     * @type {bool}
+     */
+    get identifierPath() {
+        return null;
     }
     
     /**
@@ -64,4 +73,5 @@ export default class Node {
         }
         return result;
     }
+    
 }

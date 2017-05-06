@@ -29,7 +29,7 @@ export default class BinaryExpression extends Node {
     }
     
     /** @override */
-    get children () {
+    get children() {
         return ['lhs', 'rhs'];
     }
 }

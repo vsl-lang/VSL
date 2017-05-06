@@ -20,7 +20,8 @@ export default class TypedIdentifier extends Node {
         this.type = type;
     }
     
-    get children () {
-        return null;
+    /** @override */
+    get children() {
+        return ['type'];
     }
 }

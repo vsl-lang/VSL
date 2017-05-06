@@ -22,7 +22,8 @@ export default class Identifier extends Node {
         this.identifier = identifier;
     }
     
-    get children () {
+    /** @override */
+    get children() {
         return null;
     }
 }

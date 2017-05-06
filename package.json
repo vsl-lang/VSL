@@ -35,6 +35,7 @@
     "babel-cli": "^6.24.1",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-loop-optimizer": "^1.2.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-wildcard": "^1.0.0",
     "babel-preset-flow": "^6.23.0",
     "esdoc": "^0.5.2",

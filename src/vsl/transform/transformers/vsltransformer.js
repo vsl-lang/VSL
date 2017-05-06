@@ -1,5 +1,5 @@
-import Transformer from './transformer';
-import * as Transformations from './passes/';
+import Transformer from '../transformer';
+import * as Transformations from '../passes/';
 
 /**
  * A default transformer initalized to the passes described in `passes/`

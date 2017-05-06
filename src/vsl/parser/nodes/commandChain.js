@@ -18,12 +18,8 @@ export default class CommandChain extends Node {
         this.expressions = expressions;
     }
     
-    /**
-     * Returns all the child nodes
-     * @return empty array
-     * @override
-     */
-    children() {
-        return expressions;
+    /** @override */
+    get children() {
+        return ['expressions'];
     }
 }
