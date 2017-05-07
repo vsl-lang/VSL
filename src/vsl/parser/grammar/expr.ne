@@ -26,7 +26,7 @@ Literal -> %decimal {% literal %}
   | %string {% literal %}
   
 # Primitiveish Things
-FunctionHead -> ArgumentList (_ "->" _ type {% nth(3) %}):?
+FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
 
 ArgumentList -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}
 Argument -> TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {% (d, l) => new t.FunctionArgument(d[0], d[1], l) %}
@@ -51,7 +51,7 @@ Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
 Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
 Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
-Chain -> BinaryOp[Chain, ("->" | ":>"), Range]  {% id %}
+Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
 Range -> Cast (".." | "...") _ Range {% (d, l) => new t.BinaryExpression(d[0], d[3], d[1][0], l) %} | Cast {% id %}
 Cast -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
 Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0], l) %} | Property {% id %}
@@ -60,6 +60,6 @@ Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpressio
 ## what about assignment
 FunctionizedOperator -> "(" (
   "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
-    | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "->" | ":>"
+    | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>"
     | ".." | "..." | "::"
 ) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0], l) %}

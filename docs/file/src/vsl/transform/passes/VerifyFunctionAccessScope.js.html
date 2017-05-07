@@ -97,18 +97,21 @@ export default class VerifyFunctionAccessScope extends Transformation {
     /** @overide */
     modify(node: Node, tool: ASTTool) {
         // Statement[] -&gt; CodeBlock -&gt; ClassStatement
-        let classStatement = tool.nthParent(3);
+        let DEPTH_TO_CLASS = 3;
+        
+        let classStatement = tool.nthParent(DEPTH_TO_CLASS);
         let accessModifiers = node.access;
         
         if (classStatement instanceof t.ClassStatement) {
             // A class function
-            
             return;
         }
         
-        if (classStatement === null) {
+        if (node.parentScope.rootScope === true) {
             // Top-level function
-            
+            if (AccessModifiers.Membership.some(i =&gt; accessModifiers.includes(i))) {
+                throw new TransformError(&quot;Non-methods may not be defined as static.&quot;, node)
+            }
             return;
         }
         

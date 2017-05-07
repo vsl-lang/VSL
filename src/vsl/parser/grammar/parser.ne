@@ -26,9 +26,11 @@ const NodeTypes = require('./vsltokentype'),
 @include "ws.ne"
 @include "class.ne"
 @include "assignment.ne"
+@include "function.ne"
 
-main -> CodeBlock[statement] {% id %}
+main -> CodeBlock[statement {% id %}] {% d => (d[0].rootScope = true, d[0])%}
 statement -> Expression {% id %}
+    | FunctionStatement[statement] {% id %}
     | AssignmentStatement {% id %}
     | ClassStatement[statement] {% id %}
     | InterfaceStatement[statement] {% id %}

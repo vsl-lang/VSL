@@ -2,15 +2,32 @@ p > code, li > code {
     font-family: Menlo, Consolas, monospace;
 }
 
+body {
+    background: #FCFCFC;
+}
+
+.content {
+    margin-right: 50px;
+    background: white;
+}
+
+.access {
+    font-weight: bold;
+}
+
+h1, h2 {
+    border-bottom: solid 1px #F3F3F3;
+}
+
 h3 {
     font-size: 1.2em;
     background: none;
-    padding: none;
+    padding: 0;
 }
 
 .layout-container > header {
     border-bottom: none;
-    background: ;#F9F9F9;
+    background: #FCFCFC;
 }
 
 .navigation {

@@ -188,13 +188,14 @@ export default class VSLTokenizer extends Tokenizer {
             [&apos;final&apos;, passThrough],
             [&apos;const&apos;, passThrough],
 
+            [&apos;static&apos;, passThrough],
+            [&apos;lazy&apos;, passThrough],
+
             [&apos;public&apos;, passThrough],
             [&apos;private&apos;, passThrough],
             [&apos;readonly&apos;, passThrough],
             [&apos;internal&apos;, passThrough],
 
-            [&apos;inline&apos;, passThrough],
-            
             [&apos;is&apos;, passThrough],
             
             [&apos;func&apos;, passThrough],
@@ -202,7 +203,6 @@ export default class VSLTokenizer extends Tokenizer {
             [&apos;class&apos;, passThrough],
             [&apos;struct&apos;, passThrough],
             [&apos;interface&apos;, passThrough],
-            [&apos;enumeration&apos;, passThrough],
             [&apos;enum&apos;, passThrough],
             
             [&apos;if&apos;, passThrough],

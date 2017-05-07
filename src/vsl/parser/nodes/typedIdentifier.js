@@ -1,7 +1,12 @@
 import Node from './node';
 
 /**
- * Wraps a typed identifier.
+ * Represents an identifier and it's associated type. This node is usually used
+ * for variable delcarations and such where a type is intrinsic to the parent
+ * node.
+ * 
+ * `type` may be null and in that case the parent can specify for the type
+ * inferrer to infer the type. The identifier 
  * 
  */
 export default class TypedIdentifier extends Node {

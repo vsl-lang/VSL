@@ -20,6 +20,6 @@ export default class Type extends Node {
     
     /** @override */
     get children() {
-        return [path[0]];
+        return this.path ? [this.path[0]] : null;
     }
 }
