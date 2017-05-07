@@ -50,6 +50,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionStatement.js~FunctionStatement.html">FunctionStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionizedOperator.js~FunctionizedOperator.html">FunctionizedOperator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html">InterfaceStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html">InternalMarker</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/literal.js~Literal.html">Literal</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span></span></li>
@@ -63,13 +64,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformError.js~TransformError.html">TransformError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformation.js~Transformation.html">Transformation</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformer.js~Transformer.html">Transformer</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/passes</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression.html">FoldBinaryIntegerExpression</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange.html">FoldFiniteIntegerRange</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope.html">VerifyFunctionAccessScope</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/scope</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/id.js~Id.html">Id</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/type.js~Type.html">Type</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html">ScopeTransverser</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html">ScopeTraverser</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/vsltransformer.js~VSLTransformer.html">VSLTransformer</a></span></span></li>
 </ul>
 </div>
@@ -92,7 +93,7 @@
 
   
   
-  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span> &#x2192; Transformer</div></div>
+  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span> &#x2192; Transformer</div></div>
   <div class="flat-list" data-ice="directSubclass"><h4>Direct Subclass:</h4><div><span><a href="class/src/vsl/transform/transformers/vsltransformer.js~VSLTransformer.html">VSLTransformer</a></span></div></div>
   
   
@@ -273,10 +274,39 @@ handles transformation distribution.</p>
 </div>
 
 <div class="inherited-summary" data-ice="inheritedSummary"><h2>Inherited Summary</h2><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3"><span class="toggle closed"></span> From class <span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></td></tr></thead>
+  <thead><tr><td data-ice="title" colspan="3"><span class="toggle closed"></span> From class <span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span></td></tr></thead>
   <tbody>
   
   <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html#instance-method-finishedNode">finishedNode</a></span></span><span data-ice="signature">(parent: <span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span> | <span><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span><span>[]</span></span>, name: <span>any</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p><em>Optional</em> method which is called once the traverser finishes processing
+a node&apos;s children</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
     <td>
       <span class="access" data-ice="access">public</span>
       
@@ -289,13 +319,13 @@ handles transformation distribution.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html#instance-method-queue">queue</a></span></span><span data-ice="signature">(ast: <span>any</span>)</span>
+          <span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html#instance-method-queue">queue</a></span></span><span data-ice="signature">(ast: <span>any</span>)</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Queues an AST to be transversed, this in turn calls the abstract function
+        <div data-ice="description"><p>Queues an AST to be traversed, this in turn calls the abstract function
 <code>#receivedNode(parent:name:)</code> which can be used to determine what to do
 with the node.</p>
 </div>
@@ -319,13 +349,13 @@ with the node.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html#instance-method-receivedNode">receivedNode</a></span></span><span data-ice="signature">(parent: <span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span> | <span><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span><span>[]</span></span>, name: <span>any</span>)</span>
+          <span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html#instance-method-receivedNode">receivedNode</a></span></span><span data-ice="signature">(parent: <span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span> | <span><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span><span>[]</span></span>, name: <span>any</span>)</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Called everytime the transverser encounters a node</p>
+        <div data-ice="description"><p>Called everytime the traverser encounters a node</p>
 </div>
       </div>
     </td>
@@ -437,7 +467,7 @@ may or may not be syncronous.</p>
 <p>Return value can be extracted by specifying an <code>.oncompletion</code> handler.</p>
 </div>
 
-  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/vsl/transform/transverser.js~Transverser.html#instance-method-queue">Transverser#queue</a></span></div>
+  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/vsl/transform/traverser.js~Traverser.html#instance-method-queue">Traverser#queue</a></span></div>
 
   <div data-ice="properties"><div data-ice="properties">
   <h4 data-ice="title">Params:</h4>
@@ -495,10 +525,10 @@ may or may not be syncronous.</p>
   
   
   
-  <div data-ice="description"><p>Called everytime the transverser encounters a node</p>
+  <div data-ice="description"><p>Called everytime the traverser encounters a node</p>
 </div>
 
-  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/vsl/transform/transverser.js~Transverser.html#instance-method-receivedNode">Transverser#receivedNode</a></span></div>
+  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/vsl/transform/traverser.js~Traverser.html#instance-method-receivedNode">Traverser#receivedNode</a></span></div>
 
   <div data-ice="properties"><div data-ice="properties">
   <h4 data-ice="title">Params:</h4>

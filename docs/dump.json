@@ -1889,6 +1889,216 @@
   {
     "__docId__": 80,
     "kind": "file",
+    "name": "src/vsl/parser/nodes/interfaceStatement.js",
+    "content": "import Node from './node';\n\n/**\n * Wraps an interfcae\n * \n */\nexport default class InterfaceStatement extends Node {\n    \n    /**\n     * Constructs a generic function statement\n     * \n     * @param {string[]} access - The access modifiers of the node\n     * @param {Identifier[]} superclass - The superclasses to inherit or implement\n     * @param {Node[]} statements - The interface's body.\n     * @param {Object} position - a position from nearley\n     */\n    constructor(\n        access: string[],\n        name: Identifier,\n        superclasses: Identifier[],\n        statements: [],\n        position: Object\n    ) {\n        super(position);\n        \n        /** @type {string} */\n        this.access = access;\n        this.name = name;\n        this.superclasses = superclasses;\n        this.statements = statements;\n    }\n    \n    /** @override */\n    get identifierPath() {\n        return this.name;\n    }\n    \n    /** @override */\n    get children() {\n        return ['name', 'superclasses', 'statements'];\n    }\n}",
+    "static": true,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 81,
+    "kind": "class",
+    "name": "InterfaceStatement",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js",
+    "static": true,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "access": null,
+    "export": true,
+    "importPath": "vsl/src/vsl/parser/nodes/interfaceStatement.js",
+    "importStyle": "InterfaceStatement",
+    "description": "Wraps an interfcae",
+    "lineNumber": 7,
+    "interface": false,
+    "extends": [
+      "src/vsl/parser/nodes/node.js~Node"
+    ]
+  },
+  {
+    "__docId__": 82,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#constructor",
+    "access": null,
+    "description": "Constructs a generic function statement",
+    "lineNumber": 17,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "access",
+        "description": "The access modifiers of the node"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Identifier[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "superclass",
+        "description": "The superclasses to inherit or implement"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Node[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "statements",
+        "description": "The interface's body."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "position",
+        "description": "a position from nearley"
+      }
+    ]
+  },
+  {
+    "__docId__": 83,
+    "kind": "member",
+    "name": "access",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#access",
+    "access": null,
+    "description": null,
+    "lineNumber": 21,
+    "type": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 84,
+    "kind": "member",
+    "name": "name",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#name",
+    "access": null,
+    "description": null,
+    "lineNumber": 22,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 85,
+    "kind": "member",
+    "name": "superclasses",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#superclasses",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 86,
+    "kind": "member",
+    "name": "statements",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#statements",
+    "access": null,
+    "description": null,
+    "lineNumber": 24,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 87,
+    "kind": "get",
+    "name": "identifierPath",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#identifierPath",
+    "access": null,
+    "description": null,
+    "lineNumber": 28,
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "override": true
+  },
+  {
+    "__docId__": 88,
+    "kind": "get",
+    "name": "children",
+    "memberof": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#children",
+    "access": null,
+    "description": null,
+    "lineNumber": 33,
+    "type": {
+      "types": [
+        "string[]"
+      ]
+    },
+    "override": true
+  },
+  {
+    "__docId__": 89,
+    "kind": "file",
     "name": "src/vsl/parser/nodes/internalMarker.js",
     "content": "import Node from './node';\n\n/**\n * Used to specify that the parent's implementation is internally defined.\n */\nexport default class InternalMarker extends Node {\n    \n    /**\n     * Creates a marker\n     * @param {Object} position - a position from nearley\n     */\n    constructor (position: Object) {\n        super(position);\n    }\n    \n    /** @override */\n    get children() {\n        return null;\n    }\n}",
     "static": true,
@@ -1898,7 +2108,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 81,
+    "__docId__": 90,
     "kind": "class",
     "name": "InternalMarker",
     "memberof": "src/vsl/parser/nodes/internalMarker.js",
@@ -1916,7 +2126,7 @@
     ]
   },
   {
-    "__docId__": 82,
+    "__docId__": 91,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/internalMarker.js~InternalMarker",
@@ -1941,7 +2151,7 @@
     ]
   },
   {
-    "__docId__": 83,
+    "__docId__": 92,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/internalMarker.js~InternalMarker",
@@ -1960,7 +2170,7 @@
     "override": true
   },
   {
-    "__docId__": 84,
+    "__docId__": 93,
     "kind": "file",
     "name": "src/vsl/parser/nodes/literal.js",
     "content": "import Node from './node';\n\n/**\n * This matches any simple literal.\n * \n * This excludes more complex literal types such as lambdas and switches.\n * If it can be expressed in a single string this class will wrap it, else\n *  consider a more complex class. \n * \n * The primary classes using this are:\n *  - String\n *  - Number\n *  - Boolean?\n */\nexport default class Literal extends Node {\n    \n    /**\n     * Creates a wrapper for literals\n     * \n     * @param {string} literal - the literal string value of the literal\n     * @param {number} type - The literal type as from a TokenType\n     * @param {Object} position - a position from nearley\n     */\n    constructor (literal: string, type: number, position: Object) {\n        super(position);\n        \n        /** @type {string} */\n        this.literal = literal;\n        \n        /** @type {VSLTokenType} */\n        this.type = type;\n    }\n    \n    /** @override */\n    get children() {\n        return null;\n    }\n}",
@@ -1971,7 +2181,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 85,
+    "__docId__": 94,
     "kind": "class",
     "name": "Literal",
     "memberof": "src/vsl/parser/nodes/literal.js",
@@ -1989,7 +2199,7 @@
     ]
   },
   {
-    "__docId__": 86,
+    "__docId__": 95,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/literal.js~Literal",
@@ -2034,7 +2244,7 @@
     ]
   },
   {
-    "__docId__": 87,
+    "__docId__": 96,
     "kind": "member",
     "name": "literal",
     "memberof": "src/vsl/parser/nodes/literal.js~Literal",
@@ -2053,7 +2263,7 @@
     }
   },
   {
-    "__docId__": 88,
+    "__docId__": 97,
     "kind": "member",
     "name": "type",
     "memberof": "src/vsl/parser/nodes/literal.js~Literal",
@@ -2072,7 +2282,7 @@
     }
   },
   {
-    "__docId__": 89,
+    "__docId__": 98,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/literal.js~Literal",
@@ -2091,10 +2301,10 @@
     "override": true
   },
   {
-    "__docId__": 90,
+    "__docId__": 99,
     "kind": "file",
     "name": "src/vsl/parser/nodes/node.js",
-    "content": "/**\n * Node class for AST.\n */\nexport default class Node {\n    \n    /**\n     * Creates a new Node object.\n     */\n    constructor(position: Object) {\n        //if (process.env[\"VSL_ENV\"] != \"dev_debug\")\n        //    this.position = position;\n        \n        /**\n         * If exists, references the closest scope. Use an ASTTool to perform\n         * variable lookups\n         * \n         * @type {?CodeBlock}\n         */\n        this.parentScope = null;\n        \n        /**\n         * If exists, a transverser will set this to the parent node or wrapping\n         * container.\n         * \n         * @type {?(Node | Node[])}\n         */\n        this.parentNode = null;\n    }\n    \n    /**\n     * Generates an string representing the AST from a generator.\n     * \n     * The string should use the passed generator to create the outputting\n     * string so padding is correct.\n     * \n     * @abstract\n     * @param {Generator} generator the target generator\n     **/\n     generate(generator: Generator) {\n         throw new TypeError(\"generate(generator:) must be overriden\");\n     }\n    \n    /**\n     * Returns all the children of a node. The order must be consistent\n     * @type {?Node[]}\n     */\n    get children() {\n        throw new Error(\"Must implement Node#children\");\n    }\n    \n    /**\n     * Specifies the field name which declares a variable.\n     * @type {?(Identifier | TypedIdentifier)}\n     */\n    get identifierPath() {\n        return null;\n    }\n    \n    /**\n     * Returns the string representation of the Node.\n     * @param {string} padding String to add to the left of the tree\n     * @return {string} Tree representation of this node.\n     */\n    toAST (padding: String='') {\n        let children = this.children;\n        if (this.unbox)\n            return padding + '\"' + this.children + '\"\\n';\n        let result = '';\n        if (this.type === NodeType.BinaryExpression || this.type === NodeType.UnaryExpression)\n            result = result + padding + operator_names[this.operator_type] + '\\n';\n        else\n            result = result + padding + this.constructor.name + '\\n';\n        if (padding.length >= 3) {\n            let last_chars = padding.slice(-1);\n            if (last_chars === '├')\n                padding = padding.slice(0, -1) + '│';\n            else if (last_chars === '└')\n                padding = padding.slice(0, -1) + ' ';\n        }\n        if (typeof this.children === 'string')\n            result = result + padding + '└\"' + this.children + '\"\\n';\n        else if (this.children.length !== 0) {\n            let new_padding = padding + '├';\n            for (let i = 0; i < this.children.length - 1; i++)\n                result += this.children[i].toAST(new_padding);\n            new_padding = padding + '└';\n            let item = this.children[this.children.length - 1];\n            result += item.toAST(new_padding);\n        }\n        return result;\n    }\n    \n}",
+    "content": "/**\n * Node class for AST.\n */\nexport default class Node {\n    \n    /**\n     * Creates a new Node object.\n     */\n    constructor(position: Object) {\n        //if (process.env[\"VSL_ENV\"] != \"dev_debug\")\n        //    this.position = position;\n        \n        /**\n         * If exists, references the closest scope. Use an ASTTool to perform\n         * variable lookups\n         * \n         * @type {?CodeBlock}\n         */\n        this.parentScope = null;\n        \n        /**\n         * If exists, a traverser will set this to the parent node or wrapping\n         * container.\n         * \n         * @type {?(Node | Node[])}\n         */\n        this.parentNode = null;\n    }\n    \n    /**\n     * Generates an string representing the AST from a generator.\n     * \n     * The string should use the passed generator to create the outputting\n     * string so padding is correct.\n     * \n     * @abstract\n     * @param {Generator} generator the target generator\n     **/\n     generate(generator: Generator) {\n         throw new TypeError(\"generate(generator:) must be overriden\");\n     }\n    \n    /**\n     * Returns all the children of a node. The order must be consistent\n     * @type {?Node[]}\n     */\n    get children() {\n        throw new Error(\"Must implement Node#children\");\n    }\n    \n    /**\n     * Specifies the field name which declares a variable.\n     * @type {?(Identifier | TypedIdentifier)}\n     */\n    get identifierPath() {\n        return null;\n    }\n    \n    /**\n     * Returns the string representation of the Node.\n     * @param {string} padding String to add to the left of the tree\n     * @return {string} Tree representation of this node.\n     */\n    toAST (padding: String='') {\n        let children = this.children;\n        if (this.unbox)\n            return padding + '\"' + this.children + '\"\\n';\n        let result = '';\n        if (this.type === NodeType.BinaryExpression || this.type === NodeType.UnaryExpression)\n            result = result + padding + operator_names[this.operator_type] + '\\n';\n        else\n            result = result + padding + this.constructor.name + '\\n';\n        if (padding.length >= 3) {\n            let last_chars = padding.slice(-1);\n            if (last_chars === '├')\n                padding = padding.slice(0, -1) + '│';\n            else if (last_chars === '└')\n                padding = padding.slice(0, -1) + ' ';\n        }\n        if (typeof this.children === 'string')\n            result = result + padding + '└\"' + this.children + '\"\\n';\n        else if (this.children.length !== 0) {\n            let new_padding = padding + '├';\n            for (let i = 0; i < this.children.length - 1; i++)\n                result += this.children[i].toAST(new_padding);\n            new_padding = padding + '└';\n            let item = this.children[this.children.length - 1];\n            result += item.toAST(new_padding);\n        }\n        return result;\n    }\n    \n}",
     "static": true,
     "longname": "src/vsl/parser/nodes/node.js",
     "access": null,
@@ -2102,7 +2312,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 91,
+    "__docId__": 100,
     "kind": "class",
     "name": "Node",
     "memberof": "src/vsl/parser/nodes/node.js",
@@ -2117,7 +2327,7 @@
     "interface": false
   },
   {
-    "__docId__": 92,
+    "__docId__": 101,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2138,7 +2348,7 @@
     ]
   },
   {
-    "__docId__": 93,
+    "__docId__": 102,
     "kind": "member",
     "name": "parentScope",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2157,14 +2367,14 @@
     }
   },
   {
-    "__docId__": 94,
+    "__docId__": 103,
     "kind": "member",
     "name": "parentNode",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
     "static": false,
     "longname": "src/vsl/parser/nodes/node.js~Node#parentNode",
     "access": null,
-    "description": "If exists, a transverser will set this to the parent node or wrapping\ncontainer.",
+    "description": "If exists, a traverser will set this to the parent node or wrapping\ncontainer.",
     "lineNumber": 27,
     "type": {
       "nullable": true,
@@ -2177,7 +2387,7 @@
     }
   },
   {
-    "__docId__": 95,
+    "__docId__": 104,
     "kind": "method",
     "name": "generate",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2203,7 +2413,7 @@
     "abstract": true
   },
   {
-    "__docId__": 96,
+    "__docId__": 105,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2224,7 +2434,7 @@
     }
   },
   {
-    "__docId__": 97,
+    "__docId__": 106,
     "kind": "get",
     "name": "identifierPath",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2246,7 +2456,7 @@
     }
   },
   {
-    "__docId__": 98,
+    "__docId__": 107,
     "kind": "method",
     "name": "toAST",
     "memberof": "src/vsl/parser/nodes/node.js~Node",
@@ -2279,7 +2489,7 @@
     }
   },
   {
-    "__docId__": 99,
+    "__docId__": 108,
     "kind": "file",
     "name": "src/vsl/parser/nodes/propertyExpression.js",
     "content": "import Node from './node';\n\n/**\n * Matches a property expression.\n * \n * A property expression is anything in the form `head tail`.\n * \n * A tail can have various markers including:\n *  - accessors through `.`\n *  - subscript `[ ... ]`\n *  - function calls `( ... )`\n *  - etc\n * \n * Make sure you specify tail still if it doesn't exist\n */\nexport default class PropertyExpression extends Node {\n    \n    /**\n     * Creates a wrapper ExperssionStatement\n     * \n     * @param {Expression} expression the primary expression\n     * @param {Object} position a position from nearley\n     */\n    constructor (head: any, tail: any, position: Object) {\n        super(position);\n        \n        /** @type {Expression} */\n        this.head = head;\n        \n        /** @type {Identifier[]|Subscript[]|FunctionCall[]} */\n        this.tail = tail;\n    }\n    \n    /** @override */\n    get children () {\n        return ['head', 'tail'];\n    }\n}",
@@ -2290,7 +2500,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 100,
+    "__docId__": 109,
     "kind": "class",
     "name": "PropertyExpression",
     "memberof": "src/vsl/parser/nodes/propertyExpression.js",
@@ -2308,7 +2518,7 @@
     ]
   },
   {
-    "__docId__": 101,
+    "__docId__": 110,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/propertyExpression.js~PropertyExpression",
@@ -2343,7 +2553,7 @@
     ]
   },
   {
-    "__docId__": 102,
+    "__docId__": 111,
     "kind": "member",
     "name": "head",
     "memberof": "src/vsl/parser/nodes/propertyExpression.js~PropertyExpression",
@@ -2362,7 +2572,7 @@
     }
   },
   {
-    "__docId__": 103,
+    "__docId__": 112,
     "kind": "member",
     "name": "tail",
     "memberof": "src/vsl/parser/nodes/propertyExpression.js~PropertyExpression",
@@ -2383,7 +2593,7 @@
     }
   },
   {
-    "__docId__": 104,
+    "__docId__": 113,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/propertyExpression.js~PropertyExpression",
@@ -2402,7 +2612,7 @@
     "override": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 114,
     "kind": "file",
     "name": "src/vsl/parser/nodes/subscript.js",
     "content": "import Node from './node';\n\n/**\n * Matches a subscript expression inside a PropertyExpression\n * \n * @example\n * head[tail]\n */\n\nexport default class Subscript extends Node {\n    /**\n     * Creates a subscript\n     * \n     * @param {Expression} expression the provided expression\n     * @param {Object} position a position from nearley\n     */\n    constructor (expression: any, position: Object) {\n        super(position);\n        \n        /** @type {Expression} */\n        this.expression = expression;\n    }\n    \n    /** @override */\n    get children () {\n        return ['expression'];\n    }\n}",
@@ -2413,7 +2623,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 106,
+    "__docId__": 115,
     "kind": "class",
     "name": "Subscript",
     "memberof": "src/vsl/parser/nodes/subscript.js",
@@ -2434,7 +2644,7 @@
     ]
   },
   {
-    "__docId__": 107,
+    "__docId__": 116,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/subscript.js~Subscript",
@@ -2469,7 +2679,7 @@
     ]
   },
   {
-    "__docId__": 108,
+    "__docId__": 117,
     "kind": "member",
     "name": "expression",
     "memberof": "src/vsl/parser/nodes/subscript.js~Subscript",
@@ -2488,7 +2698,7 @@
     }
   },
   {
-    "__docId__": 109,
+    "__docId__": 118,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/subscript.js~Subscript",
@@ -2507,10 +2717,10 @@
     "override": true
   },
   {
-    "__docId__": 110,
+    "__docId__": 119,
     "kind": "file",
     "name": "src/vsl/parser/nodes/type.js",
-    "content": "import Node from './node';\n\n/**\n * Wraps a type\n * \n */\nexport default class Type extends Node {\n    \n    constructor(\n        path: Identifier[],\n        optional: bool,\n        position: Object\n    ) {\n        super(position);\n        \n        /** @type {string} */\n        this.path = path;\n        this.optional = optional;\n    }\n    \n    /** @override */\n    get children() {\n        return [path[0]];\n    }\n}",
+    "content": "import Node from './node';\n\n/**\n * Wraps a type\n * \n */\nexport default class Type extends Node {\n    \n    constructor(\n        path: Identifier[],\n        optional: bool,\n        position: Object\n    ) {\n        super(position);\n        \n        /** @type {string} */\n        this.path = path;\n        this.optional = optional;\n    }\n    \n    /** @override */\n    get children() {\n        return this.path ? [this.path[0]] : null;\n    }\n}",
     "static": true,
     "longname": "src/vsl/parser/nodes/type.js",
     "access": null,
@@ -2518,7 +2728,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 111,
+    "__docId__": 120,
     "kind": "class",
     "name": "Type",
     "memberof": "src/vsl/parser/nodes/type.js",
@@ -2536,7 +2746,7 @@
     ]
   },
   {
-    "__docId__": 112,
+    "__docId__": 121,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/type.js~Type",
@@ -2576,7 +2786,7 @@
     ]
   },
   {
-    "__docId__": 113,
+    "__docId__": 122,
     "kind": "member",
     "name": "path",
     "memberof": "src/vsl/parser/nodes/type.js~Type",
@@ -2595,7 +2805,7 @@
     }
   },
   {
-    "__docId__": 114,
+    "__docId__": 123,
     "kind": "member",
     "name": "optional",
     "memberof": "src/vsl/parser/nodes/type.js~Type",
@@ -2618,7 +2828,7 @@
     }
   },
   {
-    "__docId__": 115,
+    "__docId__": 124,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/type.js~Type",
@@ -2631,16 +2841,16 @@
     "lineNumber": 18,
     "type": {
       "types": [
-        "undefined[]"
+        "*"
       ]
     },
     "override": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 125,
     "kind": "file",
     "name": "src/vsl/parser/nodes/typedIdentifier.js",
-    "content": "import Node from './node';\n\n/**\n * Wraps a typed identifier.\n * \n */\nexport default class TypedIdentifier extends Node {\n    \n    /**\n     * Creates an identifier\n     * \n     * @param {string} identifier the identifier\n     * @param {Object} position a position from nearley\n     */\n    constructor (identifier: string, type: Type, position: Object) {\n        super(position);\n        \n        /** @type {string} */\n        this.identifier = identifier;\n        this.type = type;\n    }\n    \n    /** @override */\n    get children() {\n        return ['type'];\n    }\n}",
+    "content": "import Node from './node';\n\n/**\n * Represents an identifier and it's associated type. This node is usually used\n * for variable delcarations and such where a type is intrinsic to the parent\n * node.\n * \n * `type` may be null and in that case the parent can specify for the type\n * inferrer to infer the type. The identifier \n * \n */\nexport default class TypedIdentifier extends Node {\n    \n    /**\n     * Creates an identifier\n     * \n     * @param {string} identifier the identifier\n     * @param {Object} position a position from nearley\n     */\n    constructor (identifier: string, type: Type, position: Object) {\n        super(position);\n        \n        /** @type {string} */\n        this.identifier = identifier;\n        this.type = type;\n    }\n    \n    /** @override */\n    get children() {\n        return ['type'];\n    }\n}",
     "static": true,
     "longname": "src/vsl/parser/nodes/typedIdentifier.js",
     "access": null,
@@ -2648,7 +2858,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 117,
+    "__docId__": 126,
     "kind": "class",
     "name": "TypedIdentifier",
     "memberof": "src/vsl/parser/nodes/typedIdentifier.js",
@@ -2658,15 +2868,15 @@
     "export": true,
     "importPath": "vsl/src/vsl/parser/nodes/typedIdentifier.js",
     "importStyle": "TypedIdentifier",
-    "description": "Wraps a typed identifier.",
-    "lineNumber": 7,
+    "description": "Represents an identifier and it's associated type. This node is usually used\nfor variable delcarations and such where a type is intrinsic to the parent\nnode.\n\n`type` may be null and in that case the parent can specify for the type\ninferrer to infer the type. The identifier ",
+    "lineNumber": 12,
     "interface": false,
     "extends": [
       "src/vsl/parser/nodes/node.js~Node"
     ]
   },
   {
-    "__docId__": 118,
+    "__docId__": 127,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier",
@@ -2676,7 +2886,7 @@
     "longname": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier#constructor",
     "access": null,
     "description": "Creates an identifier",
-    "lineNumber": 15,
+    "lineNumber": 20,
     "params": [
       {
         "nullable": null,
@@ -2701,7 +2911,7 @@
     ]
   },
   {
-    "__docId__": 119,
+    "__docId__": 128,
     "kind": "member",
     "name": "identifier",
     "memberof": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier",
@@ -2709,7 +2919,7 @@
     "longname": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier#identifier",
     "access": null,
     "description": null,
-    "lineNumber": 19,
+    "lineNumber": 24,
     "type": {
       "nullable": null,
       "types": [
@@ -2720,7 +2930,7 @@
     }
   },
   {
-    "__docId__": 120,
+    "__docId__": 129,
     "kind": "member",
     "name": "type",
     "memberof": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier",
@@ -2728,7 +2938,7 @@
     "longname": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier#type",
     "access": null,
     "description": null,
-    "lineNumber": 20,
+    "lineNumber": 25,
     "undocument": true,
     "unknown": [
       {
@@ -2743,7 +2953,7 @@
     }
   },
   {
-    "__docId__": 121,
+    "__docId__": 130,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier",
@@ -2753,7 +2963,7 @@
     "longname": "src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier#children",
     "access": null,
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 29,
     "type": {
       "types": [
         "string[]"
@@ -2762,7 +2972,7 @@
     "override": true
   },
   {
-    "__docId__": 122,
+    "__docId__": 131,
     "kind": "file",
     "name": "src/vsl/parser/nodes/unaryExpression.js",
     "content": "import Node from './node';\n\n/**\n * Matches a unary expression\n * \n * See Also: `BinaryExpression`\n * \n * This matches any generic unary expression\n */\nexport default class UnaryExpression extends Node {\n    \n    /**\n     * Creates a wrapper ExperssionStatement\n     * \n     * @param {Expression} expression the expression\n     * @param {string} operator the operator for the expression\n     * @param {Object} position a position from nearley\n     */\n    constructor (expression: any, operator: string, position: Object) {\n        super(position);\n        \n        /** @type {Expression} */\n        this.expression = expression;\n        \n        /** @type {string} */\n        this.op = operator;\n    }\n    \n    /** @override */\n    get children () {\n        return ['expression'];\n    }\n}",
@@ -2773,7 +2983,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 123,
+    "__docId__": 132,
     "kind": "class",
     "name": "UnaryExpression",
     "memberof": "src/vsl/parser/nodes/unaryExpression.js",
@@ -2791,7 +3001,7 @@
     ]
   },
   {
-    "__docId__": 124,
+    "__docId__": 133,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/nodes/unaryExpression.js~UnaryExpression",
@@ -2836,7 +3046,7 @@
     ]
   },
   {
-    "__docId__": 125,
+    "__docId__": 134,
     "kind": "member",
     "name": "expression",
     "memberof": "src/vsl/parser/nodes/unaryExpression.js~UnaryExpression",
@@ -2855,7 +3065,7 @@
     }
   },
   {
-    "__docId__": 126,
+    "__docId__": 135,
     "kind": "member",
     "name": "op",
     "memberof": "src/vsl/parser/nodes/unaryExpression.js~UnaryExpression",
@@ -2874,7 +3084,7 @@
     }
   },
   {
-    "__docId__": 127,
+    "__docId__": 136,
     "kind": "get",
     "name": "children",
     "memberof": "src/vsl/parser/nodes/unaryExpression.js~UnaryExpression",
@@ -2893,7 +3103,7 @@
     "override": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 137,
     "kind": "file",
     "name": "src/vsl/parser/nodes.js",
     "content": "import * as Nodes from './nodes';\nexport default Nodes;",
@@ -2904,7 +3114,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 129,
+    "__docId__": 138,
     "kind": "file",
     "name": "src/vsl/parser/tokenizer.js",
     "content": "import bound from './indicator';\nimport highlight from './highlight';\n\n/**\n * Tokenizer class.\n */\n//TODO: docs\nexport default class Tokenizer {\n    //TODO: fix type of tokenmatchers in esdoc\n    /**\n     * Creates a new Tokenizer object.\n     * @param {string[]|function(self: Tokenizer)[]} tokenMatchers - An array of\n     *  the escaped string form of a regex matching a token, a function to\n     *  return a token given the matched text, the type of the returned token,\n     *  and the scopes the regex should match in.\n     * @param {number} [scope=0] - Starting scope of the lexer\n     * @param {string[]} [tokenTypes=[]]\n     */\n    constructor (tokenMatchers, scope: number = 0, tokenTypes: string[] = []) {\n        this.tokenMatchers = tokenMatchers.map(tokenMatcher => tokenMatcher.map(object => {\n            object[0] = new RegExp('^' + object[0].replace(/[\\/\\r\\n\\t]/g, match => ('\\\\' + {\n                '/': '/',\n                '\\r': 'r',\n                '\\n': 'n',\n                '\\t': 't'\n            }[match])).replace(/^[a-zA-Z]+$/, '$&(?=$|[^a-zA-Z0-9_])'));\n            return object;\n        }));\n        this.tokenMatcher = tokenMatchers[scope];\n        this.scope = scope;\n        this.variables = {};\n        this.code = '';\n        this.originalCode = '';\n        this.positions = [];\n        this.index = 0;\n        this.line = 0;\n        this.column = 0;\n    }\n    \n    save () {\n        return {\n            index: this.index,\n            line: this.line,\n            column: this.column\n        }\n    }\n    \n    /**\n     * @param {string} code New code.\n     * @param {Info} info Position info for \n     */\n    reset (code: string, info: Object=null) {\n        this.code = code;\n        info = info || {index: 0, line: 0, column: 0};\n        this.index = info.index;\n        this.line = info.line;\n        this.column = info.column;\n    }\n    \n    /**\n     * @return Next token, or undefined if there are no more tokens.\n     */\n    next () {\n        let code = this.code,\n            token = [],\n            success = false;\n        while (1) {\n            if (code.length === 0)\n                return undefined;\n            for (let [regex, onSuccess, type] of this.tokenMatcher) {\n                let match = regex.exec(code);\n                if (match) {\n                    let matched = match[0],\n                        value = onSuccess(this, matched),\n                        length = matched.length;\n                    if (!length)\n                        continue;\n                    this.code = code = code.slice(length);\n                    if (typeof value !== 'undefined') {\n                        this.column += length;\n                        this.index += length;\n                        this.positions.push({\n                            line: this.line,\n                            column: this.column,\n                            index: this.index,\n                            length\n                        });\n                        return typeof type === 'undefined' ? {value} : [value, type];\n                    } else\n                        this.index += length;\n                    success = true;\n                    break;\n                }\n            }\n            if (!success) {\n                this.column++;\n                this.index++;\n                let value = code[0];\n                this.code = code = code.slice(1);\n                this.positions.push({\n                    line: this.line,\n                    column: this.column,\n                    index: this.index,\n                    length: 1\n                });\n                return {value};\n            }\n        }\n    }\n    \n    /**\n     * Tokenizes a given sequence of code\n     * @param {string} code - The desired code chunk or string to tokenize\n     * @return An array of tokens. If the token is of a complex type the format\n     *         [value, TokenType]. Where `TokenType` is a positive integer in the\n     *         enumeration of `TokenType` which represents the type of `value`\n     */\n    tokenize (code: string) {\n        this.reset(code);\n        let result = [],\n            next = null;\n        while ((next = this.next()))\n            result.push(next);\n        return result;\n    }\n    \n    /**\n     * Returns a formatted error message given a token.\n     * \n     * @param {Token} token The token causing the error.\n     */\n    formatError (token: Object) {\n        console.log('token', token);\n        return token;\n    }\n    \n    has (tokenType) {\n        return false;\n        //too slow since lexer will need to return {type: value} instead of array\n        //['integer', 'decimal', 'string', 'identifier'].includes(tokenType);\n    }\n    \n    begin (scope) {\n        this.scope = scope;\n        this.tokenMatcher = this.tokenMatchers[scope];\n    }\n    \n    newline (lines: number=1, column: number=-1) {\n        this.line += lines;\n        this.column = column;\n    }\n}",
@@ -2915,7 +3125,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 130,
+    "__docId__": 139,
     "kind": "class",
     "name": "Tokenizer",
     "memberof": "src/vsl/parser/tokenizer.js",
@@ -2930,7 +3140,7 @@
     "interface": false
   },
   {
-    "__docId__": 131,
+    "__docId__": 140,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -2980,7 +3190,7 @@
     ]
   },
   {
-    "__docId__": 132,
+    "__docId__": 141,
     "kind": "member",
     "name": "tokenMatchers",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3003,7 +3213,7 @@
     }
   },
   {
-    "__docId__": 133,
+    "__docId__": 142,
     "kind": "member",
     "name": "tokenMatcher",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3026,7 +3236,7 @@
     }
   },
   {
-    "__docId__": 134,
+    "__docId__": 143,
     "kind": "member",
     "name": "scope",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3049,7 +3259,7 @@
     }
   },
   {
-    "__docId__": 135,
+    "__docId__": 144,
     "kind": "member",
     "name": "variables",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3072,7 +3282,7 @@
     }
   },
   {
-    "__docId__": 136,
+    "__docId__": 145,
     "kind": "member",
     "name": "code",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3095,7 +3305,7 @@
     }
   },
   {
-    "__docId__": 137,
+    "__docId__": 146,
     "kind": "member",
     "name": "originalCode",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3118,7 +3328,7 @@
     }
   },
   {
-    "__docId__": 138,
+    "__docId__": 147,
     "kind": "member",
     "name": "positions",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3141,7 +3351,7 @@
     }
   },
   {
-    "__docId__": 139,
+    "__docId__": 148,
     "kind": "member",
     "name": "index",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3164,7 +3374,7 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 149,
     "kind": "member",
     "name": "line",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3187,7 +3397,7 @@
     }
   },
   {
-    "__docId__": 141,
+    "__docId__": 150,
     "kind": "member",
     "name": "column",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3210,7 +3420,7 @@
     }
   },
   {
-    "__docId__": 142,
+    "__docId__": 151,
     "kind": "method",
     "name": "save",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3236,7 +3446,7 @@
     }
   },
   {
-    "__docId__": 143,
+    "__docId__": 152,
     "kind": "method",
     "name": "reset",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3271,7 +3481,7 @@
     ]
   },
   {
-    "__docId__": 144,
+    "__docId__": 153,
     "kind": "member",
     "name": "code",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3294,7 +3504,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 154,
     "kind": "member",
     "name": "index",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3317,7 +3527,7 @@
     }
   },
   {
-    "__docId__": 146,
+    "__docId__": 155,
     "kind": "member",
     "name": "line",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3340,7 +3550,7 @@
     }
   },
   {
-    "__docId__": 147,
+    "__docId__": 156,
     "kind": "member",
     "name": "column",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3363,7 +3573,7 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 157,
     "kind": "method",
     "name": "next",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3385,7 +3595,7 @@
     }
   },
   {
-    "__docId__": 149,
+    "__docId__": 158,
     "kind": "member",
     "name": "code",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3408,7 +3618,7 @@
     }
   },
   {
-    "__docId__": 150,
+    "__docId__": 159,
     "kind": "member",
     "name": "column",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3431,7 +3641,7 @@
     }
   },
   {
-    "__docId__": 151,
+    "__docId__": 160,
     "kind": "member",
     "name": "index",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3454,7 +3664,7 @@
     }
   },
   {
-    "__docId__": 152,
+    "__docId__": 161,
     "kind": "member",
     "name": "index",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3477,7 +3687,7 @@
     }
   },
   {
-    "__docId__": 153,
+    "__docId__": 162,
     "kind": "member",
     "name": "code",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3500,7 +3710,7 @@
     }
   },
   {
-    "__docId__": 154,
+    "__docId__": 163,
     "kind": "method",
     "name": "tokenize",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3533,7 +3743,7 @@
     }
   },
   {
-    "__docId__": 155,
+    "__docId__": 164,
     "kind": "method",
     "name": "formatError",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3563,7 +3773,7 @@
     }
   },
   {
-    "__docId__": 156,
+    "__docId__": 165,
     "kind": "method",
     "name": "has",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3596,7 +3806,7 @@
     }
   },
   {
-    "__docId__": 157,
+    "__docId__": 166,
     "kind": "method",
     "name": "begin",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3624,7 +3834,7 @@
     ]
   },
   {
-    "__docId__": 158,
+    "__docId__": 167,
     "kind": "member",
     "name": "scope",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3647,7 +3857,7 @@
     }
   },
   {
-    "__docId__": 159,
+    "__docId__": 168,
     "kind": "member",
     "name": "tokenMatcher",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3670,7 +3880,7 @@
     }
   },
   {
-    "__docId__": 160,
+    "__docId__": 169,
     "kind": "method",
     "name": "newline",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3708,7 +3918,7 @@
     ]
   },
   {
-    "__docId__": 161,
+    "__docId__": 170,
     "kind": "member",
     "name": "line",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3731,7 +3941,7 @@
     }
   },
   {
-    "__docId__": 162,
+    "__docId__": 171,
     "kind": "member",
     "name": "column",
     "memberof": "src/vsl/parser/tokenizer.js~Tokenizer",
@@ -3754,7 +3964,7 @@
     }
   },
   {
-    "__docId__": 163,
+    "__docId__": 172,
     "kind": "file",
     "name": "src/vsl/parser/vslparser.js",
     "content": "import nearley from 'vsl-nearley';\nimport parser from './parser';\n\nimport VSLTokenizer from './vsltokenizer';\n\nexport default class VSLParser {\n    constructor() {\n        this.tokenizer = new VSLTokenizer();\n        this.parser = new nearley.Parser(parser.ParserRules, parser.ParserStart, {lexer: this.tokenizer});\n        this.error = null;\n    }\n    \n    feed(string: string) {\n        let results = this.parser.feed(string);\n        return [results.results[0]];\n    }\n}",
@@ -3765,7 +3975,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 164,
+    "__docId__": 173,
     "kind": "class",
     "name": "VSLParser",
     "memberof": "src/vsl/parser/vslparser.js",
@@ -3787,7 +3997,7 @@
     "interface": false
   },
   {
-    "__docId__": 165,
+    "__docId__": 174,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/vslparser.js~VSLParser",
@@ -3808,7 +4018,7 @@
     "params": []
   },
   {
-    "__docId__": 166,
+    "__docId__": 175,
     "kind": "member",
     "name": "tokenizer",
     "memberof": "src/vsl/parser/vslparser.js~VSLParser",
@@ -3831,7 +4041,7 @@
     }
   },
   {
-    "__docId__": 167,
+    "__docId__": 176,
     "kind": "member",
     "name": "parser",
     "memberof": "src/vsl/parser/vslparser.js~VSLParser",
@@ -3854,7 +4064,7 @@
     }
   },
   {
-    "__docId__": 168,
+    "__docId__": 177,
     "kind": "member",
     "name": "error",
     "memberof": "src/vsl/parser/vslparser.js~VSLParser",
@@ -3877,7 +4087,7 @@
     }
   },
   {
-    "__docId__": 169,
+    "__docId__": 178,
     "kind": "method",
     "name": "feed",
     "memberof": "src/vsl/parser/vslparser.js~VSLParser",
@@ -3910,7 +4120,7 @@
     }
   },
   {
-    "__docId__": 170,
+    "__docId__": 179,
     "kind": "file",
     "name": "src/vsl/parser/vslscope.js",
     "content": "const VSLScope = Object.freeze({\n    Normal: 0,\n    Comment: 1,\n    MAX: 2\n});\n\nexport default VSLScope;",
@@ -3921,7 +4131,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 171,
+    "__docId__": 180,
     "kind": "variable",
     "name": "VSLScope",
     "memberof": "src/vsl/parser/vslscope.js",
@@ -3947,10 +4157,10 @@
     }
   },
   {
-    "__docId__": 172,
+    "__docId__": 181,
     "kind": "file",
     "name": "src/vsl/parser/vsltokenizer.js",
-    "content": "import Tokenizer from './tokenizer';\nimport VSLScope from './vslscope';\nimport VSLTokenType from './vsltokentype';\n\nfunction noop () {}\nfunction passThrough (_, match) { return match; }\nfunction strip (character) {\n    return function transform (_, match) {\n        return match.replace(character, '');\n    };\n}\nconst strip_ = strip('_');\nfunction slice (start, end) {\n    return function transform (_, match) {\n        return match.slice(start, end);\n    };\n}\nconst slice1 = slice(1);\nconst removeDelimiters = slice(1, -1);\n\n/**\n * VSL-specific Tokenizer\n * \n * This defines tokens for VSL. For further information see {@link Tokenizer}\n */\nexport default class VSLTokenizer extends Tokenizer {\n    constructor () {\n        let tokenMatchers = Array(VSLScope.MAX);\n        tokenMatchers[VSLScope.Normal] = [\n            ['(?:\\\\s|\\\\\\\\\\\\n)*[\\r\\n](?:\\\\s|\\\\\\\\\\\\n)*', (self, match) => {\n                self.newline(match.match(/(?:\\r|\\n|\\r\\n)/).length, match.match(/[ \\t\\v\\f]*$/)[0].length - 1);\n                return '\\n';\n            }],\n            ['(?:\\\\s|\\\\\\\\\\\\n)+', noop],\n            ['//[^\\r\\n]+', noop],\n            ['/\\\\*', self => {\n                self.variables.commentDepth++;\n                self.begin(VSLScope.Comment);\n            }, null],\n            ['\"(?:\\\\\\\\[\"bfnrt\\\\/\\\\\\\\]|\\\\\\\\u[a-fA-F0-9]{4}|[^\"\\\\\\\\])*\"', removeDelimiters, VSLTokenType.String],\n            [\"'(?:\\\\\\\\['bfnrt\\\\/\\\\\\\\]|\\\\\\\\u[a-fA-F0-9]{4}|[^'\\\\\\\\])*'\", removeDelimiters, VSLTokenType.String],\n            ['\\\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],\n            ['\\\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],\n            ['\\\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],\n            ['\\\\.[0-9_]+', strip_, VSLTokenType.Decimal],\n            ['[0-9][0-9_]*\\\\.[0-9_]+', strip_, VSLTokenType.Decimal],\n            ['(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*', strip_, VSLTokenType.Integer],\n            ['[0-9][0-9_]*', strip_, VSLTokenType.Integer],\n            ['/[^\\/\\*]([^\\\\/\\r\\n]|\\\\[^\\r\\n])+/[gmixc]*', passThrough, VSLTokenType.Regex],\n            ['\\\\.\\\\.\\\\.', passThrough],\n            ['\\\\.\\\\.', passThrough],\n            ['\\\\.', passThrough],\n            [';', passThrough],\n            [':', passThrough],\n            [',', passThrough],\n            ['\\\\+=', passThrough],\n            ['-=', passThrough],\n            ['\\\\*\\\\*=', passThrough],\n            ['\\\\*=', passThrough],\n            ['/=', passThrough],\n            ['%=', passThrough],\n            ['\\\\+', passThrough],\n            ['-', passThrough],\n            ['/', passThrough],\n            ['%', passThrough],\n            ['\\\\*\\\\*', passThrough],\n            ['\\\\*', passThrough],\n            ['<<=', passThrough],\n            ['>>=', passThrough],\n            ['<<', passThrough],\n            ['>>', passThrough],\n            ['==', passThrough],\n            ['!=', passThrough],\n            ['<>', passThrough],\n            ['<=>', passThrough],\n            ['<=', passThrough],\n            ['>=', passThrough],\n            ['<', passThrough],\n            ['>', passThrough],\n            ['=', passThrough],\n            [':=', passThrough],\n            ['&=', passThrough],\n            ['|=', passThrough],\n            ['^=', passThrough],\n            ['&&', passThrough],\n            ['||', passThrough],\n            ['!', passThrough],\n            ['&', passThrough],\n            ['|', passThrough],\n            ['~', passThrough],\n            ['^', passThrough],\n            ['\\\\?', passThrough],\n            ['and', passThrough],\n            ['or', passThrough],\n            ['not', passThrough],\n            ['xor', passThrough],\n            ['::', passThrough],\n            ['->', passThrough],\n            [':>', passThrough],\n            ['{', passThrough],\n            ['}', passThrough],\n            ['\\\\(', passThrough],\n            ['\\\\)', passThrough],\n            ['\\\\[', passThrough],\n            ['\\\\]', passThrough],\n            ['=>', passThrough],\n            \n            ['var', passThrough],\n            ['let', passThrough],\n            ['final', passThrough],\n            ['const', passThrough],\n\n            ['static', passThrough],\n            ['lazy', passThrough],\n\n            ['public', passThrough],\n            ['private', passThrough],\n            ['readonly', passThrough],\n            ['internal', passThrough],\n\n            ['is', passThrough],\n            \n            ['func', passThrough],\n            ['fn', passThrough],\n            ['class', passThrough],\n            ['struct', passThrough],\n            ['interface', passThrough],\n            ['enum', passThrough],\n            \n            ['if', passThrough],\n            ['for', passThrough],\n            ['while', passThrough],\n            \n            ['[a-zA-Z_][a-zA-Z0-9_]*', passThrough, VSLTokenType.Identifier]\n        ];\n        tokenMatchers[VSLScope.Comment] = [\n            ['/\\\\*', self => {\n                self.variables.commentDepth++;\n                self.begin(VSLScope.Comment);\n            }],\n            ['(?:[^/*]|\\\\*[^/]|/[^*])+', noop],\n            ['\\\\*/', self => {\n                self.variables.commentDepth--;\n                if (!self.variables.commentDepth)\n                    self.begin(VSLScope.Normal);\n            }]\n        ];\n        super(tokenMatchers, VSLScope.Normal);\n        this.variables = {\n            commentDepth: 0\n        };\n    }\n}",
+    "content": "import Tokenizer from './tokenizer';\nimport VSLScope from './vslscope';\nimport VSLTokenType from './vsltokentype';\n\nfunction noop () {}\nfunction passThrough (_, match) { return match; }\nfunction strip (character) {\n    return function transform (_, match) {\n        return match.replace(character, '');\n    };\n}\nconst strip_ = strip('_');\nfunction slice (start, end) {\n    return function transform (_, match) {\n        return match.slice(start, end);\n    };\n}\nconst slice1 = slice(1);\nconst removeDelimiters = slice(1, -1);\n\n/**\n * VSL-specific Tokenizer\n * \n * This defines tokens for VSL. For further information see {@link Tokenizer}\n */\nexport default class VSLTokenizer extends Tokenizer {\n    constructor () {\n        let tokenMatchers = Array(VSLScope.MAX);\n        tokenMatchers[VSLScope.Normal] = [\n            ['(?:\\\\s|\\\\\\\\\\\\n)*[\\r\\n](?:\\\\s|\\\\\\\\\\\\n)*', (self, match) => {\n                self.newline(match.match(/(?:\\r|\\n|\\r\\n)/).length, match.match(/[ \\t\\v\\f]*$/)[0].length - 1);\n                return '\\n';\n            }],\n            ['(?:\\\\s|\\\\\\\\\\\\n)+', noop],\n            ['//[^\\r\\n]+', noop],\n            ['/\\\\*', self => {\n                self.variables.commentDepth++;\n                self.begin(VSLScope.Comment);\n            }, null],\n            ['\"(?:\\\\\\\\[\"bfnrt\\\\/\\\\\\\\]|\\\\\\\\u[a-fA-F0-9]{4}|[^\"\\\\\\\\])*\"', removeDelimiters, VSLTokenType.String],\n            [\"'(?:\\\\\\\\['bfnrt\\\\/\\\\\\\\]|\\\\\\\\u[a-fA-F0-9]{4}|[^'\\\\\\\\])*'\", removeDelimiters, VSLTokenType.String],\n            ['\\\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],\n            ['\\\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],\n            ['\\\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],\n            ['\\\\.[0-9_]+', strip_, VSLTokenType.Decimal],\n            ['[0-9][0-9_]*\\\\.[0-9_]+', strip_, VSLTokenType.Decimal],\n            ['(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*', strip_, VSLTokenType.Integer],\n            ['[0-9][0-9_]*', strip_, VSLTokenType.Integer],\n            ['/[^\\/\\*]([^\\\\/\\r\\n]|\\\\[^\\r\\n])+/[gmixc]*', passThrough, VSLTokenType.Regex],\n            ['\\\\.\\\\.\\\\.', passThrough],\n            ['\\\\.\\\\.', passThrough],\n            ['\\\\.', passThrough],\n            ['->', passThrough],\n            ['=>', passThrough],\n            ['~>', passThrough],\n            [':>', passThrough],\n            [';', passThrough],\n            [':', passThrough],\n            [',', passThrough],\n            ['\\\\+=', passThrough],\n            ['-=', passThrough],\n            ['\\\\*\\\\*=', passThrough],\n            ['\\\\*=', passThrough],\n            ['/=', passThrough],\n            ['%=', passThrough],\n            ['\\\\+', passThrough],\n            ['-', passThrough],\n            ['/', passThrough],\n            ['%', passThrough],\n            ['\\\\*\\\\*', passThrough],\n            ['\\\\*', passThrough],\n            ['<<=', passThrough],\n            ['>>=', passThrough],\n            ['<<', passThrough],\n            ['>>', passThrough],\n            ['==', passThrough],\n            ['!=', passThrough],\n            ['<>', passThrough],\n            ['<=>', passThrough],\n            ['<=', passThrough],\n            ['>=', passThrough],\n            ['<', passThrough],\n            ['>', passThrough],\n            ['=', passThrough],\n            [':=', passThrough],\n            ['&=', passThrough],\n            ['\\\\|=', passThrough],\n            ['\\\\^=', passThrough],\n            ['&&', passThrough],\n            ['\\\\|\\\\|', passThrough],\n            ['!', passThrough],\n            ['&', passThrough],\n            ['\\\\|', passThrough],\n            ['~', passThrough],\n            ['\\\\^', passThrough],\n            ['\\\\?', passThrough],\n            ['and', passThrough],\n            ['or', passThrough],\n            ['not', passThrough],\n            ['xor', passThrough],\n            ['::', passThrough],\n            ['{', passThrough],\n            ['}', passThrough],\n            ['\\\\(', passThrough],\n            ['\\\\)', passThrough],\n            ['\\\\[', passThrough],\n            ['\\\\]', passThrough],\n            \n            ['var', passThrough],\n            ['let', passThrough],\n            ['final', passThrough],\n            ['const', passThrough],\n\n            ['static', passThrough],\n            ['lazy', passThrough],\n\n            ['public', passThrough],\n            ['private', passThrough],\n            ['readonly', passThrough],\n            ['internal', passThrough],\n\n            ['is', passThrough],\n            \n            ['func', passThrough],\n            ['fn', passThrough],\n            ['class', passThrough],\n            ['struct', passThrough],\n            ['interface', passThrough],\n            ['enum', passThrough],\n            \n            ['if', passThrough],\n            ['for', passThrough],\n            ['while', passThrough],\n            \n            ['[a-zA-Z_][a-zA-Z0-9_]*', passThrough, VSLTokenType.Identifier]\n        ];\n        tokenMatchers[VSLScope.Comment] = [\n            ['/\\\\*', self => {\n                self.variables.commentDepth++;\n                self.begin(VSLScope.Comment);\n            }],\n            ['(?:[^/*]|\\\\*[^/]|/[^*])+', noop],\n            ['\\\\*/', self => {\n                self.variables.commentDepth--;\n                if (!self.variables.commentDepth)\n                    self.begin(VSLScope.Normal);\n            }]\n        ];\n        super(tokenMatchers, VSLScope.Normal);\n        this.variables = {\n            commentDepth: 0\n        };\n    }\n}",
     "static": true,
     "longname": "src/vsl/parser/vsltokenizer.js",
     "access": null,
@@ -3958,7 +4168,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 173,
+    "__docId__": 182,
     "kind": "function",
     "name": "noop",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -3982,7 +4192,7 @@
     "params": []
   },
   {
-    "__docId__": 174,
+    "__docId__": 183,
     "kind": "function",
     "name": "passThrough",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4024,7 +4234,7 @@
     }
   },
   {
-    "__docId__": 175,
+    "__docId__": 184,
     "kind": "function",
     "name": "strip",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4060,7 +4270,7 @@
     }
   },
   {
-    "__docId__": 176,
+    "__docId__": 185,
     "kind": "variable",
     "name": "strip_",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4086,7 +4296,7 @@
     }
   },
   {
-    "__docId__": 177,
+    "__docId__": 186,
     "kind": "function",
     "name": "slice",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4128,7 +4338,7 @@
     }
   },
   {
-    "__docId__": 178,
+    "__docId__": 187,
     "kind": "variable",
     "name": "slice1",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4154,7 +4364,7 @@
     }
   },
   {
-    "__docId__": 179,
+    "__docId__": 188,
     "kind": "variable",
     "name": "removeDelimiters",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4180,7 +4390,7 @@
     }
   },
   {
-    "__docId__": 180,
+    "__docId__": 189,
     "kind": "class",
     "name": "VSLTokenizer",
     "memberof": "src/vsl/parser/vsltokenizer.js",
@@ -4198,7 +4408,7 @@
     ]
   },
   {
-    "__docId__": 181,
+    "__docId__": 190,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/parser/vsltokenizer.js~VSLTokenizer",
@@ -4219,7 +4429,7 @@
     "params": []
   },
   {
-    "__docId__": 182,
+    "__docId__": 191,
     "kind": "member",
     "name": "variables",
     "memberof": "src/vsl/parser/vsltokenizer.js~VSLTokenizer",
@@ -4242,7 +4452,7 @@
     }
   },
   {
-    "__docId__": 183,
+    "__docId__": 192,
     "kind": "file",
     "name": "src/vsl/parser/vsltokentype.js",
     "content": "const VSLTokenType = Object.freeze({\n    Integer: 0,\n    Decimal: 1,\n    String: 2,\n    Regex: 3,\n    SpecialArgument: 4,\n    SpecialLoop: 5,\n    SpecialIdentifier: 6,\n    Identifier: 7\n}); \n\nexport default VSLTokenType;",
@@ -4253,7 +4463,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 184,
+    "__docId__": 193,
     "kind": "variable",
     "name": "VSLTokenType",
     "memberof": "src/vsl/parser/vsltokentype.js",
@@ -4279,10 +4489,10 @@
     }
   },
   {
-    "__docId__": 185,
+    "__docId__": 194,
     "kind": "file",
     "name": "src/vsl/transform/asttool.js",
-    "content": "/**\n * Passed to Transformations to aid in transversing and modifying the AST\n * \n * This should really only be generated by a Transformer unless you know what\n * you're doing.\n * \n * This offers a range of functions to help in modifying an AST fragment. This\n * is offered to all transformations by a `Transformer` object and will provide\n * primarially the modification ability along with other common tasks. This\n * serves as an interface between the AST and a transformation.\n * \n * This provides the necessary abstraction needed in order to prevent accidental\n * mutations and verify that the AST is indeed being properly transversed.\n */\nexport default class ASTTool {\n    /**\n     * Creates an ASTTool based on a fragment\n     * \n     * If you aren't working with `Transformer` itself, you can ignore this and\n     *  just read the function docs.\n     * \n     * @param {Node|Node[]} parent - The parent node or array\n     * @param {name} - The key `fragment` represents within it's parent. If the\n     *     `parent` is an array, then this should be a referencing integer.\n     * \n     * @private\n     */\n    constructor(parent: Node | Node[], name: any) {\n        /** @private */\n        this.parent = parent;\n        \n        /** @private */\n        this.name = name;\n\n        /** @private */\n        this.replacement = null;\n    }\n    \n    /**\n     * Access the nth parent. This transverses up the AST tree and if the parent\n     * could not be found, or another error occurs, this returns nil.\n     */\n    nthParent(n: number) {\n        n = n | 0;\n        let parent = this.parent[this.name];\n        while (n > 0 && (parent = parent.parentNode)) n--;\n        return parent;\n    }\n    \n    /**\n     * Replaces the fragment with a new node.\n     * \n     * ### Overview\n     * Use this method to replace the given node.\n     * \n     * ### Notes\n     * Ensure that the resulting node is of a correct type as no checks are done\n     * as of this time.\n     * \n     * @param {Node} with - the replacement node\n     */\n    replace(node: Node) {\n        node.parentScope = this.parent[this.name].parentScope;\n        nose.parentNode = this.parent;\n        this.parent[this.name] = node;\n    }\n}",
+    "content": "/**\n * Passed to Transformations to aid in traversing and modifying the AST\n * \n * This should really only be generated by a Transformer unless you know what\n * you're doing.\n * \n * This offers a range of functions to help in modifying an AST fragment. This\n * is offered to all transformations by a `Transformer` object and will provide\n * primarially the modification ability along with other common tasks. This\n * serves as an interface between the AST and a transformation.\n * \n * This provides the necessary abstraction needed in order to prevent accidental\n * mutations and verify that the AST is indeed being properly traversed.\n */\nexport default class ASTTool {\n    /**\n     * Creates an ASTTool based on a fragment\n     * \n     * If you aren't working with `Transformer` itself, you can ignore this and\n     *  just read the function docs.\n     * \n     * @param {Node|Node[]} parent - The parent node or array\n     * @param {name} - The key `fragment` represents within it's parent. If the\n     *     `parent` is an array, then this should be a referencing integer.\n     * \n     * @private\n     */\n    constructor(parent: Node | Node[], name: any) {\n        /** @private */\n        this.parent = parent;\n        \n        /** @private */\n        this.name = name;\n\n        /** @private */\n        this.replacement = null;\n    }\n    \n    /**\n     * Access the nth parent. This traverses up the AST tree and if the parent\n     * could not be found, or another error occurs, this returns nil.\n     */\n    nthParent(n: number) {\n        n = n | 0;\n        let parent = this.parent[this.name];\n        while (n > 0 && (parent = parent.parentNode)) n--;\n        return parent;\n    }\n    \n    /**\n     * Recursively looks and traverses the AST to locate the value associated\n     * for a given `id`.\n     * \n     * @return {?(Id | Type)}\n     */\n    resolve(id: string) {\n        let scope = this.parent[this.name].parentScope, res;\n        while (scope && !(res = scope.scope.get(string))) scope = scope.parentScope;\n        return res || null;\n    }\n    \n    /**\n     * Replaces the fragment with a new node.\n     * \n     * ### Overview\n     * Use this method to replace the given node.\n     * \n     * ### Notes\n     * Ensure that the resulting node is of a correct type as no checks are done\n     * as of this time.\n     * \n     * @param {Node} with - the replacement node\n     */\n    replace(node: Node) {\n        node.parentScope = this.parent[this.name].parentScope;\n        nose.parentNode = this.parent;\n        this.parent[this.name] = node;\n    }\n}",
     "static": true,
     "longname": "src/vsl/transform/asttool.js",
     "access": null,
@@ -4290,7 +4500,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 186,
+    "__docId__": 195,
     "kind": "class",
     "name": "ASTTool",
     "memberof": "src/vsl/transform/asttool.js",
@@ -4300,12 +4510,12 @@
     "export": true,
     "importPath": "vsl/src/vsl/transform/asttool.js",
     "importStyle": "ASTTool",
-    "description": "Passed to Transformations to aid in transversing and modifying the AST\n\nThis should really only be generated by a Transformer unless you know what\nyou're doing.\n\nThis offers a range of functions to help in modifying an AST fragment. This\nis offered to all transformations by a `Transformer` object and will provide\nprimarially the modification ability along with other common tasks. This\nserves as an interface between the AST and a transformation.\n\nThis provides the necessary abstraction needed in order to prevent accidental\nmutations and verify that the AST is indeed being properly transversed.",
+    "description": "Passed to Transformations to aid in traversing and modifying the AST\n\nThis should really only be generated by a Transformer unless you know what\nyou're doing.\n\nThis offers a range of functions to help in modifying an AST fragment. This\nis offered to all transformations by a `Transformer` object and will provide\nprimarially the modification ability along with other common tasks. This\nserves as an interface between the AST and a transformation.\n\nThis provides the necessary abstraction needed in order to prevent accidental\nmutations and verify that the AST is indeed being properly traversed.",
     "lineNumber": 15,
     "interface": false
   },
   {
-    "__docId__": 187,
+    "__docId__": 196,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4341,7 +4551,7 @@
     ]
   },
   {
-    "__docId__": 188,
+    "__docId__": 197,
     "kind": "member",
     "name": "parent",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4357,7 +4567,7 @@
     }
   },
   {
-    "__docId__": 189,
+    "__docId__": 198,
     "kind": "member",
     "name": "name",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4373,7 +4583,7 @@
     }
   },
   {
-    "__docId__": 190,
+    "__docId__": 199,
     "kind": "member",
     "name": "replacement",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4389,7 +4599,7 @@
     }
   },
   {
-    "__docId__": 191,
+    "__docId__": 200,
     "kind": "method",
     "name": "nthParent",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4398,7 +4608,7 @@
     "static": false,
     "longname": "src/vsl/transform/asttool.js~ASTTool#nthParent",
     "access": null,
-    "description": "Access the nth parent. This transverses up the AST tree and if the parent\ncould not be found, or another error occurs, this returns nil.",
+    "description": "Access the nth parent. This traverses up the AST tree and if the parent\ncould not be found, or another error occurs, this returns nil.",
     "lineNumber": 43,
     "params": [
       {
@@ -4415,7 +4625,37 @@
     }
   },
   {
-    "__docId__": 192,
+    "__docId__": 201,
+    "kind": "method",
+    "name": "resolve",
+    "memberof": "src/vsl/transform/asttool.js~ASTTool",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/transform/asttool.js~ASTTool#resolve",
+    "access": null,
+    "description": "Recursively looks and traverses the AST to locate the value associated\nfor a given `id`.",
+    "lineNumber": 56,
+    "params": [
+      {
+        "name": "id",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "nullable": true,
+      "types": [
+        "Id ",
+        " Type"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 202,
     "kind": "method",
     "name": "replace",
     "memberof": "src/vsl/transform/asttool.js~ASTTool",
@@ -4425,7 +4665,7 @@
     "longname": "src/vsl/transform/asttool.js~ASTTool#replace",
     "access": null,
     "description": "Replaces the fragment with a new node.\n\n### Overview\nUse this method to replace the given node.\n\n### Notes\nEnsure that the resulting node is of a correct type as no checks are done\nas of this time.",
-    "lineNumber": 62,
+    "lineNumber": 75,
     "params": [
       {
         "nullable": null,
@@ -4440,7 +4680,7 @@
     ]
   },
   {
-    "__docId__": 193,
+    "__docId__": 203,
     "kind": "file",
     "name": "src/vsl/transform/data/accessModifiers.js",
     "content": "export default {\n    Scope: [\"public\", \"private\", \"readonly\"],\n    Membership: [\"static\"]\n};",
@@ -4451,7 +4691,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 194,
+    "__docId__": 204,
     "kind": "file",
     "name": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js",
     "content": "import Transformation from '../transformation';\nimport TokenType from '../../parser/vsltokentype';\nimport t from '../../parser/nodes';\n\n/** @private */\nconst MAX_SAFE_LEN = Number.MAX_SAFE_INTEGER.toString().length - 1;\n\n/** @private */\nfunction isSafeInteger(node: Node): bool {\n    return node instanceof t.Literal && node.type === TokenType.Integer &&\n        node.literal.length <= MAX_SAFE_LEN;\n}\n\n/**\n * Transforms any binary expressions with raw `VSLNodeType.Integer`s ({@link VSLNodeType})\n * \n * Note: This won't apply for complex intger types as those wouldn't be the same\n * AST node as {@link Literal} only applies to simple literals.\n * \n * This will transform integers within the bounds of a private `MAX_SAFE_LEN` which\n * is 15 on most platforms, set to: `Number.MAX_SAFE_INTEGER.toString().length - 1`.\n * A number is checked on whether it's string length exceedes this range. Due to \n * integer promotion, it is not exactly safe to rely on the bounded Integer type\n * and therefore string types are used.\n * \n * Not all operations are supported as some operations may product output which\n * is larger than the applicable computation boundry as to avoid overflow or loss\n * of precision.\n * \n * This supports the operators:\n *  - `+`\n *  - `-`\n *  - `*`\n *  - `/`\n *  - `%`\n *  - `&`\n *  - `|`\n *  - `^`\n *  - `>>`\n *  - `<<`\n * \n * @example\n * BinaryExpression {\n *   lhs: Literal { literal: \"1\", type: Integer }, \n *   rhs: Literal { literal: \"1\", type: Integer },\n *   op: \"+\"\n * }\n * \n * =>\n * \n * Literal { literal: \"2\", type: Integer }\n */\nexport default class FoldBinaryIntegerExpression extends Transformation {\n    constructor() {\n        super(t.BinaryExpression, \"Optimize::FoldBinaryIntegerExpression\");\n    }\n    \n    modify(node: Node, tool: ASTTool) {\n        if (isSafeInteger(node.lhs) && isSafeInteger(node.rhs)) {\n            let replacement = null,\n                lhs = +node.lhs.literal,\n                rhs = +node.rhs.literal;\n            \n            switch (node.op.value) {\n                case \"+\": replacement = lhs + rhs; break;\n                case \"-\": replacement = lhs - rhs; break;\n                case \"*\": replacement = lhs * rhs; break;\n                case \"/\": replacement = lhs / rhs; break;\n                case \"%\": replacement = lhs % rhs; break;\n                \n                case \"&\": replacement = lhs & rhs; break;\n                case \"|\": replacement = lhs | rhs; break;\n                case \"^\": replacement = lhs ^ rhs; break;\n                \n                case \">>\": replacement = lhs >> rhs; break;\n                case \"<<\": replacement = lhs << rhs; break;\n            }\n            \n            if (replacement != null) {\n                tool.replace(new t.Literal(\n                    replacement.toString(),\n                    TokenType.Integer,\n                    node.position\n                ));\n            }\n        }\n    }\n}",
@@ -4462,7 +4702,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 195,
+    "__docId__": 205,
     "kind": "variable",
     "name": "MAX_SAFE_LEN",
     "memberof": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js",
@@ -4481,7 +4721,7 @@
     }
   },
   {
-    "__docId__": 196,
+    "__docId__": 206,
     "kind": "function",
     "name": "isSafeInteger",
     "memberof": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js",
@@ -4510,7 +4750,7 @@
     }
   },
   {
-    "__docId__": 197,
+    "__docId__": 207,
     "kind": "class",
     "name": "FoldBinaryIntegerExpression",
     "memberof": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js",
@@ -4531,7 +4771,7 @@
     ]
   },
   {
-    "__docId__": 198,
+    "__docId__": 208,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression",
@@ -4552,7 +4792,7 @@
     "params": []
   },
   {
-    "__docId__": 199,
+    "__docId__": 209,
     "kind": "method",
     "name": "modify",
     "memberof": "src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression",
@@ -4586,7 +4826,7 @@
     ]
   },
   {
-    "__docId__": 200,
+    "__docId__": 210,
     "kind": "file",
     "name": "src/vsl/transform/passes/FoldFiniteIntegerRange.js",
     "content": "import Transformation from '../transformation.js';\nimport TokenType from '../../parser/vsltokentype';\nimport t from '../../parser/nodes';\n\n/** @private */\nconst MAX_SAFE_LEN = Number.MAX_SAFE_INTEGER.toString().length - 1;\n\n/** @private */\nfunction isSafeInteger(node: Node): bool {\n    return node instanceof t.Literal && node.type === TokenType.Integer &&\n        node.literal.length <= MAX_SAFE_LEN;\n}\n\n/**\n * Transforms any finite with raw `VSLNodeType.Integer`s ({@link VSLNodeType})\n * \n * Note: This won't apply for complex intger types as those wouldn't be the same\n * AST node as {@link Literal} only applies to simple literals.\n * \n * This will transform integers within the bounds of a private `MAX_SAFE_LEN` which\n * is 15 on most platforms, set to: `Number.MAX_SAFE_INTEGER.toString().length - 1`.\n * A number is checked on whether it's string length exceedes this range. Due to \n * integer promotion, it is not exactly safe to rely on the bounded Integer type\n * and therefore string types are used.\n * \n * @example\n * BinaryExpression {\n *   lhs: Literal { literal: \"1\", type: Integer }, \n *   rhs: Literal { literal: \"3\", type: Integer },\n *   op: \"...\"\n * }\n * \n * =>\n * \n * ArrayLiteral {\n *   data: [\n *     Literal { literal: \"1\", type: Integer },\n *     Literal { literal: \"2\", type: Integer },\n *     Literal { literal: \"3\", type: Integer }\n *   ]\n * }\n */\nexport default class FoldFiniteIntegerRange extends Transformation {\n    constructor() {\n        super(t.BinaryExpression, \"Optimize::FoldFiniteIntegerRange\");\n    }\n    \n    modify(node: Node, tool: ASTTool) {\n        \n    }\n}",
@@ -4597,7 +4837,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 201,
+    "__docId__": 211,
     "kind": "variable",
     "name": "MAX_SAFE_LEN",
     "memberof": "src/vsl/transform/passes/FoldFiniteIntegerRange.js",
@@ -4616,7 +4856,7 @@
     }
   },
   {
-    "__docId__": 202,
+    "__docId__": 212,
     "kind": "function",
     "name": "isSafeInteger",
     "memberof": "src/vsl/transform/passes/FoldFiniteIntegerRange.js",
@@ -4645,7 +4885,7 @@
     }
   },
   {
-    "__docId__": 203,
+    "__docId__": 213,
     "kind": "class",
     "name": "FoldFiniteIntegerRange",
     "memberof": "src/vsl/transform/passes/FoldFiniteIntegerRange.js",
@@ -4666,7 +4906,7 @@
     ]
   },
   {
-    "__docId__": 204,
+    "__docId__": 214,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange",
@@ -4687,7 +4927,7 @@
     "params": []
   },
   {
-    "__docId__": 205,
+    "__docId__": 215,
     "kind": "method",
     "name": "modify",
     "memberof": "src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange",
@@ -4721,10 +4961,10 @@
     ]
   },
   {
-    "__docId__": 206,
+    "__docId__": 216,
     "kind": "file",
     "name": "src/vsl/transform/passes/VerifyFunctionAccessScope.js",
-    "content": "import Transformation from '../transformation.js';\nimport TransformError from '../transformError.js';\nimport AccessModifiers from '../data/accessModifiers';\nimport t from '../../parser/nodes';\n\n/**\n * Verifies and determines if a functions access modifiers are valid within its\n * scope.\n * \n * An example is if a function declared `static func` is outside of a function.\n * This does not implement access modifers either but just checks a function's\n * scope\n */\nexport default class VerifyFunctionAccessScope extends Transformation {\n    constructor() {\n        super(t.FunctionStatement, \"Verify::FunctionAccessScope\");\n    }\n    \n    /** @overide */\n    modify(node: Node, tool: ASTTool) {\n        // Statement[] -> CodeBlock -> ClassStatement\n        let DEPTH_TO_CLASS = 3;\n        \n        let classStatement = tool.nthParent(DEPTH_TO_CLASS);\n        let accessModifiers = node.access;\n        \n        if (classStatement instanceof t.ClassStatement) {\n            // A class function\n            return;\n        }\n        \n        if (node.parentScope.rootScope === true) {\n            // Top-level function\n            if (AccessModifiers.Membership.some(i => accessModifiers.includes(i))) {\n                throw new TransformError(\"Non-methods may not be defined as static.\", node)\n            }\n            return;\n        }\n        \n        // Nested function\n        if (accessModifiers.length > 0) {\n            throw new TransformError(\"Functions inside scopes may not have any modifiers.\", node);\n        }\n    }\n}",
+    "content": "import Transformation from '../transformation.js';\nimport TransformError from '../transformError.js';\nimport AccessModifiers from '../data/accessModifiers';\nimport t from '../../parser/nodes';\n\n/**\n * Verifies and determines if a functions access modifiers are valid within its\n * scope.\n * \n * An example is if a function declared `static func` is outside of a function.\n * This does not implement access modifers either but just checks a function's\n * scope\n */\nexport default class VerifyFunctionAccessScope extends Transformation {\n    constructor() {\n        super(t.FunctionStatement, \"Verify::FunctionAccessScope\");\n    }\n    \n    /** @overide */\n    modify(node: Node, tool: ASTTool) {\n        let statement = node.parentScope.parentNode;\n        let accessModifiers = node.access;\n        \n        if (statement instanceof t.ClassStatement || statement instanceof t.InterfaceStatement) {\n            // A class function\n            return;\n        }\n        \n        if (node.parentScope.rootScope === true) {\n            // Top-level function\n            if (AccessModifiers.Membership.some(i => accessModifiers.includes(i))) {\n                throw new TransformError(\"Non-methods may not be defined as static.\", node)\n            }\n            return;\n        }\n        \n        // Nested function\n        if (accessModifiers.length > 0) {\n            throw new TransformError(\"Functions inside scopes may not have any modifiers.\", node);\n        }\n    }\n}",
     "static": true,
     "longname": "src/vsl/transform/passes/VerifyFunctionAccessScope.js",
     "access": null,
@@ -4732,7 +4972,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 207,
+    "__docId__": 217,
     "kind": "class",
     "name": "VerifyFunctionAccessScope",
     "memberof": "src/vsl/transform/passes/VerifyFunctionAccessScope.js",
@@ -4750,7 +4990,7 @@
     ]
   },
   {
-    "__docId__": 208,
+    "__docId__": 218,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope",
@@ -4771,7 +5011,7 @@
     "params": []
   },
   {
-    "__docId__": 209,
+    "__docId__": 219,
     "kind": "method",
     "name": "modify",
     "memberof": "src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope",
@@ -4804,7 +5044,7 @@
     ]
   },
   {
-    "__docId__": 210,
+    "__docId__": 220,
     "kind": "file",
     "name": "src/vsl/transform/scope/id.js",
     "content": "/**\n * Represents all information about a VSL variable or identifier.\n */\nexport default class Id {\n    \n    /**\n     * @param {bool} mutable - Whether the id is a constant\n     * @param {?Type} type - The type of the variable. `nil` specifies the type\n     *     is yet to be deduced\n     * @param {Node} source - The statement source\n     */\n    constructor(mutable: bool, type: ?Type, source: Node) {\n        this.mutable = mutable;\n        this.type = type;\n        this.source = source;\n    }\n}",
@@ -4815,7 +5055,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 211,
+    "__docId__": 221,
     "kind": "class",
     "name": "Id",
     "memberof": "src/vsl/transform/scope/id.js",
@@ -4830,7 +5070,7 @@
     "interface": false
   },
   {
-    "__docId__": 212,
+    "__docId__": 222,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/scope/id.js~Id",
@@ -4875,7 +5115,7 @@
     ]
   },
   {
-    "__docId__": 213,
+    "__docId__": 223,
     "kind": "member",
     "name": "mutable",
     "memberof": "src/vsl/transform/scope/id.js~Id",
@@ -4898,7 +5138,7 @@
     }
   },
   {
-    "__docId__": 214,
+    "__docId__": 224,
     "kind": "member",
     "name": "type",
     "memberof": "src/vsl/transform/scope/id.js~Id",
@@ -4921,7 +5161,7 @@
     }
   },
   {
-    "__docId__": 215,
+    "__docId__": 225,
     "kind": "member",
     "name": "source",
     "memberof": "src/vsl/transform/scope/id.js~Id",
@@ -4944,7 +5184,7 @@
     }
   },
   {
-    "__docId__": 216,
+    "__docId__": 226,
     "kind": "file",
     "name": "src/vsl/transform/scope/type.js",
     "content": "/**\n * Represents all information about a VSL type. This includes:\n * \n *  - Type name\n *  - Declaration node\n *  - other?\n */\nexport default class Type {\n    \n    /**\n     * @param {string} name - The name of the class as a string\n     * @param {Node} source - The statement source\n     */\n    constructor(name: string, source: Node) {\n        this.name = name;\n        this.source = source;\n    }\n}",
@@ -4955,7 +5195,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 217,
+    "__docId__": 227,
     "kind": "class",
     "name": "Type",
     "memberof": "src/vsl/transform/scope/type.js",
@@ -4970,7 +5210,7 @@
     "interface": false
   },
   {
-    "__docId__": 218,
+    "__docId__": 228,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/scope/type.js~Type",
@@ -5005,7 +5245,7 @@
     ]
   },
   {
-    "__docId__": 219,
+    "__docId__": 229,
     "kind": "member",
     "name": "name",
     "memberof": "src/vsl/transform/scope/type.js~Type",
@@ -5028,7 +5268,7 @@
     }
   },
   {
-    "__docId__": 220,
+    "__docId__": 230,
     "kind": "member",
     "name": "source",
     "memberof": "src/vsl/transform/scope/type.js~Type",
@@ -5051,7 +5291,7 @@
     }
   },
   {
-    "__docId__": 221,
+    "__docId__": 231,
     "kind": "file",
     "name": "src/vsl/transform/transformError.js",
     "content": "/**\n * Use this to specify an error occured within a `Transformation`. This allows\n * you to pass the node so the CLI or others can obtain location data and show\n * exactly where the error occured.\n * \n */\nexport default class TransformError extends Error {\n    constructor(message, node) {\n        super(message);\n        this.name = 'Transform Error';\n        this.node = node;\n    }\n}",
@@ -5062,7 +5302,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 222,
+    "__docId__": 232,
     "kind": "class",
     "name": "TransformError",
     "memberof": "src/vsl/transform/transformError.js",
@@ -5080,7 +5320,7 @@
     ]
   },
   {
-    "__docId__": 223,
+    "__docId__": 233,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/transformError.js~TransformError",
@@ -5114,7 +5354,7 @@
     ]
   },
   {
-    "__docId__": 224,
+    "__docId__": 234,
     "kind": "member",
     "name": "name",
     "memberof": "src/vsl/transform/transformError.js~TransformError",
@@ -5137,7 +5377,7 @@
     }
   },
   {
-    "__docId__": 225,
+    "__docId__": 235,
     "kind": "member",
     "name": "node",
     "memberof": "src/vsl/transform/transformError.js~TransformError",
@@ -5160,10 +5400,10 @@
     }
   },
   {
-    "__docId__": 226,
+    "__docId__": 236,
     "kind": "file",
     "name": "src/vsl/transform/transformation.js",
-    "content": "/**\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and transversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n */\nexport default class Transformation {\n    /**\n     * Creates a new transformation object\n     * \n     * @param {Class<Node>} type - the node type to match which is subclass of Node\n     * @param {string} name - the name of the transformation object, for debug purposes\n     */\n    constructor(type: Class<Node>, name: any) {\n        /** @type {Class<Node>} */\n        this.type = type;\n        /** @type {string} */\n        this.name = name;\n    }\n    \n    /**\n     * Modifies a given AST fragment with the `tool`.\n     * \n     * This is the primary function which you must implement to create a\n     * transformer. You can specifically specify the node type this executes upon\n     * through specifying the \"type\" field in the `super` call within your\n     * constructor.\n     * \n     * To run upon any time, pass `null` to the constructor. Never pass undefined\n     * to a field unless specifically noted. If you do happen to pass null you\n     * must perform type checking yourself by using `instanceof` with a node type.\n     * \n     * You likely need access to the node classes to check if a node is of a\n     * specific type, you can import this using:\n     * \n     *      import t from '../../parser/nodes';\n     * \n     * This file is automatically updated based on the directory contents at\n     * build-time.\n     * \n     * This methods execution shuold generally be controlled by a `Transformer`\n     * or a seperate parent object to interface with the delegates.\n     * \n     * @param {Node} node - The node being applied on\n     * @param {ASTTool} tool - The ASTTool for modifications\n     * \n     * @abstract\n     */\n    modify(node: Node, tool: ASTTool) {\n        throw new TypeError(\"Must overload Transformation#modify(node, tool)\");\n    }\n}",
+    "content": "/**\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and traversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n */\nexport default class Transformation {\n    /**\n     * Creates a new transformation object\n     * \n     * @param {Class<Node>} type - the node type to match which is subclass of Node\n     * @param {string} name - the name of the transformation object, for debug purposes\n     */\n    constructor(type: Class<Node>, name: any) {\n        /** @type {Class<Node>} */\n        this.type = type;\n        /** @type {string} */\n        this.name = name;\n    }\n    \n    /**\n     * Modifies a given AST fragment with the `tool`.\n     * \n     * This is the primary function which you must implement to create a\n     * transformer. You can specifically specify the node type this executes upon\n     * through specifying the \"type\" field in the `super` call within your\n     * constructor.\n     * \n     * To run upon any time, pass `null` to the constructor. Never pass undefined\n     * to a field unless specifically noted. If you do happen to pass null you\n     * must perform type checking yourself by using `instanceof` with a node type.\n     * \n     * You likely need access to the node classes to check if a node is of a\n     * specific type, you can import this using:\n     * \n     *      import t from '../../parser/nodes';\n     * \n     * This file is automatically updated based on the directory contents at\n     * build-time.\n     * \n     * This methods execution shuold generally be controlled by a `Transformer`\n     * or a seperate parent object to interface with the delegates.\n     * \n     * @param {Node} node - The node being applied on\n     * @param {ASTTool} tool - The ASTTool for modifications\n     * \n     * @abstract\n     */\n    modify(node: Node, tool: ASTTool) {\n        throw new TypeError(\"Must overload Transformation#modify(node, tool)\");\n    }\n}",
     "static": true,
     "longname": "src/vsl/transform/transformation.js",
     "access": null,
@@ -5171,7 +5411,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 227,
+    "__docId__": 237,
     "kind": "class",
     "name": "Transformation",
     "memberof": "src/vsl/transform/transformation.js",
@@ -5181,7 +5421,7 @@
     "export": true,
     "importPath": "vsl/src/vsl/transform/transformation.js",
     "importStyle": "Transformation",
-    "description": "A transformation or a pass for a `Transformer`\n\n### Usage\n\nSubclass this and pass it to a `Transformer` to apply it to an AST. Each is\npassed a `ASTTool` object to aid in modifying and transversing the AST. Never\nuse anything but the ASTTool for modification. Additionally do not attempt to\nuse any undocumented methods of `ASTTool`, as.\n\nOverride:\n - The constructor to provide the node type to run the transformation upon\n    and the transformation's name.\n - The `modify(node:tool:)` method of this class.\n\nRefer to the {@link ASTTool} reference for further information.\n\n### Information\n\nA transformation is loaded into a transformer and it automatically called\nwhere applicable. A transformer should not queue or delegate any further\nnodes to transformation, nor should it attempt to mutate the AST without the\nuse of an ASTTool.\n\n### Timing\n\nEach Transformation is individually timed and tracked by a {@link Transformer}. The\ntiming information is obtained through the `transform(ast:parent:)` method for\nany and all routed transformations. It is available accurate to microsecond\nprecision and should be used for all transformations to ensure the most efficient\ntransformations are occuring.\n\nTransformations are recursive any may run on replaced nodes if the transformer\ndeems correct. You may need to specify specifically if your Transformation\nrequests specific queuing priority or transformation status to avoid extra runs\nand calls.",
+    "description": "A transformation or a pass for a `Transformer`\n\n### Usage\n\nSubclass this and pass it to a `Transformer` to apply it to an AST. Each is\npassed a `ASTTool` object to aid in modifying and traversing the AST. Never\nuse anything but the ASTTool for modification. Additionally do not attempt to\nuse any undocumented methods of `ASTTool`, as.\n\nOverride:\n - The constructor to provide the node type to run the transformation upon\n    and the transformation's name.\n - The `modify(node:tool:)` method of this class.\n\nRefer to the {@link ASTTool} reference for further information.\n\n### Information\n\nA transformation is loaded into a transformer and it automatically called\nwhere applicable. A transformer should not queue or delegate any further\nnodes to transformation, nor should it attempt to mutate the AST without the\nuse of an ASTTool.\n\n### Timing\n\nEach Transformation is individually timed and tracked by a {@link Transformer}. The\ntiming information is obtained through the `transform(ast:parent:)` method for\nany and all routed transformations. It is available accurate to microsecond\nprecision and should be used for all transformations to ensure the most efficient\ntransformations are occuring.\n\nTransformations are recursive any may run on replaced nodes if the transformer\ndeems correct. You may need to specify specifically if your Transformation\nrequests specific queuing priority or transformation status to avoid extra runs\nand calls.",
     "examples": [
       "import Transformation from '../transformation';\nimport TokenType from '../../parser/vsltokentype';\nimport t from '../../parser/nodes';\n\nexport default class MyTransformer extends Transformation {\n    constructor() {\n         super(t.Expression, \"TransformerType::TransformerName\");\n    }\n\n    modify(node: Node, tool: ASTTool) {\n        // ... modifications\n        tool.replace( newNode );\n    }\n}"
     ],
@@ -5190,7 +5430,7 @@
     "interface": false
   },
   {
-    "__docId__": 228,
+    "__docId__": 238,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/transformation.js~Transformation",
@@ -5225,7 +5465,7 @@
     ]
   },
   {
-    "__docId__": 229,
+    "__docId__": 239,
     "kind": "member",
     "name": "type",
     "memberof": "src/vsl/transform/transformation.js~Transformation",
@@ -5244,7 +5484,7 @@
     }
   },
   {
-    "__docId__": 230,
+    "__docId__": 240,
     "kind": "member",
     "name": "name",
     "memberof": "src/vsl/transform/transformation.js~Transformation",
@@ -5263,7 +5503,7 @@
     }
   },
   {
-    "__docId__": 231,
+    "__docId__": 241,
     "kind": "method",
     "name": "modify",
     "memberof": "src/vsl/transform/transformation.js~Transformation",
@@ -5299,10 +5539,10 @@
     "abstract": true
   },
   {
-    "__docId__": 232,
+    "__docId__": 242,
     "kind": "file",
     "name": "src/vsl/transform/transformer.js",
-    "content": "import Transformation from './transformation';\nimport Transverser from './transverser';\nimport ASTTool from './asttool';\nimport Node from '../parser/nodes/node';\n\n/**\n * Takes an AST and transforms it according to a series of transformations\n * \n * This is a generic class, reference VSLTransfomer for a VSL-specific\n * implementation\n * \n * ### Overview\n * This takes a series of \"passes\" which are applied to the AST, each \"pass\"\n *  would return a new AST node which would be replaced (if specified as so).\n * This is now excluded and further matching AST nodes would be applied\n * \n * ### Usage\n * \n * A `Transformer` can be subclassed (see {@link VSLTransformer}) with a no-args\n * providing this class with the applicable transformers. This class can also\n * be directly constructed with the applicable constructors with no difference.\n * A subclass of `Transformer` should not offer any significant interface not\n * specified by `Transformer` as internal structure might rapidly change.\n * \n * Note: If you're in the REPL and want to just load everything. Just run:\n * \n *     var VSLParser = require('./lib/vsl/parser/vslparser.js');\n *     var p = new VSLParser(); var ast = p.feed(\"1 + 1\");\n *     var VSLTransformer = require('./lib/vsl/transform/vsltransformer');\n *     var t = new VSLTransformer();\n * \n * Additionally, it is reccomended to use `Transformer#queue` to initially load\n * the AST.\n * \n * ### Details\n * In practice, each AST Node is treated like a `Node**`, when a node is swapped\n * the other transformers will mutate it if applicable. This prevents infinite \n * recursion at the end, the node will be requeued for processing, it's children\n * will be in turn verified for applicable transformations. This means a node should not rely on transformation order for any reason,\n * transformations may be parallelized and therefore should also not have any\n * side-effects and be thread safe, concurrency may or may not be implemented in\n * any specific way.\n */\nexport default class Transformer extends Transverser {\n    \n    /**\n     * Creates a new Transformer with the given passes\n     * @param {Transformation[]} passes - The given passes to setup\n     */\n    constructor(passes: Transformation[]) {\n        super();\n        \n        /** @private */\n        this.passes = passes;\n        \n        /** @private */\n        this.time = null;\n        \n        /** @private */\n        this.nodeQueue = [];\n    }\n    \n    /**\n     * Queues an AST to be parsed, calls `transform(ast:)` and automatically\n     * handles transformation distribution. Therefore, this is the reccomended\n     * way to automatically setup and queue the inital AST nodes.\n     * \n     * It is reccomended to buffer expressions with `queue(ast:)` and use the transform\n     * status to determine whether a fork of Transformers should be utilized or \n     * to simply continuing to pipe further AST statements into queue. This operation\n     * may or may not be syncronous.\n     * \n     * Avoid directly calling from a {@link Transformation}\n     * \n     * Return value can be extracted by specifying an `.oncompletion` handler.\n     * \n     * @param {any} ast - An AST as outputted by a `Parser`\n     */\n     queue(ast: any) {\n         super.queue(ast);\n     }\n     \n     /** @override */\n     receivedNode(parent: Node | Node[], name: string) {\n         this.appendNodeQueue(parent, name)\n     }\n     \n     /**\n      * Adds item to node queue\n      * @private\n      */\n    appendNodeQueue(parent: Node | Node[], name: string) {\n        this.nodeQueue.push([ parent[name], parent, name ]);\n        this.didUpdateQueue()\n    }\n     \n     /**\n      * Handles the queue items\n      * @private\n      */\n    didUpdateQueue() {\n        var value, node, parent, item;\n        while (value = this.nodeQueue.shift()) {\n            [node, parent, item] = value;\n            let result = this.transform(node, parent, item);\n        }\n    }\n    \n    /**\n     * Transform the AST according to the setup transformer. This is recursively\n     * called and should never be called from within a transformer\n     * \n     * @param {Node} ast - An AST as outputted by a `Parser`\n     * @param {Node|Node[]} parent - The parent node of the given ast\n     * @param {any} name - The reference to the child relative to the parent.\n     * @param {Transformation[]} [passes=this.passes] - Do not specify. Only for internal use\n     * @return A transformed AST with the passes applied\n     * \n     * @example\n     * var AST = new VSLParser().feed(new VSLTokenizer().tokenize(input));\n     * var final = new VSLTransformer(VSLTransformer.default).transform(AST);\n     */\n    transform(ast: any, parent: parent, name: any, passes: Transformation[] = this.passes) {\n        \n        let t = process.hrtime();\n        \n        for (let i = 0; i < passes.length; i++) {\n            let result = this.transform_once(\n                ast,\n                parent,\n                name,\n                passes[i]\n            );\n            \n            if (result === false) {\n                // Requeue with remaining transformations. Excluding current\n                let queuedTransforms = passes.slice(i + 1);\n                if (queuedTransforms.length > 0)\n                    this.transform(parent[name], parent, name, queuedTransforms);\n                break;\n            }\n        }\n        \n    }\n    \n    /**\n     * Transforms with single transformer.\n     * \n     * @return {bool} if node was mutated and should be requeued.\n     * @private\n     */\n    transform_once(ast: Node, parent: Node | Node[], name: any, pass: Transformation) {\n        // Create the tool for modification\n        let astTool = new ASTTool(parent, name);\n        \n        // Setup the transformation\n        let transformation = new pass();\n        let type = transformation.type\n        \n        // Ensure ast is of the correct type\n        // otherwise stop processing the node\n        if (!(type === null || ast instanceof type))\n            return false;\n        \n        // Call transformation\n        transformation.modify(ast, astTool);\n        \n        // Get new node\n        let result = parent[name];\n        \n        return ast === result;\n    }\n}",
+    "content": "import Transformation from './transformation';\nimport Traverser from './traverser';\nimport ASTTool from './asttool';\nimport Node from '../parser/nodes/node';\n\n/**\n * Takes an AST and transforms it according to a series of transformations\n * \n * This is a generic class, reference VSLTransfomer for a VSL-specific\n * implementation\n * \n * ### Overview\n * This takes a series of \"passes\" which are applied to the AST, each \"pass\"\n *  would return a new AST node which would be replaced (if specified as so).\n * This is now excluded and further matching AST nodes would be applied\n * \n * ### Usage\n * \n * A `Transformer` can be subclassed (see {@link VSLTransformer}) with a no-args\n * providing this class with the applicable transformers. This class can also\n * be directly constructed with the applicable constructors with no difference.\n * A subclass of `Transformer` should not offer any significant interface not\n * specified by `Transformer` as internal structure might rapidly change.\n * \n * Note: If you're in the REPL and want to just load everything. Just run:\n * \n *     var VSLParser = require('./lib/vsl/parser/vslparser.js');\n *     var p = new VSLParser(); var ast = p.feed(\"1 + 1\");\n *     var VSLTransformer = require('./lib/vsl/transform/vsltransformer');\n *     var t = new VSLTransformer();\n * \n * Additionally, it is reccomended to use `Transformer#queue` to initially load\n * the AST.\n * \n * ### Details\n * In practice, each AST Node is treated like a `Node**`, when a node is swapped\n * the other transformers will mutate it if applicable. This prevents infinite \n * recursion at the end, the node will be requeued for processing, it's children\n * will be in turn verified for applicable transformations. This means a node should not rely on transformation order for any reason,\n * transformations may be parallelized and therefore should also not have any\n * side-effects and be thread safe, concurrency may or may not be implemented in\n * any specific way.\n */\nexport default class Transformer extends Traverser {\n    \n    /**\n     * Creates a new Transformer with the given passes\n     * @param {Transformation[]} passes - The given passes to setup\n     */\n    constructor(passes: Transformation[]) {\n        super();\n        \n        /** @private */\n        this.passes = passes;\n        \n        /** @private */\n        this.time = null;\n        \n        /** @private */\n        this.nodeQueue = [];\n    }\n    \n    /**\n     * Queues an AST to be parsed, calls `transform(ast:)` and automatically\n     * handles transformation distribution. Therefore, this is the reccomended\n     * way to automatically setup and queue the inital AST nodes.\n     * \n     * It is reccomended to buffer expressions with `queue(ast:)` and use the transform\n     * status to determine whether a fork of Transformers should be utilized or \n     * to simply continuing to pipe further AST statements into queue. This operation\n     * may or may not be syncronous.\n     * \n     * Avoid directly calling from a {@link Transformation}\n     * \n     * Return value can be extracted by specifying an `.oncompletion` handler.\n     * \n     * @param {any} ast - An AST as outputted by a `Parser`\n     */\n     queue(ast: any) {\n         super.queue(ast);\n     }\n     \n     /** @override */\n     receivedNode(parent: Node | Node[], name: string) {\n         this.appendNodeQueue(parent, name)\n     }\n     \n     /**\n      * Adds item to node queue\n      * @private\n      */\n    appendNodeQueue(parent: Node | Node[], name: string) {\n        this.nodeQueue.push([ parent[name], parent, name ]);\n        this.didUpdateQueue()\n    }\n     \n     /**\n      * Handles the queue items\n      * @private\n      */\n    didUpdateQueue() {\n        var value, node, parent, item;\n        while (value = this.nodeQueue.shift()) {\n            [node, parent, item] = value;\n            let result = this.transform(node, parent, item);\n        }\n    }\n    \n    /**\n     * Transform the AST according to the setup transformer. This is recursively\n     * called and should never be called from within a transformer\n     * \n     * @param {Node} ast - An AST as outputted by a `Parser`\n     * @param {Node|Node[]} parent - The parent node of the given ast\n     * @param {any} name - The reference to the child relative to the parent.\n     * @param {Transformation[]} [passes=this.passes] - Do not specify. Only for internal use\n     * @return A transformed AST with the passes applied\n     * \n     * @example\n     * var AST = new VSLParser().feed(new VSLTokenizer().tokenize(input));\n     * var final = new VSLTransformer(VSLTransformer.default).transform(AST);\n     */\n    transform(ast: any, parent: parent, name: any, passes: Transformation[] = this.passes) {\n        \n        let t = process.hrtime();\n        \n        for (let i = 0; i < passes.length; i++) {\n            let result = this.transform_once(\n                ast,\n                parent,\n                name,\n                passes[i]\n            );\n            \n            if (result === false) {\n                // Requeue with remaining transformations. Excluding current\n                let queuedTransforms = passes.slice(i + 1);\n                if (queuedTransforms.length > 0)\n                    this.transform(parent[name], parent, name, queuedTransforms);\n                break;\n            }\n        }\n        \n    }\n    \n    /**\n     * Transforms with single transformer.\n     * \n     * @return {bool} if node was mutated and should be requeued.\n     * @private\n     */\n    transform_once(ast: Node, parent: Node | Node[], name: any, pass: Transformation) {\n        // Create the tool for modification\n        let astTool = new ASTTool(parent, name);\n        \n        // Setup the transformation\n        let transformation = new pass();\n        let type = transformation.type\n        \n        // Ensure ast is of the correct type\n        // otherwise stop processing the node\n        if (!(type === null || ast instanceof type))\n            return false;\n        \n        // Call transformation\n        transformation.modify(ast, astTool);\n        \n        // Get new node\n        let result = parent[name];\n        \n        return ast === result;\n    }\n}",
     "static": true,
     "longname": "src/vsl/transform/transformer.js",
     "access": null,
@@ -5310,7 +5550,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 233,
+    "__docId__": 243,
     "kind": "class",
     "name": "Transformer",
     "memberof": "src/vsl/transform/transformer.js",
@@ -5324,11 +5564,11 @@
     "lineNumber": 44,
     "interface": false,
     "extends": [
-      "src/vsl/transform/transverser.js~Transverser"
+      "src/vsl/transform/traverser.js~Traverser"
     ]
   },
   {
-    "__docId__": 234,
+    "__docId__": 244,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5353,7 +5593,7 @@
     ]
   },
   {
-    "__docId__": 235,
+    "__docId__": 245,
     "kind": "member",
     "name": "passes",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5369,7 +5609,7 @@
     }
   },
   {
-    "__docId__": 236,
+    "__docId__": 246,
     "kind": "member",
     "name": "time",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5385,7 +5625,7 @@
     }
   },
   {
-    "__docId__": 237,
+    "__docId__": 247,
     "kind": "member",
     "name": "nodeQueue",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5401,7 +5641,7 @@
     }
   },
   {
-    "__docId__": 238,
+    "__docId__": 248,
     "kind": "method",
     "name": "queue",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5426,7 +5666,7 @@
     ]
   },
   {
-    "__docId__": 239,
+    "__docId__": 249,
     "kind": "method",
     "name": "receivedNode",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5454,7 +5694,7 @@
     "override": true
   },
   {
-    "__docId__": 240,
+    "__docId__": 250,
     "kind": "method",
     "name": "appendNodeQueue",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5481,7 +5721,7 @@
     ]
   },
   {
-    "__docId__": 241,
+    "__docId__": 251,
     "kind": "method",
     "name": "didUpdateQueue",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5495,7 +5735,7 @@
     "params": []
   },
   {
-    "__docId__": 242,
+    "__docId__": 252,
     "kind": "method",
     "name": "transform",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5564,7 +5804,7 @@
     }
   },
   {
-    "__docId__": 243,
+    "__docId__": 253,
     "kind": "method",
     "name": "transform_once",
     "memberof": "src/vsl/transform/transformer.js~Transformer",
@@ -5611,43 +5851,43 @@
     }
   },
   {
-    "__docId__": 244,
+    "__docId__": 254,
     "kind": "file",
-    "name": "src/vsl/transform/transformers/scopetransverser.js",
-    "content": "import Transverser from '../transverser';\nimport * as Scope from '../scope/';\nimport * as t from '../../parser/nodes/';\n\n/**\n * Handles scoping. This resolved and mangles identifiers. Latter transformers\n * will not have to verify scope or such. This will emit errors if scoping or\n * access errors occur.\n * \n * Each scope is defined by a `t.CodeBlock` node and if a `get Node#identifierPath()`\n * call does not return nil; the returned {@link Identifier} is then taken as the\n * identifier to declare a variable as.\n * \n * See: {@link Transformer}\n */\nexport default class ScopeTransverser extends Transverser {\n    constructor() {\n        super();\n        \n        // This is basically a stack of the current scope.\n        // For a normal app this would look roughy like:\n        // [ STL, Libraries, Global ]\n        // specify STL to provide the base STL info\n        this.scope = [];\n    }\n    \n    /** @override */\n    receivedNode(parent: Node | Node[], name: string) {\n        let node = parent[name];\n        if (node === null) return;\n        \n        // If the parent is a code block, we want to add it to the scope\n        if (node instanceof t.CodeBlock) {\n            this.scope.push(node);\n        }\n        \n        \n        let identifierPath = null;\n        // Handle new identifier declarations\n        if (identifierPath = node.identifierPath) {\n            if (identifierPath instanceof t.TypedIdentifier) {\n                let id = identifierPath.identifier;\n                let name = id.identifier;\n                let type = id.type;\n                \n                // If type key is variable\n                let mutable = node.type === t.AssignmentType.Variable\n                \n                this.scope[this.scope.length - 1].scope.set(\n                    name,\n                    new Scope.Id(\n                        mutable,\n                        type,\n                        node\n                    )\n                );\n                \n            } else {\n                let name = identifierPath.identifier;\n                let result = null;\n                \n                this.scope[this.scope.length - 1].scope.set(\n                    name,\n                    node\n                );\n            }\n        }\n        \n        node.parentScope = this.scope[this.scope.length - 1] || null;\n        \n    }\n}",
+    "name": "src/vsl/transform/transformers/scopetraverser.js",
+    "content": "import Traverser from '../traverser';\nimport * as Scope from '../scope/';\nimport * as t from '../../parser/nodes/';\n\n/**\n * Handles scoping. This resolved and mangles identifiers. Latter transformers\n * will not have to verify scope or such. This will emit errors if scoping or\n * access errors occur.\n * \n * Each scope is defined by a `t.CodeBlock` node and if a `get Node#identifierPath()`\n * call does not return nil; the returned {@link Identifier} is then taken as the\n * identifier to declare a variable as.\n * \n * See: {@link Transformer}\n */\nexport default class ScopeTraverser extends Traverser {\n    constructor() {\n        super();\n        \n        // This is basically a stack of the current scope.\n        // For a normal app this would look roughy like:\n        // [ STL, Libraries, Global ]\n        // specify STL to provide the base STL info\n        this.scope = [];\n    }\n    \n    /** @override */\n    receivedNode(parent: Node | Node[], name: string) {\n        let node = parent[name];\n        if (node === null) return;\n        \n        // If the parent is a code block, we want to add it to the scope\n        if (node instanceof t.CodeBlock) {\n            this.scope.push(node);\n        }\n        \n        \n        let identifierPath = null;\n        // Handle new identifier declarations\n        if (identifierPath = node.identifierPath) {\n            if (identifierPath instanceof t.TypedIdentifier) {\n                let id = identifierPath.identifier;\n                let name = id.identifier;\n                let type = id.type;\n                \n                // If type key is variable\n                let mutable = node.type === t.AssignmentType.Variable\n                \n                this.scope[this.scope.length - 1].scope.set(\n                    name,\n                    new Scope.Id(\n                        mutable,\n                        type,\n                        node\n                    )\n                );\n                \n            } else {\n                let name = identifierPath.identifier;\n                let result = null;\n                \n                this.scope[this.scope.length - 1].scope.set(\n                    name,\n                    node\n                );\n            }\n        }\n        \n        node.parentScope = this.scope[this.scope.length - 1] || null;\n    }\n    \n    /** @override */\n    finishedNode(parent: Node | Node[], name: string) {\n        if (parent[name] instanceof t.CodeBlock) {\n            this.scope.pop()\n        }\n    }\n}",
     "static": true,
-    "longname": "src/vsl/transform/transformers/scopetransverser.js",
+    "longname": "src/vsl/transform/transformers/scopetraverser.js",
     "access": null,
     "description": null,
     "lineNumber": 1
   },
   {
-    "__docId__": 245,
+    "__docId__": 255,
     "kind": "class",
-    "name": "ScopeTransverser",
-    "memberof": "src/vsl/transform/transformers/scopetransverser.js",
+    "name": "ScopeTraverser",
+    "memberof": "src/vsl/transform/transformers/scopetraverser.js",
     "static": true,
-    "longname": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser",
+    "longname": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser",
     "access": null,
     "export": true,
-    "importPath": "vsl/src/vsl/transform/transformers/scopetransverser.js",
-    "importStyle": "ScopeTransverser",
+    "importPath": "vsl/src/vsl/transform/transformers/scopetraverser.js",
+    "importStyle": "ScopeTraverser",
     "description": "Handles scoping. This resolved and mangles identifiers. Latter transformers\nwill not have to verify scope or such. This will emit errors if scoping or\naccess errors occur.\n\nEach scope is defined by a `t.CodeBlock` node and if a `get Node#identifierPath()`\ncall does not return nil; the returned {@link Identifier} is then taken as the\nidentifier to declare a variable as.\n\nSee: {@link Transformer}",
     "lineNumber": 16,
     "interface": false,
     "extends": [
-      "src/vsl/transform/transverser.js~Transverser"
+      "src/vsl/transform/traverser.js~Traverser"
     ]
   },
   {
-    "__docId__": 246,
+    "__docId__": 256,
     "kind": "constructor",
     "name": "constructor",
-    "memberof": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser",
+    "memberof": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#constructor",
+    "longname": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#constructor",
     "access": null,
     "description": null,
     "lineNumber": 17,
@@ -5661,12 +5901,12 @@
     "params": []
   },
   {
-    "__docId__": 247,
+    "__docId__": 257,
     "kind": "member",
     "name": "scope",
-    "memberof": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser",
+    "memberof": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser",
     "static": false,
-    "longname": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#scope",
+    "longname": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#scope",
     "access": null,
     "description": null,
     "lineNumber": 24,
@@ -5684,14 +5924,14 @@
     }
   },
   {
-    "__docId__": 248,
+    "__docId__": 258,
     "kind": "method",
     "name": "receivedNode",
-    "memberof": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser",
+    "memberof": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#receivedNode",
+    "longname": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#receivedNode",
     "access": null,
     "description": null,
     "lineNumber": 28,
@@ -5712,7 +5952,35 @@
     "override": true
   },
   {
-    "__docId__": 249,
+    "__docId__": 259,
+    "kind": "method",
+    "name": "finishedNode",
+    "memberof": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#finishedNode",
+    "access": null,
+    "description": null,
+    "lineNumber": 61,
+    "params": [
+      {
+        "name": "parent",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "name",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "override": true
+  },
+  {
+    "__docId__": 260,
     "kind": "file",
     "name": "src/vsl/transform/transformers/vsltransformer.js",
     "content": "import Transformer from '../transformer';\nimport * as Transformations from '../passes/';\n\n/**\n * A default transformer initalized to the passes described in `passes/`\n * \n * See: {@link Transformer}\n */\nexport default class VSLTransformer extends Transformer {\n    constructor() {\n        super(Object.values(Transformations));\n    }\n}",
@@ -5723,7 +5991,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 250,
+    "__docId__": 261,
     "kind": "class",
     "name": "VSLTransformer",
     "memberof": "src/vsl/transform/transformers/vsltransformer.js",
@@ -5741,7 +6009,7 @@
     ]
   },
   {
-    "__docId__": 251,
+    "__docId__": 262,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/vsl/transform/transformers/vsltransformer.js~VSLTransformer",
@@ -5762,44 +6030,44 @@
     "params": []
   },
   {
-    "__docId__": 252,
+    "__docId__": 263,
     "kind": "file",
-    "name": "src/vsl/transform/transverser.js",
-    "content": "import Node from '../parser/nodes/node';\n\n/**\n * Transverses the AST.\n * \n * @abstract\n */\nexport default class Transverser {\n    \n    /**\n     * Queues an AST to be transversed, this in turn calls the abstract function\n     * `#receivedNode(parent:name:)` which can be used to determine what to do\n     * with the node. The AST is recursed in order.\n     * \n     * @param {any} ast - An AST as outputted by a `Parser`\n     */\n\n    queue(ast: any) {\n        // Recursively add all AST nodes in an array\n         if (ast instanceof Array) {\n            for (let i = 0; i < ast.length; i++) {\n                // If it's a node array. Then we also want to queue itself and queue\n                // the node itself so its children will be added.\n                this.processNode(ast, i);\n                \n                // Requeue the further children\n                this.queue(ast[i], ast);\n            }\n         } else if (ast instanceof Node) {\n             let children = ast.children, name, child;\n             \n             if (children) {\n                for (let i = 0; i < children.length; i++) {\n                    name = children[i]\n                    child = ast[ name ];\n                    \n                    this.processNode(ast, name);\n                    \n                    if (child != null) this.queue(child, ast);\n                }\n             }\n         } else {\n             if (process.env[\"VSL_ENV\"] != \"dev_debug\") console.log(ast);\n             throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);\n         }\n    }\n    \n    /**\n     * @private\n     */\n    processNode(parent: any, name: string) {\n        \n        if (process.env.VSL_ENV === \"dev_debug\") {\n            console.log(\"-- Received Node --\");\n            console.log(\"Parent: \", parent);\n            console.log(\"Name: \", name);\n            console.log(\"Node: \", parent[name]);\n            console.log(\"Scope: \", this.scope);\n            console.log(\"\\n\\n\");\n        }\n        \n        let node = parent[name];\n        if (node) node.parentNode = parent;\n        \n        if (node instanceof Node) this.receivedNode(parent, name);\n    }\n    \n    /**\n     * Called everytime the transverser encounters a node\n     * \n     * @param {Node|Node[]} parent - The parent node of the given ast\n     * @param {any} name - The reference to the child relative to the parent.\n     * \n     * @abstract\n     */\n    receivedNode(parent: any, name: string) {\n        throw new TypeError(`${this.constructor.name}: Did not implement required method #receivedNode(parent:name:)`);\n    }\n    \n}",
+    "name": "src/vsl/transform/traverser.js",
+    "content": "import Node from '../parser/nodes/node';\n\n/**\n * Traverses the AST.\n * \n * @abstract\n */\nexport default class Traverser {\n    \n    /**\n     * Queues an AST to be traversed, this in turn calls the abstract function\n     * `#receivedNode(parent:name:)` which can be used to determine what to do\n     * with the node. The AST is recursed in order.\n     * \n     * This method runs top-down in a deterministic order and is not specifically\n     * run async. If it is, you can safely assume that the order of execution\n     * will be the same and for every `#processsedNode` there will be an equiv.\n     * `#finishedNode` call.\n     * \n     * This method handles strings and arrays but behavior can be overloaded to\n     * add the ability to handle nodes of a non-conforming type to `Node` or a\n     * `Node[]`. An example of such would be:\n     * \n     *     /** @override *\\/\n     *     queue(ast: any) {\n     *         if (ast instanceof MyClass) handle(ast);\n     *         else super.queue(ast);\n     *     }\n     * \n     * @param {any} ast - An AST as outputted by a `Parser`\n     */\n    queue(ast: any) {\n        // Recursively add all AST nodes in an array\n         if (ast instanceof Array) {\n            for (let i = 0; i < ast.length; i++) {\n                // If it's a node array. Then we also want to queue itself and queue\n                // the node itself so its children will be added.\n                this.processNode(ast, i);\n                \n                // Requeue the further children\n                this.queue(ast[i], ast);\n                \n                // Notify that the node is finished if defined\n                this.finishedNode(ast, i);\n            }\n         } else if (ast instanceof Node) {\n             let children = ast.children, name, child;\n             \n             if (children) {\n                for (let i = 0; i < children.length; i++) {\n                    name = children[i]\n                    child = ast[ name ];\n                    \n                    this.processNode(ast, name);\n                    \n                    if (child != null) this.queue(child, ast);\n                    \n                    this.finishedNode(ast, name);\n                }\n             }\n         } else {\n             if (process.env[\"VSL_ENV\"] != \"dev_debug\") console.log(ast);\n             throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);\n         }\n    }\n    \n    /**\n     * @private\n     */\n    processNode(parent: any, name: string) {\n        \n        if (process.env.VSL_ENV === \"dev_debug\") {\n            console.log(\"-- Received Node --\");\n            console.log(\"Parent: \", parent);\n            console.log(\"Name: \", name);\n            console.log(\"Node: \", parent[name]);\n            console.log(\"Scope: \", this.scope);\n            console.log(\"\\n\\n\");\n        }\n        \n        let node = parent[name];\n        if (node) node.parentNode = parent;\n        \n        if (node instanceof Node) this.receivedNode(parent, name);\n    }\n    \n    /**\n     * Called everytime the traverser encounters a node\n     * \n     * @param {Node|Node[]} parent - The parent node of the given ast\n     * @param {any} name - The reference to the child relative to the parent.\n     * \n     * @abstract\n     */\n    receivedNode(parent: Node | Node[], name: string) {\n        throw new TypeError(`${this.constructor.name}: Did not implement required method #receivedNode(parent:name:)`);\n    }\n    \n    \n    /**\n     * _Optional_ method which is called once the traverser finishes processing\n     * a node's children\n     * \n     * @param {Node|Node[]} parent - The parent node of the given ast\n     * @param {any} name - The reference to the child relative to the parent.\n     * \n     * @abstract\n     */\n    finishedNode(parent: Node | Node[], name: string) {\n        return;\n    }\n}",
     "static": true,
-    "longname": "src/vsl/transform/transverser.js",
+    "longname": "src/vsl/transform/traverser.js",
     "access": null,
     "description": null,
     "lineNumber": 1
   },
   {
-    "__docId__": 253,
+    "__docId__": 264,
     "kind": "class",
-    "name": "Transverser",
-    "memberof": "src/vsl/transform/transverser.js",
+    "name": "Traverser",
+    "memberof": "src/vsl/transform/traverser.js",
     "static": true,
-    "longname": "src/vsl/transform/transverser.js~Transverser",
+    "longname": "src/vsl/transform/traverser.js~Traverser",
     "access": null,
     "export": true,
-    "importPath": "vsl/src/vsl/transform/transverser.js",
-    "importStyle": "Transverser",
-    "description": "Transverses the AST.",
+    "importPath": "vsl/src/vsl/transform/traverser.js",
+    "importStyle": "Traverser",
+    "description": "Traverses the AST.",
     "lineNumber": 8,
     "abstract": true,
     "interface": false
   },
   {
-    "__docId__": 254,
+    "__docId__": 265,
     "kind": "method",
     "name": "queue",
-    "memberof": "src/vsl/transform/transverser.js~Transverser",
+    "memberof": "src/vsl/transform/traverser.js~Traverser",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/vsl/transform/transverser.js~Transverser#queue",
+    "longname": "src/vsl/transform/traverser.js~Traverser#queue",
     "access": null,
-    "description": "Queues an AST to be transversed, this in turn calls the abstract function\n`#receivedNode(parent:name:)` which can be used to determine what to do\nwith the node. The AST is recursed in order.",
-    "lineNumber": 18,
+    "description": "Queues an AST to be traversed, this in turn calls the abstract function\n`#receivedNode(parent:name:)` which can be used to determine what to do\nwith the node. The AST is recursed in order.\n\nThis method runs top-down in a deterministic order and is not specifically\nrun async. If it is, you can safely assume that the order of execution\nwill be the same and for every `#processsedNode` there will be an equiv.\n`#finishedNode` call.\n\nThis method handles strings and arrays but behavior can be overloaded to\nadd the ability to handle nodes of a non-conforming type to `Node` or a\n`Node[]`. An example of such would be:\n\n    /** @override *\\/\n    queue(ast: any) {\n        if (ast instanceof MyClass) handle(ast);\n        else super.queue(ast);\n    }",
+    "lineNumber": 32,
     "params": [
       {
         "nullable": null,
@@ -5814,17 +6082,17 @@
     ]
   },
   {
-    "__docId__": 255,
+    "__docId__": 266,
     "kind": "method",
     "name": "processNode",
-    "memberof": "src/vsl/transform/transverser.js~Transverser",
+    "memberof": "src/vsl/transform/traverser.js~Traverser",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/vsl/transform/transverser.js~Transverser#processNode",
+    "longname": "src/vsl/transform/traverser.js~Traverser#processNode",
     "access": "private",
     "description": "",
-    "lineNumber": 53,
+    "lineNumber": 72,
     "params": [
       {
         "name": "parent",
@@ -5841,17 +6109,17 @@
     ]
   },
   {
-    "__docId__": 256,
+    "__docId__": 267,
     "kind": "method",
     "name": "receivedNode",
-    "memberof": "src/vsl/transform/transverser.js~Transverser",
+    "memberof": "src/vsl/transform/traverser.js~Traverser",
     "generator": false,
     "async": false,
     "static": false,
-    "longname": "src/vsl/transform/transverser.js~Transverser#receivedNode",
+    "longname": "src/vsl/transform/traverser.js~Traverser#receivedNode",
     "access": null,
-    "description": "Called everytime the transverser encounters a node",
-    "lineNumber": 78,
+    "description": "Called everytime the traverser encounters a node",
+    "lineNumber": 97,
     "params": [
       {
         "nullable": null,
@@ -5878,7 +6146,44 @@
     "abstract": true
   },
   {
-    "__docId__": 258,
+    "__docId__": 268,
+    "kind": "method",
+    "name": "finishedNode",
+    "memberof": "src/vsl/transform/traverser.js~Traverser",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/vsl/transform/traverser.js~Traverser#finishedNode",
+    "access": null,
+    "description": "_Optional_ method which is called once the traverser finishes processing\na node's children",
+    "lineNumber": 110,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Node",
+          "Node[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "parent",
+        "description": "The parent node of the given ast"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "any"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "name",
+        "description": "The reference to the child relative to the parent."
+      }
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 270,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -5890,7 +6195,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 259,
+    "__docId__": 271,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -5902,7 +6207,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 260,
+    "__docId__": 272,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -5914,7 +6219,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 261,
+    "__docId__": 273,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -5926,7 +6231,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 262,
+    "__docId__": 274,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -5938,7 +6243,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 263,
+    "__docId__": 275,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -5950,7 +6255,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 264,
+    "__docId__": 276,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -5962,7 +6267,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 265,
+    "__docId__": 277,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -5974,7 +6279,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 266,
+    "__docId__": 278,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -5986,7 +6291,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 267,
+    "__docId__": 279,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -5998,7 +6303,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 268,
+    "__docId__": 280,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -6010,7 +6315,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 269,
+    "__docId__": 281,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -6022,7 +6327,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 270,
+    "__docId__": 282,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -6034,7 +6339,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 271,
+    "__docId__": 283,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -6046,7 +6351,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 272,
+    "__docId__": 284,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -6058,7 +6363,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 273,
+    "__docId__": 285,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -6070,7 +6375,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 274,
+    "__docId__": 286,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -6082,7 +6387,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 275,
+    "__docId__": 287,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -6094,7 +6399,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 276,
+    "__docId__": 288,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -6106,7 +6411,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 277,
+    "__docId__": 289,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -6118,7 +6423,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 278,
+    "__docId__": 290,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -6130,7 +6435,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 279,
+    "__docId__": 291,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -6142,7 +6447,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 280,
+    "__docId__": 292,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -6154,7 +6459,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 281,
+    "__docId__": 293,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -6166,7 +6471,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 282,
+    "__docId__": 294,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -6178,7 +6483,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 283,
+    "__docId__": 295,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -6190,7 +6495,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 284,
+    "__docId__": 296,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -6202,7 +6507,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 285,
+    "__docId__": 297,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -6214,7 +6519,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 286,
+    "__docId__": 298,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -6226,7 +6531,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 287,
+    "__docId__": 299,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -6238,7 +6543,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 288,
+    "__docId__": 300,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -6250,7 +6555,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 289,
+    "__docId__": 301,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -6262,7 +6567,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 290,
+    "__docId__": 302,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -6274,7 +6579,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 291,
+    "__docId__": 303,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -6286,7 +6591,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 292,
+    "__docId__": 304,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -6298,7 +6603,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 293,
+    "__docId__": 305,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -6310,7 +6615,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 294,
+    "__docId__": 306,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -6322,7 +6627,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 295,
+    "__docId__": 307,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -6334,7 +6639,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 296,
+    "__docId__": 308,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -6346,7 +6651,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 297,
+    "__docId__": 309,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -6358,7 +6663,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 298,
+    "__docId__": 310,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -6370,7 +6675,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 299,
+    "__docId__": 311,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -6382,7 +6687,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 300,
+    "__docId__": 312,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -6394,7 +6699,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 301,
+    "__docId__": 313,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -6406,7 +6711,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 302,
+    "__docId__": 314,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -6418,7 +6723,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 303,
+    "__docId__": 315,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -6430,7 +6735,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 304,
+    "__docId__": 316,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -6443,7 +6748,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 306,
+    "__docId__": 318,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -6455,7 +6760,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 307,
+    "__docId__": 319,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -6467,7 +6772,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 308,
+    "__docId__": 320,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -6479,7 +6784,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 309,
+    "__docId__": 321,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -6491,7 +6796,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 310,
+    "__docId__": 322,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -6503,7 +6808,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 311,
+    "__docId__": 323,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -6515,7 +6820,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 312,
+    "__docId__": 324,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -6527,7 +6832,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 313,
+    "__docId__": 325,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",

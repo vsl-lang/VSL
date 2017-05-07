@@ -24,4 +24,13 @@ ClassStatement[s] -> Modifier "class" _ Identifier _ (":" _ ExtensionList _ {% n
         l
     )
 %}
-InterfaceStatement[s] -> Modifier "interface" _ Identifier _ ExtensionList "{" _ (InterfaceItems[$s] _):? "}"
+
+InterfaceStatement[s] -> Modifier "interface" _ Identifier _ (":" _ ExtensionList _ {% nth(2) %}):? "{" _ (InterfaceItems[$s] _ {% id %}):? "}" {%
+    (d, l) => new t.InterfaceStatement(
+        d[0],
+        d[3],
+        d[5],
+        d[8],
+        l
+    )
+%}

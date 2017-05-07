@@ -50,6 +50,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionStatement.js~FunctionStatement.html">FunctionStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionizedOperator.js~FunctionizedOperator.html">FunctionizedOperator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html">InterfaceStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html">InternalMarker</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/literal.js~Literal.html">Literal</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span></span></li>
@@ -63,13 +64,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformError.js~TransformError.html">TransformError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformation.js~Transformation.html">Transformation</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformer.js~Transformer.html">Transformer</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/passes</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression.html">FoldBinaryIntegerExpression</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange.html">FoldFiniteIntegerRange</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope.html">VerifyFunctionAccessScope</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/scope</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/id.js~Id.html">Id</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/type.js~Type.html">Type</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html">ScopeTransverser</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html">ScopeTraverser</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/vsltransformer.js~VSLTransformer.html">VSLTransformer</a></span></span></li>
 </ul>
 </div>
@@ -306,7 +307,7 @@ transformed into a lambda recursively and that can be type inferred.</p>
       <div>
         
         
-        <div data-ice="description"><p>If exists, a transverser will set this to the parent node or wrapping
+        <div data-ice="description"><p>If exists, a traverser will set this to the parent node or wrapping
 container.</p>
 </div>
       </div>

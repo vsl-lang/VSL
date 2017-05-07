@@ -1,11 +1,11 @@
 {
-  "coverage": "70.11%",
-  "expectCount": 174,
-  "actualCount": 122,
+  "coverage": "70.27%",
+  "expectCount": 185,
+  "actualCount": 130,
   "files": {
     "src/vsl/transform/asttool.js": {
-      "expectCount": 3,
-      "actualCount": 3,
+      "expectCount": 4,
+      "actualCount": 4,
       "undocumentLines": []
     },
     "src/vsl/parser/nodes/assignmentStatement.js": {
@@ -100,6 +100,15 @@
       "actualCount": 4,
       "undocumentLines": []
     },
+    "src/vsl/parser/nodes/interfaceStatement.js": {
+      "expectCount": 8,
+      "actualCount": 5,
+      "undocumentLines": [
+        22,
+        24,
+        23
+      ]
+    },
     "src/vsl/parser/nodes/internalMarker.js": {
       "expectCount": 3,
       "actualCount": 3,
@@ -120,9 +129,9 @@
       "actualCount": 5,
       "undocumentLines": []
     },
-    "src/vsl/transform/transformers/scopetransverser.js": {
-      "expectCount": 4,
-      "actualCount": 2,
+    "src/vsl/transform/transformers/scopetraverser.js": {
+      "expectCount": 5,
+      "actualCount": 3,
       "undocumentLines": [
         17,
         24
@@ -172,9 +181,9 @@
       "actualCount": 5,
       "undocumentLines": []
     },
-    "src/vsl/transform/transverser.js": {
-      "expectCount": 3,
-      "actualCount": 3,
+    "src/vsl/transform/traverser.js": {
+      "expectCount": 4,
+      "actualCount": 4,
       "undocumentLines": []
     },
     "src/vsl/parser/nodes/type.js": {
@@ -197,7 +206,7 @@
       "expectCount": 5,
       "actualCount": 4,
       "undocumentLines": [
-        20
+        25
       ]
     },
     "src/vsl/parser/nodes/unaryExpression.js": {

@@ -1,7 +1,7 @@
 {
   "type": "File",
   "start": 0,
-  "end": 3657,
+  "end": 3655,
   "loc": {
     "start": {
       "line": 1,
@@ -15,7 +15,7 @@
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 3657,
+    "end": 3655,
     "loc": {
       "start": {
         "line": 1,
@@ -30,8 +30,8 @@
     "body": [
       {
         "type": "ExportDefaultDeclaration",
-        "start": 2032,
-        "end": 3657,
+        "start": 2030,
+        "end": 3655,
         "loc": {
           "start": {
             "line": 56,
@@ -44,8 +44,8 @@
         },
         "declaration": {
           "type": "ClassDeclaration",
-          "start": 2047,
-          "end": 3657,
+          "start": 2045,
+          "end": 3655,
           "loc": {
             "start": {
               "line": 56,
@@ -58,8 +58,8 @@
           },
           "id": {
             "type": "Identifier",
-            "start": 2053,
-            "end": 2067,
+            "start": 2051,
+            "end": 2065,
             "loc": {
               "start": {
                 "line": 56,
@@ -77,8 +77,8 @@
           "superClass": null,
           "body": {
             "type": "ClassBody",
-            "start": 2068,
-            "end": 3657,
+            "start": 2066,
+            "end": 3655,
             "loc": {
               "start": {
                 "line": 56,
@@ -92,8 +92,8 @@
             "body": [
               {
                 "type": "ClassMethod",
-                "start": 2299,
-                "end": 2429,
+                "start": 2297,
+                "end": 2427,
                 "loc": {
                   "start": {
                     "line": 63,
@@ -107,8 +107,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2299,
-                  "end": 2310,
+                  "start": 2297,
+                  "end": 2308,
                   "loc": {
                     "start": {
                       "line": 63,
@@ -132,8 +132,8 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 2311,
-                    "end": 2315,
+                    "start": 2309,
+                    "end": 2313,
                     "loc": {
                       "start": {
                         "line": 63,
@@ -149,8 +149,8 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 2317,
-                    "end": 2321,
+                    "start": 2315,
+                    "end": 2319,
                     "loc": {
                       "start": {
                         "line": 63,
@@ -167,8 +167,8 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2323,
-                  "end": 2429,
+                  "start": 2321,
+                  "end": 2427,
                   "loc": {
                     "start": {
                       "line": 63,
@@ -182,8 +182,8 @@
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 2360,
-                      "end": 2377,
+                      "start": 2358,
+                      "end": 2375,
                       "loc": {
                         "start": {
                           "line": 65,
@@ -196,8 +196,8 @@
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 2360,
-                        "end": 2376,
+                        "start": 2358,
+                        "end": 2374,
                         "loc": {
                           "start": {
                             "line": 65,
@@ -211,8 +211,8 @@
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 2360,
-                          "end": 2369,
+                          "start": 2358,
+                          "end": 2367,
                           "loc": {
                             "start": {
                               "line": 65,
@@ -225,8 +225,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 2360,
-                            "end": 2364,
+                            "start": 2358,
+                            "end": 2362,
                             "loc": {
                               "start": {
                                 "line": 65,
@@ -241,8 +241,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 2365,
-                            "end": 2369,
+                            "start": 2363,
+                            "end": 2367,
                             "loc": {
                               "start": {
                                 "line": 65,
@@ -261,8 +261,8 @@
                         },
                         "right": {
                           "type": "Identifier",
-                          "start": 2372,
-                          "end": 2376,
+                          "start": 2370,
+                          "end": 2374,
                           "loc": {
                             "start": {
                               "line": 65,
@@ -282,8 +282,8 @@
                         {
                           "type": "CommentBlock",
                           "value": "* @type {Class<Node>} ",
-                          "start": 2329,
-                          "end": 2355,
+                          "start": 2327,
+                          "end": 2353,
                           "loc": {
                             "start": {
                               "line": 64,
@@ -300,8 +300,8 @@
                         {
                           "type": "CommentBlock",
                           "value": "* @type {string} ",
-                          "start": 2382,
-                          "end": 2403,
+                          "start": 2380,
+                          "end": 2401,
                           "loc": {
                             "start": {
                               "line": 66,
@@ -317,8 +317,8 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 2408,
-                      "end": 2425,
+                      "start": 2406,
+                      "end": 2423,
                       "loc": {
                         "start": {
                           "line": 67,
@@ -331,8 +331,8 @@
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 2408,
-                        "end": 2424,
+                        "start": 2406,
+                        "end": 2422,
                         "loc": {
                           "start": {
                             "line": 67,
@@ -346,8 +346,8 @@
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 2408,
-                          "end": 2417,
+                          "start": 2406,
+                          "end": 2415,
                           "loc": {
                             "start": {
                               "line": 67,
@@ -360,8 +360,8 @@
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 2408,
-                            "end": 2412,
+                            "start": 2406,
+                            "end": 2410,
                             "loc": {
                               "start": {
                                 "line": 67,
@@ -376,8 +376,8 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 2413,
-                            "end": 2417,
+                            "start": 2411,
+                            "end": 2415,
                             "loc": {
                               "start": {
                                 "line": 67,
@@ -396,8 +396,8 @@
                         },
                         "right": {
                           "type": "Identifier",
-                          "start": 2420,
-                          "end": 2424,
+                          "start": 2418,
+                          "end": 2422,
                           "loc": {
                             "start": {
                               "line": 67,
@@ -417,8 +417,8 @@
                         {
                           "type": "CommentBlock",
                           "value": "* @type {string} ",
-                          "start": 2382,
-                          "end": 2403,
+                          "start": 2380,
+                          "end": 2401,
                           "loc": {
                             "start": {
                               "line": 66,
@@ -440,8 +440,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Creates a new transformation object\n   * \n   * @param {Class<Node>} type - the node type to match which is subclass of Node\n   * @param {string} name - the name of the transformation object, for debug purposes\n   ",
-                    "start": 2072,
-                    "end": 2296,
+                    "start": 2070,
+                    "end": 2294,
                     "loc": {
                       "start": {
                         "line": 57,
@@ -458,8 +458,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Modifies a given AST fragment with the `tool`.\n   * \n   * This is the primary function which you must implement to create a\n   * transformer. You can specifically specify the node type this executes upon\n   * through specifying the \"type\" field in the `super` call within your\n   * constructor.\n   * \n   * To run upon any time, pass `null` to the constructor. Never pass undefined\n   * to a field unless specifically noted. If you do happen to pass null you\n   * must perform type checking yourself by using `instanceof` with a node type.\n   * \n   * You likely need access to the node classes to check if a node is of a\n   * specific type, you can import this using:\n   * \n   *      import t from '../../parser/nodes';\n   * \n   * This file is automatically updated based on the directory contents at\n   * build-time.\n   * \n   * This methods execution shuold generally be controlled by a `Transformer`\n   * or a seperate parent object to interface with the delegates.\n   * \n   * @param {Node} node - The node being applied on\n   * @param {ASTTool} tool - The ASTTool for modifications\n   * \n   * @abstract\n   ",
-                    "start": 2433,
-                    "end": 3552,
+                    "start": 2431,
+                    "end": 3550,
                     "loc": {
                       "start": {
                         "line": 70,
@@ -475,8 +475,8 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 3555,
-                "end": 3655,
+                "start": 3553,
+                "end": 3653,
                 "loc": {
                   "start": {
                     "line": 98,
@@ -490,8 +490,8 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 3555,
-                  "end": 3561,
+                  "start": 3553,
+                  "end": 3559,
                   "loc": {
                     "start": {
                       "line": 98,
@@ -515,8 +515,8 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 3562,
-                    "end": 3566,
+                    "start": 3560,
+                    "end": 3564,
                     "loc": {
                       "start": {
                         "line": 98,
@@ -532,8 +532,8 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 3568,
-                    "end": 3572,
+                    "start": 3566,
+                    "end": 3570,
                     "loc": {
                       "start": {
                         "line": 98,
@@ -550,8 +550,8 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 3574,
-                  "end": 3655,
+                  "start": 3572,
+                  "end": 3653,
                   "loc": {
                     "start": {
                       "line": 98,
@@ -565,8 +565,8 @@
                   "body": [
                     {
                       "type": "ThrowStatement",
-                      "start": 3580,
-                      "end": 3651,
+                      "start": 3578,
+                      "end": 3649,
                       "loc": {
                         "start": {
                           "line": 99,
@@ -579,8 +579,8 @@
                       },
                       "argument": {
                         "type": "NewExpression",
-                        "start": 3586,
-                        "end": 3650,
+                        "start": 3584,
+                        "end": 3648,
                         "loc": {
                           "start": {
                             "line": 99,
@@ -593,8 +593,8 @@
                         },
                         "callee": {
                           "type": "Identifier",
-                          "start": 3590,
-                          "end": 3599,
+                          "start": 3588,
+                          "end": 3597,
                           "loc": {
                             "start": {
                               "line": 99,
@@ -611,8 +611,8 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "start": 3600,
-                            "end": 3649,
+                            "start": 3598,
+                            "end": 3647,
                             "loc": {
                               "start": {
                                 "line": 99,
@@ -639,8 +639,8 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n   * Modifies a given AST fragment with the `tool`.\n   * \n   * This is the primary function which you must implement to create a\n   * transformer. You can specifically specify the node type this executes upon\n   * through specifying the \"type\" field in the `super` call within your\n   * constructor.\n   * \n   * To run upon any time, pass `null` to the constructor. Never pass undefined\n   * to a field unless specifically noted. If you do happen to pass null you\n   * must perform type checking yourself by using `instanceof` with a node type.\n   * \n   * You likely need access to the node classes to check if a node is of a\n   * specific type, you can import this using:\n   * \n   *      import t from '../../parser/nodes';\n   * \n   * This file is automatically updated based on the directory contents at\n   * build-time.\n   * \n   * This methods execution shuold generally be controlled by a `Transformer`\n   * or a seperate parent object to interface with the delegates.\n   * \n   * @param {Node} node - The node being applied on\n   * @param {ASTTool} tool - The ASTTool for modifications\n   * \n   * @abstract\n   ",
-                    "start": 2433,
-                    "end": 3552,
+                    "start": 2431,
+                    "end": 3550,
                     "loc": {
                       "start": {
                         "line": 70,
@@ -659,9 +659,9 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and transversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
+              "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and traversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
               "start": 0,
-              "end": 2031,
+              "end": 2029,
               "loc": {
                 "start": {
                   "line": 1,
@@ -679,9 +679,9 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and transversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
+            "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and traversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
             "start": 0,
-            "end": 2031,
+            "end": 2029,
             "loc": {
               "start": {
                 "line": 1,
@@ -701,9 +701,9 @@
   "comments": [
     {
       "type": "CommentBlock",
-      "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and transversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
+      "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and traversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
       "start": 0,
-      "end": 2031,
+      "end": 2029,
       "loc": {
         "start": {
           "line": 1,
@@ -718,8 +718,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Creates a new transformation object\n   * \n   * @param {Class<Node>} type - the node type to match which is subclass of Node\n   * @param {string} name - the name of the transformation object, for debug purposes\n   ",
-      "start": 2072,
-      "end": 2296,
+      "start": 2070,
+      "end": 2294,
       "loc": {
         "start": {
           "line": 57,
@@ -734,8 +734,8 @@
     {
       "type": "CommentBlock",
       "value": "* @type {Class<Node>} ",
-      "start": 2329,
-      "end": 2355,
+      "start": 2327,
+      "end": 2353,
       "loc": {
         "start": {
           "line": 64,
@@ -750,8 +750,8 @@
     {
       "type": "CommentBlock",
       "value": "* @type {string} ",
-      "start": 2382,
-      "end": 2403,
+      "start": 2380,
+      "end": 2401,
       "loc": {
         "start": {
           "line": 66,
@@ -766,8 +766,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Modifies a given AST fragment with the `tool`.\n   * \n   * This is the primary function which you must implement to create a\n   * transformer. You can specifically specify the node type this executes upon\n   * through specifying the \"type\" field in the `super` call within your\n   * constructor.\n   * \n   * To run upon any time, pass `null` to the constructor. Never pass undefined\n   * to a field unless specifically noted. If you do happen to pass null you\n   * must perform type checking yourself by using `instanceof` with a node type.\n   * \n   * You likely need access to the node classes to check if a node is of a\n   * specific type, you can import this using:\n   * \n   *      import t from '../../parser/nodes';\n   * \n   * This file is automatically updated based on the directory contents at\n   * build-time.\n   * \n   * This methods execution shuold generally be controlled by a `Transformer`\n   * or a seperate parent object to interface with the delegates.\n   * \n   * @param {Node} node - The node being applied on\n   * @param {ASTTool} tool - The ASTTool for modifications\n   * \n   * @abstract\n   ",
-      "start": 2433,
-      "end": 3552,
+      "start": 2431,
+      "end": 3550,
       "loc": {
         "start": {
           "line": 70,
@@ -783,9 +783,9 @@
   "tokens": [
     {
       "type": "CommentBlock",
-      "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and transversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
+      "value": "*\n * A transformation or a pass for a `Transformer`\n * \n * ### Usage\n * \n * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is\n * passed a `ASTTool` object to aid in modifying and traversing the AST. Never\n * use anything but the ASTTool for modification. Additionally do not attempt to\n * use any undocumented methods of `ASTTool`, as.\n * \n * Override:\n *  - The constructor to provide the node type to run the transformation upon\n *     and the transformation's name.\n *  - The `modify(node:tool:)` method of this class.\n * \n * Refer to the {@link ASTTool} reference for further information.\n * \n * ### Information\n * \n * A transformation is loaded into a transformer and it automatically called\n * where applicable. A transformer should not queue or delegate any further\n * nodes to transformation, nor should it attempt to mutate the AST without the\n * use of an ASTTool.\n * \n * ### Timing\n * \n * Each Transformation is individually timed and tracked by a {@link Transformer}. The\n * timing information is obtained through the `transform(ast:parent:)` method for\n * any and all routed transformations. It is available accurate to microsecond\n * precision and should be used for all transformations to ensure the most efficient\n * transformations are occuring.\n * \n * Transformations are recursive any may run on replaced nodes if the transformer\n * deems correct. You may need to specify specifically if your Transformation\n * requests specific queuing priority or transformation status to avoid extra runs\n * and calls.\n * \n * @example\n * import Transformation from '../transformation';\n * import TokenType from '../../parser/vsltokentype';\n * import t from '../../parser/nodes';\n * \n * export default class MyTransformer extends Transformation {\n *     constructor() {\n *          super(t.Expression, \"TransformerType::TransformerName\");\n *     }\n * \n *     modify(node: Node, tool: ASTTool) {\n *         // ... modifications\n *         tool.replace( newNode );\n *     }\n * }\n * \n * @abstract\n ",
       "start": 0,
-      "end": 2031,
+      "end": 2029,
       "loc": {
         "start": {
           "line": 1,
@@ -812,8 +812,8 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 2032,
-      "end": 2038,
+      "start": 2030,
+      "end": 2036,
       "loc": {
         "start": {
           "line": 56,
@@ -840,8 +840,8 @@
         "updateContext": null
       },
       "value": "default",
-      "start": 2039,
-      "end": 2046,
+      "start": 2037,
+      "end": 2044,
       "loc": {
         "start": {
           "line": 56,
@@ -868,8 +868,8 @@
         "updateContext": null
       },
       "value": "class",
-      "start": 2047,
-      "end": 2052,
+      "start": 2045,
+      "end": 2050,
       "loc": {
         "start": {
           "line": 56,
@@ -894,8 +894,8 @@
         "binop": null
       },
       "value": "Transformation",
-      "start": 2053,
-      "end": 2067,
+      "start": 2051,
+      "end": 2065,
       "loc": {
         "start": {
           "line": 56,
@@ -919,8 +919,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2068,
-      "end": 2069,
+      "start": 2066,
+      "end": 2067,
       "loc": {
         "start": {
           "line": 56,
@@ -935,8 +935,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Creates a new transformation object\n   * \n   * @param {Class<Node>} type - the node type to match which is subclass of Node\n   * @param {string} name - the name of the transformation object, for debug purposes\n   ",
-      "start": 2072,
-      "end": 2296,
+      "start": 2070,
+      "end": 2294,
       "loc": {
         "start": {
           "line": 57,
@@ -961,8 +961,8 @@
         "binop": null
       },
       "value": "constructor",
-      "start": 2299,
-      "end": 2310,
+      "start": 2297,
+      "end": 2308,
       "loc": {
         "start": {
           "line": 63,
@@ -986,8 +986,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2310,
-      "end": 2311,
+      "start": 2308,
+      "end": 2309,
       "loc": {
         "start": {
           "line": 63,
@@ -1012,8 +1012,8 @@
         "binop": null
       },
       "value": "type",
-      "start": 2311,
-      "end": 2315,
+      "start": 2309,
+      "end": 2313,
       "loc": {
         "start": {
           "line": 63,
@@ -1038,8 +1038,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2315,
-      "end": 2316,
+      "start": 2313,
+      "end": 2314,
       "loc": {
         "start": {
           "line": 63,
@@ -1064,8 +1064,8 @@
         "binop": null
       },
       "value": "name",
-      "start": 2317,
-      "end": 2321,
+      "start": 2315,
+      "end": 2319,
       "loc": {
         "start": {
           "line": 63,
@@ -1089,8 +1089,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2321,
-      "end": 2322,
+      "start": 2319,
+      "end": 2320,
       "loc": {
         "start": {
           "line": 63,
@@ -1114,8 +1114,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2323,
-      "end": 2324,
+      "start": 2321,
+      "end": 2322,
       "loc": {
         "start": {
           "line": 63,
@@ -1130,8 +1130,8 @@
     {
       "type": "CommentBlock",
       "value": "* @type {Class<Node>} ",
-      "start": 2329,
-      "end": 2355,
+      "start": 2327,
+      "end": 2353,
       "loc": {
         "start": {
           "line": 64,
@@ -1158,8 +1158,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 2360,
-      "end": 2364,
+      "start": 2358,
+      "end": 2362,
       "loc": {
         "start": {
           "line": 65,
@@ -1184,8 +1184,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2364,
-      "end": 2365,
+      "start": 2362,
+      "end": 2363,
       "loc": {
         "start": {
           "line": 65,
@@ -1210,8 +1210,8 @@
         "binop": null
       },
       "value": "type",
-      "start": 2365,
-      "end": 2369,
+      "start": 2363,
+      "end": 2367,
       "loc": {
         "start": {
           "line": 65,
@@ -1237,8 +1237,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 2370,
-      "end": 2371,
+      "start": 2368,
+      "end": 2369,
       "loc": {
         "start": {
           "line": 65,
@@ -1263,8 +1263,8 @@
         "binop": null
       },
       "value": "type",
-      "start": 2372,
-      "end": 2376,
+      "start": 2370,
+      "end": 2374,
       "loc": {
         "start": {
           "line": 65,
@@ -1289,8 +1289,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2376,
-      "end": 2377,
+      "start": 2374,
+      "end": 2375,
       "loc": {
         "start": {
           "line": 65,
@@ -1305,8 +1305,8 @@
     {
       "type": "CommentBlock",
       "value": "* @type {string} ",
-      "start": 2382,
-      "end": 2403,
+      "start": 2380,
+      "end": 2401,
       "loc": {
         "start": {
           "line": 66,
@@ -1333,8 +1333,8 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 2408,
-      "end": 2412,
+      "start": 2406,
+      "end": 2410,
       "loc": {
         "start": {
           "line": 67,
@@ -1359,8 +1359,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2412,
-      "end": 2413,
+      "start": 2410,
+      "end": 2411,
       "loc": {
         "start": {
           "line": 67,
@@ -1385,8 +1385,8 @@
         "binop": null
       },
       "value": "name",
-      "start": 2413,
-      "end": 2417,
+      "start": 2411,
+      "end": 2415,
       "loc": {
         "start": {
           "line": 67,
@@ -1412,8 +1412,8 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 2418,
-      "end": 2419,
+      "start": 2416,
+      "end": 2417,
       "loc": {
         "start": {
           "line": 67,
@@ -1438,8 +1438,8 @@
         "binop": null
       },
       "value": "name",
-      "start": 2420,
-      "end": 2424,
+      "start": 2418,
+      "end": 2422,
       "loc": {
         "start": {
           "line": 67,
@@ -1464,8 +1464,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2424,
-      "end": 2425,
+      "start": 2422,
+      "end": 2423,
       "loc": {
         "start": {
           "line": 67,
@@ -1489,8 +1489,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2428,
-      "end": 2429,
+      "start": 2426,
+      "end": 2427,
       "loc": {
         "start": {
           "line": 68,
@@ -1505,8 +1505,8 @@
     {
       "type": "CommentBlock",
       "value": "*\n   * Modifies a given AST fragment with the `tool`.\n   * \n   * This is the primary function which you must implement to create a\n   * transformer. You can specifically specify the node type this executes upon\n   * through specifying the \"type\" field in the `super` call within your\n   * constructor.\n   * \n   * To run upon any time, pass `null` to the constructor. Never pass undefined\n   * to a field unless specifically noted. If you do happen to pass null you\n   * must perform type checking yourself by using `instanceof` with a node type.\n   * \n   * You likely need access to the node classes to check if a node is of a\n   * specific type, you can import this using:\n   * \n   *      import t from '../../parser/nodes';\n   * \n   * This file is automatically updated based on the directory contents at\n   * build-time.\n   * \n   * This methods execution shuold generally be controlled by a `Transformer`\n   * or a seperate parent object to interface with the delegates.\n   * \n   * @param {Node} node - The node being applied on\n   * @param {ASTTool} tool - The ASTTool for modifications\n   * \n   * @abstract\n   ",
-      "start": 2433,
-      "end": 3552,
+      "start": 2431,
+      "end": 3550,
       "loc": {
         "start": {
           "line": 70,
@@ -1531,8 +1531,8 @@
         "binop": null
       },
       "value": "modify",
-      "start": 3555,
-      "end": 3561,
+      "start": 3553,
+      "end": 3559,
       "loc": {
         "start": {
           "line": 98,
@@ -1556,8 +1556,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3561,
-      "end": 3562,
+      "start": 3559,
+      "end": 3560,
       "loc": {
         "start": {
           "line": 98,
@@ -1582,8 +1582,8 @@
         "binop": null
       },
       "value": "node",
-      "start": 3562,
-      "end": 3566,
+      "start": 3560,
+      "end": 3564,
       "loc": {
         "start": {
           "line": 98,
@@ -1608,8 +1608,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3566,
-      "end": 3567,
+      "start": 3564,
+      "end": 3565,
       "loc": {
         "start": {
           "line": 98,
@@ -1634,8 +1634,8 @@
         "binop": null
       },
       "value": "tool",
-      "start": 3568,
-      "end": 3572,
+      "start": 3566,
+      "end": 3570,
       "loc": {
         "start": {
           "line": 98,
@@ -1659,8 +1659,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3572,
-      "end": 3573,
+      "start": 3570,
+      "end": 3571,
       "loc": {
         "start": {
           "line": 98,
@@ -1684,8 +1684,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3574,
-      "end": 3575,
+      "start": 3572,
+      "end": 3573,
       "loc": {
         "start": {
           "line": 98,
@@ -1712,8 +1712,8 @@
         "updateContext": null
       },
       "value": "throw",
-      "start": 3580,
-      "end": 3585,
+      "start": 3578,
+      "end": 3583,
       "loc": {
         "start": {
           "line": 99,
@@ -1740,8 +1740,8 @@
         "updateContext": null
       },
       "value": "new",
-      "start": 3586,
-      "end": 3589,
+      "start": 3584,
+      "end": 3587,
       "loc": {
         "start": {
           "line": 99,
@@ -1766,8 +1766,8 @@
         "binop": null
       },
       "value": "TypeError",
-      "start": 3590,
-      "end": 3599,
+      "start": 3588,
+      "end": 3597,
       "loc": {
         "start": {
           "line": 99,
@@ -1791,8 +1791,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3599,
-      "end": 3600,
+      "start": 3597,
+      "end": 3598,
       "loc": {
         "start": {
           "line": 99,
@@ -1818,8 +1818,8 @@
         "updateContext": null
       },
       "value": "Must overload Transformation#modify(node, tool)",
-      "start": 3600,
-      "end": 3649,
+      "start": 3598,
+      "end": 3647,
       "loc": {
         "start": {
           "line": 99,
@@ -1843,8 +1843,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3649,
-      "end": 3650,
+      "start": 3647,
+      "end": 3648,
       "loc": {
         "start": {
           "line": 99,
@@ -1869,8 +1869,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3650,
-      "end": 3651,
+      "start": 3648,
+      "end": 3649,
       "loc": {
         "start": {
           "line": 99,
@@ -1894,8 +1894,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3654,
-      "end": 3655,
+      "start": 3652,
+      "end": 3653,
       "loc": {
         "start": {
           "line": 100,
@@ -1919,8 +1919,8 @@
         "postfix": false,
         "binop": null
       },
-      "start": 3656,
-      "end": 3657,
+      "start": 3654,
+      "end": 3655,
       "loc": {
         "start": {
           "line": 101,
@@ -1945,8 +1945,8 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 3657,
-      "end": 3657,
+      "start": 3655,
+      "end": 3655,
       "loc": {
         "start": {
           "line": 101,

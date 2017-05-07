@@ -90,6 +90,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "vsl/src/vsl/parser/nodes/interfacestatement.js~interfacestatement",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html",
+    "<span>InterfaceStatement</span> <span class=\"search-result-import-path\">vsl/src/vsl/parser/nodes/interfaceStatement.js</span>",
+    "class"
+  ],
+  [
     "vsl/src/vsl/parser/nodes/internalmarker.js~internalmarker",
     "class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html",
     "<span>InternalMarker</span> <span class=\"search-result-import-path\">vsl/src/vsl/parser/nodes/internalMarker.js</span>",
@@ -114,9 +120,9 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "vsl/src/vsl/transform/transformers/scopetransverser.js~scopetransverser",
-    "class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html",
-    "<span>ScopeTransverser</span> <span class=\"search-result-import-path\">vsl/src/vsl/transform/transformers/scopetransverser.js</span>",
+    "vsl/src/vsl/transform/transformers/scopetraverser.js~scopetraverser",
+    "class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html",
+    "<span>ScopeTraverser</span> <span class=\"search-result-import-path\">vsl/src/vsl/transform/transformers/scopetraverser.js</span>",
     "class"
   ],
   [
@@ -150,9 +156,9 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "vsl/src/vsl/transform/transverser.js~transverser",
-    "class/src/vsl/transform/transverser.js~Transverser.html",
-    "<span>Transverser</span> <span class=\"search-result-import-path\">vsl/src/vsl/transform/transverser.js</span>",
+    "vsl/src/vsl/transform/traverser.js~traverser",
+    "class/src/vsl/transform/traverser.js~Traverser.html",
+    "<span>Traverser</span> <span class=\"search-result-import-path\">vsl/src/vsl/transform/traverser.js</span>",
     "class"
   ],
   [
@@ -924,6 +930,54 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/vsl/parser/nodes/interfacestatement.js",
+    "file/src/vsl/parser/nodes/interfaceStatement.js.html",
+    "src/vsl/parser/nodes/interfaceStatement.js",
+    "file"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#access",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-member-access",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#access",
+    "member"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#children",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-get-children",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#children",
+    "member"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#constructor",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-constructor-constructor",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#constructor",
+    "method"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#identifierpath",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-get-identifierPath",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#identifierPath",
+    "member"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#name",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-member-name",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#name",
+    "member"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#statements",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-member-statements",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#statements",
+    "member"
+  ],
+  [
+    "src/vsl/parser/nodes/interfacestatement.js~interfacestatement#superclasses",
+    "class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html#instance-member-superclasses",
+    "src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement#superclasses",
+    "member"
+  ],
+  [
     "src/vsl/parser/nodes/internalmarker.js",
     "file/src/vsl/parser/nodes/internalMarker.js.html",
     "src/vsl/parser/nodes/internalMarker.js",
@@ -1368,6 +1422,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/vsl/transform/asttool.js~asttool#resolve",
+    "class/src/vsl/transform/asttool.js~ASTTool.html#instance-method-resolve",
+    "src/vsl/transform/asttool.js~ASTTool#resolve",
+    "method"
+  ],
+  [
     "src/vsl/transform/data/accessmodifiers.js",
     "file/src/vsl/transform/data/accessModifiers.js.html",
     "src/vsl/transform/data/accessModifiers.js",
@@ -1566,27 +1626,33 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/vsl/transform/transformers/scopetransverser.js",
-    "file/src/vsl/transform/transformers/scopetransverser.js.html",
-    "src/vsl/transform/transformers/scopetransverser.js",
+    "src/vsl/transform/transformers/scopetraverser.js",
+    "file/src/vsl/transform/transformers/scopetraverser.js.html",
+    "src/vsl/transform/transformers/scopetraverser.js",
     "file"
   ],
   [
-    "src/vsl/transform/transformers/scopetransverser.js~scopetransverser#constructor",
-    "class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html#instance-constructor-constructor",
-    "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#constructor",
+    "src/vsl/transform/transformers/scopetraverser.js~scopetraverser#constructor",
+    "class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html#instance-constructor-constructor",
+    "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#constructor",
     "method"
   ],
   [
-    "src/vsl/transform/transformers/scopetransverser.js~scopetransverser#receivednode",
-    "class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html#instance-method-receivedNode",
-    "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#receivedNode",
+    "src/vsl/transform/transformers/scopetraverser.js~scopetraverser#finishednode",
+    "class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html#instance-method-finishedNode",
+    "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#finishedNode",
     "method"
   ],
   [
-    "src/vsl/transform/transformers/scopetransverser.js~scopetransverser#scope",
-    "class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html#instance-member-scope",
-    "src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser#scope",
+    "src/vsl/transform/transformers/scopetraverser.js~scopetraverser#receivednode",
+    "class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html#instance-method-receivedNode",
+    "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#receivedNode",
+    "method"
+  ],
+  [
+    "src/vsl/transform/transformers/scopetraverser.js~scopetraverser#scope",
+    "class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html#instance-member-scope",
+    "src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser#scope",
     "member"
   ],
   [
@@ -1602,21 +1668,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/vsl/transform/transverser.js",
-    "file/src/vsl/transform/transverser.js.html",
-    "src/vsl/transform/transverser.js",
+    "src/vsl/transform/traverser.js",
+    "file/src/vsl/transform/traverser.js.html",
+    "src/vsl/transform/traverser.js",
     "file"
   ],
   [
-    "src/vsl/transform/transverser.js~transverser#queue",
-    "class/src/vsl/transform/transverser.js~Transverser.html#instance-method-queue",
-    "src/vsl/transform/transverser.js~Transverser#queue",
+    "src/vsl/transform/traverser.js~traverser#finishednode",
+    "class/src/vsl/transform/traverser.js~Traverser.html#instance-method-finishedNode",
+    "src/vsl/transform/traverser.js~Traverser#finishedNode",
     "method"
   ],
   [
-    "src/vsl/transform/transverser.js~transverser#receivednode",
-    "class/src/vsl/transform/transverser.js~Transverser.html#instance-method-receivedNode",
-    "src/vsl/transform/transverser.js~Transverser#receivedNode",
+    "src/vsl/transform/traverser.js~traverser#queue",
+    "class/src/vsl/transform/traverser.js~Traverser.html#instance-method-queue",
+    "src/vsl/transform/traverser.js~Traverser#queue",
+    "method"
+  ],
+  [
+    "src/vsl/transform/traverser.js~traverser#receivednode",
+    "class/src/vsl/transform/traverser.js~Traverser.html#instance-method-receivedNode",
+    "src/vsl/transform/traverser.js~Traverser#receivedNode",
     "method"
   ]
 ]

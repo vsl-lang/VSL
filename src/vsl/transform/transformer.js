@@ -1,5 +1,5 @@
 import Transformation from './transformation';
-import Transverser from './transverser';
+import Traverser from './traverser';
 import ASTTool from './asttool';
 import Node from '../parser/nodes/node';
 
@@ -41,7 +41,7 @@ import Node from '../parser/nodes/node';
  * side-effects and be thread safe, concurrency may or may not be implemented in
  * any specific way.
  */
-export default class Transformer extends Transverser {
+export default class Transformer extends Traverser {
     
     /**
      * Creates a new Transformer with the given passes

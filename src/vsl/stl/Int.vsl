@@ -1,19 +1,23 @@
+/**
+ * Compiles to an 32-bit (4 byte) integer. All operators compile to their native
+ * equivalent. 
+ */
 public class Int: Comparable {
 
-    static func ==(lhs: Int, rhs: Int) -> Bool internal
-    static func >(lhs: Int, rhs: Int) -> Bool internal
-    static func <(lhs: Int, rhs: Int) -> Bool internal
+    public static func ==(lhs: Int, rhs: Int) -> Bool internal
+    public static func >(lhs: Int, rhs: Int) -> Bool internal
+    public static func <(lhs: Int, rhs: Int) -> Bool internal
     
-    static func +(lhs: Int, rhs: Int) internal
-    static func -(lhs: Int, rhs: Int) internal
-    static func /(lhs: Int, rhs: Int) internal
-    static func *(lhs: Int, rhs: Int) internal
-    static func %(lhs: Int, rhs: Int) internal
+    public static func +(lhs: Int, rhs: Int) -> Int internal
+    public static func -(lhs: Int, rhs: Int) -> Int internal
+    public static func /(lhs: Int, rhs: Int) -> Int internal
+    public static func *(lhs: Int, rhs: Int) -> Int internal
+    public static func %(lhs: Int, rhs: Int) -> Int internal
     
-    static func **(lhs: Int, rhs: Int) internal
+    public static func **(lhs: Int, rhs: Int) -> Int internal
     
-    static func ^(lhs: Int, rhs: Int) internal
-    static func &(lhs: Int, rhs: Int) internal
-    static func |(lhs: Int, rhs: Int) internal
+    public static func ^(lhs: Int, rhs: Int) -> Int internal
+    public static func &(lhs: Int, rhs: Int) -> Int internal
+    public static func |(lhs: Int, rhs: Int) -> Int internal
     
 }

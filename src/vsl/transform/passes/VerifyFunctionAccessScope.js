@@ -18,10 +18,10 @@ export default class VerifyFunctionAccessScope extends Transformation {
     
     /** @overide */
     modify(node: Node, tool: ASTTool) {
-        let classStatement = node.parentScope.parentNode;
+        let statement = node.parentScope.parentNode;
         let accessModifiers = node.access;
         
-        if (classStatement instanceof t.ClassStatement) {
+        if (statement instanceof t.ClassStatement || statement instanceof t.InterfaceStatement) {
             // A class function
             return;
         }

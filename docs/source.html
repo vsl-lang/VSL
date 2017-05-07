@@ -50,6 +50,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionStatement.js~FunctionStatement.html">FunctionStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/functionizedOperator.js~FunctionizedOperator.html">FunctionizedOperator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html">InterfaceStatement</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html">InternalMarker</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/literal.js~Literal.html">Literal</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span></span></li>
@@ -63,19 +64,19 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformError.js~TransformError.html">TransformError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformation.js~Transformation.html">Transformation</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformer.js~Transformer.html">Transformer</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/passes</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldBinaryIntegerExpression.js~FoldBinaryIntegerExpression.html">FoldBinaryIntegerExpression</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/FoldFiniteIntegerRange.js~FoldFiniteIntegerRange.html">FoldFiniteIntegerRange</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope.html">VerifyFunctionAccessScope</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/scope</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/id.js~Id.html">Id</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/scope/type.js~Type.html">Type</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html">ScopeTransverser</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">vsl/transform/transformers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html">ScopeTraverser</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/vsl/transform/transformers/vsltransformer.js~VSLTransformer.html">VSLTransformer</a></span></span></li>
 </ul>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1>Source <img data-ice="coverageBadge" src="./badge.svg"><span data-ice="totalCoverageCount" class="total-coverage-count">122/174</span></h1>
+<div class="content" data-ice="content"><h1>Source <img data-ice="coverageBadge" src="./badge.svg"><span data-ice="totalCoverageCount" class="total-coverage-count">130/185</span></h1>
 
 <table class="files-summary" data-ice="files" data-use-coverage="true">
   <thead>
@@ -211,6 +212,14 @@
       <td style="display: none;" data-ice="updated">2017-05-06 23:19:54 (UTC)</td>
     </tr>
 <tr data-ice="file">
+      <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/interfaceStatement.js.html#errorLines=22,23,24">src/vsl/parser/nodes/interfaceStatement.js</a></span></td>
+      <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/nodes/interfaceStatement.js~InterfaceStatement.html">InterfaceStatement</a></span></td>
+      <td class="coverage"><span data-ice="coverage">62 %</span><span data-ice="coverageCount" class="coverage-count">5/8</span></td>
+      <td style="display: none;" data-ice="size">1021 byte</td>
+      <td style="display: none;" data-ice="lines">41</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 17:15:18 (UTC)</td>
+    </tr>
+<tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/internalMarker.js.html">src/vsl/parser/nodes/internalMarker.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/nodes/internalMarker.js~InternalMarker.html">InternalMarker</a></span></td>
       <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">3/3</span></td>
@@ -230,9 +239,9 @@
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/node.js.html">src/vsl/parser/nodes/node.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/nodes/node.js~Node.html">Node</a></span></td>
       <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">8/8</span></td>
-      <td style="display: none;" data-ice="size">2930 byte</td>
+      <td style="display: none;" data-ice="size">2928 byte</td>
       <td style="display: none;" data-ice="lines">92</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 18:27:26 (UTC)</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:31:59 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/propertyExpression.js.html">src/vsl/parser/nodes/propertyExpression.js</a></span></td>
@@ -254,17 +263,17 @@
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/type.js.html#errorLines=14,9">src/vsl/parser/nodes/type.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/nodes/type.js~Type.html">Type</a></span></td>
       <td class="coverage"><span data-ice="coverage">60 %</span><span data-ice="coverageCount" class="coverage-count">3/5</span></td>
-      <td style="display: none;" data-ice="size">414 byte</td>
+      <td style="display: none;" data-ice="size">438 byte</td>
       <td style="display: none;" data-ice="lines">24</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 15:51:10 (UTC)</td>
+      <td style="display: none;" data-ice="updated">2017-05-07 22:32:56 (UTC)</td>
     </tr>
 <tr data-ice="file">
-      <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/typedIdentifier.js.html#errorLines=20">src/vsl/parser/nodes/typedIdentifier.js</a></span></td>
+      <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/typedIdentifier.js.html#errorLines=25">src/vsl/parser/nodes/typedIdentifier.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/nodes/typedIdentifier.js~TypedIdentifier.html">TypedIdentifier</a></span></td>
       <td class="coverage"><span data-ice="coverage">80 %</span><span data-ice="coverageCount" class="coverage-count">4/5</span></td>
-      <td style="display: none;" data-ice="size">566 byte</td>
-      <td style="display: none;" data-ice="lines">26</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 01:42:55 (UTC)</td>
+      <td style="display: none;" data-ice="size">830 byte</td>
+      <td style="display: none;" data-ice="lines">31</td>
+      <td style="display: none;" data-ice="updated">2017-05-07 22:25:08 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/nodes/unaryExpression.js.html">src/vsl/parser/nodes/unaryExpression.js</a></span></td>
@@ -302,9 +311,9 @@
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/vsltokenizer.js.html#errorLines=29,46">src/vsl/parser/vsltokenizer.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/parser/vsltokenizer.js~VSLTokenizer.html">VSLTokenizer</a></span></td>
       <td class="coverage"><span data-ice="coverage">33 %</span><span data-ice="coverageCount" class="coverage-count">1/3</span></td>
-      <td style="display: none;" data-ice="size">5385 byte</td>
-      <td style="display: none;" data-ice="lines">152</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 21:53:53 (UTC)</td>
+      <td style="display: none;" data-ice="size">5430 byte</td>
+      <td style="display: none;" data-ice="lines">153</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:02:29 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/parser/vsltokentype.js.html#errorLines=1">src/vsl/parser/vsltokentype.js</a></span></td>
@@ -317,10 +326,10 @@
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/asttool.js.html">src/vsl/transform/asttool.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/asttool.js~ASTTool.html">ASTTool</a></span></td>
-      <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">3/3</span></td>
-      <td style="display: none;" data-ice="size">2198 byte</td>
-      <td style="display: none;" data-ice="lines">66</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 19:04:20 (UTC)</td>
+      <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">4/4</span></td>
+      <td style="display: none;" data-ice="size">2560 byte</td>
+      <td style="display: none;" data-ice="lines">78</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:36:54 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/data/accessModifiers.js.html">src/vsl/transform/data/accessModifiers.js</a></span></td>
@@ -350,9 +359,9 @@
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/passes/VerifyFunctionAccessScope.js.html#errorLines=15">src/vsl/transform/passes/VerifyFunctionAccessScope.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/passes/VerifyFunctionAccessScope.js~VerifyFunctionAccessScope.html">VerifyFunctionAccessScope</a></span></td>
       <td class="coverage"><span data-ice="coverage">66 %</span><span data-ice="coverageCount" class="coverage-count">2/3</span></td>
-      <td style="display: none;" data-ice="size">1531 byte</td>
-      <td style="display: none;" data-ice="lines">44</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 20:05:14 (UTC)</td>
+      <td style="display: none;" data-ice="size">1468 byte</td>
+      <td style="display: none;" data-ice="lines">41</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 17:16:56 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/scope/id.js.html#errorLines=13,14,15">src/vsl/transform/scope/id.js</a></span></td>
@@ -360,7 +369,7 @@
       <td class="coverage"><span data-ice="coverage">40 %</span><span data-ice="coverageCount" class="coverage-count">2/5</span></td>
       <td style="display: none;" data-ice="size">499 byte</td>
       <td style="display: none;" data-ice="lines">16</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 17:44:00 (UTC)</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:58:55 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/scope/type.js.html#errorLines=15,16">src/vsl/transform/scope/type.js</a></span></td>
@@ -382,25 +391,25 @@
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/transformation.js.html">src/vsl/transform/transformation.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/transformation.js~Transformation.html">Transformation</a></span></td>
       <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">5/5</span></td>
-      <td style="display: none;" data-ice="size">3790 byte</td>
+      <td style="display: none;" data-ice="size">3788 byte</td>
       <td style="display: none;" data-ice="lines">100</td>
-      <td style="display: none;" data-ice="updated">2017-05-06 01:44:22 (UTC)</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:30:31 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/transformer.js.html">src/vsl/transform/transformer.js</a></span></td>
       <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/transformer.js~Transformer.html">Transformer</a></span></td>
       <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">5/5</span></td>
-      <td style="display: none;" data-ice="size">6210 byte</td>
+      <td style="display: none;" data-ice="size">6204 byte</td>
       <td style="display: none;" data-ice="lines">172</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 18:54:23 (UTC)</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:30:05 (UTC)</td>
     </tr>
 <tr data-ice="file">
-      <td data-ice="filePath"><span><a href="file/src/vsl/transform/transformers/scopetransverser.js.html#errorLines=17,24">src/vsl/transform/transformers/scopetransverser.js</a></span></td>
-      <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/transformers/scopetransverser.js~ScopeTransverser.html">ScopeTransverser</a></span></td>
-      <td class="coverage"><span data-ice="coverage">50 %</span><span data-ice="coverageCount" class="coverage-count">2/4</span></td>
-      <td style="display: none;" data-ice="size">2356 byte</td>
-      <td style="display: none;" data-ice="lines">71</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 18:48:12 (UTC)</td>
+      <td data-ice="filePath"><span><a href="file/src/vsl/transform/transformers/scopetraverser.js.html#errorLines=17,24">src/vsl/transform/transformers/scopetraverser.js</a></span></td>
+      <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/transformers/scopetraverser.js~ScopeTraverser.html">ScopeTraverser</a></span></td>
+      <td class="coverage"><span data-ice="coverage">60 %</span><span data-ice="coverageCount" class="coverage-count">3/5</span></td>
+      <td style="display: none;" data-ice="size">2517 byte</td>
+      <td style="display: none;" data-ice="lines">77</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:53:51 (UTC)</td>
     </tr>
 <tr data-ice="file">
       <td data-ice="filePath"><span><a href="file/src/vsl/transform/transformers/vsltransformer.js.html#errorLines=10">src/vsl/transform/transformers/vsltransformer.js</a></span></td>
@@ -411,12 +420,12 @@
       <td style="display: none;" data-ice="updated">2017-05-07 00:47:12 (UTC)</td>
     </tr>
 <tr data-ice="file">
-      <td data-ice="filePath"><span><a href="file/src/vsl/transform/transverser.js.html">src/vsl/transform/transverser.js</a></span></td>
-      <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/transverser.js~Transverser.html">Transverser</a></span></td>
-      <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">3/3</span></td>
-      <td style="display: none;" data-ice="size">2600 byte</td>
-      <td style="display: none;" data-ice="lines">79</td>
-      <td style="display: none;" data-ice="updated">2017-05-07 19:03:30 (UTC)</td>
+      <td data-ice="filePath"><span><a href="file/src/vsl/transform/traverser.js.html">src/vsl/transform/traverser.js</a></span></td>
+      <td data-ice="identifier" class="identifiers"><span><a href="class/src/vsl/transform/traverser.js~Traverser.html">Traverser</a></span></td>
+      <td class="coverage"><span data-ice="coverage">100 %</span><span data-ice="coverageCount" class="coverage-count">4/4</span></td>
+      <td style="display: none;" data-ice="size">3843 byte</td>
+      <td style="display: none;" data-ice="lines">111</td>
+      <td style="display: none;" data-ice="updated">2017-05-01 01:54:29 (UTC)</td>
     </tr>
 </tbody>
 </table>

@@ -14,6 +14,7 @@ const NodeTypes = require('./vsltokentype'),
   decimal = freeze({ test: x => x[1] === NodeTypes.Decimal }),
   string = freeze({ test: x => x[1] === NodeTypes.String }),
   identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
+  unwrap = d => d[0].value,
   mid = d => d[0][0];
 %}
 

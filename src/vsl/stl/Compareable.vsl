@@ -1,4 +1,0 @@
-public internal interface Constrastable: Comparable, Equatable {
-    static func >=(lhs: Self, rhs: Self)
-    static func <=(lhs: Self, rhs: Self)
-}

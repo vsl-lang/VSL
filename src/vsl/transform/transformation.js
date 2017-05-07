@@ -4,7 +4,7 @@
  * ### Usage
  * 
  * Subclass this and pass it to a `Transformer` to apply it to an AST. Each is
- * passed a `ASTTool` object to aid in modifying and transversing the AST. Never
+ * passed a `ASTTool` object to aid in modifying and traversing the AST. Never
  * use anything but the ASTTool for modification. Additionally do not attempt to
  * use any undocumented methods of `ASTTool`, as.
  * 

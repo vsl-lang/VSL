@@ -1,20 +1,34 @@
 import Node from '../parser/nodes/node';
 
 /**
- * Transverses the AST.
+ * Traverses the AST.
  * 
  * @abstract
  */
-export default class Transverser {
+export default class Traverser {
     
     /**
-     * Queues an AST to be transversed, this in turn calls the abstract function
+     * Queues an AST to be traversed, this in turn calls the abstract function
      * `#receivedNode(parent:name:)` which can be used to determine what to do
      * with the node. The AST is recursed in order.
      * 
+     * This method runs top-down in a deterministic order and is not specifically
+     * run async. If it is, you can safely assume that the order of execution
+     * will be the same and for every `#processsedNode` there will be an equiv.
+     * `#finishedNode` call.
+     * 
+     * This method handles strings and arrays but behavior can be overloaded to
+     * add the ability to handle nodes of a non-conforming type to `Node` or a
+     * `Node[]`. An example of such would be:
+     * 
+     *     /** @override *\/
+     *     queue(ast: any) {
+     *         if (ast instanceof MyClass) handle(ast);
+     *         else super.queue(ast);
+     *     }
+     * 
      * @param {any} ast - An AST as outputted by a `Parser`
      */
-
     queue(ast: any) {
         // Recursively add all AST nodes in an array
          if (ast instanceof Array) {
@@ -25,6 +39,9 @@ export default class Transverser {
                 
                 // Requeue the further children
                 this.queue(ast[i], ast);
+                
+                // Notify that the node is finished if defined
+                this.finishedNode(ast, i);
             }
          } else if (ast instanceof Node) {
              let children = ast.children, name, child;
@@ -37,6 +54,8 @@ export default class Transverser {
                     this.processNode(ast, name);
                     
                     if (child != null) this.queue(child, ast);
+                    
+                    this.finishedNode(ast, name);
                 }
              }
          } else {
@@ -66,15 +85,28 @@ export default class Transverser {
     }
     
     /**
-     * Called everytime the transverser encounters a node
+     * Called everytime the traverser encounters a node
      * 
      * @param {Node|Node[]} parent - The parent node of the given ast
      * @param {any} name - The reference to the child relative to the parent.
      * 
      * @abstract
      */
-    receivedNode(parent: any, name: string) {
+    receivedNode(parent: Node | Node[], name: string) {
         throw new TypeError(`${this.constructor.name}: Did not implement required method #receivedNode(parent:name:)`);
     }
     
+    
+    /**
+     * _Optional_ method which is called once the traverser finishes processing
+     * a node's children
+     * 
+     * @param {Node|Node[]} parent - The parent node of the given ast
+     * @param {any} name - The reference to the child relative to the parent.
+     * 
+     * @abstract
+     */
+    finishedNode(parent: Node | Node[], name: string) {
+        return;
+    }
 }

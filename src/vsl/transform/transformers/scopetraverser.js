@@ -1,4 +1,4 @@
-import Transverser from '../transverser';
+import Traverser from '../traverser';
 import * as Scope from '../scope/';
 import * as t from '../../parser/nodes/';
 
@@ -13,7 +13,7 @@ import * as t from '../../parser/nodes/';
  * 
  * See: {@link Transformer}
  */
-export default class ScopeTransverser extends Transverser {
+export default class ScopeTraverser extends Traverser {
     constructor() {
         super();
         
@@ -67,6 +67,12 @@ export default class ScopeTransverser extends Transverser {
         }
         
         node.parentScope = this.scope[this.scope.length - 1] || null;
-        
+    }
+    
+    /** @override */
+    finishedNode(parent: Node | Node[], name: string) {
+        if (parent[name] instanceof t.CodeBlock) {
+            this.scope.pop()
+        }
     }
 }

@@ -19,7 +19,7 @@ export default class Node {
         this.parentScope = null;
         
         /**
-         * If exists, a transverser will set this to the parent node or wrapping
+         * If exists, a traverser will set this to the parent node or wrapping
          * container.
          * 
          * @type {?(Node | Node[])}
