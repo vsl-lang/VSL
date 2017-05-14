@@ -10,7 +10,7 @@ import Node from './node';
 export default class BinaryExpression extends Node {
     
     /**
-     * Creates a wrapper ExperssionStatement
+     * Creates a wrapper ExpressionStatement
      * 
      * @param {Expression} lhs left-hand side of the expression
      * @param {Expression} rhs right-hand side of the expression

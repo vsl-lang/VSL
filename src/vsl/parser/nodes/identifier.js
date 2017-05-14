@@ -1,4 +1,5 @@
 import Node from './node';
+import Id from '../../scope/scopeItem';
 
 /**
  * Wraps a identifier.
@@ -19,7 +20,7 @@ export default class Identifier extends Node {
         super(position);
         
         /** @type {string} */
-        this.identifier = identifier;
+        this.identifier = new Id(identifier, null);
     }
     
     /** @override */

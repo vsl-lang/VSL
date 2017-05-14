@@ -1,4 +1,5 @@
 import Node from './node';
+import Type from '../../scope/type';
 
 /**
  * Wraps a class
@@ -32,7 +33,7 @@ export default class ClassStatement extends Node {
     
     /** @override */
     get identifierPath() {
-        return this.name;
+        return new Type(this.name.name);
     }
     
     /** @override */

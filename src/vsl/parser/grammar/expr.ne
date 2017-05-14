@@ -2,7 +2,7 @@
 # `Expression` may be empty
 
 @{%
-  const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
+const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
   expr = (d, l) => new t.ExpressionStatement(d[0], l);
 %}
 
@@ -24,7 +24,30 @@ propertyTail -> "." _ Identifier {% d => d[2] %}
 Literal -> %decimal {% literal %}
   | %integer {% literal %}
   | %string {% literal %}
-  
+  | Array {% id %}
+  | Dictionary {% id %}
+  | Tuple {% id %}
+  # v- ok this name is way too long
+  | ImmutableDictionary {% id %}
+  | Set {% id %}
+
+Array -> "[" "]" {% (d, l) => new t.ArrayNode([], l) %}
+  | "[" delimited[Expression, ","] "]" {% (d, l) => new t.ArrayNode(d[1], l) %}
+
+Dictionary -> "[" ":" "]" {% (d, l) => new t.DictionaryNode(new Map(), l) %}
+  | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.DictionaryNode(new Map(d[1]), l) %}
+
+Tuple -> "(" ")" {% (d, l) => new t.TupleNode([], l) %}
+  | "(" delimited[Expression, ","] ")" {% (d, l) => new t.TupleNode(d[1], l) %}
+
+ImmutableDictionary -> "[" ":" "]" {% (d, l) => new t.ImmutableDictionaryNode(new Map(), l) %}
+  | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionaryNode(new Map(d[1]), l) %}
+
+Set -> "{" "}" {% (d, l) => new t.SetNode([], l) %}
+  | "{" delimited[Expression, ","] "}" {% (d, l) => new t.SetNode(d[1], l) %}
+
+Key -> Identifier {% id %}
+  | "[" Expression "]" {% nth(1) %}
 # Primitiveish Things
 FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
 
@@ -35,12 +58,13 @@ Argument -> TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {% (d, l) => ne
 
 ## Match a generic operator
 ## This handles whitespace
-BinaryOp[self, ops, next] -> $self $ops _ $next {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0], l) %} | $next {% mid %}
-BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0], l) %} | $next {% mid %}
+BinaryOp[self, ops, next] -> $self $ops _ $next {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, l) %} | $next {% mid %}
+BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, l) %} | $next {% mid %}
 
 # Top level assignment
-BinaryExpression -> Assign {% id %}
+BinaryExpression -> Ternary {% id %}
 
+Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], d[4], l) %}
 Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
 Is -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
@@ -52,9 +76,9 @@ Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
 Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
-Range -> Cast (".." | "...") _ Range {% (d, l) => new t.BinaryExpression(d[0], d[3], d[1][0], l) %} | Cast {% id %}
+Range -> Cast (".." | "...") _ Range {% (d, l) => new t.BinaryExpression(d[0], d[3], d[1][0].value, l) %} | Cast {% id %}
 Cast -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
-Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0], l) %} | Property {% id %}
+Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, l) %} | Property {% id %}
 
 ## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
 ## what about assignment
@@ -62,4 +86,4 @@ FunctionizedOperator -> "(" (
   "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
     | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>"
     | ".." | "..." | "::"
-) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0], l) %}
+) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0].value, l) %}

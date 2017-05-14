@@ -1,5 +1,4 @@
 import Traverser from '../traverser';
-import * as Scope from '../scope/';
 import * as t from '../../parser/nodes/';
 
 /**
@@ -30,43 +29,22 @@ export default class ScopeTraverser extends Traverser {
         if (node === null) return;
         
         // If the parent is a code block, we want to add it to the scope
+        // This builds a stack of the scope tree, so for a typical top-level
+        // class this might look like:
+        //     libvsl, MyClass.vsl, MyClass
+        // Each file would have it's own top-level preqeued block.
         if (node instanceof t.CodeBlock) {
             this.scope.push(node);
         }
         
+        // Store the current scope for brevity
+        const currentScope = this.scope[this.scope.length - 1];
         
-        let identifierPath = null;
-        // Handle new identifier declarations
-        if (identifierPath = node.identifierPath) {
-            if (identifierPath instanceof t.TypedIdentifier) {
-                let id = identifierPath.identifier;
-                let name = id.identifier;
-                let type = id.type;
-                
-                // If type key is variable
-                let mutable = node.type === t.AssignmentType.Variable
-                
-                this.scope[this.scope.length - 1].scope.set(
-                    name,
-                    new Scope.Id(
-                        mutable,
-                        type,
-                        node
-                    )
-                );
-                
-            } else {
-                let name = identifierPath.identifier;
-                let result = null;
-                
-                this.scope[this.scope.length - 1].scope.set(
-                    name,
-                    node
-                );
-            }
-        }
+        currentScope
         
-        node.parentScope = this.scope[this.scope.length - 1] || null;
+        
+        // Set parent scope for transformers
+        node.parentScope = currentScope || null;
     }
     
     /** @override */

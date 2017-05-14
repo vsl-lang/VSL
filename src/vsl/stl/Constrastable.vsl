@@ -1,4 +1,0 @@
-public internal interface Constrastable {
-    static func >(lhs: Self, rhs: Self)
-    static func <(lhs: Self, rhs: Self)
-}

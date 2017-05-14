@@ -69,11 +69,11 @@ export default class ASTTool {
      * Ensure that the resulting node is of a correct type as no checks are done
      * as of this time.
      * 
-     * @param {Node} with - the replacement node
+     * @param {Node} withNode - the replacement node
      */
-    replace(node: Node) {
-        node.parentScope = this.parent[this.name].parentScope;
-        nose.parentNode = this.parent;
-        this.parent[this.name] = node;
+    replace(withNode: Node) {
+        withNode.parentScope = this.parent[this.name].parentScope;
+        withNode.parentNode = this.parent;
+        this.parent[this.name] = withNode;
     }
 }

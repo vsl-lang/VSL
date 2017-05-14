@@ -5,3 +5,4 @@ lib
 .c9
 build
 test*
+docs

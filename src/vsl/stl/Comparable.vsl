@@ -1,4 +1,0 @@
-public internal interface Comparable: Comparable, Equatable {
-    public static func >=(lhs: Self, rhs: Self)
-    public static func <=(lhs: Self, rhs: Self)
-}

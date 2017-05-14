@@ -15,7 +15,7 @@ InterfaceItem -> FunctionHead {% id %}
 InterfaceItems[s] -> CodeBlock[(InterfaceItem | ClassItem[$s]) {% mid %}] {% id %}
 ClassItems[s] -> CodeBlock[ClassItem[$s] {% id %}] {% id %}
 
-ClassStatement[s] -> Modifier "class" _ Identifier _ (":" _ ExtensionList _ {% nth(2) %}):? "{" _ (ClassItems[$s] _ {% id %}):? "}" {%
+ClassStatement[s] -> Modifier "class" _ className _ (":" _ ExtensionList _ {% nth(2) %}):? "{" _ (ClassItems[$s] _ {% id %}):? "}" {%
     (d, l) => new t.ClassStatement(
         d[0],
         d[3],
@@ -25,7 +25,7 @@ ClassStatement[s] -> Modifier "class" _ Identifier _ (":" _ ExtensionList _ {% n
     )
 %}
 
-InterfaceStatement[s] -> Modifier "interface" _ Identifier _ (":" _ ExtensionList _ {% nth(2) %}):? "{" _ (InterfaceItems[$s] _ {% id %}):? "}" {%
+InterfaceStatement[s] -> Modifier "interface" _ className _ (":" _ ExtensionList _ {% nth(2) %}):? "{" _ (InterfaceItems[$s] _ {% id %}):? "}" {%
     (d, l) => new t.InterfaceStatement(
         d[0],
         d[3],

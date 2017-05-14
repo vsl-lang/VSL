@@ -17,9 +17,9 @@ export default class Literal extends Node {
     /**
      * Creates a wrapper for literals
      * 
-     * @param {string} literal - the literal string value of the literal
-     * @param {number} type - The literal type as from a TokenType
-     * @param {Object} position - a position from nearley
+     * @param {string} literal the literal string value of the literal
+     * @param {number} type The literal type as from a TokenType
+     * @param {Object} position a position from nearley
      */
     constructor (literal: string, type: number, position: Object) {
         super(position);

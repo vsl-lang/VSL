@@ -7,10 +7,12 @@ export default class InternalMarker extends Node {
     
     /**
      * Creates a marker
+     * @param {String} id - the literal ID to bind to.
      * @param {Object} position - a position from nearley
      */
-    constructor (position: Object) {
+    constructor(id: String, position: Object) {
         super(position);
+        this.id = id;
     }
     
     /** @override */

@@ -5,7 +5,6 @@
  *                        create the index highlight
  * @param {number[]} index - An array in the form of [start, end] which specify
  *                           the indexes to highlight
- * @param {boolean} [highlight=false] - Highlight with ANSI codes the output
  * 
  * @return {Object} contains the needed indices and lines
  * @property {string[]} lines the lines to view

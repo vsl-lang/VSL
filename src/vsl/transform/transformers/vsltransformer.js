@@ -1,5 +1,5 @@
 import Transformer from '../transformer';
-import * as Transformations from '../passes/';
+import * as pass from '../passes/';
 
 /**
  * A default transformer initalized to the passes described in `passes/`
@@ -8,6 +8,11 @@ import * as Transformations from '../passes/';
  */
 export default class VSLTransformer extends Transformer {
     constructor() {
-        super(Object.values(Transformations));
+        super([
+            pass.FoldFiniteIntegerRange,
+            pass.FoldBinaryIntegerExpression,
+            
+            pass.VerifyFunctionAccessScope
+        ]);
     }
 }

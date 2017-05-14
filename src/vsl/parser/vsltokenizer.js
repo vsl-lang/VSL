@@ -54,6 +54,9 @@ export default class VSLTokenizer extends Tokenizer {
             ['=>', passThrough],
             ['~>', passThrough],
             [':>', passThrough],
+            ['@@@', passThrough],
+            ['@@', passThrough],
+            ['@', passThrough],
             [';', passThrough],
             [':', passThrough],
             [',', passThrough],
@@ -120,7 +123,8 @@ export default class VSLTokenizer extends Tokenizer {
             ['internal', passThrough],
 
             ['is', passThrough],
-            
+
+            ['function', passThrough],           
             ['func', passThrough],
             ['fn', passThrough],
             ['class', passThrough],

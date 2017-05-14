@@ -1,4 +1,5 @@
 import Node from './node';
+import Scope from '../../scope';
 
 /**
  * Contains a series of statements.
@@ -27,9 +28,9 @@ export default class CodeBlock extends Node {
          * `ScopeTransformer`, and all information in custom transformations
          * should be accessable through an `ASTTool`
          * 
-         * @type {Map}
+         * @type {Scope}
          */
-        this.scope = new Map();
+        this.scope = new Scope();
     }
     
     /** @override */
