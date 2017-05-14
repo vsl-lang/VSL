@@ -1,0 +1,11 @@
+import libc
+
+/**
+ * An integer. Defines as a 32-bit or 4-byte integer, use this for day-to-day
+ * numerical operations
+ */
+public class Int: SignedNumber<Int> {
+    public static func **(lhs: T, rhs: T) -> T llvm {
+        return pow(base: lhs as Double, power: rhs as Double)
+    }
+}

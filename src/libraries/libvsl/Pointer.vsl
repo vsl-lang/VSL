@@ -1,0 +1,28 @@
+/**
+ * A primitive class representing a low-level pointer object. The pointer class
+ * is an akward class in the sense it has a bunch of compiler glue to make it
+ * functional.
+ * 
+ * This definition only offers to specify the behavior of _functions_ of Pointer
+ * instances. No fields exist because the generated code for `Pointer<id>` is
+ * always `(id)*`.
+ */
+@noinit @unsafe
+public class Pointer<T> {
+
+    public func dereference() -> T llvm {
+    define <returnType> <name>(<returnType>*) alwaysinline {
+    entry:
+        %1 = load <returnType>, <returnType>* %0
+        ret %1
+    }   
+    }
+    
+    public func getptr(at: Int64) -> Pointer<T> llvm {
+    define <returnType> <name>(i64) alwaysinline {
+        %1 = getelementptr <returnType>, <returnType>, i64 %0
+        ret %1
+    }
+    }
+    
+}

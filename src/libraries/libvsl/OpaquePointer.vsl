@@ -1,0 +1,11 @@
+/**
+ * A primitive class representing a low-level pointer object. A type of pointer
+ * class which is an akward class in the sense it has a bunch of compiler glue
+ * to make it functional.
+ * 
+ * This refers a generic struct of an unknown type.
+ */
+
+public class OpaquePointer {
+    
+}

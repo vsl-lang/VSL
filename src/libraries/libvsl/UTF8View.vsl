@@ -1,0 +1,29 @@
+/**
+ * Browses a string with the UTF-8 encoding
+ */
+public class UTF8View: String {
+    
+    // Internally holds the string
+    private let string: String
+    
+    /**
+     * Constructs a UTF8View of a given string. This is the best way and fastest
+     * way to initalize this
+     */
+    public init(of string: String) {
+        self.string = string
+    }
+    
+    /**
+     * Determines the length of a string
+     */
+    public var length: Int {
+        return strlen(cstring: self.string.cString)
+        // var counter: Int = 0
+        // for glyph in self.glyphs {
+        //     counter += 1
+        // }
+        // return counter
+    }
+
+}

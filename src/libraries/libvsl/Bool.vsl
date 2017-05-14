@@ -1,0 +1,7 @@
+/**
+ * Represents a true or false value. Internally an `i1`.
+ */
+public class Bool {
+}
+
+public typealias Boolean = Bool;
