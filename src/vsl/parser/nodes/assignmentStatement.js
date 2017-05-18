@@ -33,6 +33,6 @@ export default class AssignmentStatement extends Node {
     
     /** @override */
     get children() {
-        return ['lhs', 'rhs'];
+        return ['identifier', 'value'];
     }
 }

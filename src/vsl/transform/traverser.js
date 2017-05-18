@@ -1,11 +1,35 @@
 import Node from '../parser/nodes/node';
 
 /**
- * Traverses the AST.
+ * Traverses the AST. The backbone of transformers and other times. If you ever
+ * need to climb the AST of unknown types, use this. Do note that if you're
+ * dealing with a transformation, that does already have a `Transformer` (which
+ * is a subclass of this), so you might not need a subclass of this. 
+ * 
+ * Subclassing is easy, check the API, but the most likely method you want to 
+ * override is `receivedNode` which gets the parent, and name, you can get the
+ * node then using `parent[name]`. Both values are passed as if the node is
+ * changed you can still obtain a reference to it. Again, it's reccomended to
+ * try to use `ASTTool` and modify your transformations before creating a
+ * traverser objects as the queue generation is blocking and GC iterations can
+ * be slow as they need to iterate yet again.
  * 
  * @abstract
  */
 export default class Traverser {
+    
+    /**
+     * Instantiates a traverser object. Note: This must be subclassed to be
+     * used. See {@link Transformer} or {@link ASTGarbageCollector} for more
+     * information.
+     * 
+     * @param {boolean} shouldProcess - Whether or not the node should be setup
+     *     with special data. (Note: if false, only assume the raw node will be
+     *     passed.)
+     */
+    constructor(shouldProcess: boolean = true) {
+        this.shouldProcess = shouldProcess;
+    }
     
     /**
      * Queues an AST to be traversed, this in turn calls the abstract function
@@ -48,10 +72,11 @@ export default class Traverser {
              
              if (children) {
                 for (let i = 0; i < children.length; i++) {
-                    name = children[i]
-                    child = ast[ name ];
+                    name = children[i];
                     
                     this.processNode(ast, name);
+                    
+                    child = ast[ name ];
                     
                     if (child != null) this.queue(child, ast);
                     
@@ -68,18 +93,21 @@ export default class Traverser {
      * @private
      */
     processNode(parent: any, name: string) {
-        
-        if (process.env.VSL_ENV === "dev_debug") {
-            console.log("-- Received Node --");
-            console.log("Parent: ", parent);
-            console.log("Name: ", name);
-            console.log("Node: ", parent[name]);
-            console.log("Scope: ", this.scope);
-            console.log("\n\n");
-        }
-        
         let node = parent[name];
-        if (node) node.parentNode = parent;
+        
+        if (this.shouldProcess) {
+            if (process.env.VSL_ENV === "dev_debug") {
+                console.log("-- Received Node --");
+                console.log("Parent: ", parent.constructor.name);
+                console.log("Name: ", name);
+                console.log("Exists: ", !!(parent[name]));
+                // console.log("Node: ", parent[name]);
+                // console.log("Scope: ", this.scope);
+                console.log("\n\n");
+            }
+            
+            if (node) node.parentNode = parent;
+        }
         
         if (node instanceof Node) this.receivedNode(parent, name);
     }

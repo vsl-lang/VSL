@@ -25,12 +25,18 @@ export default class ASTTool {
      * 
      * @private
      */
-    constructor(parent: Node | Node[], name: any) {
+    constructor(parent: Node | Node[], name: any, transformer: Transformer) {
         /** @private */
         this.parent = parent;
         
         /** @private */
         this.name = name;
+        
+        /** @private */
+        this.fragment = parent[name];
+        
+        /** @private */
+        this.transformer = transformer;
 
         /** @private */
         this.replacement = null;
@@ -60,6 +66,49 @@ export default class ASTTool {
     }
     
     /**
+     * Transforms a node and then calls the callback when the transformation is
+     * finished executing. See {@link Transformer}'s `queueThen` for more
+     * information on what this does.
+     * 
+     * Note: `node` MUST BE a DIRECT child of the current node. If it is not,
+     * use `.queueThenDeep`.
+     * 
+     * This is merely a wrapper which makes execution simpler.
+     * 
+     * @param {Node|Node[]} node - The node(s) to be processed and queued.
+     * @param {?Transformation} transformation - The desired transformation to run
+     * @param {func()} callback - Called when the node is processed
+     */
+    queueThen(node: node, transformation: ?Transformation) {
+        this.queueThenDeep(node, this.parent, this.name, transformation);
+    }
+    
+    /**
+     * Transforms a node and then calls the callback when the transformation is
+     * finished executing. See {@link Transformer}'s `queueThen` for more
+     * information on what this does.
+     * 
+     * This offers the ability to queue another but a direct child.
+     * 
+     * Alternatively, if `tranformation` is null, this will run all
+     * transformations.
+     * 
+     * @param {Node|Node[]} node - The node(s) to be processed and queued.
+     * @param {Node|Node[]} parent - The parent node of the given ast
+     * @param {any} name - The reference to the child relative to the parent.
+     * @param {?Transformation} transformation - The desired transformation to run
+     * @param {func()} callback - Called when the node is processed
+     */
+    queueThenDeep(node: Node, parent: parent, name: any, transformation: ?Transformation) {
+        if (transformation === null) {
+            this.transformer.transform(node, parent, name);
+        } else {
+            this.transformer.queueThen(node, parent, name, transformation);
+        }
+    }
+
+    
+    /**
      * Replaces the fragment with a new node.
      * 
      * ### Overview
@@ -75,5 +124,32 @@ export default class ASTTool {
         withNode.parentScope = this.parent[this.name].parentScope;
         withNode.parentNode = this.parent;
         this.parent[this.name] = withNode;
+    }
+    
+    /**
+     * Removed a fragment from tree. This does not remove the reference form the
+     * parent tree. 
+     * 
+     * NOTE: This invalidates the AST tool, it cannot be used anymore for
+     * functions which reference the exising node. Node's are tracked by their
+     * parent and position so further `replace` calls may work but will not be
+     * applicable for garbage colleciton by this method.
+     * 
+     * It should almost always be used after a `.replace` call or other calls
+     * which remove a node. If you do use a `.replace`, you'd usually want this
+     * as the last statement in your transformer.
+     */
+    gc() {
+        
+    }
+    
+    /**
+     * Notifies the scope that an identifier has been changed. This will
+     * automatically determine the changed node and will check with the fragment
+     * to determine what is the best way and if even at all the scope needs to
+     * be updated.
+     */
+    notifyScopeChange() {
+        // TODO: Unimplemented
     }
 }

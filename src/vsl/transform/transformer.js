@@ -50,13 +50,22 @@ export default class Transformer extends Traverser {
     constructor(passes: Transformation[]) {
         super();
         
-        /** @private */
+        /**
+         * Contains a list of all the transformations the transformer will use.
+         * 
+         * @type {Transformation[]}
+         */
         this.passes = passes;
         
         /** @private */
         this.time = null;
         
-        /** @private */
+        /**
+         * DO NOT directly modify. Use `queue` or such to modify. Exposed
+         * primarially for performance and GC reasons.
+         * 
+         * @type {Node[]}
+         */
         this.nodeQueue = [];
     }
     
@@ -82,32 +91,56 @@ export default class Transformer extends Traverser {
      
      /** @override */
      receivedNode(parent: Node | Node[], name: string) {
-         this.appendNodeQueue(parent, name)
+         if (this.haltSetPrepend)
+            this.prependNodeQueue(parent, name);
+        else
+            this.appendNodeQueue(parent, name);
      }
      
      /**
-      * Adds item to node queue
-      * @private
+      * Adds item to the end node queue (reccomended).
       */
-    appendNodeQueue(parent: Node | Node[], name: string) {
+    appendNodeQueue(parent: Node | Node[], name: string | number) {
+        parent[name].queueQualifier = this.nodeQueue.length;
+        
         this.nodeQueue.push([ parent[name], parent, name ]);
         this.didUpdateQueue()
-    }
-     
+    }     
      /**
       * Handles the queue items
       * @private
       */
     didUpdateQueue() {
         var value, node, parent, item;
-        while (value = this.nodeQueue.shift()) {
+        while ((value = this.nodeQueue.shift()) !== (void 0)) {
+            if (value === null) continue;
             [node, parent, item] = value;
             let result = this.transform(node, parent, item);
         }
     }
     
     /**
-     * Transform the AST according to the setup transformer. This is recursively
+     * Queues a given node for transformation.
+     * 
+     * This accepts a specific transformation which needs to be executed, and
+     * also required the parent node and the current node's name. It is
+     * reccomended to use ASTTool's interface
+     * 
+     * This is useful if your node has children which _must_ be processed before
+     * the current one is.
+     * 
+     * @param {Node|Node[]} node - The node(s) to be processed and queued.
+     * @param {Node|Node[]} parent - The parent node of the given ast
+     * @param {any} name - The reference to the child relative to the parent.
+     * @param {Transformation} transformation - The desired transformation to run
+     */
+    queueThen(node: Node, parent: parent, name: any, transformation: Transformation) {
+        this.transform_once(node, parent, name, transformation);
+    }
+    
+    /**
+     * Transform the AST accordi
+ng to the setup transformer. This is recursively
      * called and should never be called from within a transformer
      * 
      * @param {Node} ast - An AST as outputted by a `Parser`
@@ -151,8 +184,8 @@ export default class Transformer extends Traverser {
      */
     transform_once(ast: Node, parent: Node | Node[], name: any, pass: Transformation) {
         // Create the tool for modification
-        let astTool = new ASTTool(parent, name);
-        
+        let astTool = new ASTTool(parent, name, this);
+
         // Setup the transformation
         let transformation = new pass();
         let type = transformation.type

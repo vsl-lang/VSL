@@ -7,19 +7,21 @@ import Node from './node';
 export default class Type extends Node {
     
     constructor(
-        path: Identifier[],
+        path: Node[],
         optional: bool,
         position: Object
     ) {
         super(position);
         
-        /** @type {string} */
+        /** @type {Node[]} */
         this.path = path;
+        
+        /** @type {bool} */
         this.optional = optional;
     }
     
     /** @override */
     get children() {
-        return this.path ? [this.path[0]] : null;
+        return ['path'];
     }
 }

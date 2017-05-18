@@ -12,6 +12,8 @@ export default class VSLParser {
     
     feed(string: string) {
         let results = this.parser.feed(string);
-        return [results.results[0]];
+        if (results.results.length > 1)
+            throw 'ono ambiguity ;_;';
+        return results.results;
     }
 }

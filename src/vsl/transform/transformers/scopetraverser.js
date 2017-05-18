@@ -40,9 +40,6 @@ export default class ScopeTraverser extends Traverser {
         // Store the current scope for brevity
         const currentScope = this.scope[this.scope.length - 1];
         
-        currentScope
-        
-        
         // Set parent scope for transformers
         node.parentScope = currentScope || null;
     }

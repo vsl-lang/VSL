@@ -25,6 +25,19 @@ export default class Node {
          * @type {?(Node | Node[])}
          */
         this.parentNode = null;
+        
+        /**
+         * An integer representing the position within a queue to qualify the
+         * node for a GC pass when requested by a parent.
+         * 
+         * A {@link Transformer} will automatically do this.
+         * 
+         * If you set this, the ASTTool for the node should process with a
+         * transformer.
+         * 
+         * @type {?number}
+         */
+        this.queueQualifier = null;
     }
     
     /**

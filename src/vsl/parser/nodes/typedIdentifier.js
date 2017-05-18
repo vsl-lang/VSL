@@ -14,8 +14,9 @@ export default class TypedIdentifier extends Node {
     /**
      * Creates an identifier
      * 
-     * @param {string} identifier the identifier
-     * @param {Object} position a position from nearley
+     * @param {string} identifier - the identifier
+     * @param {Type} type - the type of the identifier
+     * @param {Object} position - a position from nearley
      */
     constructor (identifier: string, type: Type, position: Object) {
         super(position);

@@ -31,20 +31,20 @@ Literal -> %decimal {% literal %}
   | ImmutableDictionary {% id %}
   | Set {% id %}
 
-Array -> "[" "]" {% (d, l) => new t.ArrayNode([], l) %}
-  | "[" delimited[Expression, ","] "]" {% (d, l) => new t.ArrayNode(d[1], l) %}
+Array -> "[" "]" {% (d, l) => new t.Array([], l) %}
+  | "[" delimited[Expression, ","] "]" {% (d, l) => new t.Array(d[1], l) %}
 
-Dictionary -> "[" ":" "]" {% (d, l) => new t.DictionaryNode(new Map(), l) %}
-  | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.DictionaryNode(new Map(d[1]), l) %}
+Dictionary -> "[" ":" "]" {% (d, l) => new t.Dictionary(new Map(), l) %}
+  | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.Dictionary(new Map(d[1]), l) %}
 
-Tuple -> "(" ")" {% (d, l) => new t.TupleNode([], l) %}
-  | "(" delimited[Expression, ","] ")" {% (d, l) => new t.TupleNode(d[1], l) %}
+Tuple -> "(" ")" {% (d, l) => new t.Tuple([], l) %}
+  | "(" delimited[Expression, ","] ")" {% (d, l) => new t.Tuple(d[1], l) %}
 
-ImmutableDictionary -> "[" ":" "]" {% (d, l) => new t.ImmutableDictionaryNode(new Map(), l) %}
-  | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionaryNode(new Map(d[1]), l) %}
+ImmutableDictionary -> "[" ":" "]" {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
+  | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionary(new Map(d[1]), l) %}
 
-Set -> "{" "}" {% (d, l) => new t.SetNode([], l) %}
-  | "{" delimited[Expression, ","] "}" {% (d, l) => new t.SetNode(d[1], l) %}
+Set -> "{" "}" {% (d, l) => new t.Set([], l) %}
+  | "{" delimited[Expression, ","] "}" {% (d, l) => new t.Set(d[1], l) %}
 
 Key -> Identifier {% id %}
   | "[" Expression "]" {% nth(1) %}
@@ -64,7 +64,7 @@ BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryEx
 # Top level assignment
 BinaryExpression -> Ternary {% id %}
 
-Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], d[4], l) %}
+Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], d[4], l) %} | Assign {% id %}
 Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
 Is -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
