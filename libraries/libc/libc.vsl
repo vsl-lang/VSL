@@ -116,4 +116,3 @@ public func fopen(filename: CString, opentype: CString) -> FILE internal(fopen)
  *     is usually not good.
  */
 public func fclose(stream: FILE) -> Int internal(fclose)
-

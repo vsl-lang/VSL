@@ -40,6 +40,9 @@ export default class ASTTool {
 
         /** @private */
         this.replacement = null;
+        
+        /** @private */
+        this.sourceQualifier = this.fragment.queueQualifier;
     }
     
     /**
@@ -77,7 +80,6 @@ export default class ASTTool {
      * 
      * @param {Node|Node[]} node - The node(s) to be processed and queued.
      * @param {?Transformation} transformation - The desired transformation to run
-     * @param {func()} callback - Called when the node is processed
      */
     queueThen(node: node, transformation: ?Transformation) {
         this.queueThenDeep(node, this.parent, this.name, transformation);
@@ -97,7 +99,6 @@ export default class ASTTool {
      * @param {Node|Node[]} parent - The parent node of the given ast
      * @param {any} name - The reference to the child relative to the parent.
      * @param {?Transformation} transformation - The desired transformation to run
-     * @param {func()} callback - Called when the node is processed
      */
     queueThenDeep(node: Node, parent: parent, name: any, transformation: ?Transformation) {
         if (transformation === null) {
@@ -139,8 +140,11 @@ export default class ASTTool {
      * which remove a node. If you do use a `.replace`, you'd usually want this
      * as the last statement in your transformer.
      */
-    gc() {
+    gc(relativeQueueQualifier: number = this.sourceQualifier) {
+        if (relativeQueueQualifier === null) return;
+        if (this.transformer === null) return;
         
+        this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
     }
     
     /**

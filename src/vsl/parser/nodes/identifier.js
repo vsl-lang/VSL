@@ -27,4 +27,9 @@ export default class Identifier extends Node {
     get children() {
         return null;
     }
+    
+    /** @override */
+    toString() {
+        return this.identifier.id;
+    }
 }

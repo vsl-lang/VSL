@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 import VSLParser from '../vsl/parser/vslparser';
 import VSLTokenizer from '../vsl/parser/vsltokenizer';
+
+import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
+import ScopeTraverser from '../vsl/transform/transformers/scopetraverser';
 
 import readline from 'readline';
 import util from 'util';
@@ -90,7 +93,6 @@ if (argv.r) {
     }
     prompt();
     let feeding = false;
-    let transformer = new VSLTransformer();
     rl.on('line', function (input) {
         if (input === 'exit')
     		exit(rl.close());
@@ -109,17 +111,22 @@ if (argv.r) {
         }
         parser = new VSLParser();
     	let result = feed(input);
-    	transformer.queue(result.results);
+    	
+    	new ScopeTraverser().queue(result);
+        new VSLPreprocessor().queue(result);
+        new VSLTransformer().queue(result);
+
+    	
     	if (typeof result === 'undefined')
     	    return prompt();
     	// check if got any tokens at all
     	// i.e. skip if all comments or no input
     	if (result.tokens && result.length < 1) {
     	    feeding = true;
-    	    rl.setPrompt('>>>>>>>>>>>>> '.bold);
+    	    rl.setPrompt('>>>>>>>>>>>>>> '.bold);
     	    return rl.prompt();
     	}
-    	display(result);
+    	console.log(result[0].toString());
         prompt();
     });
 }

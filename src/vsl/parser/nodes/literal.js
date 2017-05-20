@@ -35,4 +35,9 @@ export default class Literal extends Node {
     get children() {
         return null;
     }
+    
+    /** @override */
+    toString() {
+        return this.literal;
+    }
 }

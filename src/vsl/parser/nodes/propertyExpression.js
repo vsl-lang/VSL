@@ -35,4 +35,9 @@ export default class PropertyExpression extends Node {
     get children () {
         return ['head', 'tail'];
     }
+    
+    /** @override */
+    toString() {
+        return `(${this.head}).${this.tail.join(".")}`
+    }
 }

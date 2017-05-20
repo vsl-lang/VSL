@@ -43,4 +43,9 @@ export default class FunctionStatement extends Node {
     get children() {
         return ['name', 'args', 'returnType', 'statements'];
     }
+    
+    /** @override */
+    toString() {
+        return `${this.access.join(" ")}${this.access.length ? " " : ""}func ${this.name.identifier.id}(${this.args.join(", ")})${this.returnType ? " -> " + this.returnType : ""} ${this.statements}`
+    }
 }

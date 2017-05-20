@@ -35,4 +35,11 @@ export default class AssignmentStatement extends Node {
     get children() {
         return ['identifier', 'value'];
     }
+    
+    /** @override */
+    toString() {
+        return (this.type === 0 ? "var" : "let") +
+            ` ${this.identifier}` +
+            (this.value ? " = " + this.value : "");
+    }
 }
