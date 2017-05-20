@@ -1,0 +1,739 @@
+public enum CURLOption: Int {
+    /** set an abstract Unix domain socket */
+    case abstractUnixSocket
+    
+    /** timeout waiting for FTP server to connect back */
+    case accepttimeoutMs
+    
+    /** enables automatic decompression of HTTP downloads */
+    case acceptEncoding
+    
+    /** set scope for local IPv6 addresses */
+    case addressScope
+    
+    /** enable appending to the remote file */
+    case append
+    
+    /** automatically update the referer header */
+    case autoreferer
+    
+    /** set preferred receive buffer size */
+    case buffersize
+    
+    /** path to Certificate Authority (CA) bundle */
+    case cainfo
+    
+    /** specify directory holding CA certificates */
+    case capath
+    
+    /** request SSL certificate information */
+    case certinfo
+    
+    /** callback before a transfer with FTP wildcardmatch */
+    case chunkBgnFunction
+    
+    /** custom pointer to the FTP chunk callbacks */
+    case chunkData
+    
+    /** callback after a transfer with FTP wildcardmatch */
+    case chunkEndFunction
+    
+    /** pointer passed to the socket close callback */
+    case closeSocketData
+    
+    /** callback to socket close replacement function */
+    case closeSocketFunction
+    
+    /** timeout for the connect phase */
+    case connectTimeout
+    
+    /** timeout for the connect phase */
+    case connectTimeoutMs
+    
+    /** stop when connected to target server */
+    case connectOnly
+    
+    /** Connect to a specific host and port instead of the URL's host and port */
+    case connectTo
+    
+    /** convert data from network to host encoding */
+    case convFromNetworkFunction
+    
+    /** convert data from UTF8 to host encoding */
+    case convFromUtf8Function
+    
+    /** convert data to network from host encoding */
+    case convToNetworkFunction
+    
+    /** set contents of HTTP Cookie header */
+    case cookie
+    
+    /** file name to read cookies from */
+    case cookieFile
+    
+    /** file name to store cookies to */
+    case cookieJar
+    
+    /** add to or manipulate cookies held in memory */
+    case cookieList
+    
+    /** start a new cookie session */
+    case cookieSession
+    
+    /** have libcurl copy data to POST */
+    case copyPostFields
+    
+    /** enable/disable CRLF conversion */
+    case crlf
+    
+    /** specify a Certificate Revocation List file */
+    case crlFile
+    
+    /** custom string for request */
+    case customRequest
+    
+    /** custom pointer for debug callback */
+    case debugData
+    
+    /** debug callback */
+    case debugFunction
+    
+    /** default protocol to use if the URL is missing a */
+    case defaultProtocol
+    
+    /** ask for names only in a directory listing */
+    case dirListonly
+    
+    /** set life-time for DNS cache entries */
+    case dnsCacheTimeout
+    
+    /** set interface to speak DNS over */
+    case dnsInterface
+    
+    /** IPv4 address to bind DNS resolves to */
+    case dnsLocalIp4
+    
+    /** IPv6 address to bind DNS resolves to */
+    case dnsLocalIp6
+    
+    /** set preferred DNS servers */
+    case dnsServers
+    
+    /** enable/disable global DNS cache */
+    case dnsUseGlobalCache
+    
+    /** set EGD socket path */
+    case egdSocket
+    
+    /** set error buffer for error messages */
+    case errorBuffer
+    
+    /** timeout for Expect: 100-continue response */
+    case expect100TimeoutMs
+    
+    /** request failure on HTTP response >= 400 */
+    case failOnError
+    
+    /** get the modification time of the remote resource */
+    case fileTime
+    
+    /** custom pointer to fnmatch callback */
+    case fnMatchData
+    
+    /** wildcard matching function callback */
+    case fnMatchFunction
+    
+    /** follow HTTP 3xx redirects */
+    case followLocation
+    
+    /** make connection get closed at once after use */
+    case forbidReuse
+    
+    /** force a new connection to be used */
+    case freshConnect
+    
+    /** make FTP transfer active */
+    case ftpPort
+    
+    /** set order in which to attempt TLS vs SSL when using FTP */
+    case ftpSslAuth
+    
+    /** set account info for FTP */
+    case ftpAccount
+    
+    /** command to use instead of USER with FTP */
+    case ftpAlternativeToUser
+    
+    /** create missing dirs for FTP and SFTP */
+    case ftpCreateMissingDirs
+    
+    /** select directory traversing method for FTP */
+    case ftpFilemethod
+    
+    /** time allowed to wait for FTP response */
+    case ftpResponseTimeout
+    
+    /** ignore the IP address in the PASV response */
+    case ftpSkipPasvIp
+    
+    /** switch off SSL again with FTP after auth */
+    case ftpSslCcc
+    
+    /** enable/disable use of EPRT with FTP */
+    case ftpUseEprt
+    
+    /** enable/disable use of EPSV */
+    case ftpUseEpsv
+    
+    /** enable the PRET command */
+    case ftpUsePret
+    
+    /** set allowed GSS-API delegation */
+    case gssApiDelegation
+    
+    /** pass headers to the data stream */
+    case header
+    
+    /** pointer to pass to header callback */
+    case headerData
+    
+    /** callback that receives header data */
+    case headerFunction
+    
+    /** set how to send HTTP headers */
+    case headerOpt
+    
+    /** specify alternative matches for HTTP 200 OK */
+    case http200aliases
+    
+    /** set HTTP server authentication methods to try */
+    case httpAuth
+    
+    /** ask for a HTTP GET request */
+    case httpGet
+    
+    /** set custom HTTP headers */
+    case httpHeader
+    
+    /** specify the multipart formpost content */
+    case httpPost
+    
+    /** tunnel through HTTP proxy */
+    case httpProxyTunnel
+    
+    /** enable/disable HTTP content decoding */
+    case httpContentDecoding
+    
+    /** enable/disable HTTP transfer decoding */
+    case httpTransferDecoding
+    
+    /** specify HTTP protocol version to use */
+    case httpVersion
+    
+    /** ignore content length */
+    case ignoreContentLength
+    
+    /** set size of the input file to send off */
+    case infileSize
+    
+    /** set size of the input file to send off */
+    case infileSizeLarge
+    
+    /** source interface for outgoing traffic */
+    case interface
+    
+    /** custom pointer to RTSP interleave callback */
+    case interleaveData
+    
+    /** callback function for RTSP interleaved data */
+    case interleaveFunction
+    
+    /** custom pointer passed to I/O callback */
+    case ioCtlData
+    
+    /** callback for I/O operations */
+    case ioCtlFunction
+    
+    /** specify which IP protocol version to use */
+    case ipResolve
+    
+    /** issuer SSL certificate filename */
+    case issuerCert
+    
+    /** keep sending on early HTTP response >= 300 */
+    case keepSendingOnError
+    
+    /** set passphrase to private key */
+    case keyPasswd
+    
+    /** set FTP kerberos security level */
+    case krbLevel
+    
+    /** set local port number to use for socket */
+    case localPort
+    
+    /** number of additional local ports to try */
+    case localPortRange
+    
+    /** set login options */
+    case loginOptions
+    
+    /** set low speed limit in bytes per second */
+    case lowSpeedLimit
+    
+    /** set low speed limit time period */
+    case lowSpeedTime
+    
+    /** SMTP authentication address */
+    case mailAuth
+    
+    /** SMTP sender address */
+    case mailFrom
+    
+    /** list of SMTP mail recipients */
+    case mailRcpt
+    
+    /** maximum connection cache size */
+    case maxConnects
+    
+    /** maximum file size allowed to download */
+    case maxFileSize
+    
+    /** maximum file size allowed to download */
+    case maxFileSizeLarge
+    
+    /** maximum number of redirects allowed */
+    case maxRedirs
+    
+    /** rate limit data download speed */
+    case maxRecvSpeedLarge
+    
+    /** rate limit data upload speed */
+    case maxSendSpeedLarge
+    
+    /** request that .netrc is used */
+    case netrc
+    
+    /** file name to read .netrc info from */
+    case netrcFile
+    
+    /** permissions for remotely created directories */
+    case newDirectoryPerms
+    
+    /** permissions for remotely created files */
+    case newFilePerms
+    
+    /** do the download request without getting the body */
+    case noBody
+    
+    /** switch off the progress meter */
+    case noProgress
+    
+    /** disable proxy use for specific hosts */
+    case noProxy
+    
+    /** skip all signal handling */
+    case noSignal
+    
+    /** custom pointer passed to open socket callback */
+    case openSocketData
+    
+    /** set callback for opening sockets */
+    case openSocketFunction
+    
+    /** password to use in authentication */
+    case password
+    
+    /** do not handle dot dot sequences */
+    case pathAsIs
+    
+    /** set pinned public key */
+    case pinnedPublicKey
+    
+    /** wait for pipelining/multiplexing */
+    case pipeWait
+    
+    /** set remote port number to work with */
+    case port
+    
+    /** request a HTTP POST */
+    case post
+    
+    /** specify data to POST to server */
+    case postFields
+    
+    /** size of POST data pointed to */
+    case postFieldSize
+    
+    /** size of POST data pointed to */
+    case postFieldSizeLarge
+    
+    /** (S)FTP commands to run after the transfer */
+    case postQuote
+    
+    /** how to act on a HTTP POST redirect */
+    case postRedir
+    
+    /** commands to run before FTP or SFTP transfer */
+    case preQuote
+    
+    /** set pre-proxy to use */
+    case preProxy
+    
+    /** store a private pointer */
+    case privatePtr
+    
+    /** custom pointer passed to the progress callback */
+    case progressData
+    
+    /** callback to progress meter function */
+    case progressFunction
+    
+    /** set allowed protocols */
+    case protocols
+    
+    /** set proxy to use */
+    case proxy
+    
+    /** set HTTP proxy authentication methods to try */
+    case proxyAuth
+    
+    /** custom HTTP headers to pass to proxy */
+    case proxyHeader
+    
+    /** password to use with proxy authentication */
+    case proxyPassword
+    
+    /** port number the proxy listens on */
+    case proxyPort
+    
+    /** proxy protocol type */
+    case proxyType
+    
+    /** user name to use for proxy authentication */
+    case proxyUsername
+    
+    /** user name and password to use for proxy authentication */
+    case proxyUserPwd
+    
+    /** path to proxy Certificate Authority (CA) bundle */
+    case proxyCaInfo
+    
+    /** specify directory holding proxy CA certificates */
+    case proxyCaPath
+    
+    /** specify a proxy Certificate Revocation List file */
+    case proxyCrlFile
+    
+    /** set passphrase to proxy private key */
+    case proxyKeyPasswd
+    
+    /** set pinned public key for https proxy */
+    case proxyPinnedPublicKey
+    
+    /** proxy authentication service name */
+    case proxyServiceName
+    
+    /** set SSL proxy client certificate */
+    case proxySslCert
+    
+    /** specify type of the proxy client SSL certificate */
+    case proxySslCertType
+    
+    /** specify private keyfile for TLS and SSL proxy client cert */
+    case proxySslKey
+    
+    /** set type of the proxy private key file */
+    case proxySslKeyType
+    
+    /** set preferred proxy TLS/SSL version */
+    case proxySslVersion
+    
+    /** specify ciphers to use for proxy TLS */
+    case proxySslCipherList
+    
+    /** set proxy SSL behavior options */
+    case proxySslOptions
+    
+    /** verify the proxy certificate's name against host */
+    case proxySslVerifyHost
+    
+    /** verify the proxy's SSL certificate */
+    case proxySslVerifyPeer
+    
+    /** password to use for proxy TLS authentication */
+    case proxyTlsAuthPassword
+    
+    /** set proxy TLS authentication methods */
+    case proxyTlsAuthType
+    
+    /** user name to use for proxy TLS authentication */
+    case proxyTlsAuthUsername
+    
+    /** append FTP transfer mode to URL for proxy */
+    case proxyTransferMode
+    
+    /** make a HTTP PUT request */
+    case put
+    
+    /** (S)FTP commands to run before transfer */
+    case quote
+    
+    /** specify a source for random data */
+    case randomFile
+    
+    /** set byte range to request */
+    case range
+    
+    /** custom pointer passed to the read callback */
+    case readData
+    
+    /** read callback for data uploads */
+    case readFunction
+    
+    /** set protocols allowed to redirect to */
+    case redirProtocols
+    
+    /** set the HTTP referer header */
+    case referer
+    
+    /** provide custom host name to IP address resolves */
+    case resolve
+    
+    /** set a point to resume transfer from */
+    case resumeFrom
+    
+    /** set a point to resume transfer from */
+    case resumeFromLarge
+    
+    /** set the RTSP client CSEQ number */
+    case rtspClientCseq
+    
+    /** specify RTSP request */
+    case rtspRequest
+    
+    /** set the RTSP server CSEQ number */
+    case rtspServerCseq
+    
+    /** set RTSP session ID */
+    case rtspSessionId
+    
+    /** set RTSP stream URI */
+    case rtspStreamUri
+    
+    /** set RTSP Transport: header */
+    case rtspTransport
+    
+    /** enable sending initial response in first packet */
+    case saslIr
+    
+    /** custom pointer passed to the seek callback */
+    case seekData
+    
+    /** user callback for seeking in input stream */
+    case seekFunction
+    
+    /** authentication service name */
+    case serviceName
+    
+    /** specify share handle to use */
+    case share
+    
+    /** custom pointer to pass to sockopt callback */
+    case sockOptData
+    
+    /** set callback for setting socket options */
+    case sockOptFunction
+    
+    /** set socks proxy gssapi negotiation protection */
+    case socks5GssApiNec
+    
+    /** SOCKS5 proxy authentication service name */
+    case socks5GssApiService
+    
+    /** set desired auth types for SFTP and SCP */
+    case sshAuthTypes
+    
+    /** checksum of SSH server public key */
+    case sshHostPublicKeyMd5
+    
+    /** pointer to pass to the SSH key callback */
+    case sshKeyData
+    
+    /** callback for known host matching logic */
+    case sshKeyFunction
+    
+    /** file name holding the SSH known hosts */
+    case sshKnownHosts
+    
+    /** set private key file for SSH auth */
+    case sshPrivateKeyFile
+    
+    /** set public key file for SSH auth */
+    case sshPublicKeyFile
+    
+    /** set SSL client certificate */
+    case sslCert
+    
+    /** specify type of the client SSL certificate */
+    case sslCertType
+    
+    /** set SSL engine identifier */
+    case sslEngine
+    
+    /** make SSL engine default */
+    case sslEngineDefault
+    
+    /** specify private keyfile for TLS and SSL client cert */
+    case sslKey
+    
+    /** set type of the private key file */
+    case sslKeyType
+    
+    /** set preferred TLS/SSL version */
+    case sslVersion
+    
+    /** specify ciphers to use for TLS */
+    case sslCipherList
+    
+    /** custom pointer passed to ssl_ctx callback */
+    case sslCtxData
+    
+    /** SSL context callback for OpenSSL, wolfSSL/CyaSSL or mbedTLS */
+    case sslCtxFunction
+    
+    /** enable ALPN */
+    case sslEnableAlpn
+    
+    /** enable NPN */
+    case sslEnableNpn
+    
+    /** enable TLS false start */
+    case sslFalsestart
+    
+    /** set SSL behavior options */
+    case sslOptions
+    
+    /** enable/disable use of the SSL session-ID cache */
+    case sslSessionidCache
+    
+    /** verify the certificate's name against host */
+    case sslVerifyhost
+    
+    /** verify the peer's SSL certificate */
+    case sslVerifypeer
+    
+    /** verify the certificate's status */
+    case sslVerifystatus
+    
+    /** redirect stderr to another stream */
+    case stderr
+    
+    /** set stream this transfer depends on */
+    case streamDepends
+    
+    /** set stream this transfer depends on execlusively */
+    case streamDependsE
+    
+    /** set numerical stream weight */
+    case streamWeight
+    
+    /** Suppress proxy CONNECT response headers from user callbacks */
+    case suppressConnectHeaders
+    
+    /** enable TCP Fast Open */
+    case tcpFastopen
+    
+    /** enable TCP keep-alive probing */
+    case tcpKeepalive
+    
+    /** set TCP keep-alive idle time wait */
+    case tcpKeepidle
+    
+    /** set TCP keep-alive interval */
+    case tcpKeepintvl
+    
+    /** set the TCP_NODELAY option */
+    case tcpNodelay
+    
+    /** custom telnet options */
+    case telnetoptions
+    
+    /** TFTP block size */
+    case tftpBlksize
+    
+    /** Do not send TFTP options requests. */
+    case tftpNoOptions
+    
+    /** select condition for a time request */
+    case timecondition
+    
+    /** set maximum time the request is allowed to take */
+    case timeout
+    
+    /** set maximum time the request is allowed to take */
+    case timeoutMs
+    
+    /** set time value for conditional */
+    case timevalue
+    
+    /** password to use for TLS authentication */
+    case tlsauthPassword
+    
+    /** set TLS authentication methods */
+    case tlsauthType
+    
+    /** user name to use for TLS authentication */
+    case tlsauthUsername
+    
+    /** request a text based transfer for FTP */
+    case transfertext
+    
+    /** ask for HTTP Transfer Encoding */
+    case transferEncoding
+    
+    /** set Unix domain socket */
+    case unixSocketPath
+    
+    /** send credentials to other hosts too */
+    case unrestrictedAuth
+    
+    /** enable data upload */
+    case upload
+    
+    /** provide the URL to use in the request */
+    case url
+    
+    /** set HTTP user-agent header */
+    case userAgent
+    
+    /** user name to use in authentication */
+    case username
+    
+    /** user name and password to use in authentication */
+    case userpwd
+    
+    /** request using SSL / TLS for the transfer */
+    case useSsl
+    
+    /** set verbose mode on/off */
+    case verbose
+    
+    /** enable directory wildcard transfers */
+    case wildcardMatch
+    
+    /** custom pointer passed to the write callback */
+    case writeData
+    
+    /** set callback for writing received data */
+    case writeFunction
+    
+    /** custom pointer passed to the progress callback */
+    case xferInfoData
+    
+    /** callback to progress meter function */
+    case xferInfoFunction
+    
+    /** specify OAuth 2.0 access token */
+    case xoauth2Bearer
+}

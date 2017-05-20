@@ -1,0 +1,8 @@
+/**
+ * Itself refers to a 8-bit integer. If you want to store a byte use `Byte` or
+ * `UInt8`. Ususually this doesn't have any significant use but you can still
+ * use
+ */
+public class Int8: SignedNumber<Int8> {
+
+}

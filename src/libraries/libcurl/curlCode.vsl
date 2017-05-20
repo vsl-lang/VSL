@@ -1,0 +1,475 @@
+public enum CURLCode: Int {
+    /**
+     * All fine. Proceed as usual.
+     */
+    case ok
+
+    /**
+     * The URL you passed to libcurl used a protocol that this libcurl does not 
+     * support. The support might be a compile-time option that you didn't use, 
+     * it can be a misspelled protocol string or just a protocol libcurl has no 
+     * code for.
+     */
+    case unsupportedProtocol
+
+    /**
+     * Very early initialization code failed. This is likely to be an internal e
+     * rror or problem, or a resource problem where something fundamental couldn
+     * 't get done at init time.
+     */
+    case failedInit
+
+    /**
+     * The URL was not properly formatted.
+     */
+    case urlMalformat
+
+    /**
+     * A requested feature, protocol or option was not found built-in in this li
+     * bcurl due to a build-time decision. This means that a feature or option w
+     * as not enabled or explicitly disabled when libcurl was built and in order
+     *  to get it to function you have to get a rebuilt libcurl.
+     */
+    case notBuiltIn
+
+    /**
+     * Couldn't resolve proxy. The given proxy host could not be resolved.
+     */
+    case couldntResolveProxy
+
+    /**
+     * Couldn't resolve host. The given remote host was not resolved.
+     */
+    case couldntResolveHost
+
+    /**
+     * Failed to connect() to host or proxy.
+     */
+    case couldntConnect
+
+    /**
+     * The server sent data libcurl couldn't parse. This error code is used for 
+     * more than just FTP and is aliased as CURLE_WEIRD_SERVER_REPLY since 7.51.
+     * 0.
+     */
+    case ftpWeirdServerReply
+
+    /**
+     * We were denied access to the resource given in the URL. For FTP, this occ
+     * urs while trying to change to the remote directory.
+     */
+    case remoteAccessDenied
+
+    /**
+     * While waiting for the server to connect back when an active FTP session i
+     * s used, an error code was sent over the control connection or similar.
+     */
+    case ftpAcceptFailed
+
+    /**
+     * After having sent the FTP password to the server, libcurl expects a prope
+     * r reply. This error code indicates that an unexpected code was returned.
+     */
+    case ftpWeirdPassReply
+
+    /**
+     * During an active FTP session while waiting for the server to connect, the
+     *  CURLOPT_ACCEPTTIMEOUT_MS (or the internal default) timeout expired.
+     */
+    case ftpAcceptTimeout
+
+    /**
+     * libcurl failed to get a sensible result back from the server as a respons
+     * e to either a PASV or a EPSV command. The server is flawed.
+     */
+    case ftpWeirdPasvReply
+
+    /**
+     * FTP servers return a 227-line as a response to a PASV command. If libcurl
+     *  fails to parse that line, this return code is passed back.
+     */
+    case ftpWeird227Format
+
+    /**
+     * An internal failure to lookup the host used for the new connection.
+     */
+    case ftpCantGetHost
+
+    /**
+     * A problem was detected in the HTTP2 framing layer. This is somewhat gener
+     * ic and can be one out of several problems, see the error buffer for detai
+     * ls.
+     */
+    case http2
+
+    /**
+     * Received an error when trying to set the transfer mode to binary or ASCII
+     * .
+     */
+    case ftpCouldntSetType
+
+    /**
+     * A file transfer was shorter or larger than expected. This happens when th
+     * e server first reports an expected transfer size, and then delivers data 
+     * that doesn't match the previously given size.
+     */
+    case partialFile
+
+    /**
+     * This was either a weird reply to a 'RETR' command or a zero byte transfer
+     *  complete.
+     */
+    case ftpCouldntRetrFile
+
+    /**
+     * When sending custom "QUOTE" commands to the remote server, one of the com
+     * mands returned an error code that was 400 or higher (for FTP) or otherwis
+     * e indicated unsuccessful completion of the command.
+     */
+    case quoteError
+
+    /**
+     * This is returned if CURLOPT_FAILONERROR is set TRUE and the HTTP server r
+     * eturns an error code that is >= 400.
+     */
+    case httpReturnedError
+
+    /**
+     * An error occurred when writing received data to a local file, or an error
+     *  was returned to libcurl from a write callback.
+     */
+    case writeError
+
+    /**
+     * Failed starting the upload. For FTP, the server typically denied the STOR
+     *  command. The error buffer usually contains the server's explanation for 
+     * this.
+     */
+    case uploadFailed
+
+    /**
+     * There was a problem reading a local file or an error returned by the read
+     *  callback.
+     */
+    case readError
+
+    /**
+     * A memory allocation request failed. This is serious badness and things ar
+     * e severely screwed up if this ever occurs.
+     */
+    case outOfMemory
+
+    /**
+     * Operation timeout. The specified time-out period was reached according to
+     *  the conditions.
+     */
+    case operationTimedOut
+
+    /**
+     * The FTP PORT command returned error. This mostly happens when you haven't
+     *  specified a good enough address for libcurl to use. See CURLOPT_FTPPORT.
+     */
+    case ftpPortFailed
+
+    /**
+     * The FTP REST command returned error. This should never happen if the serv
+     * er is sane.
+     */
+    case ftpCouldntUseRest
+
+    /**
+     * The server does not support or accept range requests.
+     */
+    case rangeError
+
+    /**
+     * This is an odd error that mainly occurs due to internal confusion.
+     */
+    case httpPostError
+
+    /**
+     * A problem occurred somewhere in the SSL/TLS handshake. You really want th
+     * e error buffer and read the message there as it pinpoints the problem sli
+     * ghtly more. Could be certificates (file formats, paths, permissions), pas
+     * swords, and others.
+     */
+    case sslConnectError
+
+    /**
+     * The download could not be resumed because the specified offset was out of
+     *  the file boundary.
+     */
+    case badDownloadResume
+
+    /**
+     * A file given with FILE:// couldn't be opened. Most likely because the fil
+     * e path doesn't identify an existing file. Did you check file permissions?
+     */
+    case fileCouldntReadFile
+
+    /**
+     * LDAP cannot bind. LDAP bind operation failed.
+     */
+    case ldapCannotBind
+
+    /**
+     * LDAP search failed.
+     */
+    case ldapSearchFailed
+
+    /**
+     * Function not found. A required zlib function was not found.
+     */
+    case functionNotFound
+
+    /**
+     * Aborted by callback. A callback returned "abort" to libcurl.
+     */
+    case abortedByCallback
+
+    /**
+     * Internal error. A function was called with a bad parameter.
+     */
+    case badFunctionArgument
+
+    /**
+     * Interface error. A specified outgoing interface could not be used. Set wh
+     * ich interface to use for outgoing connections' source IP address with CUR
+     * LOPT_INTERFACE.
+     */
+    case interfaceFailed
+
+    /**
+     * Too many redirects. When following redirects, libcurl hit the maximum amo
+     * unt. Set your limit with CURLOPT_MAXREDIRS.
+     */
+    case tooManyRedirects
+
+    /**
+     * An option passed to libcurl is not recognized/known. Refer to the appropr
+     * iate documentation. This is most likely a problem in the program that use
+     * s libcurl. The error buffer might contain more specific information about
+     *  which exact option it concerns.
+     */
+    case unknownOption
+
+    /**
+     * A telnet option string was Illegally formatted.
+     */
+    case telnetOptionSyntax
+
+    /**
+     * The remote server's SSL certificate or SSH md5 fingerprint was deemed not
+     *  OK.
+     */
+    case peerFailedVerification
+
+    /**
+     * Nothing was returned from the server, and under the circumstances, gettin
+     * g nothing is considered an error.
+     */
+    case gotNothing
+
+    /**
+     * The specified crypto engine wasn't found.
+     */
+    case sslEngineNotFound
+
+    /**
+     * Failed setting the selected SSL crypto engine as default!
+     */
+    case sslEngineSetFailed
+
+    /**
+     * Failed sending network data.
+     */
+    case sendError
+
+    /**
+     * Failure with receiving network data.
+     */
+    case recvError
+
+    /**
+     * problem with the local client certificate.
+     */
+    case sslCertProblem
+
+    /**
+     * Couldn't use specified cipher.
+     */
+    case sslCipher
+
+    /**
+     * Peer certificate cannot be authenticated with known CA certificates.
+     */
+    case sslCacert
+
+    /**
+     * Unrecognized transfer encoding.
+     */
+    case badContentEncoding
+
+    /**
+     * Invalid LDAP URL.
+     */
+    case ldapInvalidUrl
+
+    /**
+     * Maximum file size exceeded.
+     */
+    case filesizeExceeded
+
+    /**
+     * Requested FTP SSL level failed.
+     */
+    case useSslFailed
+
+    /**
+     * When doing a send operation curl had to rewind the data to retransmit, bu
+     * t the rewinding operation failed.
+     */
+    case sendFailRewind
+
+    /**
+     * Initiating the SSL Engine failed.
+     */
+    case sslEngineInitFailed
+
+    /**
+     * The remote server denied curl to login (Added in 7.13.1)
+     */
+    case loginDenied
+
+    /**
+     * File not found on TFTP server.
+     */
+    case tftpNotFound
+
+    /**
+     * Permission problem on TFTP server.
+     */
+    case tftpPerm
+
+    /**
+     * Out of disk space on the server.
+     */
+    case remoteDiskFull
+
+    /**
+     * Illegal TFTP operation.
+     */
+    case tftpIllegal
+
+    /**
+     * Unknown TFTP transfer ID.
+     */
+    case tftpUnknownId
+
+    /**
+     * File already exists and will not be overwritten.
+     */
+    case remoteFileExists
+
+    /**
+     * This error should never be returned by a properly functioning TFTP server
+     * .
+     */
+    case tftpNoSuchUser
+
+    /**
+     * Character conversion failed.
+     */
+    case convFailed
+
+    /**
+     * Caller must register conversion callbacks.
+     */
+    case convReqd
+
+    /**
+     * Problem with reading the SSL CA cert (path? access rights?)
+     */
+    case sslCacertBadfile
+
+    /**
+     * The resource referenced in the URL does not exist.
+     */
+    case remoteFileNotFound
+
+    /**
+     * An unspecified error occurred during the SSH session.
+     */
+    case ssh
+
+    /**
+     * Failed to shut down the SSL connection.
+     */
+    case sslShutdownFailed
+
+    /**
+     * Socket is not ready for send/recv wait till it's ready and try again. Thi
+     * s return code is only returned from curl_easy_recv and curl_easy_send (Ad
+     * ded in 7.18.2)
+     */
+    case again
+
+    /**
+     * Failed to load CRL file (Added in 7.19.0)
+     */
+    case sslCrlBadfile
+
+    /**
+     * Issuer check failed (Added in 7.19.0)
+     */
+    case sslIssuerError
+
+    /**
+     * The FTP server does not understand the PRET command at all or does not su
+     * pport the given argument. Be careful when using CURLOPT_CUSTOMREQUEST, a 
+     * custom LIST command will be sent with PRET CMD before PASV as well. (Adde
+     * d in 7.20.0)
+     */
+    case ftpPretFailed
+
+    /**
+     * Mismatch of RTSP CSeq numbers.
+     */
+    case rtspCseqError
+
+    /**
+     * Mismatch of RTSP Session Identifiers.
+     */
+    case rtspSessionError
+
+    /**
+     * Unable to parse FTP file list (during FTP wildcard downloading).
+     */
+    case ftpBadFileList
+
+    /**
+     * Chunk callback reported error.
+     */
+    case chunkFailed
+
+    /**
+     * (For internal use only, will never be returned by libcurl) No connection 
+     * available, the session will be queued. (added in 7.30.0)
+     */
+    case noConnectionAvailable
+
+    /**
+     * Failed to match the pinned key specified with CURLOPT_PINNEDPUBLICKEY.
+     */
+    case sslPinnedPubKeyNotMatch
+
+    /**
+     * Status returned failure when asked with CURLOPT_SSL_VERIFYSTATUS.
+     */
+    case sslInvalidCertStatus
+
+    /**
+     * Stream error in the HTTP/2 framing layer.
+     */
+    case http2Stream
+}

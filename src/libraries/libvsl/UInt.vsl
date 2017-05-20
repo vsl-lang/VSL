@@ -6,7 +6,5 @@ import libc
  * use don't when you're sure.
  */
 public class UInt: Number<UInt> {
-    public static func **(lhs: UInt, rhs: UInt) -> T llvm {
-        return pow(base: lhs as Double, power: rhs as Double)
-    }
+
 }

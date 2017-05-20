@@ -8,9 +8,9 @@
  * always `(id)*`.
  */
 @noinit @unsafe
-public class Pointer<T> {
+public class Pointer<T> extends OpaquePointer {
 
-    public func dereference() -> T llvm {
+    override public func dereference() -> T llvm {
     define <returnType> <name>(<returnType>*) alwaysinline {
     entry:
         %1 = load <returnType>, <returnType>* %0
@@ -18,7 +18,7 @@ public class Pointer<T> {
     }   
     }
     
-    public func getptr(at: Int64) -> Pointer<T> llvm {
+    override public func getptr(at: Int64) -> Pointer<T> llvm {
     define <returnType> <name>(i64) alwaysinline {
         %1 = getelementptr <returnType>, <returnType>, i64 %0
         ret %1

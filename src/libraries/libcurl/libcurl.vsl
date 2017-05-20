@@ -1,0 +1,119 @@
+// libcurl bindings for VSL
+// 
+// VSL uses `libcurl` for HTTP requests, this is a basic binding for the C-API.
+// It is strongly reccomended to use the high-level class provided in `libvsl`
+// unless you have an extermely specific intergrated senario
+// 
+// Documentation is sourced from: https://curl.haxx.se/libcurl/c/
+
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
+/**
+ * Generic pointer to a CURL object. Only for communicating with and from
+ */
+public typealias CURL = OpaquePointer
+
+
+
+// -----------------------------------------------------------------------------
+// Boilerplate Functions
+// -----------------------------------------------------------------------------
+
+/**
+ * This function must be the first function to call, and it returns a CURL easy
+ * handle that you must use as input to other functions in the easy interface.
+ * This call MUST have a corresponding call to curl_easy_cleanup when the
+ * operation is complete.
+ */
+public func curlEasyInit() -> CURL internal(curl_easy_init)
+
+/**
+ * This function must be the last function to call for an easy session. It is
+ * the opposite of the curl_easy_init function and must be called with the same
+ * handle as input that a curl_easy_init call returned.
+ *
+ * This might close all connections this handle has used and possibly has kept
+ * open until now - unless it was attached to a multi handle while doing the
+ * transfers. Don't call this function if you intend to transfer more files,
+ * re-using handles is a key to good performance with libcurl.
+ *
+ * @param {CURL} curl - the CURL pointer to cleanup
+ */
+public func curlEasyCleanup(curl: CURL) internal(curl_easy_cleanup)
+
+
+
+// -----------------------------------------------------------------------------
+// CURL SList
+// -----------------------------------------------------------------------------
+typealias CURLSList = OpaquePointer
+
+/**
+ * curl_slist_append appends a string to a linked list of strings. The existing
+ * list should be passed as the first argument and the new list is returned from
+ * this function. Pass in NULL in the list argument to create a new list. The
+ * specified string has been appended when this function returns
+ * curl_slist_append copies the string.
+ *
+ * The list should be freed again (after usage) with curl_slist_free_all.
+ *
+ * @param {CURLSList} to - The list to append a header to
+ * @param {CString} with - The header's value
+ */
+public func curlSlistAppend(to: CURLSList, with: CString) -> CURLSList internal(curl_slist_append)
+
+/**
+ * Generates an SList from a VSL string array of headers. This has a _tiny_
+ * overhead which likely becomes non-existent after an optimization pass. Do
+ * note that this accesses the `.rawPointer` property of the strings.
+ *
+ * @param {String[]} an array of strings headers which are converted to an SList
+ * @return {CURLSList} the applicable list to pass
+ */
+public func curlSlist(from headers: String[]) -> CURLSList {
+    var list: CURLSList = .null
+    
+    for header in headers {
+        list = curlSlistAppend(list, header.rawPointer)
+    }
+    
+    return list
+} 
+
+// -----------------------------------------------------------------------------
+// Request Functions
+// -----------------------------------------------------------------------------
+
+/**
+ * curl_easy_setopt is used to tell libcurl how to behave. By setting the
+ * appropriate options, the application can change libcurl's behavior. All
+ * options are set with an option followed by a parameter. That parameter can be
+ * a long, a function pointer, an object pointer or a curl_off_t, depending on
+ * what the specific option expects. Read this manual carefully as bad input
+ * values may cause libcurl to behave badly! You can only set one option in each
+ * function call. A typical application uses many curl_easy_setopt calls in the
+ * setup phase.
+ *
+ * @param {CURL} curl - A CURL object obtained from a curl init call.
+ * @param {CURLOption} option - The option specifying what the value sets.
+ * @param {OpaquePointer} parameter - A generic parameter which accepts any
+ *     applicable type. Do remember to convert objects to pointers
+ */
+public func curlEasySetopt(curl: CURL, option: CURLOption, parameter: OpaquePointer) internal(curl_easy_setopt)
+
+/**
+ * Invoke this function after curl_easy_init and all the curl_easy_setopt calls
+ * are made, and will perform the transfer as described in the options. It must
+ * be called with the same easy_handle as input as the curl_easy_init call
+ * returned.
+ *
+ * curl_easy_perform performs the entire request in a blocking manner and
+ * returns when done, or if it failed. For non-blocking behavior, see
+ * curl_multi_perform.
+ *
+ * @param {CURL} curl - The CURL pointer obtained from a curl init call.
+ */
+public func curlEasyPerform(curl: CURL) -> CURLCode
+

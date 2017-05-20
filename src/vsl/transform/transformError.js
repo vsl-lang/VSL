@@ -5,9 +5,17 @@
  * 
  */
 export default class TransformError extends Error {
+    /**
+     * @param {string} message - error message
+     * @param {Node} node - erroring node
+     */
     constructor(message, node) {
         super(message);
+        
+        /** @private */
         this.name = 'Transform Error';
+        
+        /** @private */
         this.node = node;
     }
 }

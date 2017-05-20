@@ -76,7 +76,7 @@ table.summary tbody td:nth-child(1) {
 table.summary tbody td > div:nth-child(1) {
     color: #666;
     font-family: Menlo, Consolas, monospace;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 table.params thead {
@@ -98,7 +98,7 @@ table.params td {
 table.params td[data-ice=type], table.params td[data-ice=name] {
     color: #666;
     font-family: Menlo, Consolas, monospace;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 .content .detail > h3 {

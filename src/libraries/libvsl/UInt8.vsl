@@ -1,0 +1,18 @@
+import libc
+
+/**
+ * Itself refers to an unsigned 8-bit integer. This is usually used to refer to
+ * a byte and is great for bit-twiddling operations.
+ */
+
+public class UInt8: Number<UInt8> {
+
+}
+
+/**
+ * An alias to a `UInt8`, if for some reason in 1000 years computers change to
+ * fundamentally work at 16-bits per byte this will be a better choice to use
+ * over `UInt8`, but for now it doesn't really matter, whichever you like. Be
+ * consistent however within the same module
+ */
+public typealias Byte = UInt8

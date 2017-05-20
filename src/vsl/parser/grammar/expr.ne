@@ -19,6 +19,7 @@ Property -> propertyHead (_ propertyTail {% d => d[1] %}):* {% (d, l) => (d[1].l
 
 propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" {% (d, l) => d[2] %} | FunctionizedOperator {% id %}
 propertyTail -> "." _ Identifier {% d => d[2] %}
+  | "?" "." _ Identifier {% d => d[2] %} # TODO
   | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
 
 Literal -> %decimal {% literal %}
@@ -38,7 +39,7 @@ Dictionary -> "[" ":" "]" {% (d, l) => new t.Dictionary(new Map(), l) %}
   | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.Dictionary(new Map(d[1]), l) %}
 
 Tuple -> "(" ")" {% (d, l) => new t.Tuple([], l) %}
-  | "(" delimited[Expression, ","] ")" {% (d, l) => new t.Tuple(d[1], l) %}
+  | "(" Expression "," delimited[Expression, ","] ")" {% (d, l) => new t.Tuple([d[1]].concat(d[3]), l) %}
 
 ImmutableDictionary -> "[" ":" "]" {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
   | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionary(new Map(d[1]), l) %}

@@ -1,0 +1,14 @@
+public func curlEasyRequest(with params: [CURLOption: OpaquePointer]) -> CURLCode {
+    let curl: CURL = curlEasyInit()
+    var res: CURLCode
+    
+    for (k, v) in params {
+        curlEasySetopt(curl, option: k, parameter: v)
+    }
+    
+    res = curlEasyPerform(curl: curl)
+    
+    curlEasyCleanup(curl: curl)
+    
+    return res
+}

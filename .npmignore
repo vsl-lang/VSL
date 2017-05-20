@@ -1,7 +1,7 @@
 node_modules/*
 !node_modules/nearley
 npm-debug.log*
-lib
+src
 .c9
 build
 test*
