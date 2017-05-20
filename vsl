@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-VSL_ENV=dev_debug node ./lib/cli/vsl.js "$@"
+node ./lib/cli/vsl.js "$@"

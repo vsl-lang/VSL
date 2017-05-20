@@ -35,4 +35,9 @@ export default class ExpressionStatement extends Node {
     get children() {
         return ['expression'];
     }
+    
+    /** @override */
+    toString() {
+        return this.expression.toString();
+    }
 }

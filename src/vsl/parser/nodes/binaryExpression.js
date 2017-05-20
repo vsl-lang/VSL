@@ -32,4 +32,9 @@ export default class BinaryExpression extends Node {
     get children() {
         return ['lhs', 'rhs'];
     }
+    
+    /** @override */
+    toString() {
+        return `${this.lhs} ${this.op} ${this.rhs}`
+    }
 }

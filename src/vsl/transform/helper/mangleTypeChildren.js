@@ -1,10 +1,14 @@
 import Identifier from '../../parser/nodes/identifier';
 
 /**
- * Takes an array of nodes and gives you a mangled path.
+ * Takes an array of nodes and gives you a mangled path. This operates on
+ * `Type`s and its subclasses and child nodes. 
+ * 
+ * You usually want to call this on the `Type#path` property where you know the
+ * node for sure is a `Type`, otherwise use `mangleTypeChildren`
  * 
  * @param {Node[]} path - The child type reference
- * @param {ASTTool} - The node's AST tool to requeue
+ * @param {ASTTool} tool - The node's AST tool to requeue
  * 
  * @return {string[]} The mangled result of paths
  */

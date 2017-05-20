@@ -19,4 +19,8 @@ export default class InternalMarker extends Node {
     get children() {
         return null;
     }
+    
+    toString() {
+        return `internal(${this.id})`;
+    }
 }

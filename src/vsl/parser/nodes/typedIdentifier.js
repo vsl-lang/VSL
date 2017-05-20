@@ -30,4 +30,9 @@ export default class TypedIdentifier extends Node {
     get children() {
         return ['type'];
     }
+    
+    /** @override */
+    toString() {
+        return `${this.identifier}${this.type ? ": " + this.type : ""}`;
+    }
 }

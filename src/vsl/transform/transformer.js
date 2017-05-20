@@ -48,7 +48,7 @@ export default class Transformer extends Traverser {
      * @param {Transformation[]} passes - The given passes to setup
      */
     constructor(passes: Transformation[]) {
-        super();
+        super(true);
         
         /**
          * Contains a list of all the transformations the transformer will use.

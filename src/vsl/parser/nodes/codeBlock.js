@@ -37,4 +37,9 @@ export default class CodeBlock extends Node {
     get children() {
         return ['statements'];
     }
+    
+    /** @override */
+    toString() {
+        return `{\n${this.statements.map(i => "    " + i.toString().split("\n").join("\n    ")).join("\n")}\n}` 
+    }
 }

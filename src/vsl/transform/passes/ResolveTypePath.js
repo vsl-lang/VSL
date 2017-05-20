@@ -11,7 +11,7 @@ import mangleTypeChildren from '../helper/mangleTypeChildren';
  */
 export default class ResolveTypePath extends Transformation {
     constructor() {
-        super(t.Type, "Resolve::ResolveTypePath");
+        super(t.Type, "Resolve::TypePath");
     }
     
     modify(node: Node, tool: ASTTool) {

@@ -24,4 +24,9 @@ export default class Type extends Node {
     get children() {
         return ['path'];
     }
+    
+    /** @override */
+    toString() {
+        return this.path[0] + (this.optional ? "?" : "");
+    }
 }

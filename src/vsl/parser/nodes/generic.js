@@ -24,4 +24,9 @@ export default class Generic extends Node {
     get children() {
         return [this.typ].concat(this.parameters);
     }
+    
+    /** @override */
+    toString() {
+        return `${this.type.identifier.id}<${this.parameters.join(", ")}>`
+    }
 }
