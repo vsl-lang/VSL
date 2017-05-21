@@ -5,7 +5,7 @@ import Node from './node';
  * 
  * This matches a set literal.
  */
-export default class Set extends Node {
+export default class SetNode extends Node {
     
     /**
      * Creates a wrapper for sets

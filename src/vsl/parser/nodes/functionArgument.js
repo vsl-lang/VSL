@@ -16,7 +16,7 @@ export default class FunctionArgument extends Node {
     
     /** @override */
     get children() {
-        return this.defaultValue && ['defaultValue'];
+        return ['typedId', 'defaultValue'];
     }
     
     /** @override */

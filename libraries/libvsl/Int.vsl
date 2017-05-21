@@ -5,7 +5,7 @@ import libc
  * numerical operations
  */
 public class Int: SignedNumber<Int> {
-    public static func **(lhs: Int, rhs: Int) -> T llvm {
+    public static func **(lhs: Int, rhs: Int) -> T {
         return pow(base: lhs as Double, power: rhs as Double)
     }
 }

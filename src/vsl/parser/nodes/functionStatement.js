@@ -29,7 +29,7 @@ export default class FunctionStatement extends Node {
         /** @type {string} */
         this.access = access;
         this.name = name;
-        this.args = args;
+        this.args = args || [];
         this.returnType = returnType;
         this.statements = statements;
     }

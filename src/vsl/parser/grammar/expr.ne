@@ -21,6 +21,10 @@ propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" 
 propertyTail -> "." _ Identifier {% d => d[2] %}
   | "?" "." _ Identifier {% d => d[2] %} # TODO
   | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
+  | "(" _ delimited[ArgumentCall, ","] _ ")" {% (d, l) => new t.FunctionCall(d[2], l) %}
+
+ArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2], d[0], l) %}
+  | Expression {% (d, l) => new t.ArgumentCall(d[2], null, l) %}
 
 Literal -> %decimal {% literal %}
   | %integer {% literal %}
@@ -32,8 +36,8 @@ Literal -> %decimal {% literal %}
   | ImmutableDictionary {% id %}
   | Set {% id %}
 
-Array -> "[" "]" {% (d, l) => new t.Array([], l) %}
-  | "[" delimited[Expression, ","] "]" {% (d, l) => new t.Array(d[1], l) %}
+Array -> "[" "]" {% (d, l) => new t.ArrayNode([], l) %}
+  | "[" delimited[Expression, ","] "]" {% (d, l) => new t.ArrayNode(d[1], l) %}
 
 Dictionary -> "[" ":" "]" {% (d, l) => new t.Dictionary(new Map(), l) %}
   | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.Dictionary(new Map(d[1]), l) %}
@@ -44,8 +48,8 @@ Tuple -> "(" ")" {% (d, l) => new t.Tuple([], l) %}
 ImmutableDictionary -> "[" ":" "]" {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
   | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionary(new Map(d[1]), l) %}
 
-Set -> "{" "}" {% (d, l) => new t.Set([], l) %}
-  | "{" delimited[Expression, ","] "}" {% (d, l) => new t.Set(d[1], l) %}
+Set -> "{" "}" {% (d, l) => new t.SetNode([], l) %}
+  | "{" delimited[Expression, ","] "}" {% (d, l) => new t.SetNode(d[1], l) %}
 
 Key -> Identifier {% id %}
   | "[" Expression "]" {% nth(1) %}

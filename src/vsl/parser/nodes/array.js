@@ -5,7 +5,7 @@ import Node from './node';
  * 
  * This matches an array literal.
  */
-export default class Array extends Node {
+export default class ArrayNode extends Node {
     
     /**
      * Creates a wrapper for arrays

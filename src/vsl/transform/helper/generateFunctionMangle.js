@@ -11,7 +11,8 @@ export default function generateFunctionMangle(rootName: string, params: string[
     var paramList = "";
     
     for (var i = 0; i < params.length; i++) {
-        paramList += params[i][0] + ":" + params[i][1] + ",";
+        if (i > 0) paramList += ",";
+        paramList += params[i][0] + ":" + params[i][1];
     }
     
     return rootName + "(" + paramList  + ")";
