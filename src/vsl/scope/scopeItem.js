@@ -8,33 +8,46 @@
  */
 export default class ScopeItem {
     /**
-     * Do **not** directly construct.
-     * 
-     * @param {string} id - The string name of the object
+     * @param {string} rootId - the root identifier in a declarations
      */
-    constructor(id) {
+    constructor(rootId: string) {
         /**
          * The string name of the scope item
+         * 
+         * @type {string}
          */
-        this.id = id;
+        this.rootId = rootId;
         
-        // Contains the original ID name in case of mangling.
         /**
-         * The original name, never mangled.
+         * All items which reference this scope item
+         * 
+         * @type {Node[]}
          */
-        this.original = null;
+        this.references = []
+        
+        /**
+         * The type of the given item. For:
+         * 
+         *  - ScopeItem -> ScopeTypeItem
+         *  - ScopeFuncItem -> ScopeTypeItem (function)
+         *  - ScopeTypeItem -> ScopeMetaClass
+         * 
+         * @type {ScopeItem}
+         */
+        this.type = null;
     }
     
     /**
-     * Determines whether two `ScopeItem`s are the same.
+     * Determines whether two `ScopeItem`s matches eachother. You can use this
+     * to verify a candidate matches the prototype.
      * 
-     * @param {ScopeItem} signature - The value of the other scope item. It will
+     * @param {ScopeItem} ref - The value of the other scope item. It will
      *     be of the same subclass
      * @return {bool} Indicates whether or not the `signature` is the same.
      * 
      * @abstract
      */
-    compare(signature: ScopeItem) {
-        throw new Error("ScopeItem#compare(signature:) must be overriden");
+    equal(ref: ScopeItem): boolean {
+        return ref.rootId === this.rootId; 
     }
 }

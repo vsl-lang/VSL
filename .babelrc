@@ -5,7 +5,9 @@
         "wildcard",
         "add-module-exports",
         "transform-runtime",
-        "transform-class-properties"
+        "transform-class-properties",
+        "transform-do-expressions",
+        "transform-function-bind"
     ],
     "presets": [
         "flow",

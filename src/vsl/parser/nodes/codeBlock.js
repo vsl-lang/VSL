@@ -1,5 +1,5 @@
 import Node from './node';
-import Scope from '../../scope';
+import Scope from '../../scope/scope';
 
 /**
  * Contains a series of statements.

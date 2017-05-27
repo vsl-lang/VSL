@@ -46,6 +46,6 @@ export default class FunctionStatement extends Node {
     
     /** @override */
     toString() {
-        return `${this.access.join(" ")}${this.access.length ? " " : ""}func ${this.name.identifier.id}(${this.args.join(", ")})${this.returnType ? " -> " + this.returnType : ""} ${this.statements}`
+        return `${this.access.join(" ")}${this.access.length ? " " : ""}func ${this.name.identifier.rootId}(${this.args.join(", ")})${this.returnType ? " -> " + this.returnType : ""} ${this.statements}`
     }
 }

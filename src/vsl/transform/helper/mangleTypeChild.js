@@ -12,14 +12,14 @@ import Identifier from '../../parser/nodes/identifier';
 export default function mangleTypeChild(parent: Node | Node[], name: number | string, tool: ASTTool) {
     const node = parent[name];
     if (node instanceof Identifier) {
-        return node.identifier.id
+        return node.identifier.rootId
     }
     
     // Process each node if applicable
     tool.queueThenDeep(node, parent, name, null);
     
     if (node instanceof Identifier) {
-        return node.identifier.id;
+        return node.identifier.rootId;
     } else {
         if (process.env.VSL_ENV === "dev_debug") console.log(args, node);
         throw new TypeError(`At ${name} child for node of ${parent.constructor.name}, it was not simplified to identifier.`);

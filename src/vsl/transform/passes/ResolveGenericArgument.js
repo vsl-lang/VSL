@@ -40,7 +40,7 @@ export default class ResolveGenericArgument extends Transformation {
     }
     
     modify(node: Node, tool: ASTTool) {
-        let root = node.type.identifier.id;
+        let root = node.type.identifier.rootId;
         let args = node.parameters;
         
         let resArgs = [];

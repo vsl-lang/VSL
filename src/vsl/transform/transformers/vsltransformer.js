@@ -15,7 +15,10 @@ export default class VSLTransformer extends Transformer {
             pass.ResolveTypePath,
             pass.ResolveGenericArgument,
             
-            pass.ResolveFunctionDeclaration
+            pass.ResolveFunctionDeclaration,
+            
+            pass.TypeDeductAssignment,
+            pass.TypeDeductClassDeclaration
         ]);
     }
 }

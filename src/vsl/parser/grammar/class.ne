@@ -7,7 +7,7 @@
 @include "modifiers.ne"
 @builtin "postprocessors.ne"
 
-ExtensionList -> delimited[Identifier, _ "," _] {% id %}
+ExtensionList -> delimited[type, _ "," _] {% id %}
 
 ClassItem[s] -> FunctionStatement[$s] {% id %}
 InterfaceItem -> FunctionHead {% id %}

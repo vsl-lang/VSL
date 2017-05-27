@@ -15,7 +15,7 @@ export default class ResolveFunctionDeclaration extends Transformation {
     }
     
     modify(node: Node, tool: ASTTool) {
-        let rootName = node.name.identifier.id;
+        let rootName = node.name.identifier.rootId;
         let args = node.args || [];
         
         // Generate 2D mangled arg names  
@@ -26,7 +26,7 @@ export default class ResolveFunctionDeclaration extends Transformation {
                 throw new TypeError(`Function ${rootName} has no type for pos ${i}.`);
             
             resArgs[i] = [
-                args[i].typedId.identifier.identifier.id,
+                args[i].typedId.identifier.identifier.rootId,
                 mangleTypeChildren(args[i].typedId.type.path, tool)
             ];
         }

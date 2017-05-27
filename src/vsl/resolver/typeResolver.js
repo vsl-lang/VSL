@@ -3,7 +3,7 @@ import t from '../parser/nodes';
 /**
  * Resolves an expressions types like magic.
  */
-class TypeResolver {
+export default class TypeResolver {
     /**
      * Creates a type offer with a negotation function.
      * 
@@ -24,13 +24,13 @@ class TypeResolver {
     /**
      * Resolves types for a given node.
      * 
-     * @param {function(offer: ConstraintType): ?TypeConstaint} negotiator - The
+     * @param {function(offer: ConstraintType): ?TypeConstraint} negotiate - The
      *     function which will handle or reject all negotiation requests. Use
      *     `{ nil }` to reject all offers (bad idea though).
      * 
      * @abstract
      */
-    resolve(negotiator: (ConstraintType) => ?TypeConstraint) {
+    resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         throw new TypeError("resolve must be overriden");
     }
 }

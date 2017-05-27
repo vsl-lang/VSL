@@ -30,6 +30,6 @@ export default class Identifier extends Node {
     
     /** @override */
     toString() {
-        return this.identifier.id;
+        return this.identifier.rootId;
     }
 }

@@ -30,4 +30,9 @@ export default class UnaryExpression extends Node {
     get children () {
         return ['expression'];
     }
+    
+    /** @override */
+    toString() {
+        return this.op + `(${this.expression})`
+    }
 }

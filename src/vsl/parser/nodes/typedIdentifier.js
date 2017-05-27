@@ -28,7 +28,7 @@ export default class TypedIdentifier extends Node {
     
     /** @override */
     get children() {
-        return ['type'];
+        return ['identifier', 'type'];
     }
     
     /** @override */

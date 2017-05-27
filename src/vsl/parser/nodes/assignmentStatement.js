@@ -36,10 +36,19 @@ export default class AssignmentStatement extends Node {
         return ['identifier', 'value'];
     }
     
+    /**
+     * Gets the type of the assignment
+     */
+    get exprType() {
+        return this.identifier.type || this.value.exprType || null;
+    }
+    
     /** @override */
     toString() {
+        let t;
         return (this.type === 0 ? "var" : "let") +
-            ` ${this.identifier}` +
-            (this.value ? " = " + this.value : "");
+            ` ${this.identifier.identifier}` +
+            ` ${(t = this.exprType) ? `: ${t} ` : ""}` +
+            (this.value ? "= " + this.value : "");
     }
 }

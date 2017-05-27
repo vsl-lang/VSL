@@ -27,6 +27,6 @@ export default class Generic extends Node {
     
     /** @override */
     toString() {
-        return `${this.type.identifier.id}<${this.parameters.join(", ")}>`
+        return `${this.type.identifier.rootId}<${this.parameters.join(", ")}>`
     }
 }

@@ -7,6 +7,7 @@
  */
 
 public class OpaquePointer {
+    
     public func dereference() -> Byte llvm {
     define i8 <name>(i8*) alwaysinline {
     entry:

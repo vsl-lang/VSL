@@ -21,7 +21,7 @@ propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" 
 propertyTail -> "." _ Identifier {% d => d[2] %}
   | "?" "." _ Identifier {% d => d[2] %} # TODO
   | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
-  | "(" _ delimited[ArgumentCall, ","] _ ")" {% (d, l) => new t.FunctionCall(d[2], l) %}
+  | "(" _ delimited[ArgumentCall, ","]:? _ ")" {% (d, l) => new t.FunctionCall(d[2] || [], l) %}
 
 ArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2], d[0], l) %}
   | Expression {% (d, l) => new t.ArgumentCall(d[2], null, l) %}

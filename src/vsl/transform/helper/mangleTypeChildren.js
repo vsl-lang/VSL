@@ -18,7 +18,7 @@ export default function mangleTypeChildren(path: Node[], tool: ASTTool) {
     // Resolve sub-generics
     for (let i = 0; i < path.length; i++) {
         if (path[i] instanceof Identifier) {
-            resArgs.push(path[i].identifier.id);
+            resArgs.push(path[i].identifier.rootId);
             continue;
         }
         
@@ -26,7 +26,7 @@ export default function mangleTypeChildren(path: Node[], tool: ASTTool) {
         tool.queueThenDeep(path[i], path, i, null);
         
         if (path[i] instanceof Identifier) {
-            resArgs.push(path[i].identifier.id);
+            resArgs.push(path[i].identifier.rootId);
         } else {
             if (process.env.VSL_ENV === "dev_debug") console.log(args, node);
             throw new TypeError(`At ${i} positional in generic, it was not simplified to identifier. It is ${args[i].constructor.name}`);

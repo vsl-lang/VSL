@@ -25,4 +25,29 @@ public class Pointer<T> extends OpaquePointer {
     }
     }
     
+    // Compile-time attribute which evaluates to the size of the given type. If
+    // you do `var a = Pointer<1>.size`. It'll become `var a = 32` in the byte
+    // REPL.
+    @llvmattribute(alwaysinline)
+    static public let size: Int {
+        return +
+        #if(id("T"), isprimitive)
+        # if(id("T"), inherits, Number)
+        #  if(id("T"), endswith, 8)
+        #   echo "8"
+        #  elif(id("T"), endswith, 16)
+        #   echo "16"
+        #  elif(id("T"), endswith, 64)
+        #   echo "64"
+        #  else
+        #   echo intsize
+        #  endif
+        # elif(id("T"), inherits, OpaquePointer)
+        #  echo sub("x(\d+)", arch, "$0")
+        # endif
+        #else
+        # echo mult(structsize(id("T")), "8")
+        #endif
+    }
+    
 }

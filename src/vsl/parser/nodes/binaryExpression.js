@@ -35,6 +35,6 @@ export default class BinaryExpression extends Node {
     
     /** @override */
     toString() {
-        return `${this.lhs} ${this.op} ${this.rhs}`
+        return `(${this.lhs} ${this.op} ${this.rhs})`
     }
 }

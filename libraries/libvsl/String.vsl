@@ -1,5 +1,4 @@
 import libc
-dynamic lin
 
 // VSL String Class
 // 
@@ -51,6 +50,27 @@ public class String<T: StringView = UTF8View>: Equatable {
      *     string.
      */
     public init(from cstring: CString, length: CSize) {
+        // We're using UTF-8 and because a CString is an array of 8-bit chars
+        // and the default encoding is UTF-8 you can use that.
+        // However CString is a pointer still so if you which to use an `UInt16`
+        // or such as the string's value that works. The `.dereference()` may
+        // not work but your StringView can always act like it's a 16-bit int.
+        // 
+        // Due to the fact that Pointer: OpaquePointer. You can always use a
+        // CombiningBytePointer-func which allows you to specify the size of a
+        // type and use the CString as an OpaquePointer which means that you can
+        // act and pretend like it's a UTF-16 string, or something of a larger
+        // size:
+        // 
+        //     var bytes = 0..length.map({
+        //         var byte = cString.combine<UInt16>(format: [UInt8, UInt8])
+        //         cString.getptr(at: Pointer<UInt16>.size)
+        //         return byte
+        //     })
+        // 
+        // It is reccomended to use a yielding map as many of the string
+        // functions are generators. Also ensure to use the `length` field as
+        // VSL strings may contain NULL-bytes. (\0)
         self.value = cstring
         self.length = length
     }
@@ -86,6 +106,11 @@ public class String<T: StringView = UTF8View>: Equatable {
      *         %4 = load i8, i8* %3
      *         ret %4
      *     }
+     * 
+     * While this is explicitly defined in VSL, it is a pretty common accessor
+     * but if you are doing low-level work on the string it is reccomended to
+     * use a `.rawPointer` or `.cString`. That way you can use functions like
+     * `.combine(format:)` which creates a new type based on bytes.
      * 
      * @param {Int} at - the relative byte offset to the beginning to access.
      *     Must be < the internal length

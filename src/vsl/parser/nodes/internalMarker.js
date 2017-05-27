@@ -12,7 +12,7 @@ export default class InternalMarker extends Node {
      */
     constructor(id: String, position: Object) {
         super(position);
-        this.id = id;
+        this.rootId = id;
     }
     
     /** @override */
@@ -21,6 +21,6 @@ export default class InternalMarker extends Node {
     }
     
     toString() {
-        return `internal(${this.id})`;
+        return `internal(${this.rootId})`;
     }
 }
