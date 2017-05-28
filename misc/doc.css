@@ -1,5 +1,21 @@
 p > code, li > code {
     font-family: Menlo, Consolas, monospace;
+    border-radius: 2px;
+    font-size: 0.85em;
+    background: #f8f8f8;
+}
+
+p {
+    font-size: 17px;
+}
+
+h4 {
+    margin-bottom: 0.25em;
+}
+
+html {
+    font-weight: 300;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
 
 body {
@@ -7,12 +23,15 @@ body {
 }
 
 .content {
-    margin-right: 50px;
     background: white;
 }
 
-.access {
-    font-weight: bold;
+h1 {
+    color: black;
+}
+
+h2 {
+    padding-bottom: 0.3em;
 }
 
 h1, h2 {
@@ -23,6 +42,7 @@ h3 {
     font-size: 1.2em;
     background: none;
     padding: 0;
+    font-weight: 400;
 }
 
 .layout-container > header {
@@ -35,12 +55,28 @@ h3 {
     border: none;
 }
 
+.access {
+    font-family: Menlo, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.6em;
+    font-weight: bold;
+}
+
 pre.prettyprint, pre code.prettyprint, pre > code {
     background: #F9F9F9;
     font-size: 14px;
     
     font-family: Menlo, Consolas, monospace;
     line-height: 20px;
+}
+
+pre > code {
+    padding: 1em 1.3em;
+}
+
+pre > code > code {
+    padding: 0;
+    margin: 0;
 }
 
 pre.source-code {
@@ -79,6 +115,10 @@ table.summary tbody td > div:nth-child(1) {
     font-size: 1em;
 }
 
+table.summary tbody td > div:nth-child(1) p {
+    font-size: 0.95em;
+}
+
 table.params thead {
     background: none;
     font-size: 1em;
@@ -112,7 +152,18 @@ table.params td[data-ice=type], table.params td[data-ice=name] {
 
 .import-path {
     margin-bottom: 0.5em;
+}
+
+.return-type {
+    white-space: nowrap;
+}
+
+.return-type, p[data-ice=throwName], .import-path {
     font-family: Menlo, Consolas, monospace;
+}
+
+.return-type, p[data-ice=throwName] {
+    font-size: 0.9em;
 }
 
 .header-notice span {
@@ -122,4 +173,10 @@ table.params td[data-ice=type], table.params td[data-ice=name] {
 .navigation li span[data-ice=name] {
     padding-left: 4px;
     font-size: 1em;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #DDD;
+    margin-bottom: 1em;
 }

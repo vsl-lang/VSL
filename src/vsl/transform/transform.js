@@ -1,4 +1,3 @@
-import ScopeTraverser from './transformers/scopetraverser';
 import VSLPreprocessor from './transformers/vslpreprocessor';
 import VSLTransformer from './transformers/vslpreprocessor';
 
@@ -22,7 +21,6 @@ export default function transform(ast: CodeBlock[], disableSTL = false) {
         }
     }
     
-	new ScopeTraverser().queue(ast);
     new VSLPreprocessor().queue(ast);
     new VSLTransformer().queue(ast);
 }

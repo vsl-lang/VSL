@@ -1,7 +1,7 @@
 import Transformation from './transformation';
 import Traverser from './traverser';
 import ASTTool from './asttool';
-import Node from '../parser/nodes/node';
+import t from '../parser/nodes';
 
 /**
  * Takes an AST and transforms it according to a series of transformations
@@ -40,6 +40,30 @@ import Node from '../parser/nodes/node';
  * transformations may be parallelized and therefore should also not have any
  * side-effects and be thread safe, concurrency may or may not be implemented in
  * any specific way.
+ * 
+ * ### Scoping
+ * Handles scoping. This resolves identifiers to an extent. To locate an item
+ * a search will take a non-constant time complexity but declarations can be
+ * used in terms of indexing. If an \\(O(1 + \lg{n})\\) does not resolve our item then
+ * we will check if:
+ * 
+ * 
+ * $$\exists n\in S :n \geq (V : n)$$
+ * 
+ * Where `S` is the dynamic processed scope \\( (S\_n)\_{n\in V} \\) and `V` represents
+ * the relative position in a pre-generated scope. In this case we'd specify
+ * a resolution to the value. If:
+ * 
+ * $$\exists t \subseteq C : \forall j \in  t : t \in S_n$$
+ * 
+ * Where `C` is a candidate, then we will throw an error due to a cyclic
+ * dependence on type resolution index.
+ * 
+ * ---
+ * 
+ * Each scope is defined by a `t.CodeBlock` node and if a `get Node#identifierPath()`
+ * call does not return nil; the returned {@link Identifier} is then taken as the
+ * identifier to declare a variable as.
  */
 export default class Transformer extends Traverser {
     
@@ -67,6 +91,17 @@ export default class Transformer extends Traverser {
          * @type {Node[]}
          */
         this.nodeQueue = [];
+        
+        /**
+         * This is basically a stack of the current scope.
+         * For a normal app this would look roughy like:
+         * [ STL, Libraries, Global ]
+         * specify STL to provide the base STL info
+         * 
+         * @type {CodeBlock[]}
+         */
+        this.scope = [];
+
     }
     
     /**
@@ -85,31 +120,57 @@ export default class Transformer extends Traverser {
      * 
      * @param {any} ast - An AST as outputted by a `Parser`
      */
-     queue(ast: any) {
-         super.queue(ast);
-     }
+    queue(ast: any) {
+        super.queue(ast);
+    }
      
-     /** @override */
-     receivedNode(parent: Node | Node[], name: string) {
-         if (this.haltSetPrepend)
-            this.prependNodeQueue(parent, name);
-        else
-            this.appendNodeQueue(parent, name);
-     }
+    /** @override */
+    receivedNode(parent: Node | Node[], name: string) {
+        let node = parent[name];
+        
+        // Ignore empty nodes
+        if (node === null) return;
+        
+        // If the parent is a code block, we want to add it to the scope
+        // This builds a stack of the scope tree, so for a typical top-level
+        // class this might look like:
+        //     libvsl, MyClass.vsl, MyClass
+        // Each file would have it's own top-level preqeued block.
+        if (node instanceof t.CodeBlock) {
+            this.scope.push(node);
+        }
+        
+        // Store the current scope for brevity
+        const currentScope = this.scope[this.scope.length - 1];
+        
+        // Set parent scope for transformers
+        node.parentScope = currentScope || null;
+        
+        // Add to queue
+        this.appendNodeQueue(parent, name);
+    }
+    
+    /** @override */
+    finishedNode(parent: Node | Node[], name: string) {
+        if (parent[name] instanceof t.CodeBlock) {
+            this.scope.pop()
+        }
+    }
      
-     /**
-      * Adds item to the end node queue (reccomended).
-      */
+    /**
+     * Adds item to the end node queue (reccomended).
+     */
     appendNodeQueue(parent: Node | Node[], name: string | number) {
         parent[name].queueQualifier = this.nodeQueue.length;
         
         this.nodeQueue.push([ parent[name], parent, name ]);
         this.didUpdateQueue()
     }     
-     /**
-      * Handles the queue items
-      * @private
-      */
+    
+    /**
+     * Handles the queue items
+     * @private
+     */
     didUpdateQueue() {
         var value, node, parent, item;
         while ((value = this.nodeQueue.shift()) !== (void 0)) {

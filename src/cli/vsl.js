@@ -4,7 +4,6 @@ import VSLTokenizer from '../vsl/parser/vsltokenizer';
 
 import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
-import ScopeTraverser from '../vsl/transform/transformers/scopetraverser';
 
 import readline from 'readline';
 import util from 'util';
@@ -112,7 +111,6 @@ if (argv.r) {
         parser = new VSLParser();
     	let result = feed(input);
     	
-    	new ScopeTraverser().queue(result);
         new VSLPreprocessor().queue(result);
         new VSLTransformer().queue(result);
 

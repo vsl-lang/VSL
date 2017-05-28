@@ -38,13 +38,18 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-include": "^1.2.0",
     "babel-plugin-loop-optimizer": "^1.2.3",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-syntax-do-expressions": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-do-expressions": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-function-bind": "^6.22.0",
     "babel-plugin-wildcard": "^1.0.0",
     "babel-preset-flow": "^6.23.0",
     "esdoc": "^0.5.2",
-    "esdoc-flow-plugin": "^1.0.0",
+    "esdoc-babel-plugin": "github:mhelvens/esdoc-babel-plugin",
+    "install": "^0.10.1",
+    "npm": "^4.6.1",
     "vsl-nearley": "^2.9.3"
   }
 }
