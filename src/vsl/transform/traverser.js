@@ -28,6 +28,7 @@ export default class Traverser {
      *     passed.)
      */
     constructor(shouldProcess: boolean = true) {
+        /** @private */
         this.shouldProcess = shouldProcess;
     }
     
@@ -90,7 +91,14 @@ export default class Traverser {
     }
     
     /**
-     * @private
+     * Override this method if you'd like to process each node that comes
+     * through. Don't forget to call `super.processNode`! You don't have to but
+     * you probably want to.
+     * 
+     * @param {Node | Node[]} parent - The parent node of the given node being
+     *     processed
+     * @param {string} name - The name of the current node being processed
+     * @protected
      */
     processNode(parent: any, name: string) {
         let node = parent[name];

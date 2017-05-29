@@ -7,6 +7,10 @@ import TypeResolver from '../typeResolver';
  * single `ContextParentConstraint`. For functions this would probably needed to
  * be propogated to take into scope and resolve which function prototypes fit
  * the bill.
+ * 
+ * Call this if you have an expression you want to resolve and DO NOT FORGET
+ * to specify a negotiator. Make sure your negotiator is damn good for best
+ * results.
  */
 export default class RootResolver extends TypeResolver {
     

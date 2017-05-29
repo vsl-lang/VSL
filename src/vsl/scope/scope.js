@@ -60,9 +60,9 @@ export default class Scope {
      * for obtaining all candidate items for some processes.
      * 
      * @param {string} id - Returns the matching item from the scope.
-     * @return {?ScopeItem} null if the item could not be obtained
+     * @return {?ScopeItem[]} null if the item could not be obtained
      */
-    getAll(id: string): ?ScopeItem {
+    getAll(id: string): ?ScopeItem[] {
         let items = this.ids.get(id);
         if (this.parentScope !== null) {
             let res = this.parentScope.getAll(id);
@@ -72,7 +72,8 @@ export default class Scope {
     }
     
     /**
-     * Matches an associated `ScopeItem`
+     * Matches an associated `ScopeItem`. Returns null if it can't find that 
+     * reference.
      * 
      * @param {ScopeItem} item - An item to lookup for an applicable matching
      *     scope item. 

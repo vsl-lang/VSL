@@ -15,11 +15,11 @@ CommandChain -> Expression:+ {% (d, l) => new t.CommandChain(d[0], l) %}
 Expression -> BinaryExpression {% expr %}
 
 # Properties
-Property -> propertyHead (_ propertyTail {% d => d[1] %}):* {% (d, l) => (d[1].length === 0 ? d[0] : new t.PropertyExpression(d[0], d[1], l)) %}
+Property -> propertyHead (_ propertyTail {% d => d[1] %}):* "?":? {% (d, l) => (d[1].length === 0 ? d[0] : new t.PropertyExpression(d[0], d[1], !!d[2], l)) %}
 
 propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" {% (d, l) => d[2] %} | FunctionizedOperator {% id %}
 propertyTail -> "." _ Identifier {% d => d[2] %}
-  | "?" "." _ Identifier {% d => d[2] %} # TODO
+  | "?" "." _ Identifier {% d => classname(d[3]) %} # TODO
   | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
   | "(" _ delimited[ArgumentCall, ","]:? _ ")" {% (d, l) => new t.FunctionCall(d[2] || [], l) %}
 

@@ -1,5 +1,5 @@
 import Transformation from './transformation';
-import Traverser from './traverser';
+import ScopeTraverser from './scopetraverser';
 import ASTTool from './asttool';
 import t from '../parser/nodes';
 
@@ -65,7 +65,7 @@ import t from '../parser/nodes';
  * call does not return nil; the returned {@link Identifier} is then taken as the
  * identifier to declare a variable as.
  */
-export default class Transformer extends Traverser {
+export default class Transformer extends ScopeTraverser {
     
     /**
      * Creates a new Transformer with the given passes
@@ -91,17 +91,6 @@ export default class Transformer extends Traverser {
          * @type {Node[]}
          */
         this.nodeQueue = [];
-        
-        /**
-         * This is basically a stack of the current scope.
-         * For a normal app this would look roughy like:
-         * [ STL, Libraries, Global ]
-         * specify STL to provide the base STL info
-         * 
-         * @type {CodeBlock[]}
-         */
-        this.scope = [];
-
     }
     
     /**
@@ -126,26 +115,6 @@ export default class Transformer extends Traverser {
      
     /** @override */
     receivedNode(parent: Node | Node[], name: string) {
-        let node = parent[name];
-        
-        // Ignore empty nodes
-        if (node === null) return;
-        
-        // If the parent is a code block, we want to add it to the scope
-        // This builds a stack of the scope tree, so for a typical top-level
-        // class this might look like:
-        //     libvsl, MyClass.vsl, MyClass
-        // Each file would have it's own top-level preqeued block.
-        if (node instanceof t.CodeBlock) {
-            this.scope.push(node);
-        }
-        
-        // Store the current scope for brevity
-        const currentScope = this.scope[this.scope.length - 1];
-        
-        // Set parent scope for transformers
-        node.parentScope = currentScope || null;
-        
         // Add to queue
         this.appendNodeQueue(parent, name);
     }

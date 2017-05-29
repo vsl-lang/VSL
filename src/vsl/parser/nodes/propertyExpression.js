@@ -21,7 +21,7 @@ export default class PropertyExpression extends Node {
      * @param {Expression} expression the primary expression
      * @param {Object} position a position from nearley
      */
-    constructor (head: any, tail: any, position: Object) {
+    constructor (head: any, tail: any, optional: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
@@ -29,15 +29,18 @@ export default class PropertyExpression extends Node {
         
         /** @type {Identifier[]|Subscript[]|FunctionCall[]} */
         this.tail = tail;
+        
+        /** @type {boolean} */
+        this.optional = optional;
     }
     
     /** @override */
     get children () {
-        return ['head', 'tail'];
+        return ['head', 'tail', 'optional'];
     }
     
     /** @override */
     toString() {
-        return `(${this.head}).${this.tail.join(".")}`
+        return `(${this.head}).${this.tail.join('.')}${this.optional?'?':''}`
     }
 }
