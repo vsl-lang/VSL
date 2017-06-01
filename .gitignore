@@ -5,5 +5,9 @@ lib
 .c9
 build
 test*
+!test/
 docs
+coverage
 src/vsl/jscompiler
+src/vsl/parser/parser.js
+.nyc_output

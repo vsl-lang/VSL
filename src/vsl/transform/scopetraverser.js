@@ -57,8 +57,6 @@ export default class ScopeTraverser extends Traverser {
      * @override
      */
     processNode(parent: Node | Node[], name: string) {
-        super.processNode(parent, name);
-        
         let node = parent[name];
         
         // Ignore empty nodes
@@ -70,6 +68,12 @@ export default class ScopeTraverser extends Traverser {
         //     libvsl, MyClass.vsl, MyClass
         // Each file would have it's own top-level preqeued block.
         if (node instanceof t.CodeBlock) {
+            
+            // If there is a parent scope, specify it
+            if (this.scope.length > 0) {
+                node.scope.parentScope = this.scope[this.scope.length - 1].scope;
+            }
+            
             this.scope.push(node);
         }
         
@@ -78,5 +82,7 @@ export default class ScopeTraverser extends Traverser {
         
         // Set parent scope for transformers
         node.parentScope = currentScope || null;
+        
+        super.processNode(parent, name);
     }
 }

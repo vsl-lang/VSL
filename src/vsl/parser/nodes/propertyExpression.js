@@ -16,12 +16,14 @@ import Node from './node';
 export default class PropertyExpression extends Node {
     
     /**
-     * Creates a wrapper ExperssionStatement
+     * Matches a member-expression e.g. `(E).b`
      * 
-     * @param {Expression} expression the primary expression
+     * @param {Expression} head - the primary expression
+     * @param {Identifier} tail - The right part of the part of the node
+     * @param {boolean} optional - Whether the RHS is optional.
      * @param {Object} position a position from nearley
      */
-    constructor (head: any, tail: any, optional: boolean, position: Object) {
+    constructor(head: any, tail: any, optional: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
@@ -35,7 +37,7 @@ export default class PropertyExpression extends Node {
     }
     
     /** @override */
-    get children () {
+    get children() {
         return ['head', 'tail', 'optional'];
     }
     

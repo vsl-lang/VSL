@@ -62,14 +62,6 @@ export default class Node {
     }
     
     /**
-     * Specifies the field name which declares a variable.
-     * @type {?(Identifier | TypedIdentifier)}
-     */
-    get identifierPath() {
-        return null;
-    }
-    
-    /**
      * Returns the string representation of the Node.
      * @param {string} padding String to add to the left of the tree
      * @return {string} Tree representation of this node.

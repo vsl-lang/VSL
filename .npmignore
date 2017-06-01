@@ -5,5 +5,8 @@ src
 .c9
 build
 test*
+test
 docs
 src/vsl/jscompiler
+.travis.yml
+.nyc_output

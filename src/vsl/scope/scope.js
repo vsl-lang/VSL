@@ -65,7 +65,7 @@ export default class Scope {
     getAll(id: string): ?ScopeItem[] {
         let items = this.ids.get(id);
         if (this.parentScope !== null) {
-            let res = this.parentScope.getAll(id);
+            let res = this.parentScope && this.parentScope.getAll(id);
             if (res !== null) items = items.concat(res);
         }
         return items;

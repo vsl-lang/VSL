@@ -10,17 +10,20 @@ const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
 @include "ws.ne"
 @include "primitives.ne"
 
-CommandChain -> Expression:+ {% (d, l) => new t.CommandChain(d[0], l) %}
+#CommandChain -> Expression:+ ("\n"|";") {% (d, l) => new t.PropertyExpression(d[0], l) %} # TODO: flatten (not just like basic flatten, we need to check e.g. if is literal)
 
 Expression -> BinaryExpression {% expr %}
 
 # Properties
 Property -> propertyHead (_ propertyTail {% d => d[1] %}):* "?":? {% (d, l) => (d[1].length === 0 ? d[0] : new t.PropertyExpression(d[0], d[1], !!d[2], l)) %}
+ | "?" (_ nullableProperty {% d => d[1] %}):* "?":? {% (d, l) => (d[1].length === 0 ? d[0] : new t.PropertyExpression(new t.Whatever(), d[1], !!d[2], l)) %}
 
 propertyHead -> Literal {% id %} | Identifier {% id %} | "(" _ Expression _ ")" {% (d, l) => d[2] %} | FunctionizedOperator {% id %}
-propertyTail -> "." _ Identifier {% d => d[2] %}
-  | "?" "." _ Identifier {% d => classname(d[3]) %} # TODO
-  | "[" _ Expression _ "]" {% (d, l) => new t.Subscript(d[2], l) %}
+propertyTail -> "." _ Identifier {% nth(2) %}
+  | "[" _ delimited[Expression, ","] _ "]" {% (d, l) => new t.Subscript(d[2], false, l) %}
+  | nullableProperty {% id %}
+nullableProperty -> "?" "." _ Identifier {% d => (d[3].nullable = true) && d[3] %}
+  | "?" "[" _ delimited[Expression, ","] _ "]" {% (d, l) => new t.Subscript(d[3], true, l) %}
   | "(" _ delimited[ArgumentCall, ","]:? _ ")" {% (d, l) => new t.FunctionCall(d[2] || [], l) %}
 
 ArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2], d[0], l) %}
@@ -83,7 +86,7 @@ Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
 Range -> Cast (".." | "...") _ Range {% (d, l) => new t.BinaryExpression(d[0], d[3], d[1][0].value, l) %} | Cast {% id %}
 Cast -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
-Prefix -> ("-" | "+" | "*" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, l) %} | Property {% id %}
+Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, l) %} | Property {% id %}
 
 ## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
 ## what about assignment

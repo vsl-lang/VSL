@@ -22,7 +22,7 @@ export default class Generic extends Node {
     
     /** @override */
     get children() {
-        return [this.typ].concat(this.parameters);
+        return ['parameters'];
     }
     
     /** @override */

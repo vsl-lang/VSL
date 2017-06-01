@@ -16,7 +16,41 @@ function slice (start, end) {
     };
 }
 const slice1 = slice(1);
-const removeDelimiters = slice(1, -1);
+
+// from https://github.com/iamakulov/unescape-js/blob/master/src/index.js
+
+const jsEscapeRegex = /\\(u\{([0-9A-Fa-f]+)\}|u([0-9A-Fa-f]{4})|x([0-9A-Fa-f]{2})|([1-7][0-7]{0,2}|[0-7]{2,3})|(['"tbrnfv0\\]))/g;
+
+const usualEscapeSequences = {
+    '0': '\0',
+    'b': '\b',
+    'f': '\f',
+    'n': '\n',
+    'r': '\r',
+    't': '\t',
+    'v': '\v',
+    '\'': '\'',
+    '"': '"',
+    '\\': '\\'
+};
+
+const fromHex = (str) => String.fromCodePoint(parseInt(str, 16));
+const fromOct = (str) => String.fromCodePoint(parseInt(str, 8));
+
+function unescapeString(_, match) {
+    return match.slice(1, -1).replace(jsEscapeRegex, (_, __, varHex, longHex, shortHex, octal, specialCharacter) => {
+        if (varHex !== undefined)
+            return fromHex(varHex);
+        if (longHex !== undefined)
+            return fromHex(longHex);
+        if (shortHex !== undefined)
+            return fromHex(shortHex);
+        if (octal !== undefined)
+            return fromOct(octal);
+        else
+            return usualEscapeSequences[specialCharacter];
+    });
+}
 
 /**
  * VSL-specific Tokenizer
@@ -37,8 +71,8 @@ export default class VSLTokenizer extends Tokenizer {
                 self.variables.commentDepth++;
                 self.begin(VSLScope.Comment);
             }, null],
-            ['"(?:\\\\["bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^"\\\\])*"', removeDelimiters, VSLTokenType.String],
-            ["'(?:\\\\['bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^'\\\\])*'", removeDelimiters, VSLTokenType.String],
+            ['"(?:\\\\["bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^"\\\\])*"', unescapeString, VSLTokenType.String],
+            ["'(?:\\\\['bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^'\\\\])*'", unescapeString, VSLTokenType.String],
             ['\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],
             ['\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],
             ['\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],

@@ -1,5 +1,5 @@
 import Node from './node';
-import Type from '../../scope/type';
+import CodeBlock from './codeBlock';
 
 /**
  * Wraps a class
@@ -28,12 +28,16 @@ export default class ClassStatement extends Node {
         this.access = access;
         this.name = name;
         this.superclasses = superclasses;
-        this.statements = statements;
+        this.statements = statements === null ? new CodeBlock([]) : statements;
     }
     
     /** @override */
-    get identifierPath() {
-        return new Type(this.name.name);
+    toString() {
+        return `${this.access.join(" ")}${this.access.length ? " " : ""}class` +
+        ` ${this.name}: ${
+            this.superclasses === null ?
+            "Object" : this.superclasses.join(", ")
+        } ${this.statements}`
     }
     
     /** @override */

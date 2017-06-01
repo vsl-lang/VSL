@@ -17,4 +17,4 @@ classDeclaration -> Identifier {% id %}
 TypeAlias -> "typealias" Identifier "=" TypedIdentifier {% (d, l) => new t.TypeAlias(d[1], d[3]) %}
 
 # Identifier
-Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], l) %}
+Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], false, l) %}

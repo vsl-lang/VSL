@@ -7,7 +7,8 @@
         "transform-runtime",
         "transform-class-properties",
         "transform-do-expressions",
-        "transform-function-bind"
+        "transform-function-bind",
+        "babel-plugin-transform-export-extensions"
     ],
     "presets": [
         "flow",
@@ -17,7 +18,11 @@
             }
         }],
     ],
-    "ignore": [
-        "vsl/interpreter/integer_asm.js"
-    ]
+    "env": {
+        "test": {
+            "plugins": [
+                "istanbul"
+            ]
+        }
+    }
 }

@@ -45,8 +45,7 @@ export default class Lookup {
         let parentScope = node.parentScope.scope;
         
         // Step 1. Obtain candidate for the ScopeItem
-        let item = parentScope.get(item);
-        if (item === null) return null;
-        else return item;
+        let candidate = parentScope.get(item);
+        return candidate;
     }
 }

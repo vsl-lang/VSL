@@ -14,20 +14,23 @@ export default class Subscript extends Node {
      * @param {Expression} expression the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor (expression: any, position: Object) {
+    constructor (expression: any, nullable: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
         this.expression = expression;
+        
+        /** @type {boolean} */
+        this.nullable = nullable;
     }
     
     /** @override */
     get children () {
-        return ['expression'];
+        return ['expression', 'nullable'];
     }
     
     /** @override */
     toString() {
-        return `[${this.expression}]`;
+        return `${this.nullable?'?':''}[${this.expression}]`;
     }
 }

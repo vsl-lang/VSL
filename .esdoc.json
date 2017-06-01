@@ -4,6 +4,10 @@
     "destination": "docs",
     "styles": ["misc/doc.css"],
     "scripts": ["misc/doc.js"],
+    "test": {
+        "type": "mocha",
+        "source": "./test"
+    },
     "plugins": [
         {
           "name": "esdoc-babel-plugin",
@@ -12,6 +16,7 @@
                 "babel-plugin-syntax-do-expressions",
                 "babel-plugin-syntax-class-properties",
                 
+                "babel-plugin-transform-export-extensions",
                 "babel-plugin-transform-flow-strip-types",
                 "babel-plugin-transform-function-bind",
                 "babel-plugin-transform-class-properties",

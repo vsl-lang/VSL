@@ -1,5 +1,4 @@
 import Node from './node';
-import Type from '../../scope/type';
 
 /**
  * Wraps an interfcae
@@ -29,11 +28,6 @@ export default class InterfaceStatement extends Node {
         this.name = name;
         this.superclasses = superclasses;
         this.statements = statements;
-    }
-    
-    /** @override */
-    get identifierPath() {
-        return new Type(this.name.name);
     }
     
     /** @override */

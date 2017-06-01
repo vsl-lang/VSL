@@ -41,7 +41,7 @@ function display (output) {
 
 function feed (code) {
     let result;
-    if ((result = parser.feed(code))) {
+    if ((result = parser.feed(code + "\n"))) {
         return result;
     } else {
         if (result === null)
@@ -102,7 +102,7 @@ if (argv.r) {
                 prompt();
             } else if (result.length > 0) {
                 feeding = false;
-                display(result);
+                console.log(result[0].toString());
                 prompt();
             } else
                 rl.prompt();
@@ -194,3 +194,13 @@ if (!argv.p && !argv.t && !argv.r) {
         exit();
     });
 }
+
+process.on('exit', function () {
+    console.log();
+});
+process.on('SIGINT', function () {
+    console.log();
+});
+process.on('uncaughtException', function () {
+    console.log();
+});
