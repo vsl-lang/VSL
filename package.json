@@ -33,7 +33,7 @@
     "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
     "minimist": "^1.2.0",
-    "vsl-nearley": "^2.9.2"
+    "vsl-nearley": "^2.9.3"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -59,8 +59,7 @@
     "install": "^0.10.1",
     "mocha": "^3.4.2",
     "npm": "^4.6.1",
-    "nyc": "^10.3.2",
-    "vsl-nearley": "^2.9.3"
+    "nyc": "^10.3.2"
   },
   "nyc": {
     "require": [
