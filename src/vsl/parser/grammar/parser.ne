@@ -33,8 +33,8 @@ const NodeTypes = require('./vsltokentype'),
 
 main -> CodeBlock[statement {% id %}] {% d => (d[0].rootScope = true, d[0]) %}
 statement -> CommandChain {% id %}
-    | Expression {% id %}
-    | FunctionStatement[statement] {% id %}
-    | AssignmentStatement {% id %}
-    | ClassStatement[statement] {% id %}
-    | InterfaceStatement[statement] {% id %}
+           | Expression {% id %}
+           | FunctionStatement[statement] {% id %}
+           | AssignmentStatement {% id %}
+           | ClassStatement[statement] {% id %}
+           | InterfaceStatement[statement] {% id %}
