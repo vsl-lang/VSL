@@ -12,6 +12,9 @@
     <a href="https://codecov.io/gh/vsl-lang/VSL">
       <img src="https://codecov.io/gh/vsl-lang/VSL/branch/master/graph/badge.svg" alt="Codecov" />
     </a>
+    <a href="https://codeclimate.com/github/vsl-lang/VSL/">
+      <img src="https://codeclimate.com/github/vsl-lang/VSL/badges/gpa.svg" />
+    </a>
   </p>
   <p align="center">
     <a href="#">Website</a> &mdash;

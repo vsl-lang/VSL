@@ -195,12 +195,10 @@ if (!argv.p && !argv.t && !argv.r) {
     });
 }
 
-process.on('exit', function () {
+function newline () {
     console.log();
-});
-process.on('SIGINT', function () {
-    console.log();
-});
-process.on('uncaughtException', function () {
-    console.log();
-});
+}
+
+process.on('exit', newline);
+process.on('SIGINT', newline);
+process.on('uncaughtException', newline);

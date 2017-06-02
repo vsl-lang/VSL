@@ -8,22 +8,84 @@ export VSLParser from '../src/vsl/parser/vslparser';
 
 export VSLTokenType from '../src/vsl/parser/vsltokentype';
 
+function vslStr(source) {
+    return source.isVSL ? source : vsl(source);
+}
+
+/**
+ * VSL code tagged literal
+ */
+export function vsl(source) {
+    if (source instanceof Array) source = source[0];
+    return {
+        src: source,
+        formattedLine: source.replace(/([}{()])\n/g, "$1").replace(/\n/g, "\\n").replace(/ +/g, " "),
+        formatted: source.indexOf("\n") > -1 ? "\n" + source.replace(/^/gm, "    ") : source,
+        isVSL: true
+    };
+}
+
+/**
+ * Parses VSL code (tempalte string)
+ */
+export function parseVSL(source) {
+    if (source instanceof Array) source = source[0];
+    let res;
+    try {
+        let p = new VSLParser().feed(source);
+        if (p.length === 0) return null;
+        res = p;
+    } catch (e) {
+        return null;
+    }
+    return p
+}
+
+
 /**
  * Verifies if a syntax is a valid syntax
  * 
  * @param {string} source - string to validate
  */
 export function valid(source) {
-    try {
-        new VSLParser().feed(source);
-        // if (e.)
-    } catch(e) {
-        throw new TypeError(
-            `Parser Error: \`${source}\` expected to be valid but threw error` +
-            `: \n ${e.description}`
-        );
-    }
+    source = vslStr(source);
+    it(`should parse \`${source.formattedLine}\``, () => {
+        let res;
+        try {
+            res = new VSLParser().feed(source.src);
+        } catch(e) {
+            throw new TypeError(
+                `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
+                `: \n ${e}`
+            );
+        }
+        if (res.length === 0) {
+            throw new TypeError(
+            `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
+            ` (incomplete source)`
+            );
+        }
+    });
 };
+
+export function invalid(source) {
+    source = vslStr(source);
+    it(`should break on \`${source.formattedLine}\``, () => {
+        let res;
+        
+        try {
+            res = new VSLParser().feed(source.src);
+        } catch(e) {
+            return;
+        }
+        
+        if (res.length > 0) {
+            throw new TypeError(
+                `Parse Error: \`${source.formatted}\` expected to break but worked.`
+            );
+        }
+    });
+}
 
 /**
  * Returns the tokenizes array from a string.

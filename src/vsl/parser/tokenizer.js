@@ -130,7 +130,6 @@ export default class Tokenizer {
      * @param {Token} token The token causing the error.
      */
     formatError (token: Object) {
-        console.log('token', token);
         return token;
     }
     
