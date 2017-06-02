@@ -27,12 +27,12 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     constructor(
         rootId: string,
-        subscope: Scope,
+        subscope: Scope = null,
         {
             castables = [],
             superclass = ScopeTypeItem.RootClass,
             isInterface = false
-        }
+        } = {}
     ) {
         super(rootId);
         
@@ -46,7 +46,7 @@ export default class ScopeTypeItem extends ScopeItem {
     
     /** @override */
     equal(ref: ScopeItem): boolean {
-        return ref instanceof ScopeTypeItem && ref.rootId === this.rootId; 
+        return ref.rootId === this.rootId; 
     }
     
     /**
@@ -54,5 +54,10 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     static RootClass = do {
         new ScopeTypeItem("Object", null, {})
+    }
+    
+    /** @return {string} */
+    toString() {
+        return `${this.isInterface ? "interface" : "class"} ${this.rootId}`
     }
 }

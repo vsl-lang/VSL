@@ -12,15 +12,7 @@ import STL from '../stl/stl';
  * @param {boolean} [disableSTL=false] - Whether the STL should be disabled. 99%
  *     of the time you probably don't want this
  */
-export default function transform(ast: CodeBlock[], disableSTL = false) {
-    
-    if (disableSTL === false) {
-        for (let i = 0; i < STL.length; i++) {
-            transform(STL[i], true);
-            hoistTo(ast[0].scope, STL[i][0].scope);
-        }
-    }
-    
+export default function transform(ast: CodeBlock[]) {
     new VSLPreprocessor().queue(ast);
     new VSLTransformer().queue(ast);
 }

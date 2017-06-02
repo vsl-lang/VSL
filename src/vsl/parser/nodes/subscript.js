@@ -11,11 +11,15 @@ export default class Subscript extends Node {
     /**
      * Creates a subscript
      * 
+     * @param {Expression} head the object to subscript
      * @param {Expression} expression the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor (expression: any, nullable: boolean, position: Object) {
+    constructor (head: Expression, expression: Expression, nullable: boolean, position: Object) {
         super(position);
+
+        /** @type {Expression} */
+        this.head = head;
         
         /** @type {Expression} */
         this.expression = expression;

@@ -2,8 +2,6 @@ import t from '../parser/nodes';
 import resolvers from './resolvers';
 
 export default function vslGetChild(from: Node): TypeResolver {
-    var type: Class<TypeResolver>
-    
     switch(from.constructor) {
         case t.ExpressionStatement: return new resolvers.RootResolver(from, vslGetChild);
         case t.Identifier: return new resolvers.IdResolver(from, vslGetChild);

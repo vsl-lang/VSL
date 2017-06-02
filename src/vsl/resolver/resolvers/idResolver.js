@@ -5,7 +5,9 @@ import TypeResolver from '../typeResolver';
 import ScopeItem from '../../scope/scopeItem';
 
 /**
- * Resolves `Idenifier`s in terms of type and declaration.
+ * Resolves `Idenifier`s in terms of type and declaration. This will do a lookup
+ * but also check for valid candidates in terms of further chaining. This may 
+ * resolve to a TypeItem or an AliasItem.
  */
 export default class IdResolver extends TypeResolver {
     

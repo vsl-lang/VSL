@@ -115,10 +115,11 @@ export default class Scope {
      * 
      * @param {ScopeItem} item - The item to add to this scope.
      * @return {boolean} this will return `false` if the item has already been
-     *     declared in the scope.
+     *     declared in the scope. In that case you should throw an error
+     *     otherwise major borks could happen.
      */
     set(item: ScopeItem): boolean {
-        let candidates = this.ids.get(item.rootId);
+        let candidates = this.get(item.rootId);
         if (candidates) {
             candidates.push(item);
             return candidates.get(item) === item;
@@ -126,5 +127,41 @@ export default class Scope {
             this.ids.set(item.rootId, [item])
             return true;
         }
+    }
+    
+    /**
+     * Helper function which generates a scope's visualization. Used for
+     * debugging and reference
+     * 
+     * @return {string} The visualized scope. 
+     */
+    toString() {
+        let res = "";
+        const format = (name) => name.constructor.name.replace(/^Scope(.+)Item$/, "$1");
+        
+        for (let [id, candidates] of this.ids) {
+            let str = `├ ${id}`;
+            
+            if (candidates.length > 1) {
+                candidates.forEach(candidate => {
+                    str += `\n   ├ ${format(candidate)}`;
+                    str += `\n     ├ ${candidate.toString()}`
+                });
+            } else {
+                str += ` (${format(candidates[0])})`;
+                str += `\n   ├ ${candidates[0].toString()}`;
+            }
+            
+            res += "\n" + str;
+        }
+        
+        let prefix = "";
+        if (this.parentScope !== null) {
+            prefix = parentScope.toString();
+        } else {
+            prefix = "Root";
+        }
+        
+        return prefix + res.split("\n").map(line => " " + line).join("\n");
     }
 }

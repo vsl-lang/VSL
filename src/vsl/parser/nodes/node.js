@@ -7,8 +7,8 @@ export default class Node {
      * Creates a new Node object.
      */
     constructor(position: Object) {
-        //if (process.env["VSL_ENV"] != "dev_debug")
-        //    this.position = position;
+        if (process.env["VSL_ENV"] != "dev_debug")
+            this.position = position;
         
         /**
          * If exists, references the closest scope. Use an ASTTool to perform

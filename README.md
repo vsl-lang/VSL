@@ -26,6 +26,27 @@
   </p>
 </p>
 
+## Building
+
+Building isn't _too_ diffiult. Usually you'll want to install a pre-built binary
+but if you're feeling adventurous or just want to help build VSL (:D) building
+from source is simple:
+
+```bash
+$ git clone --recursive https://github.com/vsl-lang/VSL
+$ npm install
+$ npm run build
+```
+
+Do note, branch of the `develop` branch to make changes. All PRs go there. Other
+commands:
+
+```
+$ npm run coverage # Generates testing coverage reports
+$ npm test         # Runs all tests
+$ npm run dev      # Development build
+```
+
 ## Problem
 Today they are quite a few languages, some popular ones you may of heard of are:
  - Python

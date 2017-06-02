@@ -16,14 +16,11 @@ export default class Identifier extends Node {
      * @param {string} identifier the identifier
      * @param {Object} position a position from nearley
      */
-    constructor (identifier: string, nullable: boolean, position: Object) {
+    constructor (identifier: string, position: Object) {
         super(position);
         
         /** @type {string} */
         this.identifier = new Id(identifier, null);
-        
-        /** @type {boolean} */
-        this.nullable = nullable;
     }
     
     /** @override */

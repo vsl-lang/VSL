@@ -12,7 +12,14 @@ export default class VSLPreprocessor extends Transformer {
             pass.FoldFiniteIntegerRange,
             pass.FoldBinaryIntegerExpression,
             
-            pass.VerifyFunctionAccessScope
+            pass.VerifyFunctionAccessScope,
+            
+            pass.ResolveTypePath,
+            pass.ResolveGenericArgument,
+            
+            pass.DescribeClassDeclaration,
+            // pass.DescribeFunctionDeclaration,
+            pass.DescribeVariableAssignment
         ]);
     }
 }

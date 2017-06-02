@@ -41,13 +41,12 @@ function display (output) {
 
 function feed (code) {
     let result;
-    if ((result = parser.feed(code + "\n"))) {
+    if ((result = parser.feed(code + '\n'))) {
         return result;
     } else {
         if (result === null)
             return;
-        print("Syntax Error".red + ": ");
-        //TODO: tokenizer now returns formatted error
+        print('Syntax Error'.red + ': ');
         print(parser.error.message);
     }
 }

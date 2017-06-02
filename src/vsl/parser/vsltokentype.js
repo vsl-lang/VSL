@@ -4,9 +4,8 @@ const VSLTokenType = Object.freeze({
     String: 2,
     Regex: 3,
     SpecialArgument: 4,
-    SpecialLoop: 5,
-    SpecialIdentifier: 6,
-    Identifier: 7
+    SpecialIdentifier: 5,
+    Identifier: 6
 }); 
 
 export default VSLTokenType;

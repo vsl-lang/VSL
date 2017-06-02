@@ -74,7 +74,6 @@ export default class VSLTokenizer extends Tokenizer {
             ['"(?:\\\\["bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^"\\\\])*"', unescapeString, VSLTokenType.String],
             ["'(?:\\\\['bfnrt\\/\\\\]|\\\\u[a-fA-F0-9]{4}|[^'\\\\])*'", unescapeString, VSLTokenType.String],
             ['\\$+[0-9]+', passThrough, VSLTokenType.SpecialArgument],
-            ['\\$+_[0-9]+', passThrough, VSLTokenType.SpecialLoop],
             ['\\$[a-zA-Z_][a-zA-Z0-9_]*', slice1, VSLTokenType.SpecialIdentifier],
             ['\\.[0-9_]+', strip_, VSLTokenType.Decimal],
             ['[0-9][0-9_]*\\.[0-9_]+', strip_, VSLTokenType.Decimal],

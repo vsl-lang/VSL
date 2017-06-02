@@ -1,5 +1,5 @@
-import Transformation from '../transformation.js';
-import TransformError from '../transformError.js';
+import Transformation from '../transformation';
+import TransformError from '../transformError';
 import TokenType from '../../parser/vsltokentype';
 import t from '../../parser/nodes';
 

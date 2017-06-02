@@ -11,11 +11,15 @@ export default class FunctionCall extends Node {
     /**
      * Creates a function call
      * 
+     * @param {Expression} head the function to call
      * @param {ArgumentCall[]} args the provided arguments
      * @param {Object} position a position from nearley
      */
-    constructor (args: ArgumentCall[], position: Object) {
+    constructor (head: Expression, args: ArgumentCall[], position: Object) {
         super(position);
+
+        /** @type {Expression} */
+        this.head = head;
 
         /** @type {ArgumentCall[]} */
         this.arguments = args;
@@ -28,6 +32,6 @@ export default class FunctionCall extends Node {
     
     /** @override */
     toString() {
-        return `(${this.arguments.join(', ')})`;
+        return `${this.head}(${this.arguments.join(', ')})`;
     }
 }
