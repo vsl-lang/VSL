@@ -19,7 +19,7 @@
   <p align="center">
     <a href="#">Website</a> &mdash;
     <a href="#">Download</a> &mdash;
-    <a href="http://docs.cheddar.vihan.org/">Documentation</a>
+    <a href="#">Documentation</a>
   </p>
   <p align="center">
     Versatile Scripting Language
@@ -45,7 +45,16 @@ commands:
 $ npm run coverage # Generates testing coverage reports
 $ npm test         # Runs all tests
 $ npm run dev      # Development build
+$ npm run docs
 ```
+
+Do note you don't need to generate docs unless you want them for yourself because
+the CI will automatically generate docs.
+
+## Development Info
+
+ - Docs are located [here](https://preview.c9users.io/somebody1234/node-vsl/docs/index.html).
+ - A bunch of READMEs are located in the dirs which do more complex things
 
 ## Problem
 Today they are quite a few languages, some popular ones you may of heard of are:
