@@ -1,5 +1,6 @@
 import Transformation from './transformation';
 import ScopeTraverser from './scopetraverser';
+import Node from '../parser/nodes/node';
 import ASTTool from './asttool';
 import t from '../parser/nodes';
 
@@ -145,7 +146,7 @@ export default class Transformer extends ScopeTraverser {
         while ((value = this.nodeQueue.shift()) !== (void 0)) {
             if (value === null) continue;
             [node, parent, item] = value;
-            let result = this.transform(node, parent, item);
+            this.transform(node, parent, item);
         }
     }
     

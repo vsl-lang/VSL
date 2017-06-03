@@ -45,7 +45,8 @@ commands:
 $ npm run coverage # Generates testing coverage reports
 $ npm test         # Runs all tests
 $ npm run dev      # Development build
-$ npm run docs
+$ npm run docs     # Make docs
+$ npm run lint     # Lint code and make sure not crap
 ```
 
 Do note you don't need to generate docs unless you want them for yourself because

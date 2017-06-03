@@ -1,0 +1,12 @@
+engines:
+  csslint:
+    enabled: false
+  eslint:
+    enabled: true
+    
+ratings:
+  - "src/"
+    
+exclude_paths:
+  - "test/"
+  - "src/cli"
