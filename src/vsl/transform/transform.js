@@ -1,8 +1,6 @@
 import VSLPreprocessor from './transformers/vslpreprocessor';
 import VSLTransformer from './transformers/vslpreprocessor';
 
-import STL from '../stl/stl';
-
 /**
  * Performs transformation on a given AST root array. By default the parser will
  * output the top-level AST result as a `CodeBlock[]`, so you can just pass the

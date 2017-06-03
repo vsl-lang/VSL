@@ -5,7 +5,7 @@ import Node from './node';
  * 
  * This matches a tuple literal.
  */
-export default class Set extends Node {
+export default class Tuple extends Node {
     
     /**
      * Creates a wrapper for tuples

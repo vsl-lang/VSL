@@ -20,4 +20,30 @@ export default () => describe("Expressions", () => {
     invalid`1 +`;
     invalid`/ 1`;
     invalid`1 -`;
+    
+        
+    describe("Properties", () => {
+        valid`a`;
+        valid`a1`;
+        valid`_a`;
+        
+        invalid`1a`;
+        
+        valid`a.b`;
+        valid`a(b)`;
+        valid`a.b(c)`;
+        valid`a.b(c).d`;
+        valid`a.b[c]`;
+        valid`a.b[c].d`;
+        
+        valid`a?.b`;
+        invalid`a?`;
+        invalid`a?.b?`;
+        
+        valid`a?[c]`;
+        valid`a[c]?.d`;
+        valid`a[c]?[d]`;
+        
+        invalid `a[c]?d`
+    });
 })
