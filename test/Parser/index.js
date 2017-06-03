@@ -6,6 +6,7 @@ describe('Parser', () => {
     require('./functions')();
     require('./classes')();
     require('./comments')();
+    require('./collections')()
     
     // Global codeblock
     valid``;
