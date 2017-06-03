@@ -4,7 +4,7 @@ engines:
   eslint:
     enabled: true
     config:
-      - .eslintrc.ymlA
+      - .eslintrc.js
     
 ratings:
   - "src/"
