@@ -44,6 +44,7 @@ export default class RootResolver extends TypeResolver {
         const negotiator = (type) => {
             switch (type) {
                 case ConstraintType.ContextParentConstraint: return response;
+                case ConstraintType.RequestedTypeResolutionConstraint: return [response];
                 default: return null;
             }
         };

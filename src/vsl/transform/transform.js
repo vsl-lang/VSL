@@ -1,5 +1,5 @@
 import VSLPreprocessor from './transformers/vslpreprocessor';
-import VSLTransformer from './transformers/vslpreprocessor';
+import VSLTransformer from './transformers/vsltransformer';
 
 import STL from '../stl/stl';
 

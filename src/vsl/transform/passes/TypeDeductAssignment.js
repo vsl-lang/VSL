@@ -32,6 +32,6 @@ export default class TypeDeductAssignment extends Transformation {
         });
         
         // Add to scope
-        console.log(node);
+        // console.log(node);
     }
 }

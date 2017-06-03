@@ -6,11 +6,10 @@ import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 
 /**
- * Resolves `Idenifier`s in terms of type and declaration. This will do a lookup
- * but also check for valid candidates in terms of further chaining. This may 
- * resolve to a TypeItem or an AliasItem.
+ * Resolves types of a binary expression. Checks for candidates on LHS and does
+ * a 
  */
-export default class IdResolver extends TypeResolver {
+export default class BinaryExpressionResolver extends TypeResolver {
     
     /**
      * @param {Node} node - The node to resolve.
@@ -35,12 +34,8 @@ export default class IdResolver extends TypeResolver {
      */
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
-        // If specified, the type MUST resolve to this type.
-        const required = negotiate(ConstraintType.ContextParentConstraint);
-        
         // Negotiate the requested type for this identifier.
-        // This is supplied if they are multiple candidiates which this can fullfill
-        const candidates = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
         
         let result = this.node.parentScope.scope.get(
             new ScopeAliasItem(this.node.identifier.rootId)
@@ -52,13 +47,6 @@ export default class IdResolver extends TypeResolver {
         // Candidates of type
         let candidates = result.candidates;
         
-        if (required !== null) {
-            // Check if the type matches the required type.
-        } else if (candidates !== null) {
-            
-        } else {
-            // This should just inherit the resolution type or throw an error if
-            // we can't figure it out
-        }
+        // Atomic type so no further requeuing
     }
 }
