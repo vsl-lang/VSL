@@ -60,12 +60,11 @@ FunctionCallList -> delimited[FunctionCallArgument {% id %}, _ "," _] {% (d, l) 
 Expression -> BinaryExpression {% expr %}
 
 # Properties
-Property -> propertyHead (_ propertyTail {% nth(1) %}):* "?":? {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1], !!d[2], l))) %}
-          | "?" (_ nullableProperty {% d => d[1] %}):* "?":? {% (d, l) => (d[1].length === 0 ? new t.Whatever(l) : recursiveProperty(new t.Whatever(l), d[1], !!d[2], l)) %}
+Property -> propertyHead (_ propertyTail {% nth(1) %}):* {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1], l))) %}
+          | "?" (_ nullableProperty {% d => d[1] %}):* {% (d, l) => (d[1].length === 0 ? new t.Whatever(l) : recursiveProperty(new t.Whatever(l), d[1], l)) %}
 
-propertyHead -> Literal {% id %}
-              | Identifier {% id %}
-              | "(" _ Identifier _ ")" {% nth(2) %}
+propertyHead -> Literal                {% id %}
+              | Identifier             {% id %}
               | "(" _ Expression _ ")" {% nth(2) %}
               | FunctionizedOperator   {% id %}
 
@@ -104,8 +103,9 @@ Set -> "{" _ "}"                                             {% (d, l) => new t.
 # Primitiveish Things
 # Not really used by this file except for lambdas
 FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
+
 ArgumentList -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}
-Argument -> TypedIdentifier ( _ "=" _ (Expression {% id %} | Identifier {% id %}) {% nth(3) %}):? {% (d, l) => new t.FunctionArgument(d[0], d[1], l) %}
+Argument -> TypedIdentifier ( _ "=" _ (Expression {% id %}) {% nth(3) %}):? {% (d, l) => new t.FunctionArgument(d[0], d[1], l) %}
 
 # Operators
 
