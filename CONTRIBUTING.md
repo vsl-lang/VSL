@@ -2,33 +2,48 @@
 By contibuting to this project, you agree to abide by the thoughtbot [Code of Conduct](https://thoughtbot.com/open-source-code-of-conduct).
 
 ## Formatting code
-* Use 4 wide soft tabs.
-* Put a semicolon at the end of each line.
-* Curly braces follow [Java Style](https://en.wikipedia.org/wiki/Indent_style#Variant:_Java).
-* Names for classes are in `PascalCase`, while functions, variables, etc. names are in `camelCase`.
+ * Use 4-wide soft tabs.
+ * Semicolons are preffered at the end of statements (except block statements).
+ * Curly braces follow [Java Style](https://en.wikipedia.org/wiki/Indent_style#Variant:_Java).
+ * Names for classes are in `PascalCase`, functions/fields in `camelCase`, local names in `snek_case`.
+ * Prefer double quotes and template strings unless for particularity applied senarios. 
 
 ## Commits
-* Commit early and often. You can squash it all later when you get ready to push to `origin`.
-* Titles should be capitalized, 50 characters long, and written in the imperatave mood. It should be `Fix bug`, not `Fixed bug`.
-* Titles should be brief and informative, with no punctuation at the end.
-* The title should be prefixed by a category (e.g. `generator`, `grammar`, etc) and a colon so it's easier to read a list of commit titles.
-* Descriptions should be detailed, especially when squashing multiple commits,  but not too verbose.
-* Descriptions should be one paragraph per line, each separated by two line feeds. There is no limit on the length of a line.
-* Descriptions are written in the past tense usually.
-* It's recommended to sign your commits with your GPG key if you have one. If you don't then that's fine too.
+ * **Commit early and often**. You can squash it all later when you get ready to push to `origin`.
+ * **Sign** your commits (`git commit -s`). If you have a GPG key, use that too (`git commit -sS`)
+
+Summaries:
+ * **Capitalize** commit summaries. They should be a max of **50 characters**, no punctuation
+ * Write commit summaries in the **imperatave**. (e.g. `Fix bug`, not `Fixed bug`)
+ * Prefix the summary by a 'category' and a colon (e.g. `fix:`, `generator:`, `grammar:`, etc.)
+
+Descriptons:
+ * Limit descriptions to **72ish characters per line**. Seperate paragraphs with two newlines
+ * Write your descriptions in the past tense.
+
 Example commit message:
 ```
 documentation: Add CONTRIBUTING.md
 
-Providing a guideline for contributing can help with maintaining consistency throughout the repo. I added a CONTRIBUTING.md to further promote that.
+Providing a guideline for contributing can help with maintaining consistency
+throughout the repo. I added a CONTRIBUTING.md to further promote that.
 
-Because of this, some things in the source code may need to be changed to satisfy this, but obviously not our current commit messages because that would take too long.
+Because of this, some things in the source code may need to be changed to
+satisfy this, but obviously not our current commit messages because that would
+take too long.
+
+Signed-off-by: Sir Goat <sirgoatiiv@goatfam.com>
 ```
 
+We reccomend reading:
+
+ - [5 Useful Tips for a Better Commit Message](https://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message)
+ - [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
+
 ## Branching
-* Always create your branches from `develop` or any other branch based on `develop`.
-* Use pull requests to merge branches. Always request merges into `develop`.
-* When doing any merging into `develop` (adding a feature, bugfix, etc), merge using the `--squash` flag onto `develop`, or something equivalent to that in a pull request. This lets you create a nice descriptive commit message representing the entire branch you just merged.
-* Pull requests should be used for any features or significant changes so they're easier to track, get feedback on, etc.
-* Once that branch is merged, it should be deleted to avoid pollution. Also, consider GCing orphaned commits with `git gc --prune=now --aggressive` so they're not lying around.
-* Branch names, if they get published to `origin`,  should be prefixed by what type of branch it is (`feature`, `hotfix`, `bugfix`, etc) and a `/`. The rest of the name is a very brief `kebab-case` name in the imperative mood, e.g. `documentation/add-contributing-guidelines`.
+ * Branch from `develop` or one if it's child branches.
+ * Always pull request into `develop`.
+ * Always squash when merging upstream. (Specify who merged if diff. from PR author)
+ * Delete merged branches. Consider GCing orphaned commits with `git gc --prune=now --aggressive`.
+ * Branch names on the source repo (i.e. not on forks) should be prefixed by the type of change (`feature`, `hotfix`, `bugfix`) and a `/`. The rest of the name is a very brief `kebab-case` name in the imperative mood, e.g. `documentation/add-contributing-guidelines`.
+ 
