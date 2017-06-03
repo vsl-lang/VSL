@@ -4,6 +4,12 @@ node_js:
     - "5.12"
     - "6.10"
     - "7.10"
+
+addons:
+  codeclimate:
+    repo_token:
+      - secure: codeclimate
+
 install:
     - npm install
     - npm install -g codecov
@@ -12,3 +18,5 @@ script:
     - npm run coverage
 after_success:
     - codecov
+    - npm install -g codeclimate-test-reporter
+    - codeclimate-test-reporter < coverage/lcov.info
