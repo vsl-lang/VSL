@@ -3,6 +3,8 @@ engines:
     enabled: false
   eslint:
     enabled: true
+    config:
+      - .eslintrc.ymlA
     
 ratings:
   - "src/"
