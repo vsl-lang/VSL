@@ -26,7 +26,8 @@ Because of this, some things in the source code may need to be changed to satisf
 ```
 
 ## Branching
-* Always create your branches from `develop` or any other branch based on `develop`. 
+* Always create your branches from `develop` or any other branch based on `develop`.
+* Use pull requests to merge branches. Always request merges into `develop`.
 * When doing any merging into `develop` (adding a feature, bugfix, etc), merge using the `--squash` flag onto `develop`, or something equivalent to that in a pull request. This lets you create a nice descriptive commit message representing the entire branch you just merged.
 * Pull requests should be used for any features or significant changes so they're easier to track, get feedback on, etc.
 * Once that branch is merged, it should be deleted to avoid pollution.
