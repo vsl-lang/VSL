@@ -2,7 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeResolver from '../typeResolver';
 
-import STL from '../../stl/stl';
+// import STL from '../../stl/stl';
 
 import VSLTokenType from '../../parser/vsltokentype.js';
 

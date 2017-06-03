@@ -38,22 +38,31 @@ CommandChainPart -> (ArgumentCallHead ("," _ ArgumentCall {% nth(2) %}):* {% d =
 ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2], d[0], l) %}
                   | Expression {% (d, l, f) => d[0] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[0], null, l) %}
 
+
+#  == Prop ==
+FunctionCallArgument -> %identifier _ ":" _ Expression {% (d, l) => new t.ArgumentCall(d[4], d[0], l) %}
+                      | Expression                     {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
+                      
+FunctionCallList -> delimited[FunctionCallArgument, _ "," _] {% (d, l) => new t.FunctionCall(d[0], l) %}
+
 Expression -> BinaryExpression {% expr %}
 
 # Properties
 Property -> propertyHead (_ propertyTail {% nth(1) %}):* {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1], l))) %}
           | "?" (_ nullableProperty {% d => d[1] %}):* {% (d, l) => (d[1].length === 0 ? new t.Whatever(l) : recursiveProperty(new t.Whatever(l), d[1], l)) %}
 
-propertyHead -> Literal {% id %}
-              | Identifier {% id %}
+propertyHead -> Literal                {% id %}
+              | Identifier             {% id %}
               | "(" _ Expression _ ")" {% nth(2) %}
-              | FunctionizedOperator {% id %}
-propertyTail -> "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
+              | FunctionizedOperator   {% id %}
+
+propertyTail -> "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
               | "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {% (d, l) => new t.Subscript(null, d[2], false, l) %}
-              | nullableProperty {% id %}
-nullableProperty -> "?" "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
+              | nullableProperty                                    {% id %}
+              
+nullableProperty -> "?" "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
                   | "?" "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {% (d, l) => new t.Subscript(null, d[3], true, l) %}
-                  | "(" _ (UnnamedArgumentCall "," _ {% id %}):* NamedArgumentCall ("," _ ArgumentCall {% nth(2) %}):* _ ")" {% (d, l) => new t.FunctionCall(null, d[0].concat([d[1]]).concat(d[2]), l) %}
+                  | "(" _ FunctionCallList _ ")"                            {% nth(2) %}
 
 ArgumentCall -> NamedArgumentCall {% id %}
               | UnnamedArgumentCall {% id %}
@@ -89,6 +98,7 @@ Set -> "{" "}" {% (d, l) => new t.SetNode([], l) %}
 
 Key -> Identifier {% id %}
      | "[" Expression "]" {% nth(1) %}
+     
 # Primitiveish Things
 FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
 
@@ -127,5 +137,5 @@ Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {% (d, l) => new t.UnaryEx
 FunctionizedOperator -> "(" (
   "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
     | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>"
-    | ".." | "..." | "::"
+    | ".." | "..."
 ) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0].value, l) %}
