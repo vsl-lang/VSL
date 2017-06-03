@@ -30,5 +30,5 @@ Because of this, some things in the source code may need to be changed to satisf
 * Use pull requests to merge branches. Always request merges into `develop`.
 * When doing any merging into `develop` (adding a feature, bugfix, etc), merge using the `--squash` flag onto `develop`, or something equivalent to that in a pull request. This lets you create a nice descriptive commit message representing the entire branch you just merged.
 * Pull requests should be used for any features or significant changes so they're easier to track, get feedback on, etc.
-* Once that branch is merged, it should be deleted to avoid pollution.
+* Once that branch is merged, it should be deleted to avoid pollution. Also, consider GCing orphaned commits with `git gc --prune=now --aggressive` so they're not lying around.
 * Branch names, if they get published to `origin`,  should be prefixed by what type of branch it is (`feature`, `hotfix`, `bugfix`, etc) and a `/`. The rest of the name is a very brief `kebab-case` name in the imperative mood, e.g. `documentation/add-contributing-guidelines`.
