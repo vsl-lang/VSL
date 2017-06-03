@@ -14,7 +14,7 @@ By contibuting to this project, you agree to abide by the thoughtbot [Code of Co
 
 Summaries:
  * **Capitalize** commit summaries. They should be a max of **50 characters**, no punctuation
- * Write commit summaries in the **imperatave**. (e.g. `Fix bug`, not `Fixed bug`)
+ * Write commit summaries in the **imperative**. (e.g. `Fix bug`, not `Fixed bug`)
  * Prefix the summary by a 'category' and a colon (e.g. `fix:`, `generator:`, `grammar:`, etc.)
 
 Descriptons:
@@ -35,7 +35,7 @@ take too long.
 Signed-off-by: Sir Goat <sirgoatiiv@goatfam.com>
 ```
 
-We reccomend reading:
+We recommend reading:
 
  - [5 Useful Tips for a Better Commit Message](https://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message)
  - [A Note About Git Commit Messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
@@ -46,4 +46,3 @@ We reccomend reading:
  * Always squash when merging upstream. (Specify who merged if diff. from PR author)
  * Delete merged branches. Consider GCing orphaned commits with `git gc --prune=now --aggressive`.
  * Branch names on the source repo (i.e. not on forks) should be prefixed by the type of change (`feature`, `hotfix`, `bugfix`) and a `/`. The rest of the name is a very brief `kebab-case` name in the imperative mood, e.g. `documentation/add-contributing-guidelines`.
- 
