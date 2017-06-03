@@ -1,0 +1,14 @@
+engines:
+  csslint:
+    enabled: false
+  eslint:
+    enabled: true
+    config:
+      - .eslintrc.js
+    
+ratings:
+  - "src/"
+    
+exclude_paths:
+  - "test/"
+  - "src/cli"
