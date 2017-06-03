@@ -4,7 +4,9 @@
         "loop-optimizer",
         "wildcard",
         "add-module-exports",
-        "transform-runtime",
+        ["transform-runtime", {
+            "polyfill": false
+        }],
         "transform-class-properties",
         "transform-do-expressions",
         "transform-function-bind",

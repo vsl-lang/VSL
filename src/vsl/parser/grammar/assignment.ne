@@ -11,6 +11,7 @@ AssignmentStatement -> AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% 
     )
 %}
 
-AssignmentType -> "var" {% id %} | "let" {% id %}
+AssignmentType -> "var" {% id %}
+                | "let" {% id %}
 
 # PatternDeclaration -> "func" _ %identifier _ "::" argumentList "=>" type

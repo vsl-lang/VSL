@@ -64,7 +64,7 @@ export default class Tokenizer {
         let code = this.code,
             token = [],
             success = false;
-        while (1) {
+        while (true) {
             if (code.length === 0)
                 return undefined;
             for (let [regex, onSuccess, type] of this.tokenMatcher) {

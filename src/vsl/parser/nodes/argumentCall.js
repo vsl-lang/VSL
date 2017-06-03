@@ -33,6 +33,6 @@ export default class ArgumentCall extends Node {
     
     /** @override */
     toString() {
-        return this.name ? `${this.name}: ${this.value}` : `${this.value}o`;
+        return this.name ? `${this.name}: ${this.value}` : `${this.value.constructor.name}`;
     }
 }
