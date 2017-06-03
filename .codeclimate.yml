@@ -1,6 +1,8 @@
 engines:
   csslint:
     enabled: false
+  fixme:
+    enabled: false
   eslint:
     enabled: true
     config:

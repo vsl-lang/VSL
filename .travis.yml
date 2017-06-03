@@ -8,7 +8,7 @@ node_js:
 addons:
   codeclimate:
     repo_token:
-      - secure: codeclimate
+      - secure: CODECLIMATE_REPO_TOKEN
 
 install:
     - npm install
