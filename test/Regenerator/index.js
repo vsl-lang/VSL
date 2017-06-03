@@ -1,0 +1,3 @@
+describe("Regenerator", () => {
+    require('./expression')();
+});
