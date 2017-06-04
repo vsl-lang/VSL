@@ -118,12 +118,13 @@ if (argv.r) {
     	    return prompt();
     	// check if got any tokens at all
     	// i.e. skip if all comments or no input
-    	if (result.tokens && result.length < 1) {
+    	if (result.tokens > 1 && result.length < 1) {
     	    feeding = true;
     	    rl.setPrompt('>>>>>>>>>>>>>> '.bold);
     	    return rl.prompt();
     	}
-    	console.log(result[0].toString());
+    	if (result.tokens > 1)
+    	    console.log(result[0].toString());
         prompt();
     });
 }
@@ -156,13 +157,14 @@ if (argv.p) {
     	if (typeof result === 'undefined')
     	    return prompt();
     	// check if got any tokens at all
-    	// i.e. skip if all comments or no imput
-    	if (result.tokens && result.length < 1) {
+    	// i.e. skip if all comments or no input
+    	if (result.tokens > 1 && result.length < 1) {
     	    feeding = true;
     	    rl.setPrompt('>>>>>>>>>>> '.bold);
     	    return rl.prompt();
     	}
-    	display(result);
+    	if (result.tokens > 1)
+    	    display(result);
         prompt();
     });
 }

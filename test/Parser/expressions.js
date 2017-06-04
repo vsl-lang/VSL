@@ -29,6 +29,9 @@ export default () => describe("Expressions", () => {
         
         invalid`1a`;
         
+        valid`a b`;
+        valid`a b c: d`;
+        valid`a b c: d, 5, e: f`;
         valid`a.b`;
         valid`a(b)`;
         valid`a.b(c)`;

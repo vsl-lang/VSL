@@ -23,33 +23,35 @@ function recursiveProperty(head, tail, location) {
 # QUETION: do we allow class, function etc in closure
 # like imo we should in normal functions bc even though snek does it i think is good
 # hmm we should make it property
-# also why is it not parsing correctly halp very much
-CommandChain -> Property CommandChainPart:+ {% (d, l) => recursiveProperty(d[0], d[1], l) %}
+CommandChain -> Identifier CommandChainPart:+ {% (d, l) => recursiveProperty(d[0], d[1], l) %}
+
+# TODO: closure node
+Closure -> "{" CodeBlock[Expression] "}" {% (d, l) => d[2] %}
 
 # TODO: optional (foo? bar == foo?.bar)
-CommandChainPart -> (ArgumentCallHead ("," _ ArgumentCall {% nth(2) %}):* {% d => [d[0]].concat(d[1]) %}):? "{" CodeBlock[Expression] "}" {% (d, l) => new t.FunctionCall(null, d[0].concat([d[2]]), false, l) %}
-                  | ArgumentCallHead ("," _ ArgumentCall {% nth(2) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
-                  | ArgumentCallHead {%
-                  // O: KEEP
-                    (d, l) => console.log('asadsdasfajf', t.Tuple) || d[0] instanceof t.Identifier ? new t.PropertyExpression(null, d[0], false, l) : d[0] instanceof t.Tuple ? new t.FunctionCall(null, console.log(d[0].tuple) || d[0].tuple.map(item => new t.ArgumentCall(item, null, item.position)), l) : new t.FunctionCall(null, [d[0]], false, l)
+CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):* {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, d[0].concat([d[1]]), false, l) %}
+                  | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
+                  | %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
+                  | Expression {%
+                    (d, l, f) => (d[0].expression instanceof t.UnaryExpression || d[0].expression instanceof t.Tuple || d[0].expression instanceof t.ArrayNode || d[0].expression instanceof t.Whatever) ?
+                      f :
+                      d[0].expression instanceof t.Identifier ?
+                        new t.PropertyExpression(null, d[0].expression, false, l) :
+                        new t.FunctionCall(null, [new t.ArgumentCall(d[0], null, l)], false, l)
                   %}
-#: d[0] instanceof t.Tuple ? new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item, null, item.position)), l) :
 
-ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2], d[0], l) %}
-                  | Expression {% (d, l, f) => d[0] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[0], null, l) %}
+ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
+                  | Expression {% (d, l, f) => d[0].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[0].expression, null, l) %}
 
 
 #  == Prop ==
-FunctionCallArgument -> %identifier _ ":" _ Expression {% (d, l) => new t.ArgumentCall(d[4], d[0], l) %}
-                      | Expression                     {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
-                      
-FunctionCallList -> delimited[FunctionCallArgument, _ "," _] {% (d, l) => new t.FunctionCall(null, d[0], l) %}
 
 Expression -> BinaryExpression {% expr %}
 
 # Properties
 Property -> propertyHead (_ propertyTail {% nth(1) %}):* {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1], l))) %}
-          | "?" (_ nullableProperty {% d => d[1] %}):* {% (d, l) => (d[1].length === 0 ? new t.Whatever(l) : recursiveProperty(new t.Whatever(l), d[1], l)) %}
+          | "?" _ nullableProperty (_ propertyTail {% nth(1) %}):* {% (d, l) => recursiveProperty(new t.Whatever(l), [d[2]].concat(d[3]), l) %}
+          | "?" {% (d, l) => new t.Whatever(l) %}
 
 propertyHead -> Literal                {% id %}
               | Identifier             {% id %}
@@ -57,12 +59,13 @@ propertyHead -> Literal                {% id %}
               | FunctionizedOperator   {% id %}
 
 propertyTail -> "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
-              | "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {% (d, l) => new t.Subscript(null, d[2], false, l) %}
+              | Array                                               {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
               | nullableProperty                                    {% id %}
               
 nullableProperty -> "?" "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
-                  | "?" "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {% (d, l) => new t.Subscript(null, d[3], true, l) %}
-                  | "(" _ FunctionCallList _ ")"                            {% nth(2) %}
+                  | "?" Array                                               {% (d, l) => new t.Subscript(null, d[1].array, true, l) %}
+                  | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")" {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
+                  | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
 
 ArgumentCall -> NamedArgumentCall {% id %}
               | UnnamedArgumentCall {% id %}
@@ -81,23 +84,23 @@ Literal -> %decimal {% literal %}
 #          | ImmutableDictionary {% id %}
          | Set {% id %}
 
-Array -> "[" "]" {% (d, l) => new t.ArrayNode([], l) %}
-       | "[" delimited[Expression, ","] "]" {% (d, l) => new t.ArrayNode(d[1], l) %}
+Array -> "[" _ "]" {% (d, l) => new t.ArrayNode([], l) %}
+       | "[" _ delimited[Expression, _ "," _] _ "]" {% (d, l) => new t.ArrayNode(d[2], l) %}
 
-Dictionary -> "[" ":" "]" {% (d, l) => new t.Dictionary(new Map(), l) %}
-            | "[" delimited[Key ":" Expression, ","] "]" {% (d, l) => new t.Dictionary(new Map(d[1]), l) %}
+Dictionary -> "[" _ ":" _ "]" {% (d, l) => new t.Dictionary(new Map(), l) %}
+            | "[" _ delimited[Key ":" Expression {% (d, l) => [d[0], d[2]] %}, _ "," _] _ "]" {% (d, l) => new t.Dictionary(new Map(d[2]), l) %}
 
-Tuple -> "(" ")" {% (d, l) => new t.Tuple([], l) %}
-       | "(" Expression "," _ delimited[Expression, "," _] ")" {% (d, l) => new t.Tuple([d[1]].concat(d[3]), l) %}
+Tuple -> "(" _ ")" {% (d, l) => new t.Tuple([], l) %}
+       | "(" _ Expression "," _ delimited[Expression, _ "," _] _ ")" {% (d, l) => new t.Tuple([d[2]].concat(d[5]), l) %}
 
-ImmutableDictionary -> "(" ":" ")" {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
+ImmutableDictionary -> "(" _ ":" _ ")" {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
 #                      | "(" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionary(new Map(d[1]), l) %}
 
-Set -> "{" "}" {% (d, l) => new t.SetNode([], l) %}
-     | "{" delimited[Expression, ","] "}" {% (d, l) => new t.SetNode(d[1], l) %}
+Set -> "{" _ "}" {% (d, l) => new t.SetNode([], l) %}
+     | "{" _ delimited[Expression, _ "," _] _ "}" {% (d, l) => new t.SetNode(d[2], l) %}
 
 Key -> Identifier {% id %}
-     | "[" Expression "]" {% nth(1) %}
+     | "[" _ Expression _ "]" {% nth(1) %}
      
 # Primitiveish Things
 FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
