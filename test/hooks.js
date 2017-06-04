@@ -17,28 +17,40 @@ function vslStr(source) {
  */
 export function vsl(source) {
     if (source instanceof Array) source = source[0];
+    
+    let res;
+    try {
+        let p = new VSLParser().feed(source);
+        if (p.length === 0) res = null;
+        else res = p;
+    } catch (e) {
+        res = null;
+    }
+
+    
     return {
         src: source,
         formattedLine: source.replace(/([}{()])\n/g, "$1").replace(/\n/g, "\\n").replace(/ +/g, " "),
         formatted: source.indexOf("\n") > -1 ? "\n" + source.replace(/^/gm, "    ") : source,
-        isVSL: true
+        isVSL: true,
+        ast: res
     };
 }
 
 /**
- * Parses VSL code (tempalte string)
+ * Regenerate VSL code. Run through `parseVSL` first.
  */
-export function parseVSL(source) {
-    if (source instanceof Array) source = source[0];
-    let res;
-    try {
-        let p = new VSLParser().feed(source);
-        if (p.length === 0) return null;
-        res = p;
-    } catch (e) {
-        return null;
-    }
-    return p
+export function regenerate(source, expected) {
+    it(`should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
+        try {
+            if (source.ast === null) return;
+            let str = source.ast[0].statements[0].toString();
+            if (str === expected) return;
+            else throw new Error(`Regenerating to ${expected} resulted in ${str}`);
+        } catch(e) {
+            throw new TypeError(`An error occured while regenerating: ${source.formattedLine} to ${expected}.\n${e}`);
+        }
+    });
 }
 
 

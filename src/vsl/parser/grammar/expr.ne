@@ -121,12 +121,12 @@ Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], 
 Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
 Is -> BinaryOp[Is, ("is" | "issub"), Comparison]        {% id %}
 Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
-Or -> BinaryOp[Or, ("||"), And]                         {% id %}
-And -> BinaryOp[And, ("&&"), Shift]                     {% id %}
-Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]            {% id %}
-Sum -> BinaryOp[Sum, ("+" | "-"), Product]              {% id %}
-Product -> BinaryOp[Product, ("*" | "/"), Power]        {% id %}
-Power -> BinaryOp[Power, ("**"), Bitwise]               {% id %}
+Or -> BinaryOp[Or, ("||"), And]  {% id %}
+And -> BinaryOp[And, ("&&"), Shift]  {% id %}
+Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]  {% id %}
+Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
+Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
+Power -> BinaryOpRight[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]          {% id %}
 Range -> BinaryOp[Range, (".." | "..."), Cast]          {% id %}
