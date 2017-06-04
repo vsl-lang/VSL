@@ -1,68 +1,54 @@
 # Parses an expression
 # `Expression` may be empty
 
+@{%
+const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
+  expr = (d, l, f) => new t.ExpressionStatement(d[0], l);
+
+function recursiveProperty(head, tail, optional, location) {
+  if (tail.length === 0)
+    return head;
+  for (let i = 0; i < tail.length - 1; i++)
+    tail[i + 1].head = tail[i];
+  tail[0].head = head;
+  tail[tail.length - 1].optional = optional;
+  //console.log('ok', require('util').inspect(tail[tail.length - 1], {depth: null}));
+  return tail[tail.length - 1];
+}
+
+%}
+
 @builtin "postprocessors.ne"
 @include "ws.ne"
 @include "primitives.ne"
 @include "codeBlock.ne"
 
+# === Comamnd Chain ===
 # QUETION: do we allow class, function etc in closure
 # like imo we should in normal functions bc even though snek does it i think is good
 # hmm we should make it property
 # also why is it not parsing correctly halp very much
-@{%
-function recursiveProperty(head, tail, location) {
-    if (tail.length === 0) {
-        return head;
-    }
-    for (let i = 0; i < tail.length - 1; i++) {
-        tail[i + 1].head = tail[i];
-    }
-    tail[0].head = head;
-    return tail[tail.length - 1];
-}
-%}
+# CommandChain -> Property CommandChainPart:+ {% (d, l) => recursiveProperty(d[0], d[1], l) %}
 
-CommandChain -> Property CommandChainPart:+ {%
-    (data, location) => recursiveProperty(data[0], data[1], location)
-%}
+# # TODO: optional (foo? bar == foo?.bar)
+# CommandChainPart -> (ArgumentCallHead ("," _ ArgumentCall {% nth(2) %}):* {% d => [d[0]].concat(d[1]) %}):? "{" CodeBlock[Expression] "}" {% (d, l) => new t.FunctionCall(null, d[0].concat([d[2]]), false, l) %}
+#                   | ArgumentCallHead ("," _ ArgumentCall {% nth(2) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
+#                   | ArgumentCallHead {%
+#                   // O: KEEP
+#                     (d, l) => console.log('asadsdasfajf', t.Tuple) || d[0] instanceof t.Identifier ? new t.PropertyExpression(null, d[0], false, l) : d[0] instanceof t.Tuple ? new t.FunctionCall(null, console.log(d[0].tuple) || d[0].tuple.map(item => new t.ArgumentCall(item, null, item.position)), l) : new t.FunctionCall(null, [d[0]], false, l)
+#                   %}
+#: d[0] instanceof t.Tuple ? new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item, null, item.position)), l) :
 
-# TODO: optional (foo? bar == foo?.bar)
-CommandChainPart
-   -> (ArgumentCallHead ArgumentCallTail:* {%
-            data => [data[0]].concat(data[1])
-        %}):? "{" CodeBlock[Expression] "}" {%
-        (data, location) => new t.FunctionCall(null, data[0].concat([data[2]]),
-            false, location)
-    %}
-    | ArgumentCallHead ArgumentCallTail:+ {%
-        (data, location) => new t.FunctionCall(null, [data[0]].concat(data[1]),
-            false, location)
-    %}
-    | ArgumentCallHead {%
-        (data, location) => {
-            console.log('asadsdasfajf', t.Tuple);
-            if (data[0] instanceof t.Identifier) {
-                return new t.PropertyExpression(null, data[0], false, location);
-            } else if (data[0] instanceof t.Tuple) {
-                console.log(data[0].tuple);
-                return new t.FunctionCall(null, data[0].tuple.map(
-                    item => new t.ArgumentCall(item, null, item.position)),
-                        location);
-            } else {
-                return new t.FunctionCall(null, [data[0]], false, location);
-            }
-        }
-    %}
+# ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2], d[0], l) %}
+#                   | Expression {% (d, l, f) => d[0] instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[0], null, l) %}
+# ArgumentCall -> NamedArgumentCall {% id %}
+#               | UnnamedArgumentCall {% id %}
 
-@{%
-function argumentCallHead0(data, location, reject) {
-    if (data[2] instanceof t.UnaryExpression) {
-        return reject;
-    } else {
-        return new t.ArgumentCall(data[2], data[0], location);
-    }
-}
+# NamedArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2], d[0], l) %}
+
+# UnnamedArgumentCall -> Expression {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
+
+
 
 function argumentCallHead1(data, location, reject) {
     if (data[0] instanceof t.UnaryExpression) {
@@ -78,33 +64,11 @@ ArgumentCallHead -> %identifier ":" Expression {% argumentCallHead0 %}
 
 ArgumentCallTail -> "," _ ArgumentCall {% nth(2) %}
 
-#  == Prop ==
-@{%
-function functionCallArgument0(data, location, reject) {
-    return new t.ArgumentCall(data[4], data[0], location);
-}
-
-function functionCallArgument1(data, location, reject) {
-    return new t.ArgumentCall(data[0], null, location);
-}
-
-function functionCallList(data, location, reject) {
-    return new t.FunctionCall(data[0], location);
-}
-%}
-
-FunctionCallArgument -> %identifier _ ":" _ Expression
-                            {% functionCallArgument0 %}
-                      | Expression {% functionCallArgument1 %}
+# === Prop ===
+FunctionCallArgument -> %identifier _ ":" _ Expression {% (d, l) => new t.ArgumentCall(d[4], d[0], l) %}
+                      | Expression                     {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
                       
-FunctionCallList -> delimited[FunctionCallArgument, _ "," _]
-                        {% functionCallList %}
-
-@{%
-function expr(data, location, reject) {
-    return new t.ExpressionStatement(data[0], location);
-}
-%}
+FunctionCallList -> delimited[FunctionCallArgument {% id %}, _ "," _] {% (d, l) => new t.FunctionCall(null, d[0], l) %}
 
 Expression -> BinaryExpression {% expr %}
 
@@ -166,106 +130,32 @@ nullableProperty -> "?" "." _ Identifier {% nullableProperty0 %}
                         {% nullableProperty1 %}
                   | "(" _ FunctionCallList _ ")" {% nth(2) %}
 
-ArgumentCall -> NamedArgumentCall {% id %}
-              | UnnamedArgumentCall {% id %}
+Literal -> %decimal   {% literal %}
+         | %integer   {% literal %}
+         | %string    {% literal %}
+         | Array      {% id %}
+         | Dictionary {% id %}
+         | Tuple      {% id %}
+         | Set        {% id %}
+#          | ImmutableDictionary {% id %}
 
-@{%
-function namedArgumentCall(data, location, reject) {
-    return new t.ArgumentCall(data[2], data[0], location);
-}
+Array -> "[" _ "]"                                           {% (d, l) => new t.ArrayNode([], l) %}
+       | "[" _ delimited[Expression {% id %}, _ "," _] _ "]" {% (d, l) => new t.ArrayNode(d[2], l) %}
 
-function unnamedArgumentCall(data, location, reject) {
-    return new t.ArgumentCall(data[0], null, location);
-}
-%}
+Dictionary -> "[" _ ":" _ "]"                                                                       {% (d, l) => new t.Dictionary(new Map(), l) %}
+            | "[" _ delimited[Expression _ ":" _ Expression {% d => [d[0], d[4]] %}, _ "," _] _ "]" {% (d, l) => new t.Dictionary(new Map(d[2]), l) %}
 
-NamedArgumentCall -> %identifier ":" Expression {% namedArgumentCall %}
-UnnamedArgumentCall -> Expression               {% unnamedArgumentCall %}
+Tuple -> "(" _ ")"                                                                           {% (d, l) => new t.Tuple([], l) %}
+       | "(" _ Expression _ "," _ (delimited[Expression {% id %}, _ "," _] _ {% id %}):? ")" {% (d, l) => new t.Tuple(d[6] ? [d[2]].concat(d[6]) : [d[2]], l) %}
 
-@{%
-function literal(data, location, reject) {
-    return new t.Literal(data[0][0], data[0][1], location);
-}
-%}
+# ImmutableDictionary -> "[" ":" "]"                                {% (d, l) => new t.ImmutableDictionary(new Map(), l) %}
+#                      | "[" delimited[Key ":" Expression, ","] ")" {% (d, l) => new t.ImmutableDictionary(new Map(d[1]), l) %}
 
-Literal -> %decimal            {% literal %}
-         | %integer            {% literal %}
-         | %string             {% literal %}
-         | Array               {% id %}
-         | Dictionary          {% id %}
-         | Tuple               {% id %}
-         # v- ok this name is way too long
-#        | ImmutableDictionary {% id %}
-         | Set                 {% id %}
-
-@{%
-function array0(data, location, reject) {
-    return new t.ArrayNode([], location);
-}
-
-function array1(data, location, reject) {
-    return new t.ArrayNode(data[1], location);
-%}
-
-Array -> "[" "]"                            {% array0 %}
-       | "[" delimited[Expression, ","] "]" {% array1 %}
-
-@{%
-function dictionary0(data, location, reject) {
-    return new t.Dictionary(new Map(), location);
-}
-
-function dictionary1(data, location, reject) {
-    return new t.Dictionary(new Map(data[1]), location);
-}
-%}
-
-Dictionary -> "[" ":" "]"                                {% dictionary0 %}
-            | "[" delimited[Key ":" Expression, ","] "]" {% dictionary1 %}
-
-@{%
-function tuple0(data, location, reject) {
-    return new t.Tuple([], location);
-}
-
-function tuple1(data, location, reject) {
-    return new t.Tuple([data[1]].concat(data[3]), location);
-%}
-
-Tuple -> "(" ")"                                               {% tuple0 %}
-       | "(" Expression "," _ delimited[Expression, "," _] ")" {% tuple1 %}
-
-@{%
-function immutableDictionary0(data, location, reject) {
-    return new t.ImmutableDictionary(new Map(), location);
-}
-
-function immutableDictionary1(data, location, reject) {
-    return new t.ImmutableDictionary(new Map(data[1]), location);
-}
-%}
-
-ImmutableDictionary -> "(" ":" ")" {% immutableDictionary0 %}
-#                    | "(" delimited[Key ":" Expression, ","] ")"
-#                        {% immutableDictionary1 %}
-
-@{%
-function set0(data, location, reject) {
-    return new t.SetNode([], location);
-}
-
-function set1(data, location, reject) {
-    return new t.SetNode(data[1], location);
-}
-%}
-
-Set -> "{" "}"                            {% set0 %}
-     | "{" delimited[Expression, ","] "}" {% set1 %}
-
-Key -> Identifier         {% id %}
-     | "[" Expression "]" {% nth(1) %}
+Set -> "{" _ "}"                                             {% (d, l) => new t.SetNode([], l) %}
+     | "{" _ delimited[Expression {% id %} , _ "," _]  _ "}" {% (d, l) => new t.SetNode(d[2], l) %}
      
 # Primitiveish Things
+# Not really used by this file except for lambdas
 FunctionArgumentList -> ArgumentList (_ "->" _ type {% nth(3) %}):?
 
 ArgumentList -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}
@@ -297,46 +187,28 @@ BinaryOpRight[self, ops, next] -> $next $ops _ $self {% binaryOp %}
 # Top level assignment
 BinaryExpression -> Ternary {% id %}
 
-@{%
-function ternary(data, location, reject) {
-    return new t.Ternary(data[0], data[2], data[4], location);
-}
-
-function prefix(data, location, reject) {
-    return new t.UnaryExpression(data[1], data[0][0].value, location);
-}
-%}
-
-Ternary -> Assign "?" Ternary ":" Assign {% ternary %}
-         | Assign                        {% id %}
-Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" |
-                                 "/=" | "*=" | "%=" | "**=" | "&=" | "|=" |
-                                 "^="), Is] {% id %}
-Is -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
-Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" |
-                                    ">" | "<"), Or]  {% id %}
+Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], d[4], l) %} | Assign {% id %}
+Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
+Is -> BinaryOp[Is, ("is" | "issub"), Comparison]        {% id %}
+Comparison -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Or]  {% id %}
 Or -> BinaryOp[Or, ("||"), And]  {% id %}
 And -> BinaryOp[And, ("&&"), Shift]  {% id %}
 Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]  {% id %}
 Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
 Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
-Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
+Power -> BinaryOpRight[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
-Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
-Range -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
-Cast -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
-Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {% prefix %}
+Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]          {% id %}
+Range -> BinaryOp[Range, (".." | "..."), Cast]          {% id %}
+Cast -> BinaryOpRight[Cast, ("::"), Prefix]             {% id %}
+Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix   {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, l) %}
         | Property {% id %}
 
 ## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
 ## what about assignment
-@{%
-function functionizedOperator(data, location, reject) {
-    return new t.FunctionizedOperator(data[1][0].value, location); 
-}
-%}
+FunctionizedOperator -> "(" (
+  "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<"
+    | ">>" | "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>"
+    | ".." | "..." | "::"
+) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0].value, l) %}
 
-FunctionizedOperator -> "(" ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" |
-                             "<" | "<<" | ">>" | "+" | "-" | "*" | "/" | "**" |
-                             "&" | "|" | "^" | "~>" | ":>" | ".." | "...")
-                        ")" {% functionizedOperator %}
