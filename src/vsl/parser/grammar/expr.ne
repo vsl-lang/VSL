@@ -195,7 +195,12 @@ Argument
 ## Match a generic operator
 ## This handles whitespace
 BinaryOp[self, ops, next]
-   -> BinaryOpRight[$next, $ops, $self] {% id %}
+   -> $self $ops _ $next {%
+        (data, location) =>
+            new t.BinaryExpression(data[0][0], data[3][0], data[1][0][0].value,
+                location)
+    %}
+    | $next {% mid %}
 
 BinaryOpRight[self, ops, next]
    -> $next $ops _ $self {%
