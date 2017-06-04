@@ -124,7 +124,7 @@ And -> BinaryOp[And, ("&&"), Shift]  {% id %}
 Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]  {% id %}
 Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
 Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
-Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
+Power -> BinaryOpRight[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
 Range -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
