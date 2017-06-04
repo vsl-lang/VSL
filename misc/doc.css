@@ -216,3 +216,7 @@ hr {
 .search-input-edge {
     background: none;
 }
+
+img {
+    box-shadow: none;
+}
