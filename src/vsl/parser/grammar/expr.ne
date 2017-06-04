@@ -43,7 +43,7 @@ ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2] instanceof t
 FunctionCallArgument -> %identifier _ ":" _ Expression {% (d, l) => new t.ArgumentCall(d[4], d[0], l) %}
                       | Expression                     {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
                       
-FunctionCallList -> delimited[FunctionCallArgument, _ "," _] {% (d, l) => new t.FunctionCall(d[0], l) %}
+FunctionCallList -> delimited[FunctionCallArgument, _ "," _] {% (d, l) => new t.FunctionCall(null, d[0], l) %}
 
 Expression -> BinaryExpression {% expr %}
 
@@ -124,7 +124,7 @@ And -> BinaryOp[And, ("&&"), Shift]  {% id %}
 Shift -> BinaryOp[Shift, ("<<" | ">>"), Sum]  {% id %}
 Sum -> BinaryOp[Sum, ("+" | "-"), Product]  {% id %}
 Product -> BinaryOp[Product, ("*" | "/"), Power]  {% id %}
-Power -> BinaryOp[Power, ("**"), Bitwise]  {% id %}
+Power -> BinaryOpRight[Power, ("**"), Bitwise]  {% id %}
 Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]  {% id %}
 Range -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
