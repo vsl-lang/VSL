@@ -42,7 +42,7 @@ export default class IdResolver extends TypeResolver {
         );
         
         if (!result) {
-            throw new Error(`Use of undeclared identifier ${this.node.identifier.rootId}`);
+            this.emit(`Use of undeclared identifier ${this.node.identifier.rootId}`);
         }
         
         console.log(result);

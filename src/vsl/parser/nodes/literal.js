@@ -29,6 +29,9 @@ export default class Literal extends Node {
         
         /** @type {VSLTokenType} */
         this.type = type;
+
+        /** @type {ScopeItem[]} */
+        this.typeCandidates = [];
     }
     
     /** @override */

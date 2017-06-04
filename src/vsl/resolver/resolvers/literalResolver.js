@@ -42,15 +42,15 @@ export default class LiteralResolver extends TypeResolver {
         // to be a default candidate but for now they are hardcoded here
         switch (this.node.type) {
             case VSLTokenType.Integer:
-                this.node.typeCandidates = [STL.Int, STL.Float, STL.Double]
+                // this.node.typeCandidates = [STL.Int, STL.Float, STL.Double]
                 break;
                 
             case VSLTokenType.Decimal:
-                this.node.typeCandidates = [STL.Float, STL.Double]
+                // this.node.typeCandidates = [STL.Float, STL.Double]
                 break;
                 
             case VSLTokenType.String:
-                this.node.typeCandidates = [STL.String]
+                // this.node.typeCandidates = [STL.String]
                 break;
                 
             case VSLTokenType.Regex:
@@ -64,7 +64,15 @@ export default class LiteralResolver extends TypeResolver {
         }
         
         if (this.node.typeCandidates.length === 0) {
-            throw new Error(`Literal has no overlapping type candidates`);
+            this.emit(
+                `Literal has no overlapping type candidates. ` + 
+                `They are two reasons this could happen: \n` + 
+                `  1. The STL is not linked\n` +
+                `  2. You are using a literal which doesn't have a class ` +
+                `associated with it.\n` +
+                `This is likely an internal bug, but check for an existing` +
+                ` report before leaving your own.`
+            );
         }
         
         if (this.node.typeCandidates.length === 1) {

@@ -1,5 +1,5 @@
 import VSLPreprocessor from './transformers/vslpreprocessor';
-import VSLTransformer from './transformers/vslpreprocessor';
+import VSLTransformer from './transformers/vsltransformer';
 
 /**
  * Performs transformation on a given AST root array. By default the parser will
