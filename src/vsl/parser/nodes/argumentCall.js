@@ -1,8 +1,9 @@
 import Node from './node';
 
 /**
- * Matches an argument inside a FunctionCall
- * 
+ * Matches an argument inside a FunctionCall. This supports both the named
+ * parameter's name and the value of parameter.
+ *
  * @example
  * argument
  * name: argument
