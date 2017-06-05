@@ -2,17 +2,18 @@
 @include "primitives.ne"
 
 # Parses assignment statements
+@{%
+const assignmentTypes = {
+    "var": t.AssignmentType.Variable,
+    "let": t.AssignmentType.Constant
+};
+%}
+
 AssignmentStatement
    -> AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
-        (data, location) => {
-            var type;
-            if (data[0] === "let") {
-                type = t.AssignmentType.Constant;
-            } else {
-                type = t.AssignmentType.Variable;
-            }
-            return new t.AssignmentStatement(type, data[2], data[3], location);
-        }
+        (data, location) =>
+            new t.AssignmentStatement(assignmentTypes[data[0]], data[2],
+                data[3], location)
     %}
 
 AssignmentType
