@@ -13,13 +13,15 @@ export default class ClassStatement extends Node {
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier[]} superclass - The superclasses to inherit or implement
      * @param {Node[]} statements - The class's body.
+     * @param {Annotation[]} annotations - The annotations of the class
      * @param {Object} position - a position from nearley
      */
     constructor(
         access: string[],
         name: Identifier,
         superclasses: Identifier[],
-        statements: [],
+        statements: Node[],
+        annotations: Annotation[],
         position: Object
     ) {
         super(position);
@@ -29,11 +31,13 @@ export default class ClassStatement extends Node {
         this.name = name;
         this.superclasses = superclasses;
         this.statements = statements === null ? new CodeBlock([]) : statements;
+        this.annotations = annotations || [];
     }
     
     /** @override */
     toString() {
-        return `${this.access.join(" ")}${this.access.length ? " " : ""}class` +
+        return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
+        `${this.access.join(" ")}${this.access.length ? " " : ""}class` +
         ` ${this.name}: ${
             this.superclasses === null ?
             "Object" : this.superclasses.join(", ")
