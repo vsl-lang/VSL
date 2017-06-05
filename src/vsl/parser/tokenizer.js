@@ -1,6 +1,3 @@
-import bound from './indicator';
-import highlight from './highlight';
-
 /**
  * Tokenizer class.
  */

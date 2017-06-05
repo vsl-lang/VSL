@@ -4,7 +4,9 @@ import t from '../../parser/nodes';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 /**
- * A pre-processing entry for a class declaration
+ * A pre-processing entry for a class declaration. This goes top-down and
+ * "registers" or adds the class to a global table of all items for at least
+ * that scope.
  */
 export default class DescribeClassDeclaration extends Transformation {
     constructor() {
