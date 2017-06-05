@@ -2,7 +2,8 @@ import Generatable from './Generatable';
 
 /**
  * Controls LLVM IR genereration. Handles expressions, registers, and related
- * operations.
+ * operations. While this keeps track of all generator operators you might
+ * want to use a diffeernt class an pass this generator where requested.
  */
 export default class Generator {
     constructor() {
