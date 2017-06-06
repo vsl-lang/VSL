@@ -5,9 +5,26 @@
 @include "operators.ne"
 @builtin "postprocessors.ne"
 
-FunctionBody[s] -> "{" (CodeBlock[$s] {% id %}) "}" {% nth(2) %}
-                 | "internal" "(" %identifier ")" {% (d, l) => new t.InternalMarker(d[2][0], l) %}
-FunctionStatement[s] -> FunctionHead FunctionBody[$s] {% d => (d[0].statements = d[1], d[0]) %}
-FunctionHead -> Modifier ("function"|"func"|"fn") (Identifier {% id %} | BinaryOperator {% (d, l) => new t.Identifier(d[0].value, l) %}) FunctionArgumentList {%
-    (d, l) => new t.FunctionStatement(d[0], d[2], (d[3] || [])[0] || null, d[3][1], null, l)
-%}
+FunctionBody[s]
+   -> "{" (CodeBlock[$s] {% id %}) "}" {% nth(2) %}
+    | "internal" "(" %identifier ")" {%
+        (data, location) => new t.InternalMarker(data[2][0], location)
+    %}
+
+FunctionStatement[s]
+   -> FunctionHead FunctionBody[$s] {%
+        data => {
+            data[0].statements = data[1];
+            return data[0];
+        }
+    %}
+
+FunctionHead
+   -> Modifier ("function"|"func"|"fn")
+        (Identifier {% id %} | BinaryOperator {%
+            (data, location) => new t.Identifier(data[0].value, location)
+        %}) FunctionArgumentList {%
+        (data, location) =>
+            new t.FunctionStatement(data[0], data[2],
+                (data[3] || [])[0] || null, data[3][1], null, location)
+    %}
