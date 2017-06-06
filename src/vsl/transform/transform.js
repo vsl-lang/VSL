@@ -10,6 +10,8 @@ import VSLTransformer from './transformers/vsltransformer';
  * @param {CodeBlock[]} ast - The AST 
  */
 export default function transform(ast: CodeBlock[]) {
-    new VSLPreprocessor().queue(ast);
-    new VSLTransformer().queue(ast);
+    let preprocessor = new VSLPreprocessor();
+    preprocessor.queue(ast);
+
+    new VSLTransformer(preprocessor.context).queue(ast);
 }

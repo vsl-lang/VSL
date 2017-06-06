@@ -103,9 +103,10 @@ export default class TypeResolver {
      *
      * @param {string} message - The messaging describing the bork. Please make
      *     it as clear as possible to make fixing the bork as easy as possible.
+     *
      * @throws {TransformError} - Throws this error based on infos.
      */
-    emit(error: string) {
-        throw new TypeResolutionError(error, this.node);
+    emit(message: string) {
+        throw new TypeResolutionError(message, this.node);
     }
 }
