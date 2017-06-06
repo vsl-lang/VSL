@@ -7,25 +7,42 @@
 @include "modifiers.ne"
 @builtin "postprocessors.ne"
 
-ExtensionList -> delimited[type {% id %}, _ "," _] {% id %}
+ClassStatement[s]
+   -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _
+            {% nth(2) %}):? "{" (ClassItems[$s] {% id %}) "}" {%
+        (data, location) =>
+            new t.ClassStatement(data[1], data[4], data[6], data[8], data[0],
+                location)
+    %}
 
-ClassItem[s] -> FunctionStatement[$s] {% id %}
-InterfaceItem -> FunctionHead {% id %}
+InterfaceStatement[s]
+   -> Annotations Modifier "interface" _ classDeclaration _ (":" _
+            ExtensionList _ {% nth(2) %}):? "{" (InterfaceItems[$s] {% id %})
+        "}" {%
+        (data, location) =>
+            new t.InterfaceStatement(data[1], data[4], data[6], data[7],
+                location)
+    %}
 
-InterfaceItems[s] -> CodeBlock[(InterfaceItem | ClassItem[$s]) {% mid %}] {% id %}
-ClassItems[s] -> CodeBlock[ClassItem[$s] {% id %}] {% id %}
+Annotations
+   -> (Annotation _ {% id %}):* {% id %}
+Annotation
+   -> "@" %identifier ("(" _ delimited[AnnotationValue {% id %}, _ "," _] _
+        ")" {% nth(2) %}):? {%
+        (data, location) => new t.Annotation(data[1][0], data[2], location)
+    %}
+AnnotationValue
+   -> %identifier {% mid %}
 
-AnnotationValue -> %identifier {% mid %}
-Annotation -> "@" %identifier ("(" _ delimited[AnnotationValue {% id %}, _ "," _] _ ")" {% nth(2) %}):? {%
-    (d, l) => new t.Annotation(d[1][0], d[2], l)
-%}
+ExtensionList
+   -> delimited[type {% id %}, _ "," _] {% id %}
 
-Annotations -> (Annotation _ {% id %}):* {% id %}
+ClassItems[s]
+   -> CodeBlock[ClassItem[$s] {% id %}] {% id %}
+ClassItem[s]
+   -> FunctionStatement[$s] {% id %}
 
-ClassStatement[s] -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _ {% nth(2) %}):? "{" (ClassItems[$s] {% id %}) "}" {%
-    (d, l) => new t.ClassStatement(d[1], d[4], d[6], d[8], d[0], l)
-%}
-
-InterfaceStatement[s] -> Annotations Modifier "interface" _ classDeclaration _ (":" _ ExtensionList _ {% nth(2) %}):? "{" (InterfaceItems[$s] {% id %}) "}" {%
-    (d, l) => new t.InterfaceStatement(d[1], d[4], d[6], d[7], l)
-%}
+InterfaceItems[s]
+   -> CodeBlock[(InterfaceItem | ClassItem[$s]) {% mid %}] {% id %}
+InterfaceItem
+   -> FunctionHead {% id %}
