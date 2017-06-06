@@ -3,9 +3,9 @@
 
 @{%
 const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
-  expr = (d, l, f) => new t.ExpressionStatement(d[0], l);
+  expr = (d, l) => new t.ExpressionStatement(d[0], l);
 
-function recursiveProperty(head, tail, optional, location) {
+function recursiveProperty(head, tail, optional) {
   if (tail.length === 0)
     return head;
   for (let i = 0; i < tail.length - 1; i++)
@@ -26,16 +26,16 @@ function recursiveProperty(head, tail, optional, location) {
 # QUETION: do we allow class, function etc in closure
 # like imo we should in normal functions bc even though snek does it i think is good
 # hmm we should make it property
-CommandChain -> Identifier CommandChainPart:+ {% (d, l) => recursiveProperty(d[0], d[1], l) %}
+CommandChain -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStatement(recursiveProperty(d[0], d[1]), l) %}
 
-Closure -> "{" CodeBlock[Expression] "}" {% (d, l) => d[2] %}
+Closure -> "{" CodeBlock[Expression] "}" {% (d, l) => console.log('block', d[2]) || d[2] %}
 
 # TODO: optional (foo? bar == foo?.bar)
 CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):* {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, d[0].concat([d[1]]), false, l) %}
                   | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
                   | %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
                   | Expression {%
-                    (d, l, f) => (d[0].expression instanceof t.UnaryExpression || d[0].expression instanceof t.Tuple || d[0].expression instanceof t.ArrayNode || d[0].expression instanceof t.Whatever) ?
+                    (d, l, f) => ([t.UnaryExpression, t.Tuple, t.ArrayNode, t.Whatever, t.ParenthesizedExpression, t.Subscript, t.PropertyExpression].some(type => d[0].expression instanceof type)) ?
                       f :
                       d[0].expression instanceof t.Identifier ?
                         new t.PropertyExpression(null, d[0].expression, false, l) :
@@ -50,23 +50,24 @@ ArgumentCallHead -> %identifier ":" Expression {% (d, l, f) => d[2].expression i
 Expression -> BinaryExpression {% expr %}
 
 # Properties
-Property -> propertyHead (_ propertyTail {% nth(1) %}):* {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1], l))) %}
-          | "?" _ nullableProperty (_ propertyTail {% nth(1) %}):* {% (d, l) => recursiveProperty(new t.Whatever(l), [d[2]].concat(d[3]), l) %}
+Property -> propertyHead (_ propertyTail {% nth(1) %}):* {% (d, l) => (d[1].length === 0 ? d[0] : (d = recursiveProperty(d[0], d[1]))) %}
+          | "?" _ nullableProperty (_ propertyTail {% nth(1) %}):* {% (d, l) => recursiveProperty(new t.Whatever(l), [d[2]].concat(d[3])) %}
           | "?" {% (d, l) => new t.Whatever(l) %}
 
 propertyHead -> Literal                {% id %}
               | Identifier             {% id %}
-              | "(" _ Expression _ ")" {% nth(2) %}
+              | "(" _ Expression _ ")" {% (d, l) => new t.ParenthesizedExpression(d[2], l) %}
               | FunctionizedOperator   {% id %}
 
-propertyTail -> "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
-              | Array                                               {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
-              | nullableProperty                                    {% id %}
+propertyTail -> "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
+              | Array            {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
+              | nullableProperty {% id %}
               
 nullableProperty -> "?" "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
                   | "?" Array                                               {% (d, l) => new t.Subscript(null, d[1].array, true, l) %}
                   | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")" {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
                   | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
+                  | "(" _ Expression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
 
 ArgumentCall -> NamedArgumentCall   {% id %}
               | UnnamedArgumentCall {% id %}

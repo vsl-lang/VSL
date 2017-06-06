@@ -13,7 +13,7 @@
     "clean": "rm -r lib",
     "lint": "eslint src",
     "docs": "esdoc",
-    "test": "mocha",
+    "test": "npm run nearley && mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm test"
   },
   "repository": {

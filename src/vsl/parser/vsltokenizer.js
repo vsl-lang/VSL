@@ -87,8 +87,6 @@ export default class VSLTokenizer extends Tokenizer {
             ['=>', passThrough],
             ['~>', passThrough],
             [':>', passThrough],
-            ['@@@', passThrough],
-            ['@@', passThrough],
             ['@', passThrough],
             [';', passThrough],
             [':', passThrough],
