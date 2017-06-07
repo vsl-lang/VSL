@@ -34,7 +34,7 @@ export default class ClassStatement extends Node {
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
         /** @type {Node[]} */
-        this.statements = statements === null ? new CodeBlock([]) : statements;
+        this.statements = statements;
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }
