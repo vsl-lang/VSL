@@ -43,6 +43,6 @@ ClassItem[s]
    -> FunctionStatement[$s {% id %}] {% id %}
 
 InterfaceItems[s]
-   -> CodeBlock[(InterfaceItem | ClassItem[$s {% id %}]) {% mid %}] {% id %}
+   -> CodeBlock[InterfaceItem {% id %}] {% id %}
 InterfaceItem
    -> FunctionHead {% id %}
