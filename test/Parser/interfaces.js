@@ -29,10 +29,6 @@ export default () => describe("Interfaces", () => {
         }`;
  
         valid`interface A {
-            public func f() {}
-        }`;
-
-        valid`interface A {
             func f() internal(g)
         }`;
 
@@ -51,10 +47,6 @@ export default () => describe("Interfaces", () => {
 
         valid`interface A {
             func f()
-        }`;
-
-        valid`interface A {
-            public func f()
         }`;
 
         valid`interface A {
