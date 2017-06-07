@@ -1,5 +1,7 @@
 # Parses basic primitives
 
+@builtin "postprocessors.ne"
+
 TypedIdentifier
    -> Identifier (_ ":" _ type {% nth(3) %}):? {%
         (data, location) => new t.TypedIdentifier(data[0], data[1], location)
@@ -65,5 +67,5 @@ TypeAlias
 # Identifier
 Identifier
    -> %identifier {%
-        (data, location) => new t.Identifier(data[0][0], false, location)
+        (data, location) => new t.Identifier(data[0][0], location)
     %}

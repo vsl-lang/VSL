@@ -20,8 +20,8 @@ InterfaceStatement[s]
             ExtensionList _ {% nth(2) %}):? "{" (InterfaceItems[$s] {% id %})
         "}" {%
         (data, location) =>
-            new t.InterfaceStatement(data[1], data[4], data[6], data[7],
-                location)
+            new t.InterfaceStatement(data[1], data[4], data[6], data[8],
+                data[0], location)
     %}
 
 Annotations

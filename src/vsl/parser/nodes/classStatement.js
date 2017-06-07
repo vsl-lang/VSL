@@ -11,8 +11,9 @@ export default class ClassStatement extends Node {
      * Constructs a generic function statement
      * 
      * @param {string[]} access - The access modifiers of the node
-     * @param {Identifier[]} superclass - The superclasses to inherit or implement
-     * @param {Node[]} statements - The class's body.
+     * @param {Identifier} name - The name of the class
+     * @param {Identifier[]} superclasses - The superclasses to inherit or implement
+     * @param {Node[]} statements - The class's body
      * @param {Annotation[]} annotations - The annotations of the class
      * @param {Object} position - a position from nearley
      */
@@ -28,9 +29,13 @@ export default class ClassStatement extends Node {
         
         /** @type {string} */
         this.access = access;
+        /** @type {Identifier} */
         this.name = name;
+        /** @type {Identifier[]} */
         this.superclasses = superclasses;
+        /** @type {Node[]} */
         this.statements = statements === null ? new CodeBlock([]) : statements;
+        /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }
     

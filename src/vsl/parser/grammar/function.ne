@@ -6,7 +6,7 @@
 @builtin "postprocessors.ne"
 
 FunctionBody[s]
-   -> "{" (CodeBlock[$s] {% id %}) "}" {% nth(2) %}
+   -> "{" (CodeBlock[$s] {% id %}) "}" {% nth(1) %}
     | "internal" "(" %identifier ")" {%
         (data, location) => new t.InternalMarker(data[2][0], location)
     %}
