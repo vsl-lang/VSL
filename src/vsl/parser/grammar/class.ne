@@ -9,7 +9,7 @@
 
 ClassStatement[s]
    -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _
-            {% nth(2) %}):? "{" (ClassItems[$s] {% id %}) "}" {%
+            {% nth(2) %}):? "{" (ClassItems[$s {% id %}] {% id %}) "}" {%
         (data, location) =>
             new t.ClassStatement(data[1], data[4], data[6], data[8], data[0],
                 location)
@@ -17,8 +17,8 @@ ClassStatement[s]
 
 InterfaceStatement[s]
    -> Annotations Modifier "interface" _ classDeclaration _ (":" _
-            ExtensionList _ {% nth(2) %}):? "{" (InterfaceItems[$s] {% id %})
-        "}" {%
+            ExtensionList _ {% nth(2) %}):? "{" (InterfaceItems[$s {% id %}]
+            {% id %}) "}" {%
         (data, location) =>
             new t.InterfaceStatement(data[1], data[4], data[6], data[8],
                 data[0], location)
@@ -38,11 +38,11 @@ ExtensionList
    -> delimited[type {% id %}, _ "," _] {% id %}
 
 ClassItems[s]
-   -> CodeBlock[ClassItem[$s] {% id %}] {% id %}
+   -> CodeBlock[ClassItem[$s {% id %}] {% id %}] {% id %}
 ClassItem[s]
-   -> FunctionStatement[$s] {% id %}
+   -> FunctionStatement[$s {% id %}] {% id %}
 
 InterfaceItems[s]
-   -> CodeBlock[(InterfaceItem | ClassItem[$s]) {% mid %}] {% id %}
+   -> CodeBlock[(InterfaceItem | ClassItem[$s {% id %}]) {% mid %}] {% id %}
 InterfaceItem
    -> FunctionHead {% id %}
