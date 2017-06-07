@@ -40,9 +40,10 @@ ExtensionList
 ClassItems[s]
    -> CodeBlock[ClassItem[$s {% id %}] {% id %}] {% id %}
 ClassItem[s]
-   -> FunctionStatement[$s {% id %}] {% id %}
+   -> InterfaceItem[$s {% id %}] {% id %}
 
 InterfaceItems[s]
-   -> CodeBlock[InterfaceItem {% id %}] {% id %}
-InterfaceItem
+   -> CodeBlock[InterfaceItem[$s {% id %}] {% id %}] {% id %}
+InterfaceItem[s]
    -> FunctionHead {% id %}
+    | FunctionStatement[$s {% id %}] {% id %}
