@@ -2,7 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeResolver from '../typeResolver';
 
-import ScopeItem from '../../scope/scopeItem';
+import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 
 /**
  * Resolves `Idenifier`s in terms of type and declaration. This will do a lookup
@@ -38,15 +38,14 @@ export default class IdResolver extends TypeResolver {
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
         
         let result = this.node.parentScope.scope.get(
-            new ScopeItem(this.node.identifier.rootId)
+            new ScopeAliasItem(this.node.identifier.rootId)
         );
         
         if (!result) {
-            throw new Error(`Use of undeclared identifier ${this.node.identifier.rootId}`);
+            this.emit(`Use of undeclared identifier ${this.node.identifier.rootId}`);
         }
         
-        console.log(result);
-        
         // Atomic type so no further requeuing
+        this.node.typeCandidates = result.source.typeCandidates;
     }
 }

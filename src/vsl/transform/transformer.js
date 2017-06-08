@@ -1,3 +1,4 @@
+import TransformationContext from './transformationContext';
 import Transformation from './transformation';
 import ScopeTraverser from './scopetraverser';
 import Node from '../parser/nodes/node';
@@ -69,10 +70,16 @@ import t from '../parser/nodes';
 export default class Transformer extends ScopeTraverser {
     
     /**
-     * Creates a new Transformer with the given passes
+     * Creates a new Transformer with the given passes and context. Reference
+     * {@link TransformationContext} for more information on the context itself.
+     * Passes can again use their AST tool to access context information.
+     *
      * @param {Transformation[]} passes - The given passes to setup
+     * @param {TransformationContext} [context=TransformationContext()] - The
+     *     context of the given transformation see this constructor's
+     *     description for more info.
      */
-    constructor(passes: Transformation[]) {
+    constructor(passes: Transformation[], context: TransformationContext = new TransformationContext()) {
         super(true);
         
         /**
@@ -92,6 +99,14 @@ export default class Transformer extends ScopeTraverser {
          * @type {Node[]}
          */
         this.nodeQueue = [];
+
+        /**
+         * The context of the the transformer. Transformations can set or use
+         * this to get global context info etc.
+         *
+         * @type {TransformationContext}
+         */
+        this.context = context;
     }
     
     /**
