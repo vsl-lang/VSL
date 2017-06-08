@@ -1,4 +1,5 @@
 @include "ws.ne"
+@builtin "postprocessors.ne"
 
 CodeBlock[statement]
    -> seperator:* (delimited[$statement {% id %}, seperator:+] seperator:*

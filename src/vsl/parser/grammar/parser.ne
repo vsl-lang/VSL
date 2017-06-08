@@ -38,9 +38,9 @@ main
     %}
 
 statement
-   -> Expression {% id %}
-#   | CommandChain {% id %}
-    | FunctionStatement[statement] {% id %}
-    | AssignmentStatement {% id %}
-    | ClassStatement[statement] {% id %}
-    | InterfaceStatement[statement] {% id %}
+   -> Expression                             {% id %}
+#   | CommandChain                           {% id %}
+    | FunctionStatement[statement {% id %}]  {% id %}
+    | AssignmentStatement                    {% id %}
+    | ClassStatement[statement {% id %}]     {% id %}
+    | InterfaceStatement[statement {% id %}] {% id %}

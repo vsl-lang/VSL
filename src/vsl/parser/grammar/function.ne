@@ -6,13 +6,13 @@
 @builtin "postprocessors.ne"
 
 FunctionBody[s]
-   -> "{" (CodeBlock[$s] {% id %}) "}" {% nth(2) %}
+   -> "{" (CodeBlock[$s {% id %}] {% id %}) "}" {% nth(1) %}
     | "internal" "(" %identifier ")" {%
         (data, location) => new t.InternalMarker(data[2][0], location)
     %}
 
 FunctionStatement[s]
-   -> FunctionHead FunctionBody[$s] {%
+   -> FunctionHead FunctionBody[$s {% id %}] {%
         data => {
             data[0].statements = data[1];
             return data[0];

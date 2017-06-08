@@ -49,4 +49,4 @@ export default () => describe("Classes", () => {
             func g() {}
         }`;
     })
-})
+});
