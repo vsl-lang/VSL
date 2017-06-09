@@ -10,10 +10,10 @@ import * as pass from '../passes/';
  * See: {@link Transformer}
  */
 export default class VSLTransformer extends Transformer {
-    constructor() {
+    constructor(context: TransformationContext) {
         super([
             pass.TypeDeductAssignment,
             pass.TypeDeductClassDeclaration
-        ]);
+        ], context);
     }
 }

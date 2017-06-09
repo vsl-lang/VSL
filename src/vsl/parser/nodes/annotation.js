@@ -28,6 +28,11 @@ export default class Annotation extends Node {
         /** @type {?Node[]} */
         this.args = args || null;
     }
+
+    /** @override */
+    get children() {
+        return null;
+    }
     
     /** @override */
     toString() {

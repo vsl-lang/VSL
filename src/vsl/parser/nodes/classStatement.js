@@ -51,6 +51,6 @@ export default class ClassStatement extends Node {
     
     /** @override */
     get children() {
-        return ['name', 'superclasses', 'statements'];
+        return ['name', 'superclasses', 'statements', 'annotations'];
     }
 }
