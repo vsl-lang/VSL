@@ -50,11 +50,15 @@ export function vsl(source) {
 /**
  * Regenerate VSL code. Run through `parseVSL` first.
  */
-export function regenerate(source, expected, full = false, testText) {
+export function regenerate(source, expected, { full = false, testText, trim = false } = {}) {
     it(testText || `should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
         try {
             if (source.ast === null) return;
             let str = full ? source.ast[0].toString() : source.ast[0].statements[0].toString();
+            if (trim) {
+                str = str.replace(/\s/g, "");
+                expected = expected.replace(/\s/g, "");
+            }
             if (str === expected) return;
             else throw new Error(`Regenerating to ${expected} resulted in ${str}`);
         } catch(e) {

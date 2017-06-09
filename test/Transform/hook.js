@@ -20,7 +20,7 @@ export default () => {
                 var exp = fs.readFileSync(expText, 'utf-8');
 
                 transform(src);
-                regenerate(src, exp, true, `should work for ${tests[i]}`);
+                regenerate(src, exp, { full: true, testText: `should work for ${subtests[i]}`, trim: true });
             }
         });
     }
