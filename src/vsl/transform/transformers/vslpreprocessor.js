@@ -7,19 +7,23 @@ import * as pass from '../passes/';
  * See: {@link Transformer}
  */
 export default class VSLPreprocessor extends Transformer {
-    constructor() {
+    constructor(context: TransformationContext) {
         super([
             pass.FoldFiniteIntegerRange,
             pass.FoldBinaryIntegerExpression,
             
             pass.VerifyFunctionAccessScope,
+            pass.VerifyAnnotationSignature,
+
+            pass.RegisterPrimitiveAnnotation,
             
             pass.ResolveTypePath,
             pass.ResolveGenericArgument,
-            
+            pass.ResolveFunctionDeclaration,
+
             pass.DescribeClassDeclaration,
             // pass.DescribeFunctionDeclaration,
             pass.DescribeVariableAssignment
-        ]);
+        ], context);
     }
 }

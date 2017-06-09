@@ -1,5 +1,5 @@
 import VSLPreprocessor from './transformers/vslpreprocessor';
-import VSLTransformer from './transformers/vslpreprocessor';
+import VSLTransformer from './transformers/vsltransformer';
 
 /**
  * Performs transformation on a given AST root array. By default the parser will
@@ -10,6 +10,8 @@ import VSLTransformer from './transformers/vslpreprocessor';
  * @param {CodeBlock[]} ast - The AST 
  */
 export default function transform(ast: CodeBlock[]) {
-    new VSLPreprocessor().queue(ast);
-    new VSLTransformer().queue(ast);
+    let preprocessor = new VSLPreprocessor();
+    preprocessor.queue(ast);
+
+    new VSLTransformer(preprocessor.context).queue(ast);
 }

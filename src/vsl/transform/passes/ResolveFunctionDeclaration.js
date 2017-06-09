@@ -22,9 +22,18 @@ export default class ResolveFunctionDeclaration extends Transformation {
         let resArgs = new Array(args.length);
         
         for (var i = 0; i < args.length; i++) {
-            if (!args[i].typedId.type)
+            if (!args[i].typedId.type) {
                 throw new TypeError(`Function ${rootName} has no type for pos ${i}.`);
-            
+            }
+
+            if (args[i].typedId.type instanceof t.Identifier) {
+                resArgs[i] = [
+                    args[i].typedId.identifier.identifier.rootId,
+                    args[i].typedId.type.identifier.rootId
+                ];
+                continue;
+            }
+
             resArgs[i] = [
                 args[i].typedId.identifier.identifier.rootId,
                 mangleTypeChildren(args[i].typedId.type.path, tool)
@@ -38,7 +47,7 @@ export default class ResolveFunctionDeclaration extends Transformation {
             generateFunctionMangle(rootName, resArgs, tool),
             node.name.position
         );
-        
+
         tool.gc(oldQueueQualifier);
         
         tool.notifyScopeChange();
