@@ -6,10 +6,20 @@ export VSLTokenizer from '../src/vsl/parser/vsltokenizer';
 import VSLParser from '../src/vsl/parser/vslparser';
 export VSLParser from '../src/vsl/parser/vslparser';
 
+import VSLTransform from '../src/vsl/transform/transform';
+export VSLTransform from '../src/vsl/transform/transform';
+
 export VSLTokenType from '../src/vsl/parser/vsltokentype';
 
 function vslStr(source) {
     return source.isVSL ? source : vsl(source);
+}
+
+/**
+ * Transform a VSL template
+ */
+export function transform(template) {
+    VSLTransform(template.ast);
 }
 
 /**
@@ -40,11 +50,11 @@ export function vsl(source) {
 /**
  * Regenerate VSL code. Run through `parseVSL` first.
  */
-export function regenerate(source, expected) {
-    it(`should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
+export function regenerate(source, expected, full = false, testText) {
+    it(testText || `should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
         try {
             if (source.ast === null) return;
-            let str = source.ast[0].statements[0].toString();
+            let str = full ? source.ast[0].toString() : source.ast[0].statements[0].toString();
             if (str === expected) return;
             else throw new Error(`Regenerating to ${expected} resulted in ${str}`);
         } catch(e) {

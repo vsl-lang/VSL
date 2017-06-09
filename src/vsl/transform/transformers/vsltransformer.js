@@ -12,8 +12,6 @@ import * as pass from '../passes/';
 export default class VSLTransformer extends Transformer {
     constructor() {
         super([
-            pass.ResolveFunctionDeclaration,
-            
             pass.TypeDeductAssignment,
             pass.TypeDeductClassDeclaration
         ]);

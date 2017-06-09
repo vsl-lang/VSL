@@ -16,7 +16,8 @@ export default class VSLPreprocessor extends Transformer {
             
             pass.ResolveTypePath,
             pass.ResolveGenericArgument,
-            
+            pass.ResolveFunctionDeclaration,
+
             pass.DescribeClassDeclaration,
             // pass.DescribeFunctionDeclaration,
             pass.DescribeVariableAssignment

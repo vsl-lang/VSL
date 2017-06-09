@@ -21,9 +21,13 @@ export default class ResolveFunctionDeclaration extends Transformation {
         // Generate 2D mangled arg names  
         let resArgs = new Array(args.length);
         
+        console.log("start: ");
+        console.log(node.name.toString());
+        console.log(new Error().stack);
         for (var i = 0; i < args.length; i++) {
-            if (!args[i].typedId.type)
+            if (!args[i].typedId.type) {
                 throw new TypeError(`Function ${rootName} has no type for pos ${i}.`);
+            }
             
             resArgs[i] = [
                 args[i].typedId.identifier.identifier.rootId,
@@ -38,6 +42,9 @@ export default class ResolveFunctionDeclaration extends Transformation {
             generateFunctionMangle(rootName, resArgs, tool),
             node.name.position
         );
+
+        console.log("end: ");
+        console.log(node.name.toString());
         
         tool.gc(oldQueueQualifier);
         

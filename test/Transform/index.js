@@ -1,0 +1,3 @@
+describe("Transform", () => {
+    require('./hook')();
+});

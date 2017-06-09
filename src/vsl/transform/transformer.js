@@ -219,7 +219,7 @@ ng to the setup transformer. This is recursively
 
         // Setup the transformation
         let transformation = new pass();
-        let type = transformation.type
+        let type = transformation.type;
         
         // Ensure ast is of the correct type
         // otherwise stop processing the node

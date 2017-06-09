@@ -144,7 +144,8 @@ export default class ASTTool {
         if (relativeQueueQualifier === null) return;
         if (this.transformer === null) return;
         
-        this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
+        // TODO: implement
+        // this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
     }
     
     /**
