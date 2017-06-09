@@ -1,10 +1,10 @@
 # Parses a rough VSL class
 
-@include "ws.ne"
-@include "primitives.ne"
 @include "codeBlock.ne"
 @include "function.ne"
 @include "modifiers.ne"
+@include "primitives.ne"
+@include "ws.ne"
 @builtin "postprocessors.ne"
 
 ClassStatement[s]
@@ -41,6 +41,14 @@ ClassItems[s]
    -> CodeBlock[ClassItem[$s {% id %}] {% id %}] {% id %}
 ClassItem[s]
    -> InterfaceItem[$s {% id %}] {% id %}
+    | Field {% id %}
+
+Field
+   -> Modifier AssignmentStatement {%
+        (data, location) =>
+            new t.FieldStatement(data[0], data[1].type, data[1].identifier,
+                data[1].value, location)
+    %}
 
 InterfaceItems[s]
    -> CodeBlock[InterfaceItem[$s {% id %}] {% id %}] {% id %}
