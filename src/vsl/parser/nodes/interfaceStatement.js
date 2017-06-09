@@ -12,7 +12,7 @@ export default class InterfaceStatement extends Node {
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the interface
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
-     * @param {Node[]} statements - The interface's body
+     * @param {CodeBlock} statements - The interface's body
      * @param {Annotation[]} annotations - The annotations of the interface
      * @param {Object} position - a position from nearley
      */
@@ -28,12 +28,16 @@ export default class InterfaceStatement extends Node {
 
         /** @type {string[]} */
         this.access = access;
+
         /** @type {Identifier} */
         this.name = name;
+
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
+
         /** @type {Node[]} */
         this.statements = statements;
+
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }
