@@ -8,6 +8,7 @@ DefinitionModifier
 StateModifier
    -> "static" {% id %}
 AccessModifier
-   -> "public"   {% id %}
-    | "private"  {% id %}
-    | "readonly" {% id %}
+   -> "public"    {% id %}
+    | "protected" {% id %}
+    | "private"   {% id %}
+    | "readonly"  {% id %}
