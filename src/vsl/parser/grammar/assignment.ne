@@ -12,7 +12,7 @@ const assignmentTypes = {
 AssignmentStatement
    -> AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
         (data, location) =>
-            new t.AssignmentStatement(assignmentTypes[data[0]], data[2],
+            new t.AssignmentStatement(assignmentTypes[data[0].value], data[2],
                 data[3], location)
     %}
 
