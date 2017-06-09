@@ -18,7 +18,7 @@ export default class VerifyAnnotationSignature extends Transformation {
     modify(node: Node, tool: ASTTool) {
         let name = node.name;
         let res = Annotations.get(name);
-        if (res) {
+        if (res !== undefined) {
             if (res === null && node.args !== null) {
                 throw new TransformError(
                     `Annotation \`${name}\` does not take any arguments but ` +

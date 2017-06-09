@@ -3,7 +3,8 @@
  */
 const Annotations = new Map([
     ["primitive", 1],
-    ["inline", null]
+    ["inline", null],
+    ["_precType", null]
 ]);
 
 export default Annotations;
