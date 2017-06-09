@@ -76,7 +76,7 @@
       "src/**/*.js"
     ],
     "exclude": [
-        "src/cli/vsl.js"
+      "src/cli/vsl.js"
     ],
     "all": true,
     "sourceMap": false,
