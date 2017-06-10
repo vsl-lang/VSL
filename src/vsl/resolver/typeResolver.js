@@ -1,4 +1,5 @@
 import t from '../parser/nodes';
+import TypeResolutionError from './typeResolutionError';
 
 /**
  * Itself resolves an expressions types like magic
@@ -95,5 +96,17 @@ export default class TypeResolver {
      */
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         throw new TypeError("resolve must be overriden");
+    }
+
+    /**
+     * Emits an error. Usually used when a type conflict is encountered.
+     *
+     * @param {string} message - The messaging describing the bork. Please make
+     *     it as clear as possible to make fixing the bork as easy as possible.
+     *
+     * @throws {TransformError} - Throws this error based on infos.
+     */
+    emit(message: string) {
+        throw new TypeResolutionError(message, this.node);
     }
 }

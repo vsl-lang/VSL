@@ -17,10 +17,9 @@ export default class ScopeAliasItem extends ScopeItem {
      * 
      * @param {string} rootId - The root primary identifier of this type.
      * @param {ScopeItem[]} candidates - The possible type of the item.
-     * @param {Object} value - The value of the scope item
-     * @param {Node[]} refs - All referencing
+     * @param {Node} source - The source expression which the item was declared.
      */
-    constructor(rootId: string, candidates: ScopeItem[]) {
+    constructor(rootId: string, candidates: ScopeItem[], source: Node) {
         super(rootId);
         
         /**
@@ -44,6 +43,15 @@ export default class ScopeAliasItem extends ScopeItem {
          * @type {boolean}
          */
         this.escapesScope = false;
+
+        /**
+         * The source node in which this item was declared. Do note that this
+         * might now always be the same but you can assume it will have type
+         * info e.g. `.typeCandidates`.
+         *
+         * @type {Node}
+         */
+        this.source = source;
     }
     
     /** @override */
@@ -53,6 +61,6 @@ export default class ScopeAliasItem extends ScopeItem {
     
     /** @return {string} */
     toString() {
-        return `${this.rootId}: ${this.candidates.join("\n")}`;
+        return `${this.rootId}: ${this.candidates ? this.candidates.join("\n") : "n/a"}`;
     }
 }

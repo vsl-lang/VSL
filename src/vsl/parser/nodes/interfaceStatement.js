@@ -29,12 +29,16 @@ export default class InterfaceStatement extends Node {
 
         /** @type {string[]} */
         this.access = access;
+
         /** @type {Identifier} */
         this.name = name;
+
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
+
         /** @type {CodeBlock} */
         this.statements = statements;
+
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }

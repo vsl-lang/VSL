@@ -20,10 +20,10 @@ export default class ASTTool {
      *  just read the function docs.
      * 
      * @param {Node|Node[]} parent - The parent node or array
-     * @param {name} - The key `fragment` represents within it's parent. If the
-     *     `parent` is an array, then this should be a referencing integer.
-     * 
-     * @private
+     * @param {name} name - The key `fragment` represents within it's parent. If
+     *     the `parent` is an array, then this should be a referencing integer.
+     * @param {?Transformer} transformer - if called by a transformer, ref it
+     *     here.
      */
     constructor(parent: Node | Node[], name: any, transformer: Transformer) {
         /** @private */
@@ -43,11 +43,21 @@ export default class ASTTool {
         
         /** @private */
         this.sourceQualifier = this.fragment.queueQualifier;
+
+        /**
+         * The context which created this ASTTool, non-nil for items such
+         *
+         * @type {?TransformationContext}
+         */
+        this.context = (this.transformer && this.transformer.context) || null;
     }
     
     /**
      * Access the nth parent. This traverses up the AST tree and if the parent
-     * could not be found, or another error occurs, this returns nil.
+     * could not be found, or another error occurs, this returns nil. Passing 0
+     * will return the node itself.
+     *
+     * @param {number} n - A positive number representing the index to access.
      */
     nthParent(n: number) {
         n = n | 0;
@@ -56,17 +66,17 @@ export default class ASTTool {
         return parent;
     }
     
-    /**
-     * Recursively looks and traverses the AST to locate the value associated
-     * for a given `id`.
-     * 
-     * @return {?(Id | Type)}
-     */
-    resolve(id: string) {
-        let scope = this.parent[this.name].parentScope, res;
-        while (scope && !(res = scope.scope.get(string))) scope = scope.parentScope;
-        return res || null;
-    }
+//     /**
+//      * Recursively looks and traverses the AST to locate the value associated
+//      * for a given `id`.
+//      * 
+//      * @return {?(Id | Type)}
+//      */
+//     resolve(id: string) {
+//         let scope = this.parent[this.name].parentScope, res;
+//         while (scope && !(res = scope.scope.get(string))) scope = scope.parentScope;
+//         return res || null;
+//     }
     
     /**
      * Transforms a node and then calls the callback when the transformation is
@@ -139,12 +149,16 @@ export default class ASTTool {
      * It should almost always be used after a `.replace` call or other calls
      * which remove a node. If you do use a `.replace`, you'd usually want this
      * as the last statement in your transformer.
+     *
+     * @param {number} [relativeQueueQualifier=this.sourceQualifier] - The
+     *     queue qualifier of the node.
      */
     gc(relativeQueueQualifier: number = this.sourceQualifier) {
         if (relativeQueueQualifier === null) return;
         if (this.transformer === null) return;
         
-        this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
+        // TODO: implement
+        // this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
     }
     
     /**

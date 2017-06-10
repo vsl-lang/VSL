@@ -23,9 +23,11 @@ export default class RootResolver extends TypeResolver {
      */
     constructor(
         node: Node,
-        getChild: (Node) => TypeResolver
+        getChild: (Node) => TypeResolver,
+        context: ?TransformationContext
     ) {
         super(node, getChild);
+        this.context = context;
     }
     
     /**
@@ -44,6 +46,7 @@ export default class RootResolver extends TypeResolver {
         const negotiator = (type) => {
             switch (type) {
                 case ConstraintType.ContextParentConstraint: return response;
+                case ConstraintType.TransformationContext: return this.context;
                 default: return null;
             }
         };
@@ -51,6 +54,7 @@ export default class RootResolver extends TypeResolver {
         const child = this.getChild(this.node.expression);
         child.resolve(negotiator);
         
+        this.node.typeCandidates = this.node.expression.typeCandidates;
         this.node.exprType = this.node.expression.exprType;
     }
 }

@@ -6,7 +6,7 @@ import CodeBlock from './codeBlock';
  * 
  */
 export default class ClassStatement extends Node {
-    
+
     /**
      * Constructs a generic function statement
      * 
@@ -26,19 +26,23 @@ export default class ClassStatement extends Node {
         position: Object
     ) {
         super(position);
-        
+
         /** @type {string} */
         this.access = access;
+
         /** @type {Identifier} */
         this.name = name;
+
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
+
         /** @type {CodeBlock} */
         this.statements = statements;
+
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }
-    
+
     /** @override */
     toString() {
         return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
@@ -51,6 +55,6 @@ export default class ClassStatement extends Node {
     
     /** @override */
     get children() {
-        return ['name', 'superclasses', 'statements'];
+        return ['name', 'superclasses', 'statements', 'annotations'];
     }
 }
