@@ -15,7 +15,6 @@ export default () => {
                 var srcText = path.join(subroot, subtests[i], 'src.vsl');
                 var expText = path.join(subroot, subtests[i], 'exp.vsl');
 
-                console.log(srcText);
                 var src = vsl(fs.readFileSync(srcText, 'utf-8'));
                 var exp = fs.readFileSync(expText, 'utf-8');
 

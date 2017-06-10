@@ -6,21 +6,21 @@ import t from '../parser/nodes';
  * The \\((V\_n)_{n\in V'}\\) in a static scope-lookup senario. This will create
  * "intermediate scopes" \\(\left\\{v \subseteq V : \left|v\right| < n\right\\}\\)
  * which will generally be defined as \\(I\\).
- * 
+ *
  * This means that while \\(I \subseteq V\\), you can always assume:
- * 
+ *
  * $$\exists i \in I : (V : I_i) \equiv i$$
- * 
+ *
  * This means that if:
- * 
+ *
  * $$I_{n \in V \setminus I} \perp V$$
- * 
+ *
  * You know something funky is going on. In terms of cyclic dependence, this
  * would update a reference when \\(V_{n \in V \setminus I}\\) is accessed. So
  * such dependencies can be resolved.
- * 
+ *
  * $$  \neg(\Gamma\_{i \in (V \setminus I)} \wedge \Gamma\_{ i\perp \left\\{j \in I \right\\}} \rightarrow \Delta\_{(V \setminus I)\perp I}), \Gamma_{I\_j \perp \left\\{k \in \left(V \setminus I\right) \right\\}}\vdash P\_E(i),\Delta $$
- * 
+ *
  * Where \\(P_E\\) defines such a dependency.
  */
 export default class ScopeTraverser extends Traverser {
@@ -29,7 +29,7 @@ export default class ScopeTraverser extends Traverser {
      * Instantiates a traverser object. Note: This must be subclassed to be
      * used. See {@link Transformer} or {@link ASTGarbageCollector} for more
      * information.
-     * 
+     *
      * @param {boolean} shouldProcess - Whether or not the node should be setup
      *     with special data. (Note: if false, only assume the raw node will be
      *     passed.)
@@ -42,7 +42,7 @@ export default class ScopeTraverser extends Traverser {
          * For a normal app this would look roughy like:
          * [ STL, Libraries, Global ]
          * specify STL to provide the base STL info
-         * 
+         *
          * @type {CodeBlock[]}
          */
         this.scope = [];
@@ -50,7 +50,7 @@ export default class ScopeTraverser extends Traverser {
     
     /**
      * Handles updating and application of scope
-     * 
+     *
      * @param {Node | Node[]} parent - The parent node of the given node being
      *     processed
      * @param {string} name - The name of the current node being processed

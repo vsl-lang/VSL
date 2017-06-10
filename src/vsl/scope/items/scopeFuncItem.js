@@ -35,7 +35,7 @@ export default class ScopeFuncItem extends ScopeItem {
             }
 
             // Check the arg types match
-            if (!this.args[i].type.validCandidate(ref.args[i].type)) {
+            if (this.args[i].type !== ref.args[i].type) {
                 return false;
             }
         }
