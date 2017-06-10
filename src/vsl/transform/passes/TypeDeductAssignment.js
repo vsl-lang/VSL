@@ -12,7 +12,7 @@ import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 /**
  * Type deducts basic assignment statements
- * 
+ *
  * @example
  * var a: T = b
  */
@@ -20,11 +20,11 @@ export default class TypeDeductAssignment extends Transformation {
     constructor() {
         super(t.AssignmentStatement, "TypeDeduct::AssignmentStatement");
     }
-    
+
     modify(node: Node, tool: ASTTool) {
         let expression = node.value;
         if (expression === null) return;
-        
+
         let evalType = node.identifier.type;
         new RootResolver(expression, vslGetChild, tool.context)
             .resolve((type) => {

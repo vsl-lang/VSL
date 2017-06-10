@@ -10,12 +10,12 @@ export default class RegisterPrimitiveAnnotation extends Transformation {
     constructor() {
         super(t.Annotation, "Register::PrimitiveAnnotation");
     }
-    
+
     modify(node: Node, tool: ASTTool) {
         // Check that it's the correct type
         if (node.name !== "primitive") return;
         let type = node.args[0];
 
-        tool.context.addPrimitive(type, tool.nthParent(2));
+        tool.context.addPrimitive(type, tool.nthParent(2).scopeRef);
     }
 }

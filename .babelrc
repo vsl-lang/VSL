@@ -1,15 +1,15 @@
 {
     "plugins": [
-        "include",
-        "loop-optimizer",
-        "wildcard",
-        "add-module-exports",
-        ["transform-runtime", {
+        "babel-plugin-include",
+        "babel-plugin-loop-optimizer",
+        "babel-plugin-wildcard",
+        "babel-plugin-add-module-exports",
+        ["babel-plugin-transform-runtime", {
             "polyfill": false
         }],
-        "transform-class-properties",
-        "transform-do-expressions",
-        "transform-function-bind",
+        "babel-plugin-transform-class-properties",
+        "babel-plugin-transform-do-expressions",
+        "babel-plugin-transform-function-bind",
         "babel-plugin-transform-export-extensions"
     ],
     "presets": [
@@ -18,7 +18,7 @@
             "targets": {
                 "node": "4.8"
             }
-        }],
+        }]
     ],
     "env": {
         "test": {
