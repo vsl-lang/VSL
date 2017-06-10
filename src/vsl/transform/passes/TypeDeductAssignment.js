@@ -28,7 +28,8 @@ export default class TypeDeductAssignment extends Transformation {
         let evalType = node.identifier.type;
         new RootResolver(expression, vslGetChild, tool.context)
             .resolve((type) => {
-            // We can't offer any constraints if we don't have the 1 context
+            // We can't offer any constraints if we don't have the one context
+            // we can offer
             if (evalType === null) return null;
 
             if (type === ConstraintType.ContextParentConstraint)
@@ -37,23 +38,7 @@ export default class TypeDeductAssignment extends Transformation {
                 return null;
         });
 
-        node.typeCandidates = node.value.typeCandidates;
-
-        // Add to scope
-        let name = node.identifier.identifier.identifier.rootId;
-        let res = node.parentScope.scope.set(
-            new ScopeAliasItem(
-                name,
-                node.value.typeCandidates,
-                node.value
-            )
-        );
-
-        if (res === false) {
-            throw new TransformError(
-                `Already declared identifier \`${name}\` in scope.`,
-                node
-            );
-        }
+        // Update ref candidates
+        node.ref.candidates = node.value.typeCandidates;
     }
 }

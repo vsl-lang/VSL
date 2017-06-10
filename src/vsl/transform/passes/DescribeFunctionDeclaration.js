@@ -29,7 +29,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
         for (let i = 0; i < node.args.length; i++) {
             let arg = node.args[i];
             let type = arg.typedId.type;
-            let name = arg.typedId.identifier.rootId; // public name
+            let name = arg.typedId.identifier.identifier.rootId; // public name
 
             let isOptional = false; // Whether the argument is optional
                                     // This should be determined off the type also

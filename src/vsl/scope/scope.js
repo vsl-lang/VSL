@@ -119,10 +119,10 @@ export default class Scope {
      *     otherwise major borks could happen.
      */
     set(item: ScopeItem): boolean {
-        let candidates = this.get(item.rootId);
+        let candidates = this.ids.get(item.rootId);
         if (candidates) {
             candidates.push(item);
-            return candidates.get(item) === item;
+            return this.get(item) === item;
         } else {
             this.ids.set(item.rootId, [item])
             return true;
