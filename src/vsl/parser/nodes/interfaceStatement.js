@@ -1,4 +1,5 @@
 import Node from './node';
+import CodeBlock from './codeBlock';
 
 /**
  * Wraps an interfcae
@@ -20,7 +21,7 @@ export default class InterfaceStatement extends Node {
         access: string[],
         name: Identifier,
         superclasses: Identifier[],
-        statements: Node[],
+        statements: CodeBlock,
         annotations: Annotation[],
         position: Object
     ) {
@@ -35,7 +36,7 @@ export default class InterfaceStatement extends Node {
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
 
-        /** @type {Node[]} */
+        /** @type {CodeBlock} */
         this.statements = statements;
 
         /** @type {Annotation[]} */

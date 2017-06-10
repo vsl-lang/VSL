@@ -6,7 +6,7 @@ import CodeBlock from './codeBlock';
  * 
  */
 export default class ClassStatement extends Node {
-    
+
     /**
      * Constructs a generic function statement
      * 
@@ -21,12 +21,12 @@ export default class ClassStatement extends Node {
         access: string[],
         name: Identifier,
         superclasses: Identifier[],
-        statements: Node[],
+        statements: CodeBlock,
         annotations: Annotation[],
         position: Object
     ) {
         super(position);
-        
+
         /** @type {string} */
         this.access = access;
 
@@ -42,7 +42,7 @@ export default class ClassStatement extends Node {
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
     }
-    
+
     /** @override */
     toString() {
         return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
