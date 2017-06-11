@@ -14,8 +14,8 @@ export default class Default extends CLIMode {
     constructor() {
         super([
             ["Options", [
-                ["-v", "--version", "Displays the VSL version"],
-                ["-h", "--help"   , "Displays this help message"],
+                ["-v", "--version", "Displays the VSL version",              { run: _ => _.printAndDie(_.version()) }],
+                ["-h", "--help"   , "Displays this help message",            { run: _ => _.help() }],
                 ["-i", "--repl"   , "Opens an interactive REPL",             { repl: true }],
                 ["--color"        , "Colorizes all output where applicable", { repl: true }]
             ]],
@@ -45,13 +45,13 @@ export default class Default extends CLIMode {
                 break;
             }
             
-            if (args[i] === "--help") this.help();
-            else if (args[i] === "--version") this.printAndDie(this.version());
-            
             if (args[i][0] === "-") {
                 const flagName = this.allArgs[this.aliases[args[i]] || args[i]];
                 if (!flagName) this.error.cli(`unknown flag: ${args[i]}`);
+                
                 const flagInfo = flagName[3] || flagName[2];
+                
+                if (flagInfo.run) flagInfo.run(this);
                 if (flagInfo.mode) mode = flagInfo.mode;
                 if (flagInfo.repl) repl = flagInfo.repl;
                 if (flagInfo.color) color = flagInfo.color;
@@ -118,11 +118,18 @@ export default class Default extends CLIMode {
         process.stdin.resume();
     }
     
+    _parse(string) {
+        let res = this.parser.feed(string);
+        if (res.length === 0) return false;
+        else this.parser = new VSLParser();
+        return res
+    }
+    
     feed(string) {
         switch (this.mode) {
             case "ast": {
-                let res = this.parser.feed(string);
-                if (res.length === 0) return false;
+                let res = this._parse(string);
+                if (!res) return false;
                 console.log(util.inspect(res, {
                     colors: this.color,
                     showHidden: true,
@@ -131,8 +138,8 @@ export default class Default extends CLIMode {
                 break;
             }
             case "dryRunGen": {
-                let res = this.parser.feed(string);
-                if (res.length === 0) return false;
+                let res = this._parse(string);
+                if (!res) return false;
                 
                 VSLTransform(res);
                 
