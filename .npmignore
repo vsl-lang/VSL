@@ -10,3 +10,4 @@ docs
 src/vsl/jscompiler
 .travis.yml
 .nyc_output
+.on-save.json

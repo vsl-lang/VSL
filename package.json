@@ -33,7 +33,6 @@
     "babel-runtime": "^6.23.0",
     "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
-    "minimist": "^1.2.0",
     "vsl-nearley": "^2.9.3"
   },
   "devDependencies": {
@@ -76,7 +75,7 @@
       "src/**/*.js"
     ],
     "exclude": [
-      "src/cli/vsl.js"
+      "src/cli/**/*.js"
     ],
     "all": true,
     "sourceMap": false,
