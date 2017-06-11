@@ -123,7 +123,11 @@ export default class Default extends CLIMode {
             case "ast": {
                 let res = this.parser.feed(string);
                 if (res.length === 0) return false;
-                console.log(util.inspect(res, false, null));
+                console.log(util.inspect(res, {
+                    colors: this.color,
+                    showHidden: true,
+                    depth: null
+                }));
                 break;
             }
             case "dryRunGen": {
