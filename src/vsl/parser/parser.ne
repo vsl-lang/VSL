@@ -44,6 +44,10 @@ statement
     | FunctionStatement   {% id %}
     | Expression          {% id %}
 
+# ============================================================================ #
+#                            Classes and Interfaces                            #
+# ============================================================================ #
+
 ClassStatement
    -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" ClassItems "}" {%
@@ -92,6 +96,10 @@ InterfaceItem
    -> FunctionHead {% id %}
     | FunctionStatement {% id %}
 
+# ============================================================================ #
+#                             Assignment Statement                             #
+# ============================================================================ #
+
 @{%
 const assignmentTypes = freeze({
     "var": t.AssignmentType.Variable,
@@ -110,6 +118,10 @@ AssignmentType
    -> "var" {% id %}
     | "let" {% id %}
 
+# ============================================================================ #
+#                                  Functions                                   #
+# ============================================================================ #
+
 FunctionStatement
    -> FunctionHead FunctionBody {%
         data => {
@@ -127,21 +139,6 @@ FunctionHead
             new t.FunctionStatement(data[0], data[2],
                 (data[3] || [])[0] || null, data[3][1], null, location)
     %}
-
-Modifier
-   -> DefinitionModifier:? AccessModifier:? StateModifier:? {%
-        data => data.filter(Boolean).map(i => i.value)
-    %}
-
-DefinitionModifier
-   -> "internal" {% id %}
-StateModifier
-   -> "static" {% id %}
-AccessModifier
-   -> "public"    {% id %}
-    | "protected" {% id %}
-    | "private"   {% id %}
-    | "readonly"  {% id %}
 
 BinaryOperator
    -> ("+" | "-" | "*" | "/" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
@@ -163,6 +160,10 @@ FunctionBody
     | "internal" "(" %identifier ")" {%
         (data, location) => new t.InternalMarker(data[2][0], location)
     %}
+
+# ============================================================================ #
+#                                 Expressions                                  #
+# ============================================================================ #
 
 BinaryOp[self, ops, next]
    -> $self $ops _ $next {%
@@ -223,6 +224,10 @@ Prefix
     %}
     | Property {% id %}
 
+# ============================================================================ #
+#                                  Properties                                  #
+# ============================================================================ #
+
 @{%
 function recursiveProperty(head, tail, optional, location) {
     if (tail.length === 0) {
@@ -263,10 +268,57 @@ Property
     %}
 
 propertyHead
-   -> Literal                {% id %}
-    | Identifier             {% id %}
+   -> Identifier             {% id %}
     | "(" _ Expression _ ")" {% nth(2) %}
     | FunctionizedOperator   {% id %}
+    | Literal                {% id %}
+
+## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
+## what about assignment
+FunctionizedOperator
+   -> "(" ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<" | ">>" |
+        "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>" | ".." |
+        "..." | "::") ")" {%
+        (data, location) =>
+            new t.FunctionizedOperator(data[1][0].value, location)
+    %}
+
+propertyTail
+   -> "." _ Identifier {%
+        (data, location) =>
+            new t.PropertyExpression(null, data[2], false, location)
+    %}
+    | "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {%
+        (data, location) => new t.Subscript(null, data[2], false, location)
+    %}
+    | nullableProperty {% id %}
+
+nullableProperty
+   -> "?" "." _ Identifier {%
+        (data, location) =>
+            new t.PropertyExpression(null, data[3], true, location)
+    %}
+    | "?" "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {%
+        (data, location) => new t.Subscript(null, data[3], true, location)
+    %}
+    | "(" _ FunctionCallList _ ")" {% nth(2) %}
+
+FunctionCallList
+   -> delimited[FunctionCallArgument {% id %}, _ "," _] {%
+        (data, location) => new t.FunctionCall(null, data[0], location)
+    %}
+
+FunctionCallArgument
+   -> %identifier _ ":" _ Expression {%
+        (data, location) => new t.ArgumentCall(data[4], data[0], location)
+    %}
+    | Expression {%
+        (data, location) => new t.ArgumentCall(data[0], null, location)
+    %}
+
+# ============================================================================ #
+#                                   Literals                                   #
+# ============================================================================ #
 
 @{%
 function literal(data, location) {
@@ -320,48 +372,24 @@ Set
         (data, location) => new t.SetNode(data[2], location)
     %}
 
-## TODO: do we include short-circuit (&& and ||)? if so, how to implement?
-## what about assignment
-FunctionizedOperator
-   -> "(" ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<" | ">>" |
-        "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>" | ".." |
-        "..." | "::") ")" {%
-        (data, location) =>
-            new t.FunctionizedOperator(data[1][0].value, location)
+# ============================================================================ #
+#                                Miscellaneous                                 #
+# ============================================================================ #
+
+Modifier
+   -> DefinitionModifier:? AccessModifier:? StateModifier:? {%
+        data => data.filter(Boolean).map(i => i.value)
     %}
 
-propertyTail
-   -> "." _ Identifier {%
-        (data, location) =>
-            new t.PropertyExpression(null, data[2], false, location)
-    %}
-    | "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {%
-        (data, location) => new t.Subscript(null, data[2], false, location)
-    %}
-    | nullableProperty {% id %}
-
-nullableProperty
-   -> "?" "." _ Identifier {%
-        (data, location) =>
-            new t.PropertyExpression(null, data[3], true, location)
-    %}
-    | "?" "[" _ (delimited[Expression, "," _] {% id %}) _ "]" {%
-        (data, location) => new t.Subscript(null, data[3], true, location)
-    %}
-    | "(" _ FunctionCallList _ ")" {% nth(2) %}
-
-FunctionCallList
-   -> delimited[FunctionCallArgument {% id %}, _ "," _] {%
-        (data, location) => new t.FunctionCall(null, data[0], location)
-    %}
-
-FunctionCallArgument
-   -> %identifier _ ":" _ Expression {%
-        (data, location) => new t.ArgumentCall(data[4], data[0], location)
-    %}
-    | Expression {%
-        (data, location) => new t.ArgumentCall(data[0], null, location)
-    %}
+DefinitionModifier
+   -> "internal" {% id %}
+StateModifier
+   -> "static" {% id %}
+AccessModifier
+   -> "public"    {% id %}
+    | "protected" {% id %}
+    | "private"   {% id %}
+    | "readonly"  {% id %}
 
 TypedIdentifier
    -> Identifier (_ ":" _ type {% nth(3) %}):? {%
