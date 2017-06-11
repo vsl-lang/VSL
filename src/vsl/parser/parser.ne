@@ -304,7 +304,7 @@ nullableProperty
     | "(" _ FunctionCallList _ ")" {% nth(2) %}
 
 FunctionCallList
-   -> delimited[FunctionCallArgument {% id %}, _ "," _] {%
+   -> delimited[FunctionCallArgument {% id %}, _ "," _]:? {%
         (data, location) => new t.FunctionCall(null, data[0], location)
     %}
 
