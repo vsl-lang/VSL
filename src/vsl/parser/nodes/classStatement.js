@@ -21,7 +21,7 @@ export default class ClassStatement extends Node {
         access: string[],
         name: Identifier,
         superclasses: Identifier[],
-        statements: Node[],
+        statements: CodeBlock,
         annotations: Annotation[],
         position: Object
     ) {
