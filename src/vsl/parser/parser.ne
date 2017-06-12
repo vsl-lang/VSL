@@ -82,12 +82,21 @@ ClassItems
 ClassItem
    -> InterfaceItem {% id %}
     | Field {% id %}
+    | Constructor {% id %}
 
 Field
    -> Modifier AssignmentStatement {%
         (data, location) =>
             new t.FieldStatement(data[0], data[1].type, data[1].identifier,
                 data[1].value, location)
+    %}
+
+Constructor
+   -> AccessModifier:? _ "init" "?":? _ ArgumentList _ "{"
+        CodeBlock[statement {% id %}] "}" {%
+        (data, location) =>
+            new t.Constructor(data[0] ? data[0].value : "", !!data[3],
+                data[5] || [], data[8], location)
     %}
 
 InterfaceItems
