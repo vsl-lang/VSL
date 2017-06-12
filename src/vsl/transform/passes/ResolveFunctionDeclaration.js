@@ -2,7 +2,7 @@ import Transformation from '../transformation.js';
 import TokenType from '../../parser/vsltokentype';
 import t from '../../parser/nodes';
 
-import mangleTypeChildren from '../helper/mangleTypeChildren';
+import mangleTypeChild from '../helper/mangleTypeChild';
 import generateFunctionMangle from '../helper/generateFunctionMangle';
 
 /**
@@ -35,10 +35,11 @@ export default class ResolveFunctionDeclaration extends Transformation {
                 ];
                 continue;
             }
-
+            
+            let final = mangleTypeChild(args[i].typedId, 'type', tool);
             resArgs[i] = [
                 args[i].typedId.identifier.identifier.rootId,
-                mangleTypeChildren(args[i].typedId.type.path, tool)
+                final
             ];
         }
 
@@ -49,9 +50,10 @@ export default class ResolveFunctionDeclaration extends Transformation {
             generateFunctionMangle(rootName, resArgs, tool),
             node.name.position
         );
+        
+        node.name.original = rootName;
 
         tool.gc(oldQueueQualifier);
-
         tool.notifyScopeChange();
     }
 }

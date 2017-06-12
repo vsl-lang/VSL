@@ -24,6 +24,7 @@ export default class VSLPreprocessor extends Transformer {
             // Converts a type to what it will
             // be after mangling, not sure how
             // typealiases will be handled.
+            pass.ResolveFunctionDeclaration,
             pass.ResolveTypePath,
             pass.ResolveGenericArgument,
 
@@ -31,9 +32,7 @@ export default class VSLPreprocessor extends Transformer {
             // adds just the name and ref to class
             pass.DescribeClassDeclaration,
             pass.DescribeFunctionDeclaration,
-            pass.DescribeVariableAssignment,
-
-            pass.ResolveFunctionDeclaration,
+            pass.DescribeVariableAssignment
         ], context);
     }
 }

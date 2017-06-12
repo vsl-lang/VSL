@@ -47,6 +47,10 @@ export default class IdResolver extends TypeResolver {
             // rootId and set those as the candidates. In any case we'll call
             // ambiguity if unresolved
             
+            // We can omit void functions in this filter if it specified that
+            // they aren't need
+            const allowVoid = negotiate(ConstraintType.VoidableContext);
+            
             this.node.typeCandidates = scope
                 .getAll(rootId)
                 .filter(

@@ -23,9 +23,10 @@ export default class Default extends CLIMode {
                 ["-n"  , "--dry-run"    , "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
             ]],
             ["Source Debugging Flags", [
-                ["-N"  , "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
-                ["-ast", "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
-                ["-lex", "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
+                ["-N"    , "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
+                ["-scope", "--debug-scope", "Generates and outputs the scope tree",                  { mode: "scope" }],
+                ["-ast"  , "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
+                ["-lex"  , "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
             ]]
         ]);
         
@@ -126,29 +127,35 @@ export default class Default extends CLIMode {
     }
     
     feed(string) {
-        switch (this.mode) {
-            case "ast": {
-                let res = this._parse(string);
-                if (!res) return false;
-                console.log(util.inspect(res, {
+        
+        const modes = {
+            
+            "ast": (ast) => {
+                console.log(util.inspect(ast, {
                     colors: this.color,
                     showHidden: true,
                     depth: null
                 }));
-                break;
-            }
-            case "dryRunGen": {
-                let res = this._parse(string);
-                if (!res) return false;
-                
+            },
+            
+            "scope": (ast) => {
                 VSLTransform(res);
-                
+                console.log(res[0].scope.toString());
+            },
+            
+            "dryRunGen": (ast) => {
+                VSLTransform(res);
                 console.log(res[0].toString());
-                break;
             }
-            default: {
-                this.error.cli(`Unhandled mode ${this.mode} (internal)`)
-            }
-        }
+            
+        };
+        
+        const modeFunc = modes[this.mode];
+        if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
+        
+        let res = this._parse(string);
+        if (!res) return false;
+        
+        modeFunc(res);
     }
 }

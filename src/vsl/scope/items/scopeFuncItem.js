@@ -16,7 +16,10 @@ export default class ScopeFuncItem extends ScopeItem {
     constructor(rootId: string, args: ScopeFuncItemArgument[]) {
         super(rootId);
 
-        /** @type {ScopeFuncItemArgument[]} */
+        /**
+         * The list of arguments that a function has.
+         * @type {ScopeFuncItemArgument[]}
+         */
         this.args = args;
     }
 

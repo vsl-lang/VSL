@@ -7,7 +7,6 @@ import { RootResolver } from '../../resolver/resolvers';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
 
-import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 /**
