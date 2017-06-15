@@ -36,7 +36,7 @@ export default class Constructor extends Node {
 
     /** @override */
     get children() {
-        return ['access', 'optional', 'params', 'statements'];
+        return ['params', 'statements'];
     }
 
     /** @override */
