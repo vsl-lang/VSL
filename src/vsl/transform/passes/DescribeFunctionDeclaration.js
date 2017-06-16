@@ -56,7 +56,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
             
             // Resolve type
             let typeItemName = type.identifier.rootId;
-            let typeItem = this.get(new ScopeTypeItem(typeItemName));
+            let typeItem = node.parentScope.scope.get(new ScopeTypeItem(typeItemName));
             if (!typeItem) typeItem = typeItemName;
 
             args.push(
