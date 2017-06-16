@@ -1,9 +1,9 @@
 import Node from './node';
 
 /**
- * Used to specify that the parent's implementation is internally defined.
+ * Used to specify that the parent's implementation is externally defined.
  */
-export default class InternalMarker extends Node {
+export default class ExternalMarker extends Node {
     
     /**
      * Creates a marker
@@ -21,6 +21,6 @@ export default class InternalMarker extends Node {
     }
     
     toString() {
-        return `internal(${this.rootId})`;
+        return `external(${this.rootId})`;
     }
 }

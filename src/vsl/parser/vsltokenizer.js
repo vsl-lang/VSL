@@ -54,7 +54,7 @@ function unescapeString(_, match) {
 
 /**
  * VSL-specific Tokenizer
- * 
+ *
  * This defines tokens for VSL. For further information see {@link Tokenizer}
  */
 export default class VSLTokenizer extends Tokenizer {
@@ -153,11 +153,11 @@ export default class VSLTokenizer extends Tokenizer {
             ['public', passThrough],
             ['private', passThrough],
             ['readonly', passThrough],
-            ['internal', passThrough],
+            ['external', passThrough],
 
             ['is', passThrough],
 
-            ['function', passThrough],           
+            ['function', passThrough],
             ['func', passThrough],
             ['fn', passThrough],
             ['class', passThrough],

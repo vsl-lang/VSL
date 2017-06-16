@@ -20,7 +20,7 @@ export default class Default extends CLIMode {
                 ["--color"        , "Colorizes all output where applicable", { repl: true }]
             ]],
             ["Debug Flags", [
-                ["-n"  , "--dry-run"    , "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
+                ["-n", "--dry-run", "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
             ]],
             ["Source Debugging Flags", [
                 ["-dregen", "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],

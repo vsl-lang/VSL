@@ -166,8 +166,8 @@ Argument
 
 FunctionBody
    -> "{" (CodeBlock[statement {% id %}] {% id %}) "}" {% nth(1) %}
-    | "internal" "(" %identifier ")" {%
-        (data, location) => new t.InternalMarker(data[2][0], location)
+    | "external" "(" %identifier ")" {%
+        (data, location) => new t.ExternalMarker(data[2][0], location)
     %}
 
 # ============================================================================ #
@@ -391,7 +391,7 @@ Modifier
     %}
 
 DefinitionModifier
-   -> "internal" {% id %}
+   -> "external" {% id %}
 StateModifier
    -> "static" {% id %}
 AccessModifier
