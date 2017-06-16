@@ -238,7 +238,7 @@ Prefix
 # ============================================================================ #
 
 @{%
-function recursiveProperty(head, tail, optional, location) {
+function recursiveProperty(head, tail, location) {
     if (tail.length === 0) {
         return head;
     }
@@ -246,7 +246,7 @@ function recursiveProperty(head, tail, optional, location) {
         tail[i + 1].head = tail[i];
     }
     tail[0].head = head;
-    tail[tail.length - 1].optional = optional;
+    tail[tail.length - 1].optional = false; // TODO: fix this bork
     //console.log('ok', require('util').inspect(tail[tail.length - 1],
     //    {depth: null}));
     return tail[tail.length - 1];
