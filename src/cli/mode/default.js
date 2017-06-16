@@ -23,10 +23,10 @@ export default class Default extends CLIMode {
                 ["-n"  , "--dry-run"    , "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
             ]],
             ["Source Debugging Flags", [
-                ["-N"    , "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
-                ["-scope", "--debug-scope", "Generates and outputs the scope tree",                  { mode: "scope" }],
-                ["-ast"  , "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
-                ["-lex"  , "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
+                ["-dregen", "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
+                ["-dscope", "--debug-scope", "Generates and outputs the scope tree",                  { mode: "scope" }],
+                ["-dast"  , "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
+                ["-dlex"  , "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
             ]]
         ]);
         
