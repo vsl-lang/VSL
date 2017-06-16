@@ -165,7 +165,9 @@ export default class VSLTokenizer extends Tokenizer {
             ['interface', passThrough],
             ['enum', passThrough],
             ['typealias', passThrough],
-            
+
+            ['init', passThrough],
+
             ['if', passThrough],
             ['for', passThrough],
             ['while', passThrough],
