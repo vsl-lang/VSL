@@ -157,7 +157,7 @@ export default class Scope {
 
         let prefix = "";
         if (this.parentScope !== null) {
-            prefix = parentScope.toString();
+            prefix = this.parentScope.toString();
         } else {
             prefix = "Root";
         }

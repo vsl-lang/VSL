@@ -31,6 +31,9 @@ export default class Default extends CLIMode {
         ]);
         
         this.parser = new VSLParser();
+        
+        this.previousScope = null;
+        this.previousContext = undefined;
     }
     
     run(args) {
@@ -139,12 +142,18 @@ export default class Default extends CLIMode {
             },
             
             "scope": (ast) => {
-                VSLTransform(res);
+                ast[0].scope.parentScope = this.previousScope;
+                this.previousScope = ast[0].scope;
+                
+                this.previousContext = VSLTransform(res, this.previousContext);
                 console.log(res[0].scope.toString());
             },
             
             "dryRunGen": (ast) => {
-                VSLTransform(res);
+                ast[0].scope.parentScope = this.previousScope;
+                this.previousScope = ast[0].scope;
+                
+                this.previousContext = VSLTransform(res, this.previousContext);
                 console.log(res[0].toString());
             }
             

@@ -6,12 +6,18 @@ import VSLTransformer from './transformers/vsltransformer';
  * output the top-level AST result as a `CodeBlock[]`, so you can just pass the
  * parser output into here safely. Don't forget to load in the STL (by inserting
  * it into the CodeBlock).
- * 
- * @param {CodeBlock[]} ast - The AST 
+ *
+ * @param {CodeBlock[]} ast - The AST
+ * @param {?TransformationContext} context - The context to pass to the
+ *                                         first transformer, should be
+ *                                         propogated to the next.
+ * @return {TransformationContext} The context of the last transformer
  */
-export default function transform(ast: CodeBlock[]) {
-    let preprocessor = new VSLPreprocessor();
+export default function transform(ast: CodeBlock[], context: TransformationContext) {
+    let preprocessor = new VSLPreprocessor(context);
     preprocessor.queue(ast);
 
-    new VSLTransformer(preprocessor.context).queue(ast);
+    let res = new VSLTransformer(preprocessor.context);
+    res.queue(ast)
+    return res.context;
 }

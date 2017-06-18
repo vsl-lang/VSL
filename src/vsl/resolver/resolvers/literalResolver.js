@@ -65,11 +65,13 @@ export default class LiteralResolver extends TypeResolver {
 
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
-
+        
+        debugger;
         if (response !== null) {
             this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes)
         }
-
+        
+        debugger;
         if (requiredResolution !== null) {
             let res = this.node.typeCandidates.find(candidate => candidate.scopeRef.equal(requiredResolution));
             if (!res) {
