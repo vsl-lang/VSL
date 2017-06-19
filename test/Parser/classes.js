@@ -52,7 +52,7 @@ export default () => describe("Classes", () => {
         }`;
         
         valid`class A {
-            func f() internal(g)
+            func f() external(g)
         }`;
         
         valid`class A {

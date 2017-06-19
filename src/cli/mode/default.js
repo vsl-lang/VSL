@@ -20,16 +20,20 @@ export default class Default extends CLIMode {
                 ["--color"        , "Colorizes all output where applicable", { repl: true }]
             ]],
             ["Debug Flags", [
-                ["-n"  , "--dry-run"    , "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
+                ["-n", "--dry-run", "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
             ]],
             ["Source Debugging Flags", [
-                ["-N"  , "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
-                ["-ast", "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
-                ["-lex", "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
+                ["-dregen", "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
+                ["-dscope", "--debug-scope", "Generates and outputs the scope tree",                  { mode: "scope" }],
+                ["-dast"  , "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
+                ["-dlex"  , "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
             ]]
         ]);
         
         this.parser = new VSLParser();
+        
+        this.previousScope = null;
+        this.previousContext = undefined;
     }
     
     run(args) {
@@ -126,29 +130,41 @@ export default class Default extends CLIMode {
     }
     
     feed(string) {
-        switch (this.mode) {
-            case "ast": {
-                let res = this._parse(string);
-                if (!res) return false;
-                console.log(util.inspect(res, {
+        
+        const modes = {
+            
+            "ast": (ast) => {
+                console.log(util.inspect(ast, {
                     colors: this.color,
                     showHidden: true,
                     depth: null
                 }));
-                break;
-            }
-            case "dryRunGen": {
-                let res = this._parse(string);
-                if (!res) return false;
+            },
+            
+            "scope": (ast) => {
+                ast[0].scope.parentScope = this.previousScope;
+                this.previousScope = ast[0].scope;
                 
-                VSLTransform(res);
+                this.previousContext = VSLTransform(res, this.previousContext);
+                console.log(res[0].scope.toString());
+            },
+            
+            "dryRunGen": (ast) => {
+                ast[0].scope.parentScope = this.previousScope;
+                this.previousScope = ast[0].scope;
                 
+                this.previousContext = VSLTransform(res, this.previousContext);
                 console.log(res[0].toString());
-                break;
             }
-            default: {
-                this.error.cli(`Unhandled mode ${this.mode} (internal)`)
-            }
-        }
+            
+        };
+        
+        const modeFunc = modes[this.mode];
+        if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
+        
+        let res = this._parse(string);
+        if (!res) return false;
+        
+        modeFunc(res);
     }
 }

@@ -82,12 +82,21 @@ ClassItems
 ClassItem
    -> InterfaceItem {% id %}
     | Field {% id %}
+    | Constructor {% id %}
 
 Field
    -> Modifier AssignmentStatement {%
         (data, location) =>
             new t.FieldStatement(data[0], data[1].type, data[1].identifier,
                 data[1].value, location)
+    %}
+
+Constructor
+   -> AccessModifier:? _ "init" "?":? _ ArgumentList _ "{"
+        CodeBlock[statement {% id %}] "}" {%
+        (data, location) =>
+            new t.Constructor(data[0] ? data[0].value : "", !!data[3],
+                data[5] || [], data[8], location)
     %}
 
 InterfaceItems
@@ -157,8 +166,8 @@ Argument
 
 FunctionBody
    -> "{" (CodeBlock[statement {% id %}] {% id %}) "}" {% nth(1) %}
-    | "internal" "(" %identifier ")" {%
-        (data, location) => new t.InternalMarker(data[2][0], location)
+    | "external" "(" %identifier ")" {%
+        (data, location) => new t.ExternalMarker(data[2][0], location)
     %}
 
 # ============================================================================ #
@@ -229,7 +238,7 @@ Prefix
 # ============================================================================ #
 
 @{%
-function recursiveProperty(head, tail, optional, location) {
+function recursiveProperty(head, tail, location) {
     if (tail.length === 0) {
         return head;
     }
@@ -237,7 +246,7 @@ function recursiveProperty(head, tail, optional, location) {
         tail[i + 1].head = tail[i];
     }
     tail[0].head = head;
-    tail[tail.length - 1].optional = optional;
+    tail[tail.length - 1].optional = false; // TODO: fix this bork
     //console.log('ok', require('util').inspect(tail[tail.length - 1],
     //    {depth: null}));
     return tail[tail.length - 1];
@@ -382,7 +391,7 @@ Modifier
     %}
 
 DefinitionModifier
-   -> "internal" {% id %}
+   -> "external" {% id %}
 StateModifier
    -> "static" {% id %}
 AccessModifier

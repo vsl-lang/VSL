@@ -10,7 +10,7 @@ export default class ScopeTypeItem extends ScopeItem {
      * that your node has. If for some weird reason you need to create a scope,
      * don't set the `parentScope` of the scope, the `superclass` attribute will
      * do that for you.
-     * 
+     *
      * @param {string} rootId - The root primary identifier of this type.
      * @param {Scope} subscope - All items in the class's scope
      * @param {Object} data - Information about the class
@@ -35,27 +35,39 @@ export default class ScopeTypeItem extends ScopeItem {
         } = {}
     ) {
         super(rootId);
-        
+
         this.isInterface = isInterface;
-        
+
         this.castsables = castables;
         this.superclass = superclass;
-        
+
         this.subscope = subscope;
     }
-    
+
     /** @override */
     equal(ref: ScopeItem): boolean {
-        return ref.rootId === this.rootId; 
+        return ref.rootId === this.rootId;
     }
-    
+
+    /**
+     * Specifies if an object of the passed type can be passed for a parameter
+     * of the current type.
+     *
+     * @param  {ScopeTypeItem} ref The object to check if applicable.
+     * @return {boolean} `true` if it can, `false` if it cannot.
+     */
+    validCandidate(ref: ScopeTypeItem) {
+        // TODO: expand
+        return ref.rootId === this.rootId;
+    }
+
     /**
      * The default classes all items inherit from.
      */
     static RootClass = do {
         new ScopeTypeItem("Object", null, {})
     }
-    
+
     /** @return {string} */
     toString() {
         return `${this.isInterface ? "interface" : "class"} ${this.rootId}`

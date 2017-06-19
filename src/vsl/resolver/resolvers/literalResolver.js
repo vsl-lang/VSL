@@ -10,7 +10,7 @@ import VSLTokenType from '../../parser/vsltokentype.js';
  * Resolves any atomic literal described by an `Literal` token class.
  */
 export default class LiteralResolver extends TypeResolver {
-    
+
     /**
      * @param {Node} node - The node to resolve.
      * @param {function(from: Node): TypeResolver} getChild - Takes a node and
@@ -24,17 +24,17 @@ export default class LiteralResolver extends TypeResolver {
     ) {
         super(node, getChild);
     }
-    
+
     /**
      * Resolves types for a given node.
-     * 
+     *
      * @param {function(offer: ConstraintType): ?TypeConstraint} negotiate - The
      *     function which will handle or reject all negotiation requests. Use
      *     `{ nil }` to reject all offers (bad idea though).
      */
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
-        // Get context
+        // Get context for primitive resolution
         const context = negotiate(ConstraintType.TransformationContext).primitives;
 
         // Check the requested types of this ID
@@ -50,26 +50,28 @@ export default class LiteralResolver extends TypeResolver {
             case VSLTokenType.Integer:
                 this.node.typeCandidates = context.get("Integer") || [];
                 break;
-                
+
             case VSLTokenType.Decimal:
                 this.node.typeCandidates = context.get("FloatingPoint") || [];
                 break;
-                
+
             case VSLTokenType.String:
                 this.node.typeCandidates = context.get("String") || [];
                 break;
-                
+
             case VSLTokenType.Regex:
                 this.node.typeCandidates = context.get("Regex") || [];
                 break;
-                
+
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
         
+        debugger;
         if (response !== null) {
             this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes)
         }
-
+        
+        debugger;
         if (requiredResolution !== null) {
             let res = this.node.typeCandidates.find(candidate => candidate.scopeRef.equal(requiredResolution));
             if (!res) {
@@ -83,11 +85,11 @@ export default class LiteralResolver extends TypeResolver {
                 this.node.exprType = res.scopeRef;
             }
         }
-        
+
         if (this.node.typeCandidates.length === 0) {
             this.emit(
-                `Literal has no overlapping type candidates. ` + 
-                `They are a few reasons this could happen: \n` + 
+                `Literal has no overlapping type candidates. ` +
+                `They are a few reasons this could happen: \n` +
                 `  1. The STL is not linked\n` +
                 `  2. You are using a literal which doesn't have a class ` +
                 `associated with it.\n` +
@@ -96,7 +98,7 @@ export default class LiteralResolver extends TypeResolver {
                 `your own candidate using \`@primitive(...)\``
             );
         }
-        
+
         if (this.node.typeCandidates.length === 1) {
             this.node.exprType = this.node.typeCandidates[0];
         }

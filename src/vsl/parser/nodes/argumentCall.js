@@ -12,7 +12,7 @@ import Node from './node';
 export default class ArgumentCall extends Node {
     /**
      * Creates a argument
-     * 
+     *
      * @param {Expression} value - the argument value
      * @param {?Identifier} name - the name of the argument
      * @param {Object} position a position from nearley

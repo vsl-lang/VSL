@@ -48,6 +48,32 @@ export function vsl(source) {
 }
 
 /**
+ * Tests scope (also does transform)
+ */
+export function compareScope(src, expected) {
+    it(`should generate \`${src.formattedLine}\` correctly`, () => {
+        try {
+            transform(src);
+        } catch(e) {
+            throw new Error(
+                `An error occured in transforming ${src.formattedLine}. ` +
+                `This may not be a scope generation error so check the transformation ` +
+                `instead.`
+            );
+        }
+        
+        function format(str) { return str.replace(/\s|├/g, "") }
+        
+        let scopeTree = format(src.ast[0].scope.toString())
+        if (scopeTree !== format(expected)) {
+            throw new Error(
+                `Expected to generate:\n ${expected} but instead generated:\n ${src.ast[0].scope.toString()}`
+            );
+        }
+    })
+}
+
+/**
  * Regenerate VSL code. Run through `parseVSL` first.
  */
 export function regenerate(source, expected, { full = false, testText, trim = false } = {}) {
@@ -70,7 +96,7 @@ export function regenerate(source, expected, { full = false, testText, trim = fa
 
 /**
  * Verifies if a syntax is a valid syntax
- * 
+ *
  * @param {string} source - string to validate
  */
 export function valid(source) {
@@ -115,7 +141,7 @@ export function invalid(source) {
 
 /**
  * Returns the tokenizes array from a string.
- * 
+ *
  * @param {string} source - string to tokenize
  * @return {(Object|string)[]} - result
  */
@@ -125,7 +151,7 @@ export function tokenize( string ) {
 
 /**
  * Determines if two tokenized items are equal.
- * 
+ *
  * @param {(Object|string)[]} actual - Actual value
  * @param {(Object|string)[]} expected - Expected value
  * @return {boolean|Objcet} True if worked, otherwise returns object
@@ -159,19 +185,19 @@ export function compareToken(actual, expected) {
  * Expects the function to break
  */
 export function expectBork(f, desc = "") {
-    return () => {
+    it(`should ${desc}`, () => {
         try {
             f()
-            throw new Error(`Expected \`${desc}\` to break but worked.`);
         } catch(e) {
             return true;
         }
-    }
+        throw new Error(`Expected to \`${desc}\` to break but worked.`);
+    });
 }
 
 /**
  * Determines if two tokenized items are equal.
- * 
+ *
  * @param {string} source - Actual value
  * @param {(Object|string)[]} expected - Expected value
  * @return {boolean} True if same, false otherwise
