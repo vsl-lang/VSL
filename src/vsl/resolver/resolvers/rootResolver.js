@@ -7,13 +7,13 @@ import TypeResolver from '../typeResolver';
  * single `ContextParentConstraint`. For functions this would probably needed to
  * be propogated to take into scope and resolve which function prototypes fit
  * the bill.
- * 
+ *
  * Call this if you have an expression you want to resolve and DO NOT FORGET
  * to specify a negotiator. Make sure your negotiator is damn good for best
  * results.
  */
 export default class RootResolver extends TypeResolver {
-    
+
     /**
      * @param {Node} node - The node to resolve.
      * @param {function(from: Node): TypeResolver} getChild - Takes a node and
@@ -29,10 +29,10 @@ export default class RootResolver extends TypeResolver {
         super(node, getChild);
         this.context = context;
     }
-    
+
     /**
      * Resolves types for a given node.
-     * 
+     *
      * @param {function(offer: ConstraintType): ?TypeConstraint} negotiate - The
      *     function which will handle or reject all negotiation requests. Use
      *     `{ nil }` to reject all offers (bad idea though).
@@ -50,10 +50,10 @@ export default class RootResolver extends TypeResolver {
                 default: return null;
             }
         };
-        
+
         const child = this.getChild(this.node.expression);
         child.resolve(negotiator);
-        
+
         this.node.typeCandidates = this.node.expression.typeCandidates;
         this.node.exprType = this.node.expression.exprType;
     }

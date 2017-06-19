@@ -29,7 +29,7 @@ export default () => describe("Interfaces", () => {
         }`;
  
         valid`interface A {
-            func f() internal(g)
+            func f() external(g)
         }`;
 
         valid`interface A {

@@ -3,13 +3,13 @@ import CodeBlock from './codeBlock';
 
 /**
  * Wraps a class
- * 
+ *
  */
 export default class ClassStatement extends Node {
 
     /**
      * Constructs a generic function statement
-     * 
+     *
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the class
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
@@ -41,6 +41,9 @@ export default class ClassStatement extends Node {
 
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
+
+        /** @type {ScopeTypeItem} */
+        this.scopeRef = null;
     }
 
     /** @override */
@@ -52,7 +55,7 @@ export default class ClassStatement extends Node {
             "Object" : this.superclasses.join(", ")
         } ${this.statements}`
     }
-    
+
     /** @override */
     get children() {
         return ['name', 'superclasses', 'statements', 'annotations'];

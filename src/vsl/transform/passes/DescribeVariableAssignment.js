@@ -24,25 +24,31 @@ export default class DescribeVariableAssignment extends Transformation {
         // Resolve the type if applicable
         let candidates = [];
         if (node.identifier.type !== null) {
+            // Transform the type to mangle it et al.
             tool.queueThenDeep(node.identifier.type, node.identifier, 'type', null);
             let type = node.identifier.type;
             
+            // The mangler will wrap and identifier with a rough ScopeItem so
+            // just check everything worked.
             if (!(type instanceof t.Identifier)) {
                 throw new TypeError(`Did not reduce type, ${node.identifier}, to ID`);
             }
             
             let lookupId = type.identifier.rootId;
-            // Locate type
+            
+            // Obtain the type's object from its name
             let candidate = scope.get(new ScopeTypeItem(lookupId));
             
+            // If we couldn't find it pass it as a string for resolution later.
             if (candidate === null) candidates.push(lookupId);
             else candidates.push(candidate);
         }
         
-        let ref = new ScopeAliasItem(
+        node.ref = new ScopeAliasItem(
             rootId,
-            candidates
+            candidates,
+            node
         );
-        scope.set(ref);
+        scope.set(node.ref);
     }
 }

@@ -2,7 +2,7 @@ import Node from './node';
 
 /**
  * Matches a function call inside a PropertyExpression
- * 
+ *
  * @example
  * head(argument)
  */
@@ -10,7 +10,7 @@ import Node from './node';
 export default class FunctionCall extends Node {
     /**
      * Creates a function call
-     * 
+     *
      * @param {Expression} head the function to call
      * @param {ArgumentCall[]} args the provided arguments
      * @param {Object} position a position from nearley
@@ -27,7 +27,7 @@ export default class FunctionCall extends Node {
     
     /** @override */
     get children () {
-        return ['arguments'];
+        return ['head', 'arguments'];
     }
     
     /** @override */
