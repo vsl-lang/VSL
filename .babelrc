@@ -13,6 +13,7 @@
         "babel-plugin-transform-export-extensions"
     ],
     "presets": [
+        "react",
         "flow",
         ["env", {
             "targets": {

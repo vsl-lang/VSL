@@ -33,11 +33,16 @@
     "babel-runtime": "^6.23.0",
     "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
+    "node-sass": "^4.5.3",
+    "react": "^15.6.1",
+    "react-contenteditable": "^2.0.2",
+    "react-dom": "^15.6.1",
     "vsl-nearley": "^2.9.3"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.0.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-include": "^1.2.0",
     "babel-plugin-istanbul": "^4.1.4",
@@ -53,15 +58,22 @@
     "babel-plugin-wildcard": "^1.0.0",
     "babel-preset-env": "^1.5.1",
     "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
     "babel-register": "^6.24.1",
     "cross-env": "^5.0.0",
+    "css-loader": "^0.28.4",
     "esdoc": "^0.5.2",
     "esdoc-babel-plugin": "github:mhelvens/esdoc-babel-plugin",
     "eslint": "^3.19.0",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "html-webpack-plugin": "^2.28.0",
     "install": "^0.10.1",
     "mocha": "^3.4.2",
     "npm": "^4.6.1",
-    "nyc": "^10.3.2"
+    "nyc": "^10.3.2",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^2.6.1"
   },
   "nyc": {
     "require": [
