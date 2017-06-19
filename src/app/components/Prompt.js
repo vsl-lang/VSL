@@ -16,15 +16,22 @@ export default class Prompt extends Component {
     }
     
     onKeyDown(event) {
-        if (event.key === 'Enter') {
-            let value = ReactDOM.findDOMNode(this.contentEditable).textContent
-            
-            // Disable text area from further editing
-            this.setState({ isDisabled: true })
-            
-            if (this.props.onSubmit) {
-                let res = this.props.onSubmit(value);
-                event.preventDefault(); // Prevent from submitting newline
+        switch (event.keyCode) {
+            case 13: {
+                let value = ReactDOM.findDOMNode(this.contentEditable).textContent
+                
+                // Disable text area from further editing
+                this.setState({ isDisabled: true })
+                
+                if (this.props.onSubmit) {
+                    let res = this.props.onSubmit(value);
+                    event.preventDefault(); // Prevent from submitting newline
+                }
+                
+                break;
+            }
+            case 8: {
+                break;
             }
         }
     }

@@ -83,6 +83,17 @@ html, body {
                     left: 0.5em;
                     bottom: 0.3em;
                 }
+                
+                &.error {
+                    .error-name {
+                        color: #F63073;
+                    }
+                    
+                    .trace {
+                        margin-left: 1em;
+                        color: #75715F;
+                    }
+                }
             }
             
         }
