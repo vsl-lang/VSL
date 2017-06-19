@@ -30,6 +30,12 @@ export default class Prompt extends Component {
                 
                 break;
             }
+            case 85: {
+                // Handle ctrl+u
+                if (event.ctrlKey) {
+                    this.setState({ html: "" });
+                }
+            }
             case 8: {
                 break;
             }
