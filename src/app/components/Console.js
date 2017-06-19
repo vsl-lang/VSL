@@ -53,7 +53,7 @@ export default class Console extends Component {
         let res;
         try {
             res = this.parser.feed(text);
-        } catch(e) {
+        } catch(error) {
             let lines = this.state.lines;
             lines.push({
                 type: "error",
