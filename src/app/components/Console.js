@@ -7,7 +7,10 @@ import Prompt from './Prompt';
 import VSLParser from '../../vsl/parser/vslparser';
 import VSLTransform from '../../vsl/transform/transform';
 
-const prompt = "vsl";
+const prompt = {
+    type: "prompt",
+    prompt: "vsl"
+};
 
 export default class Console extends Component {
     constructor(props) {
@@ -33,12 +36,7 @@ export default class Console extends Component {
     }
     
     componentDidMount() {
-        let lines = this.state.lines;
-        lines.push({
-            type: "prompt",
-            prompt: prompt
-        });
-        this.setState({ lines: lines });
+        this.pushLine(prompt);
     }
     
     didClickBackground() {
@@ -46,6 +44,20 @@ export default class Console extends Component {
     }
     
     onSubmit(text) {
+        // Special behavior for help
+        if (text === "help") {
+            this.pushLineAndPrompt({
+                type: "text",
+                value: `\nWelcome to VSL!\n\n` +
+                       `If you are using VSL for the first time we reccomend referencing\n` +
+                       `the getting started guide but that doesn't exist atm. \n\n` +
+                       `The following commands are available:\n` +
+                       `  help - displays this dialog\n` +
+                       `\n`
+            });
+            return;
+        }
+        
         if (this.unfinished !== true) {
             this.parser = new VSLParser();
         }
@@ -54,63 +66,60 @@ export default class Console extends Component {
         try {
             res = this.parser.feed(text);
         } catch(error) {
-            let lines = this.state.lines;
-            lines.push({
+            this.pushLineAndPrompt({
                 type: "error",
                 name: error.name,
                 title: error.message,
                 description: error.stack
             });
-            lines.push({
-                type: "prompt",
-                prompt: prompt
-            })
-            this.setState({ lines: lines });
             return;
         }
         
         if (res.length === 0) {
             this.unfinished = true;
-            let lines = this.state.lines;
-            
-            lines.push({
+
+            this.pushLine({
                 type: "prompt",
                 prompt: ">>>"
             });
-            
-            this.setState({ lines: lines })
         } else {
             this.unfinished = false;
             
-            // Process text
+            // Specify scope and inherit + specify old
             res[0].scope.parentScope = this.previousScope;
             this.previousScope = res[0].scope;
             
-            let response;
+            // Try transformation
             try {
                 this.previousContext = VSLTransform(res, this.previousContext);
-                response = {
+                this.pushLineAndPrompt({
                     type: "text",
                     value: res[0].scope.toString()
-                }
+                });
             } catch(error) {
-                response = {
+                this.pushLineAndPrompt({
                     type: "error",
                     name: error.name,
                     title: error.message,
                     description: error.stack
-                }
+                })
             }
-            
-            let lines = this.state.lines;
-            lines.push(response);
-            lines.push({
-                type: "prompt",
-                prompt: prompt
-            })
-            
-            this.setState({ lines: lines });
         }
+    }
+    
+    pushLineAndPrompt(item) {
+        this.pushLine(item);
+        this.pushLine(prompt);
+    }
+    
+    pushLine(message) {
+        let lines = this.state.lines;
+        lines.push(message);
+        this.setState({ lines: lines })
+    }
+    
+    onClear() {
+        this.setState({ lines: lines.slice(-1) });
     }
     
     render() {
@@ -127,6 +136,7 @@ export default class Console extends Component {
                                         prompt={props.prompt}
                                         isFocused={this.state.isFocused}
                                         onSubmit={::this.onSubmit}
+                                        onClear={::this.onClear}
                                     />
                                 );
                             case "text":

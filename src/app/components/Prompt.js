@@ -36,6 +36,13 @@ export default class Prompt extends Component {
                     this.setState({ html: "" });
                 }
             }
+            case 75: {
+                // Handle metaKey or ctrl
+                if (event.metaKey || event.ctrlKey) {
+                    if (this.props.onClear) this.props.onClear();
+                }
+                break;
+            }
             case 8: {
                 break;
             }
