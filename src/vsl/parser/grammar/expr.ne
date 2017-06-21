@@ -1,21 +1,8 @@
 # Parses an expression
 # `Expression` may be empty
 
-@{%
-const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
-  expr = (d, l) => new t.ExpressionStatement(d[0], l);
 
-function recursiveProperty(head, tail, optional) {
-  if (tail.length === 0)
-    return head;
-  for (let i = 0; i < tail.length - 1; i++)
-    tail[i + 1].head = tail[i];
-  tail[0].head = head;
-  tail[tail.length - 1].optional = optional;
-  return tail[tail.length - 1];
-}
 
-%}
 
 @builtin "postprocessors.ne"
 @include "ws.ne"
@@ -26,16 +13,16 @@ function recursiveProperty(head, tail, optional) {
 # QUETION: do we allow class, function etc in closure
 # like imo we should in normal functions bc even though snek does it i think is good
 # hmm we should make it property
-CommandChain -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStatement(recursiveProperty(d[0], d[1]), l) %}
+CommandChain -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStatement(recursiveCommandChain(d[0], d[1]), l) %}
 
-Closure -> "{" CodeBlock[Expression] "}" {% (d, l) => console.log('block', d[2]) || d[2] %}
+Closure -> "{" CodeBlock[Expression {% id %}] "}" {% (d, l) => d[1] %}
 
 # TODO: optional (foo? bar == foo?.bar)
-CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):* {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, d[0].concat([d[1]]), false, l) %}
+CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, (d[0] || []).concat([new t.ArgumentCall(d[1], null, l)]), false, l) %}
                   | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
                   | %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
                   | Expression {%
-                    (d, l, f) => ([t.UnaryExpression, t.Tuple, t.ArrayNode, t.Whatever, t.ParenthesizedExpression, t.Subscript, t.PropertyExpression].some(type => d[0].expression instanceof type)) ?
+                    (d, l, f) => ([t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever, t.ParenthesizedExpression, t.Subscript, t.PropertyExpression].some(type => d[0].expression instanceof type)) ?
                       f :
                       d[0].expression instanceof t.Identifier ?
                         new t.PropertyExpression(null, d[0].expression, false, l) :
@@ -120,6 +107,8 @@ BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryEx
 
 # Top level assignment
 BinaryExpression -> Ternary {% id %}
+
+# TODO: map operator
 
 Ternary -> Assign "?" Ternary ":" Assign {% (d, l) => new t.Ternary(d[0], d[2], d[4], l) %} | Assign {% id %}
 Assign -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" | "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}

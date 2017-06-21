@@ -39,6 +39,9 @@ export default () => describe("Expressions", () => {
         valid`a.b[c]`;
         valid`a.b[c].d`;
         
+        // Unicode :D
+        valid`ಠ_ಠ.ಠ_ಠ`;
+        
         valid`a?.b`;
         invalid`a?`;
         invalid`a?.b?`;
@@ -48,5 +51,12 @@ export default () => describe("Expressions", () => {
         valid`a[c]?[d]`;
         
         invalid `a[c]?d`
+    });
+    
+    describe("Closure Command Chains", () => {
+        valid`if foo {bar}`;
+        valid`if foo {bar; 1+1}`;
+        valid`if (foo) {bar; 1+1}`;
+        valid`if (foo) {bar; 1+1}`;
     });
 })
