@@ -7,6 +7,8 @@ export default () => describe("Classes", () => {
     // Access modifiers
     valid`public class A {}`;
     valid`private class A {}`;
+    
+    valid`class A { init() {} }`;
 
     describe('Annotations', () => {
         valid`@foo class A { }`;

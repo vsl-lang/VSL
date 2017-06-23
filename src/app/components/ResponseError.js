@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 /**
  * An error response for the console. Provide 'title' and 'description'
  */
-export default class ResponseErrpr extends Component {
+export default class ResponseError extends Component {
     render() {
         return (
             <div className="response error">

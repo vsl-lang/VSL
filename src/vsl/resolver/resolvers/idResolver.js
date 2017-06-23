@@ -72,6 +72,7 @@ export default class IdResolver extends TypeResolver {
         
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        const singleType = negotiate(ConstraintType.ContextParentConstraint);
         
         let result = scope.get(
             new ScopeAliasItem(rootId)
@@ -88,5 +89,17 @@ export default class IdResolver extends TypeResolver {
         // Atomic type so no further requeuing
         result.references.push(this.node);
         this.node.typeCandidates = result.candidates;
+        
+        // Filter amongst response
+        if (response !== null) {
+            this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes);
+        }
+        
+        if (this.node.typeCandidates.length === 0) {
+            this.emit(
+                `Use of ${this.rootId} has no types which it can be deducted ` +
+                `to in this context.`
+            );
+        }
     }
 }
