@@ -10,9 +10,11 @@
         "babel-plugin-transform-class-properties",
         "babel-plugin-transform-do-expressions",
         "babel-plugin-transform-function-bind",
-        "babel-plugin-transform-export-extensions"
+        "babel-plugin-transform-export-extensions",
+        "babel-plugin-transform-object-rest-spread"
     ],
     "presets": [
+        "react",
         "flow",
         ["env", {
             "targets": {

@@ -86,6 +86,7 @@ export default class IdResolver extends TypeResolver {
         }
         
         // Atomic type so no further requeuing
-        this.node.typeCandidates = result.source.typeCandidates;
+        result.references.push(this.node);
+        this.node.typeCandidates = result.candidates;
     }
 }
