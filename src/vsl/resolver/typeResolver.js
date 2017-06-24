@@ -33,11 +33,7 @@ import TypeResolutionError from './typeResolutionError';
  *  - Requested: A fallback when it was not possible to deduct using desired traits
  *  - Desired: A trait which must be satisfied
  *
- * A rough overview of the constraints are:
- *
- *  - `ContextParentConstraint`: A contextually-identifier type.
- *  - `RequestedTypeResolutionConstraint`: A node may have multiple, this is the
- *     requested type of a given subclass. Passed in negotation
+ * A rough overview of the constraints are in the 'constraintType' file
  *
  * As the bottom-up recursion goes, the subclass can "negotiate" the type with the
  * parent by specifiying attempts and recieing the possibilities, such negotiations

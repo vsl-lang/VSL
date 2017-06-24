@@ -72,7 +72,6 @@ export default class IdResolver extends TypeResolver {
         
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-        const singleType = negotiate(ConstraintType.ContextParentConstraint);
         
         let result = scope.get(
             new ScopeAliasItem(rootId)
@@ -87,13 +86,14 @@ export default class IdResolver extends TypeResolver {
         }
         
         // Atomic type so no further requeuing
+        // This marks a reference that this node ref'd the ID
         result.references.push(this.node);
+        
+        // And this sets the candidates to the same one the ID had
         this.node.typeCandidates = result.candidates;
         
         // Filter amongst response
-        if (response !== null) {
-            this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes);
-        }
+        this.mutableIntersect(response, this.node.typeCandidates);
         
         if (this.node.typeCandidates.length === 0) {
             this.emit(

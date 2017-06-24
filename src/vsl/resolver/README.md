@@ -20,7 +20,7 @@ There are two main processes:
 each of them has their own workings which are encapsulated. However beacuse the
 type resolver functions recursively, only one node at a time, bottom-up is
 resolved using a custom post-order traverser. The traverser itself is recursive
-and does not have a seperate stack. 
+and does not have a seperate stack.
 
 ### Constraints
 A constriant has three states:
@@ -28,11 +28,7 @@ A constriant has three states:
  - Requested: A fallback when it was not possible to deduct using desired traits
  - Desired: A trait which must be satisfied
 
-A rough overview of the constraints are:
-
- - `ContextParentConstraint`: A contextually-identifier type.
- - `RequestedTypeResolutionConstraint`: A node may have multiple, this is the
-    requested type of a given subclass. Passed in negotation
+A rough overview of the constraints are available in 'constraintType'
 
 As the bottom-up recursion goes, the subclass can "negotiate" the type with the
 parent by specifiying attempts and recieing the possibilities, such negotiations
@@ -55,7 +51,7 @@ which resolved by:
     |- 1 | f(...)       | Int(Double)
 ```
 
-Now `a: 5` can be determined to be `f(a: 5 as Int)`. 
+Now `a: 5` can be determined to be `f(a: 5 as Int)`.
 
 ## Expression Node Types
 There is a differentiation between two types in an expression:
