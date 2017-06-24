@@ -39,7 +39,7 @@
     "react": "^15.6.1",
     "react-contenteditable": "^2.0.2",
     "react-dom": "^15.6.1",
-    "vsl-nearley": "^2.9.3"
+    "vsl-nearley": "^2.9.5"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

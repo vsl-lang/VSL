@@ -1,3 +1,6 @@
+import bound from './indicator';
+import highlight from './highlight';
+
 /**
  * Tokenizer class.
  */
@@ -15,7 +18,7 @@ export default class Tokenizer {
      */
     constructor (tokenMatchers, scope: number = 0, tokenTypes: string[] = []) {
         this.tokenMatchers = tokenMatchers.map(tokenMatcher => tokenMatcher.map(object => {
-            object[0] = new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
+            object[0] = object[0] instanceof RegExp ? object[0] : new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
                 '/': '/',
                 '\r': 'r',
                 '\n': 'n',
@@ -42,9 +45,13 @@ export default class Tokenizer {
         }
     }
     
+    latest () {
+        return this.positions[this.positions.length - 1];
+    }
+    
     /**
      * @param {string} code New code.
-     * @param {Info} info Position info for 
+     * @param {Info} info Position info for
      */
     reset (code: string, info: Object=null) {
         this.code = code;
@@ -74,14 +81,14 @@ export default class Tokenizer {
                         continue;
                     this.code = code = code.slice(length);
                     if (typeof value !== 'undefined') {
-                        this.column += length;
-                        this.index += length;
                         this.positions.push({
                             line: this.line,
                             column: this.column,
                             index: this.index,
                             length
                         });
+                        this.column += length;
+                        this.index += length;
                         return typeof type === 'undefined' ? {value} : [value, type];
                     } else
                         this.index += length;
@@ -90,8 +97,6 @@ export default class Tokenizer {
                 }
             }
             if (!success) {
-                this.column++;
-                this.index++;
                 let value = code[0];
                 this.code = code = code.slice(1);
                 this.positions.push({
@@ -100,6 +105,8 @@ export default class Tokenizer {
                     index: this.index,
                     length: 1
                 });
+                this.column++;
+                this.index++;
                 return {value};
             }
         }
@@ -123,7 +130,7 @@ export default class Tokenizer {
     
     /**
      * Returns a formatted error message given a token.
-     * 
+     *
      * @param {Token} token The token causing the error.
      */
     formatError (token: Object) {

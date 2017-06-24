@@ -4,10 +4,10 @@
     "destination": "docs",
     "styles": ["misc/doc.css"],
     "scripts": ["misc/doc.js"],
-    "excludes": ["^src/app"],
     "test": {
         "type": "mocha",
-        "source": "./test"
+        "source": "./test",
+        "includes": ["\\.js$"]
     },
     "plugins": [
         {
