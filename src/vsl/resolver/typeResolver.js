@@ -189,7 +189,6 @@ export default class TypeResolver {
      *                                       set, e.g. the function arg list.
      * @param  {?ScopeTypeItem[]} appliedSet This is the deductee set which will
      *                                       be matched to a rootSet.
-     * @return {?ScopeTypeItem[]}            [description]
      */
     mutableIntersect(rootSet, appliedSet) {
         let derivedCandidates = this._intersect(rootSet, appliedSet);
@@ -202,6 +201,35 @@ export default class TypeResolver {
         for (let i = 0; i < derivedCandidates.length; i++) {
             appliedSet.push(derivedCandidates[i].value);
         }
+    }
+    
+    /**
+     * Please reference `mutableIntersect` for information. This merely also
+     * mutates the root.
+     *
+     * @param  {?ScopeTypeItem[]} rootSet    The base set which to perform
+     *                                       matching against. This means a item
+     *                                       from an appliedSet could be upcast
+     *                                       to match this, but not the other
+     *                                       way. This is generally the static
+     *                                       set, e.g. the function arg list.
+     * @param  {?ScopeTypeItem[]} appliedSet This is the deductee set which will
+     *                                       be matched to a rootSet.
+     */
+    dualPlaneIntersection(rootSet, appliedSet) {
+        let derivedCandidates = this._intersect(rootSet, appliedSet);
+        if (derivedCandidates === null) return null;
+        
+        // Clear both arrays
+        rootSet.splice(0, rootSet.length);
+        appliedSet.splice(0, appliedSet.length)
+        
+        // Reapply types
+        for (let i = 0; i < derivedCandidates.length; i++) {
+            rootSet.push(derivedCandidates[i].type);
+            appliedSet.push(derivedCandidates[i].value);
+        }
+
     }
     
     /**
