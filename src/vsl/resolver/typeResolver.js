@@ -82,6 +82,50 @@ export default class TypeResolver {
     }
     
     /**
+     * Returns plane intersection plane bounds.
+     * @private
+     */
+    _intersect(rootSet, appliedSet) {
+        if (rootSet === null && appliedSet === null) {
+            this.emit(
+                `No valid type candidates on both intersection planes. Likely` +
+                ` you created a variable without any type which doesn't make ` +
+                `any sense so now we're throwing this error as a way of the ` +
+                `compiler saying 'wat'.`
+            );
+        }
+        
+        if (appliedSet === null || rootSet === null) {
+            return null;
+        }
+        
+        let derivedCandidates = [];
+        
+        // Iterate through each of the valid candidates
+        // we need to check that one of the
+        for (let i = rootSet.length - 1; i >= 0; i--) {
+            let rootItem = rootSet.pop();
+            let match = null;
+            
+            for (let j = appliedSet.length - 1; j >= 0; j--) {
+                if (rootItem.validCandidate(appliedSet[j])) {
+                    match = appliedSet[j];
+                    break;
+                }
+            }
+            
+            if (match !== null) {
+                derivedCandidates.push({
+                    root: rootItem,
+                    value: match
+                });
+            }
+        }
+        
+        return derivedCandidates;
+    }
+    
+    /**
      * Performs a set-intersection between two types, you can specify error
      * handling to centralize errors caused.
      *
@@ -148,49 +192,14 @@ export default class TypeResolver {
      * @return {?ScopeTypeItem[]}            [description]
      */
     mutableIntersect(rootSet, appliedSet) {
-        if (rootSet === null && appliedSet === null) {
-            this.emit(
-                `No valid type candidates on both intersection planes. Likely` +
-                ` you created a variable without any type which doesn't make ` +
-                `any sense so now we're throwing this error as a way of the ` +
-                `compiler saying 'wat'.`
-            );
-        }
-        
-        if (appliedSet === null) {
-            return rootSet;
-        }
-        
-        let derivedCandidates = [];
-        
-        // Iterate through each of the valid candidates
-        // we need to check that one of the
-        for (let i = rootSet.length - 1; i >= 0; i--) {
-            let rootItem = rootSet.pop();
-            let match = null;
-            
-            for (let j = appliedSet.length - 1; j >= 0; j--) {
-                if (rootItem.validCandidate(appliedSet[j])) {
-                    match = appliedSet[j];
-                    break;
-                }
-            }
-            
-            if (match !== null) {
-                derivedCandidates.push({
-                    root: rootItem,
-                    value: match
-                });
-            }
-        }
+        let derivedCandidates = this._intersect(rootSet, appliedSet);
+        if (derivedCandidates === null) return null;
         
         // Clear both arrays
-        rootSet.splice(0, rootSet.length);
         appliedSet.splice(0, appliedSet.length)
         
         // Reapply types
         for (let i = 0; i < derivedCandidates.length; i++) {
-            rootSet.push(derivedCandidates[i].root);
             appliedSet.push(derivedCandidates[i].value);
         }
     }
