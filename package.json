@@ -90,7 +90,8 @@
       "src/**/*.js"
     ],
     "exclude": [
-      "src/cli/**/*.js"
+      "src/cli/**/*.js",
+      "src/app/**/*.js"
     ],
     "all": true,
     "sourceMap": false,
