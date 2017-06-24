@@ -40,9 +40,6 @@ export default class LiteralResolver extends TypeResolver {
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
-        // Check if this has a specific type
-        const requiredResolution = negotiate(ConstraintType.ContextParentConstraint)
-
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
         // to be a default candidate but for now they are hardcoded here
@@ -66,24 +63,8 @@ export default class LiteralResolver extends TypeResolver {
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
         
-        if (response !== null) {
-            this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes)
-        }
+        this.node.typeCandidates = this.node.typeCandidates.slice();
         
-        if (requiredResolution !== null) {
-            let res = this.node.typeCandidates.find(candidate => candidate.scopeRef.equal(requiredResolution));
-            if (!res) {
-                this.emit(
-                    `This literal here needs to resolve to something that it ` +
-                    `did not resolve to. This error message should probably ` +
-                    `be made better.`
-                );
-            } else {
-                this.node.typeCandidates = [res.scopeRef];
-                this.node.exprType = res.scopeRef;
-            }
-        }
-
         if (this.node.typeCandidates.length === 0) {
             this.emit(
                 `Literal has no overlapping type candidates. ` +
@@ -91,9 +72,23 @@ export default class LiteralResolver extends TypeResolver {
                 `  1. The STL is not linked\n` +
                 `  2. You are using a literal which doesn't have a class ` +
                 `associated with it.\n` +
-                `This is likely an internal bug, but check for an existing` +
-                ` report before leaving your own. You can also try to define ` +
+                `This is likely an internal bug, but check for an existing\n` +
+                `report before leaving your own. You can also try to define\n` +
                 `your own candidate using \`@primitive(...)\``
+            );
+        }
+        
+        if (response !== null) {
+            this.mutableIntersect(response, this.node.typeCandidates)
+        }
+        
+        // Okay if this is 0 that means you have conflicting things
+        // This is because errors have already been thrown for no actually
+        // type candidates.
+        if (this.node.typeCandidates.length === 0) {
+            this.emit(
+                `Conflicting types, the context for this node needs this to\n` +
+                `be a type which this literal cannot be.`
             );
         }
 

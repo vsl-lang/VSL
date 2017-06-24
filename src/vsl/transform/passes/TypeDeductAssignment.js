@@ -31,8 +31,8 @@ export default class TypeDeductAssignment extends Transformation {
             // we can offer
             if (evalType === null) return null;
 
-            if (type === ConstraintType.ContextParentConstraint)
-                return new ScopeTypeItem(evalType.identifier.rootId);
+            if (type === ConstraintType.RequestedTypeResolutionConstraint)
+                return [new ScopeTypeItem(evalType.identifier.rootId)];
             else
                 return null;
         });

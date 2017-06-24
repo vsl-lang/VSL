@@ -86,7 +86,22 @@ export default class IdResolver extends TypeResolver {
         }
         
         // Atomic type so no further requeuing
+        // This marks a reference that this node ref'd the ID
         result.references.push(this.node);
+        
+        // And this sets the candidates to the same one the ID had
         this.node.typeCandidates = result.candidates;
+        
+        // Filter amongst response
+        this.mutableIntersect(response, this.node.typeCandidates);
+        
+        if (this.node.typeCandidates.length === 0) {
+            this.emit(
+                `Use of ${rootId} has no types which it can be deducted to\n` +
+                `in this context. This is likely an internal bug as this\n` +
+                `means that the identifier refers to a variable which\n` +
+                `already has no valid type candidates.`
+            );
+        }
     }
 }
