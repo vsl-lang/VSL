@@ -38,7 +38,7 @@ html, body {
     
     .responsive-swap {
         > i + * {
-            @media screen and (max-width: 352px) {
+            @media screen and (max-width: 475px) {
                 display: none;
             }
         }
