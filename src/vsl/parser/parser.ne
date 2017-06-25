@@ -82,7 +82,7 @@ ClassItems
 ClassItem
    -> InterfaceItem {% id %}
     | Field {% id %}
-    | Constructor {% id %}
+    | InitalizerStatement {% id %}
 
 Field
    -> Modifier AssignmentStatement {%
@@ -91,8 +91,8 @@ Field
                 data[1].value, location)
     %}
 
-Constructor
-   -> AccessModifier:? _ "init" "?":? _ ArgumentList _ "{"
+InitalizerStatement
+   -> (AccessModifier _):? "init" "?":? _ ArgumentList _ "{"
         CodeBlock[statement {% id %}] "}" {%
         (data, location) =>
             new t.InitalizerStatement(data[0] ? data[0].value : "", !!data[3],
