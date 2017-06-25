@@ -54,11 +54,9 @@ export default class VSLParser {
      *     for further chunks from STDIN.
      */
     feed(string: string): ?Node[] {
+        let results;
         try {
-            let results = this.parser.feed(string);
-            if (results.results.length > 1)
-                throw 'ono ambiguity ;_;';
-            return results.results;
+            results = this.parser.feed(string);
         } catch(e) {
             let pos = this.parser.lexer.positions[e.offset];
             throw new ParserError(
@@ -66,5 +64,9 @@ export default class VSLParser {
                 pos
             );
         }
+
+        if (results.results.length > 1)
+            throw 'ono ambiguity ;_;';
+        return results.results;
     }
 }
