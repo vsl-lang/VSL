@@ -3,7 +3,7 @@ import Node from './node'
 /**
  * Matches a class initializer/constructor.
  */
-export default class Constructor extends Node {
+export default class InitalizerStatement extends Node {
     /**
      * Constructs the constructor. A constructor that constructs a constructor
      * is also known as constructorception.
@@ -24,14 +24,18 @@ export default class Constructor extends Node {
         position: Object
     ) {
         super(position);
+        
         /** @type {string} */
         this.access = access;
+        
         /** @type {boolean} */
         this.optional = optional;
+        
         /** @type {FunctionArgument[]} */
         this.params = params;
+        
         /** @type {CodeBlock} */
-        this.statments = statements;
+        this.statements = statements;
     }
 
     /** @override */
