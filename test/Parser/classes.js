@@ -5,14 +5,11 @@ export default () => describe("Classes", () => {
     valid`class A: T {}`;
 
     // Constructors
-    debugger;
     valid`class A {\ninit() {}\n}`;
 
     // Access modifiers
     valid`public class A {}`;
     valid`private class A {}`;
-    
-    valid`class A { init() {} }`;
 
     describe('Annotations', () => {
         valid`@foo class A { }`;
