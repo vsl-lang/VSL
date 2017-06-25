@@ -131,16 +131,20 @@ export default class Default extends CLIMode {
     }
     
     _parse(string) {
+        if (this.pendingString === "") {
+            this.parser = new VSLParser();
+        }
+        
         this.pendingString += string;
         try {
-            let res = this.parser.feed(string);
-            if (res.length === 0) {
+            let ast = this.parser.feed(string);
+            if (ast.length === 0) {
                 return false;
             } else {
-                this.parser = new VSLParser();
+                let res = { str: this.pendingString.slice(), ast: ast }
                 this.pendingString = "";
+                return res;
             }
-            return res
         } catch(e) {
             this.handle(e, this.pendingString);
             this.pendingString = "";
@@ -149,6 +153,10 @@ export default class Default extends CLIMode {
     }
     
     handle(error, src) {
+        // console.log(error.node, typeof error.node.position)
+        if (error.node && typeof error.node.position === 'number') {
+            error.node.position = this.parser.parser.lexer.positions[error.node.position];
+        }
         this.error.handle({
             error,
             src
@@ -171,16 +179,16 @@ export default class Default extends CLIMode {
                 ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
-                this.previousContext = VSLTransform(res, this.previousContext);
-                console.log(res[0].scope.toString());
+                this.previousContext = VSLTransform(ast, this.previousContext);
+                console.log(ast[0].scope.toString());
             },
             
             "dryRunGen": (ast) => {
                 ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
-                this.previousContext = VSLTransform(res, this.previousContext);
-                console.log(res[0].toString());
+                this.previousContext = VSLTransform(ast, this.previousContext);
+                console.log(ast[0].toString());
             }
             
         };
@@ -192,6 +200,11 @@ export default class Default extends CLIMode {
         if (res === false) return false;
         if (res === null) return;
         
-        modeFunc(res);
+        try {
+            let ast = res.ast;
+            modeFunc(ast);
+        } catch(e) {
+            this.handle(e, res.str);
+        }
     }
 }

@@ -36,7 +36,13 @@ export default class ErrorManager {
     handle({ error, src, exit = true } = {}) {
         // Check if the node has positional information
         if (error.node) {
+            let name = error.name || "Compiler Error";
             
+            this.rawError(
+                name,
+                error.message + ` (${error.node.position.line}:${error.node.position.column})`,
+                this._highlight(src, error.node.position)
+            )
         }
         else if (error instanceof ParserError) {
             this.rawError(
