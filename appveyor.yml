@@ -11,6 +11,8 @@ environment:
 install:
     - ps: Install-Product node $env:nodejs_version
     - npm install
+    - ls node_modules/
+    - ls node_modules/.bin/
 
 version: '{build}'
 
