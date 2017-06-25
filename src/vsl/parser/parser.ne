@@ -95,7 +95,7 @@ Constructor
    -> AccessModifier:? _ "init" "?":? _ ArgumentList _ "{"
         CodeBlock[statement {% id %}] "}" {%
         (data, location) =>
-            new t.Constructor(data[0] ? data[0].value : "", !!data[3],
+            new t.InitalizerStatement(data[0] ? data[0].value : "", !!data[3],
                 data[5] || [], data[8], location)
     %}
 
