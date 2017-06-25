@@ -11,10 +11,7 @@ export default () => describe("Interfaces", () => {
     describe('Annotations', () => {
         valid`@foo interface A { }`;
         valid`@foo @bar interface A { }`;
-        valid`
-            @foo
-            @bar
-            interface A {}`
+        valid`@foo\n@bar\ninterface A {}`;
     });
 
     describe('Generics', () => {
@@ -24,42 +21,14 @@ export default () => describe("Interfaces", () => {
     });
 
     describe('Methods', () => {
-        valid`interface A {
-            func f() {}
-        }`;
- 
-        valid`interface A {
-            func f() external(g)
-        }`;
-
-        valid`interface A {
-            public func f() {}
-        }`;
-
-        valid`interface A {
-            private func f() {}
-        }`;
-
-        valid`interface A {
-            func f() {}
-            func g() {}
-        }`;
-
-        valid`interface A {
-            func f()
-        }`;
-
-        valid`interface A {
-            public func f()
-        }`;
-
-        valid`interface A {
-            private func f()
-        }`;
-
-        valid`interface A {
-            func f()
-            func g()
-        }`;
+        valid`interface A {\nfunc f() {}\n}`;
+        valid`interface A {\nfunc f() external(g)\n}`;
+        valid`interface A {\npublic func f() {}\n}`;
+        valid`interface A {\nprivate func f() {}\n}`;
+        valid`interface A {\nfunc f() {}\nfunc g() {}\n}`;
+        valid`interface A {\nfunc f()\n}`;
+        valid`interface A {\npublic func f()\n}`;
+        valid`interface A {\nprivate func f()\n}`;
+        valid`interface A {\nfunc f()\nfunc g()\n}`;
     })
 });

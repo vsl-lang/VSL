@@ -3,7 +3,11 @@ import { vsl, valid, invalid } from '../hooks';
 export default () => describe("Classes", () => {
     valid`class A {}`;
     valid`class A: T {}`;
-    
+
+    // Constructors
+    debugger;
+    valid`class A {\ninit() {}\n}`;
+
     // Access modifiers
     valid`public class A {}`;
     valid`private class A {}`;
@@ -45,29 +49,11 @@ export default () => describe("Classes", () => {
     });
 
     describe('Methods', () => {
-        valid`class A {
-            func f() {}
-        }`;
-        
-        valid`class A {
-            public func f() {}
-        }`;
-        
-        valid`class A {
-            func f() external(g)
-        }`;
-        
-        valid`class A {
-            public func f() {}
-        }`;
-        
-        valid`class A {
-            private func f() {}
-        }`;
-        
-        valid`class A {
-            func f() {}
-            func g() {}
-        }`;
+        valid`class A {\nfunc f() {}\n}`;
+        valid`class A {\npublic func f() {}\n}`;
+        valid`class A {\nfunc f() external(g)\n}`;
+        valid`class A {\npublic func f() {}\n}`;
+        valid`class A {\nprivate func f() {}\n}`;
+        valid`class A {\nfunc f() {}\nfunc g() {}\n}`;
     })
 });
