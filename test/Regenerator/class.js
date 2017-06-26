@@ -9,6 +9,11 @@ export default () => describe("Class", () => {
     );
     
     regenerate(
+        vsl`@foo class A {}`,
+        `@foo class A: Object {}`, $
+    );
+    
+    regenerate(
         vsl`public class A {}`,
         `public class A: Object {}`, $
     );
@@ -68,6 +73,64 @@ export default () => describe("Class", () => {
             `class A: Object {
                 public func f() {}
                 public func g() {}
+            }`, $
+        )
+    })
+    
+    describe("Initalizer", () => {
+        regenerate(
+            vsl`class A {
+                init() {}
+            }`,
+            `class A: Object {
+                init() {}
+            }`, $
+        )
+        
+        regenerate(
+            vsl`class A {
+                public init() {}
+            }`,
+            `class A: Object {
+                public init() {}
+            }`, $
+        )
+        
+        regenerate(
+            vsl`class A {
+                init() {}
+            }`,
+            `class A: Object {
+                init() {}
+            }`, $
+        )
+        
+        regenerate(
+            vsl`class A {
+                init(a: T) {}
+            }`,
+            `class A: Object {
+                init(a: T) {}
+            }`, $
+        )
+        
+        regenerate(
+            vsl`class A {
+                init(a: T, b: U) {}
+            }`,
+            `class A: Object {
+                init(a: T, b: U) {}
+            }`, $
+        )
+        
+        regenerate(
+            vsl`class A {
+                public init() {}
+                public init() {}
+            }`,
+            `class A: Object {
+                public init() {}
+                public init() {}
             }`, $
         )
     })
