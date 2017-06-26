@@ -20,6 +20,7 @@ export default class Console extends Component {
             lines: [
                 {
                     type: "text",
+                    id: "vsl-prompt-intro",
                     value: `\nVSL v${VERSION} (interactive)\n` +
                            "run `help` for more information.\n\n"
                 }
@@ -92,11 +93,11 @@ export default class Console extends Component {
             
             // Specify scope and inherit + specify old
             res[0].scope.parentScope = this.previousScope;
-            this.previousScope = res[0].scope;
             
             // Try transformation
             try {
                 this.previousContext = VSLTransform(res, this.previousContext);
+                this.previousScope = res[0].scope;
                 this.pushLineAndPrompt({
                     type: "text",
                     value: res[0].scope.toString()
@@ -125,7 +126,7 @@ export default class Console extends Component {
     }
     
     onClear() {
-        this.setState({ lines: lines.slice(-1) });
+        this.setState({ lines: this.state.lines.slice(-1) });
     }
     
     render() {

@@ -27,8 +27,10 @@ html, body {
     display: flex;
     flex-direction: column;
     
-    @media print {
-        color: black !important;
+    * {
+        @media print {
+            color: black !important;
+        }
     }
     
     #header {
@@ -73,6 +75,12 @@ html, body {
             padding: 1em;
             
             background: $bgColor;
+            
+            #vsl-prompt-intro {
+                @media print {
+                    display: none;
+                }
+            }
             
             .prompt {
                 

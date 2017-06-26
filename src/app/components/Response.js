@@ -5,9 +5,10 @@ import React, { Component } from 'react';
  */
 export default class Response extends Component {
     render() {
+        let { value, id } = this.props;
         return (
-            <div className="response">
-                {this.props.value}
+            <div className="response" id={id}>
+                {value}
             </div>
         );
     }
