@@ -46,7 +46,7 @@ export default class InitalizerStatement extends Node {
     /** @override */
     toString() {
         return `${this.access ? this.access + " " : ""}init` +
-            `${this.optional ? "?" : ""}(${this.args.join(", ")})` +
-            `{${this.statements.toString()}}`;
+            `${this.optional ? "?" : ""}(${this.params.join(", ")}) ` +
+            `${this.statements.toString()}`;
     }
 }
