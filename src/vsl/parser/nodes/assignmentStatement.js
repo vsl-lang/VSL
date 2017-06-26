@@ -51,7 +51,7 @@ export default class AssignmentStatement extends Node {
         let t;
         return (this.type === 0 ? "var" : "let") +
             ` ${this.identifier.identifier}` +
-            ` ${(t = this.identifier.type || this.value.exprType || null) ? `: ${t} ` : ""}` +
+            ` ${(t = this.identifier.type || (this.value && this.value.exprType) || null) ? `: ${t} ` : ""}` +
             (this.value ? "= " + this.value : "");
     }
 }
