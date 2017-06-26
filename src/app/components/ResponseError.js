@@ -81,7 +81,10 @@ export default class ResponseError extends Component {
         
         return (
             <div className="response error">
-                <div><span className="error-name">{name}: </span>{this.props.error.message}</div>
+                <div className="message">
+                    <span className="error-name">{name}: </span>
+                    {this.props.error.message}
+                </div>
                 {desc}
             </div>
         );

@@ -74,8 +74,9 @@ export default class Prompt extends Component {
                 <span className="prompt">{this.props.prompt}&gt;</span>
                 <ContentEditable
                     // Accessability props
-                    tabIndex={isDisabled ? -1 : 1}
-                    ariaLabel="REPL Input"
+                    tabIndex={this.state.isDisabled ? -1 : 1}
+                    aria-label="REPL Input"
+                    aria-disabled={this.state.isDisabled}
                     
                     ref={c => this.contentEditable = c}
                     html={this.state.html}

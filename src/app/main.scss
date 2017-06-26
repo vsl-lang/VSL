@@ -101,8 +101,21 @@ html, body {
                         color: $fgAlert;
                     }
                     
+                    .message {
+                        $indentWidth: 1em;
+                        
+                        margin-left: $indentWidth;
+                        text-indent: -$indentWidth;
+                        
+                        max-width: 605px;
+                        white-space: normal;
+                    }
+                    
                     .desc {
-                        margin-left: 1em;
+                        margin: {
+                            top: 1em;
+                            left: 1em;
+                        }
                         
                         &.indicator .accent {
                             color: $fgAccent;

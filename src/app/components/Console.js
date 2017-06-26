@@ -102,6 +102,9 @@ export default class Console extends Component {
                     value: res[0].scope.toString()
                 });
             } catch(error) {
+                if (error.node && typeof error.node.position === 'number') {
+                    error.node.position = this.parser.parser.lexer.positions[error.node.position]
+                }
                 this.pushLineAndPrompt({
                     type: "error",
                     error, code
