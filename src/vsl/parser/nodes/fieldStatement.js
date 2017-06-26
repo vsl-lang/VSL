@@ -36,6 +36,6 @@ export default class FieldStatement extends AssignmentStatement  {
 
     /** @override */
     toString() {
-        return `${modifiers.join(' ')} ${super.toString()}`;
+        return `${this.modifiers.join(' ')} ${super.toString()}`;
     }
 }
