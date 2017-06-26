@@ -250,10 +250,11 @@ export default class TypeResolver {
      *
      * @param {string} message - The messaging describing the bork. Please make
      *     it as clear as possible to make fixing the bork as easy as possible.
-     *
+     * @param {Object} ref     - The referencing error object providing error
+     *     type info.
      * @throws {TransformError} - Throws this error based on infos.
      */
-    emit(message: string) {
-        throw new TypeResolutionError(message, this.node);
+    emit(message: string, ref: Object) {
+        throw new TypeResolutionError(message, this.node, ref);
     }
 }

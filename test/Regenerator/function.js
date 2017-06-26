@@ -42,4 +42,14 @@ export default () => describe("Function", () => {
         vsl`public func f() {}`,
         `public func f() {}`, $
     );
+    
+    regenerate(
+        vsl`@test public func f() {}`,
+        `@test public func f() {}`, $
+    );
+    
+    regenerate(
+        vsl`@test(*) public func f() {}`,
+        `@test(*) public func f() {}`, $
+    );
 });

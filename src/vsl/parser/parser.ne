@@ -73,6 +73,8 @@ Annotation
     %}
 AnnotationValue
    -> %identifier {% mid %}
+    | "*" {% unwrap %}
+    | "nil" {% unwrap %}
 
 ExtensionList
    -> delimited[type {% id %}, _ "," _] {% id %}
@@ -140,21 +142,20 @@ FunctionStatement
     %}
 
 FunctionHead
-   -> Modifier ("function"|"func"|"fn")
-        (Identifier {% id %} | BinaryOperator {%
-            (data, location) => new t.Identifier(data[0].value, location)
-        %}) FunctionArgumentList {%
+   -> Annotations Modifier "func"
+        (Identifier {% id %} | OverridableOperator {% id %})
+        ArgumentList (_ "->" _ type {% nth(3) %}):? {%
         (data, location) =>
-            new t.FunctionStatement(data[0], data[2],
-                (data[3] || [])[0] || null, data[3][1], null, location)
+            new t.FunctionStatement(data[0], data[1], data[3],
+                data[4], data[5], null, location)
     %}
 
-BinaryOperator
+OverridableOperator
    -> ("+" | "-" | "*" | "/" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
-        "<=" | ">=" | "==" | "!=") {% mid %}
-
-FunctionArgumentList
-   -> ArgumentList (_ "->" _ type {% nth(3) %}):?
+        "<=" | ">=" | "==" | "!=") {%
+        (data, location) =>
+            new t.Identifier(data[0][0].value, location)
+    %}
 
 ArgumentList
    -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}

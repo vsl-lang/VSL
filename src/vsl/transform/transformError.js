@@ -9,7 +9,7 @@ export default class TransformError {
      * @param {string} message - error message
      * @param {Node} node - erroring node
      */
-    constructor(message, node) {
+    constructor(message, node, ref) {
         /** @type {string} */
         this.message = message;
 
@@ -18,5 +18,10 @@ export default class TransformError {
 
         /** @type {Node} */
         this.node = node;
+        
+        /**
+         * @type {?Object}
+         */
+        this.ref = ref;
     }
 }
