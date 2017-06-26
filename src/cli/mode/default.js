@@ -17,7 +17,8 @@ export default class Default extends CLIMode {
                 ["-v", "--version", "Displays the VSL version",              { run: _ => _.printAndDie(_.version()) }],
                 ["-h", "--help"   , "Displays this help message",            { run: _ => _.help() }],
                 ["-i", "--repl"   , "Opens an interactive REPL",             { repl: true }],
-                ["--color"        , "Colorizes all output where applicable", { repl: true }]
+                ["--color"        , "Colorizes all output where applicable", { color: true }],
+                ["--no-color"     , "Disables output colorization",          { color: false }],
             ]],
             ["Debug Flags", [
                 ["-n", "--dry-run", "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
@@ -34,6 +35,8 @@ export default class Default extends CLIMode {
         
         this.previousScope = null;
         this.previousContext = undefined;
+        
+        this.pendingString = "";
     }
     
     run(args) {
@@ -68,6 +71,8 @@ export default class Default extends CLIMode {
         this.mode = mode;
         this.color = color;
         
+        this.error.shouldColor = this.color;
+        
         if (repl) {
             this.launchREPL();
         } else if (files.length > 0) {
@@ -76,7 +81,10 @@ export default class Default extends CLIMode {
             process.stdin.resume();
             process.stdin.setEncoding('utf8');
             process.stdin.on('data', (data) => {
-                data && this.feed(data);
+                if (data) {
+                    this.pendingString += data;
+                    this.feed(data);
+                }
             });
         }
     }
@@ -123,10 +131,36 @@ export default class Default extends CLIMode {
     }
     
     _parse(string) {
-        let res = this.parser.feed(string);
-        if (res.length === 0) return false;
-        else this.parser = new VSLParser();
-        return res
+        if (this.pendingString === "") {
+            this.parser = new VSLParser();
+        }
+        
+        this.pendingString += string;
+        try {
+            let ast = this.parser.feed(string);
+            if (ast.length === 0) {
+                return false;
+            } else {
+                let res = { str: this.pendingString.slice(), ast: ast }
+                this.pendingString = "";
+                return res;
+            }
+        } catch(e) {
+            this.handle(e, this.pendingString);
+            this.pendingString = "";
+            return null;
+        }
+    }
+    
+    handle(error, src) {
+        // console.log(error.node, typeof error.node.position)
+        if (error.node && typeof error.node.position === 'number') {
+            error.node.position = this.parser.parser.lexer.positions[error.node.position];
+        }
+        this.error.handle({
+            error,
+            src
+        })
     }
     
     feed(string) {
@@ -145,16 +179,16 @@ export default class Default extends CLIMode {
                 ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
-                this.previousContext = VSLTransform(res, this.previousContext);
-                console.log(res[0].scope.toString());
+                this.previousContext = VSLTransform(ast, this.previousContext);
+                console.log(ast[0].scope.toString());
             },
             
             "dryRunGen": (ast) => {
                 ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
-                this.previousContext = VSLTransform(res, this.previousContext);
-                console.log(res[0].toString());
+                this.previousContext = VSLTransform(ast, this.previousContext);
+                console.log(ast[0].toString());
             }
             
         };
@@ -163,8 +197,14 @@ export default class Default extends CLIMode {
         if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
         
         let res = this._parse(string);
-        if (!res) return false;
+        if (res === false) return false;
+        if (res === null) return;
         
-        modeFunc(res);
+        try {
+            let ast = res.ast;
+            modeFunc(ast);
+        } catch(e) {
+            this.handle(e, res.str);
+        }
     }
 }

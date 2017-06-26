@@ -5,16 +5,20 @@
  * {@link Node} class for more info on how to access information for generating
  * an error.
  */
-export default class TypeResolutionError extends Error {
+export default class TypeResolutionError {
     /**
      * Creates an error given node and message. If you are in a resolver we
      * reccomend using the `#emit(message:)` function which will automatically
      * handle all of this stuff.
      */
     constructor(message: string, node: Node) {
-        super(message);
-
-        this.name = "TypeResolutionError";
+        /** @type {string} */
+        this.message = message;
+        
+        /** @type {string} */
+        this.name = "Type Resolution Error";
+        
+        /** @type {Node} */
         this.node = node;
     }
 }

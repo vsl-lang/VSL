@@ -5,11 +5,11 @@
   "main": "lib/cli/vsl.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "npm run nearley && NODE_ENV=production babel src/ -d lib/",
+    "build": "npm run nearley && cross-env NODE_ENV=production babel src/ -d lib/",
     "dev": "npm run nearley && npm run babel",
     "babel": "babel src/ -d lib/ -s",
     "webpack": "webpack",
-    "nearley": "mkdir -p lib/vsl/parser && nearleyc src/vsl/parser/parser.ne -o src/vsl/parser/parser.js",
+    "nearley": "mkdirp lib/vsl/parser && nearleyc src/vsl/parser/parser.ne -o src/vsl/parser/parser.js",
     "watch": "babel src/ -d lib/ -s --watch",
     "clean": "rm -r lib",
     "lint": "eslint src",
@@ -35,11 +35,12 @@
     "browser-process-hrtime": "^0.1.2",
     "colors": "^1.1.2",
     "fs-promise": "^2.0.2",
+    "mkdirp": "^0.5.1",
     "node-sass": "^4.5.3",
     "react": "^15.6.1",
     "react-contenteditable": "^2.0.2",
     "react-dom": "^15.6.1",
-    "vsl-nearley": "^2.9.3"
+    "vsl-nearley": "^2.9.5"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

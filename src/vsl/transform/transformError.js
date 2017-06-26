@@ -4,18 +4,19 @@
  * exactly where the error occured.
  *
  */
-export default class TransformError extends Error {
+export default class TransformError {
     /**
      * @param {string} message - error message
      * @param {Node} node - erroring node
      */
     constructor(message, node) {
-        super(message);
+        /** @type {string} */
+        this.message = message;
 
-        /** @private */
+        /** @type {string} */
         this.name = 'Transform Error';
 
-        /** @private */
+        /** @type {Node} */
         this.node = node;
     }
 }
