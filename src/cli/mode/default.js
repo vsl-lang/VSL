@@ -1,5 +1,6 @@
+import ParserError from '../../vsl/parser/parserError';
 import VSLParser from '../../vsl/parser/vslparser';
-import VSLTransform from '../../vsl/transform/transform.js';
+import VSLTransform from '../../vsl/transform/transform';
 
 import CLIMode from '../CLIMode';
 
@@ -7,6 +8,8 @@ import readline from 'readline';
 import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
+
+import fs from 'fs-extra';
 
 export default class Default extends CLIMode {
     usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]"
@@ -73,10 +76,10 @@ export default class Default extends CLIMode {
         
         this.error.shouldColor = this.color;
         
-        if (repl) {
+        if (files.length > 0) {
+            this.fromFiles(files);
+        } else if (repl) {
             this.launchREPL();
-        } else if (files.length > 0) {
-            console.log("ATM VSL cannot source from files");
         } else {
             process.stdin.resume();
             process.stdin.setEncoding('utf8');
@@ -86,6 +89,87 @@ export default class Default extends CLIMode {
                     this.feed(data);
                 }
             });
+        }
+    }
+    
+    async fromFiles(files) {
+        let astPromises = new Array(files.length);
+        
+        for (let [index, file] of files.entries()) {
+            let contents;
+            try {
+                contents = await fs.readFile(file, {
+                    encoding: 'utf-8'
+                });
+            } catch(e) {
+                // Bork Alert
+                if (e.code === 'ENOENT') {
+                    this.error.cli(`Could not find file ${file}`);
+                } else {
+                    this.error.cli(`Could not read file ${file} (${e.code})`);
+                }
+            }
+            
+            astPromises[index] = new Promise((resolve, reject) => {
+                let res = this._parse(contents, { file, exit: true })
+                if (res === false) {
+                    let lines = file.split("\n");
+                    this.handle(
+                        new ParserError(
+                            `Unexpected EOF. Perhaps you forgot a closing bracket?`,
+                            {
+                                line: lines.length - 1,
+                                column: lines[lines.length - 1].length - 1,
+                                index:file.length - 1,
+                                length: 1
+                            }
+                        ),
+                        file,
+                        { file, exit: true }
+                    );
+                }
+                
+                resolve(res.ast);
+            });
+        }
+        
+        // List of ours ASTs
+        let asts;
+        try {
+            asts = await Promise.all(astPromises);
+        } catch(e) {
+            throw e;
+        }
+        
+        // Get the mode, we'll call this once per AST
+        // TODO: actual binding
+        let mode = this.getMode(this.mode);
+        if (!mode) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
+        
+        asts.forEach(ast => {
+            mode(ast);
+        })
+    }
+    
+    _parse(string, { file, exit = false } = {}) {
+        if (this.pendingString === "") {
+            this.parser = new VSLParser();
+        }
+        
+        this.pendingString += string;
+        try {
+            let ast = this.parser.feed(string);
+            if (ast.length === 0) {
+                return false;
+            } else {
+                let res = { str: this.pendingString.slice(), ast: ast }
+                this.pendingString = "";
+                return res;
+            }
+        } catch(e) {
+            this.handle(e, this.pendingString, { file, exit });
+            this.pendingString = "";
+            return null;
         }
     }
     
@@ -130,41 +214,35 @@ export default class Default extends CLIMode {
         process.stdin.resume();
     }
     
-    _parse(string) {
-        if (this.pendingString === "") {
-            this.parser = new VSLParser();
-        }
-        
-        this.pendingString += string;
-        try {
-            let ast = this.parser.feed(string);
-            if (ast.length === 0) {
-                return false;
-            } else {
-                let res = { str: this.pendingString.slice(), ast: ast }
-                this.pendingString = "";
-                return res;
-            }
-        } catch(e) {
-            this.handle(e, this.pendingString);
-            this.pendingString = "";
-            return null;
-        }
-    }
-    
-    handle(error, src) {
+    handle(error, src, { exit = false } = {}) {
         // console.log(error.node, typeof error.node.position)
         if (error.node && typeof error.node.position === 'number') {
             error.node.position = this.parser.parser.lexer.positions[error.node.position];
         }
         this.error.handle({
             error,
-            src
+            src,
+            exit
         })
     }
     
     feed(string) {
+        const modeFunc = this.getMode(this.mode);
+        if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
         
+        let res = this._parse(string);
+        if (res === false) return false;
+        if (res === null) return;
+        
+        try {
+            let ast = res.ast;
+            modeFunc(ast);
+        } catch(e) {
+            this.handle(e, res.str);
+        }
+    }
+    
+    getMode(mode) {
         const modes = {
             
             "ast": (ast) => {
@@ -192,19 +270,6 @@ export default class Default extends CLIMode {
             }
             
         };
-        
-        const modeFunc = modes[this.mode];
-        if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
-        
-        let res = this._parse(string);
-        if (res === false) return false;
-        if (res === null) return;
-        
-        try {
-            let ast = res.ast;
-            modeFunc(ast);
-        } catch(e) {
-            this.handle(e, res.str);
-        }
+        return modes[mode];
     }
 }

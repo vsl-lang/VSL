@@ -29,30 +29,36 @@ export default class ErrorManager {
     /**
      * [handle description]
      * @param  {Object}  data
-     * @param  {boolean} data.error  error message
-     * @param  {string}  src         source file from error
-     * @param  {boolean} [exit=true] exit proc or throw?
+     * @param  {boolean} data.error   error message
+     * @param  {string}  src          source file from error
+     * @param  {boolean} [exit=false] exit proc or throw?
      */
-    handle({ error, src, exit = true } = {}) {
+    handle({ error, src, file, exit = false } = {}) {
+        let fileName = file ? `${file}:` : ``;
+        
         // Check if the node has positional information
         if (error.node) {
             let name = error.name || "Compiler Error";
             
             this.rawError(
                 name,
-                error.message + ` (${error.node.position.line}:${error.node.position.column})`,
+                error.message + ` (${fileName}${error.node.position.line}:${error.node.position.column})`,
                 this._highlight(src, error.node.position)
             )
         }
         else if (error instanceof ParserError) {
             this.rawError(
                 "Syntax Error",
-                error.message + ` (${error.position.line}:${error.position.column})`,
+                error.message + ` (${fileName}${error.position.line}:${error.position.column})`,
                 this._highlight(src, error.position)
             )
         }
         else {
             throw error;
+        }
+        
+        if (exit === true) {
+            process.exit(1);
         }
     }
     
