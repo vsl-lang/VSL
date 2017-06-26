@@ -6,6 +6,10 @@
 }
 
 $fgColor: white;
+$fgDim: #75715F;
+$fgAccent: #FEDB31;
+$fgAlert: #F63073;
+
 $bgColor: #222;
 
 $promptColor: orange;
@@ -23,7 +27,15 @@ html, body {
     display: flex;
     flex-direction: column;
     
+    @media print {
+        color: black !important;
+    }
+    
     #header {
+        @media print {
+            display: none;
+        }
+        
         // Stolen from somewhere on google
         font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
         
@@ -86,12 +98,19 @@ html, body {
                 
                 &.error {
                     .error-name {
-                        color: #F63073;
+                        color: $fgAlert;
                     }
                     
-                    .trace {
+                    .desc {
                         margin-left: 1em;
-                        color: #75715F;
+                        
+                        &.indicator .accent {
+                            color: $fgAccent;
+                        }
+                        
+                        &.trace {
+                            color: $fgDim;
+                        }
                     }
                 }
             }

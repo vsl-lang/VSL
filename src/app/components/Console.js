@@ -33,6 +33,8 @@ export default class Console extends Component {
         // Persistent context
         this.previousScope = null;
         this.previousContext = undefined;
+        
+        this.pendingCode = "";
     }
     
     componentDidMount() {
@@ -44,6 +46,9 @@ export default class Console extends Component {
     }
     
     onSubmit(text) {
+        this.pendingCode += text + "\n";
+        let code = this.pendingCode;
+        
         // Special behavior for help
         if (text === "help") {
             this.pushLineAndPrompt({
@@ -66,11 +71,10 @@ export default class Console extends Component {
         try {
             res = this.parser.feed(text);
         } catch(error) {
+            this.pendingCode = "";
             this.pushLineAndPrompt({
                 type: "error",
-                name: error.name,
-                title: error.message,
-                description: error.stack
+                error, code
             });
             return;
         }
@@ -83,6 +87,7 @@ export default class Console extends Component {
                 prompt: ">>>"
             });
         } else {
+            this.pendingCode = "";
             this.unfinished = false;
             
             // Specify scope and inherit + specify old
@@ -99,9 +104,7 @@ export default class Console extends Component {
             } catch(error) {
                 this.pushLineAndPrompt({
                     type: "error",
-                    name: error.name,
-                    title: error.message,
-                    description: error.stack
+                    error, code
                 })
             }
         }
