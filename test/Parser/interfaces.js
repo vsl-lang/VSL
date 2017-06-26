@@ -9,9 +9,9 @@ export default () => describe("Interfaces", () => {
     valid`private interface A {}`;
 
     describe('Annotations', () => {
-        valid`@foo interface A { }`;
-        valid`@foo @bar interface A { }`;
-        valid`@foo\n@bar\ninterface A {}`;
+        valid`@foo interface A {}`;
+        valid`@foo @bar interface A {}`;
+        valid`\n@foo\n@bar\ninterface A {}`;
     });
 
     describe('Generics', () => {

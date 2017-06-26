@@ -12,12 +12,9 @@ export default () => describe("Classes", () => {
     valid`private class A {}`;
 
     describe('Annotations', () => {
-        valid`@foo class A { }`;
-        valid`@foo @bar class A { }`;
-        valid`
-            @foo
-            @bar
-            class A {}`
+        valid`@foo class A {}`;
+        valid`@foo @bar class A {}`;
+        valid`\n@foo\n@bar\nclass A {}`;
     });
 
     describe('Fields', () => {
