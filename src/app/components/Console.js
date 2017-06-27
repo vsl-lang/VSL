@@ -20,6 +20,7 @@ export default class Console extends Component {
             lines: [
                 {
                     type: "text",
+                    id: "vsl-prompt-intro",
                     value: `\nVSL v${VERSION} (interactive)\n` +
                            "run `help` for more information.\n\n"
                 }
@@ -33,6 +34,8 @@ export default class Console extends Component {
         // Persistent context
         this.previousScope = null;
         this.previousContext = undefined;
+        
+        this.pendingCode = "";
     }
     
     componentDidMount() {
@@ -44,6 +47,9 @@ export default class Console extends Component {
     }
     
     onSubmit(text) {
+        this.pendingCode += text + "\n";
+        let code = this.pendingCode;
+        
         // Special behavior for help
         if (text === "help") {
             this.pushLineAndPrompt({
@@ -66,11 +72,10 @@ export default class Console extends Component {
         try {
             res = this.parser.feed(text);
         } catch(error) {
+            this.pendingCode = "";
             this.pushLineAndPrompt({
                 type: "error",
-                name: error.name,
-                title: error.message,
-                description: error.stack
+                error, code
             });
             return;
         }
@@ -83,25 +88,27 @@ export default class Console extends Component {
                 prompt: ">>>"
             });
         } else {
+            this.pendingCode = "";
             this.unfinished = false;
             
             // Specify scope and inherit + specify old
             res[0].scope.parentScope = this.previousScope;
-            this.previousScope = res[0].scope;
             
             // Try transformation
             try {
                 this.previousContext = VSLTransform(res, this.previousContext);
+                this.previousScope = res[0].scope;
                 this.pushLineAndPrompt({
                     type: "text",
                     value: res[0].scope.toString()
                 });
             } catch(error) {
+                if (error.node && typeof error.node.position === 'number') {
+                    error.node.position = this.parser.parser.lexer.positions[error.node.position]
+                }
                 this.pushLineAndPrompt({
                     type: "error",
-                    name: error.name,
-                    title: error.message,
-                    description: error.stack
+                    error, code
                 })
             }
         }
@@ -119,7 +126,7 @@ export default class Console extends Component {
     }
     
     onClear() {
-        this.setState({ lines: lines.slice(-1) });
+        this.setState({ lines: this.state.lines.slice(-1) });
     }
     
     render() {
