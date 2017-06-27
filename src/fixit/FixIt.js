@@ -36,13 +36,17 @@ export default class FixIt {
     async applyFixit(fixit) {
         let { d: name, f: callback, a: args = [] } = fixit;
         
-        let inputs = [];
-        for (let i = 0; i < args.length; i++) {
-            inputs.push(await this.input(args[i]));
-        }
+        let res;
+        do {
+            let inputs = [];
+            for (let i = 0; i < args.length; i++) {
+                inputs.push(await this.input(args[i]));
+            }
+            
+            let fixitManager = new FixItManager(this.source, this.node);
+            res = fixit(fixitManager, inputs);
+        } while (typeof res === 'string');
         
-        let fixitManager = new FixItManager(this.source, this.node);
-        fixit(fixitManager, inputs);
         return fixitManager.source;
     }
 }
