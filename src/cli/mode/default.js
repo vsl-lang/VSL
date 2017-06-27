@@ -3,6 +3,8 @@ import VSLParser from '../../vsl/parser/vslparser';
 import VSLTransform from '../../vsl/transform/transform';
 import VSLTokenizer from '../../vsl/parser/vsltokenizer';
 
+import FixItController from '../../fixit/FixItController';
+
 import CLIMode from '../CLIMode';
 
 import readline from 'readline';
@@ -18,11 +20,13 @@ export default class Default extends CLIMode {
     constructor() {
         super([
             ["Options", [
-                ["-v", "--version", "Displays the VSL version",              { run: _ => _.printAndDie(_.version()) }],
-                ["-h", "--help"   , "Displays this help message",            { run: _ => _.help() }],
-                ["-i", "--repl"   , "Opens an interactive REPL",             { repl: true }],
-                ["--color"        , "Colorizes all output where applicable", { color: true }],
-                ["--no-color"     , "Disables output colorization",          { color: false }],
+                ["-v", "--version"       , "Displays the VSL version",              { run: _ => _.printAndDie(_.version()) }],
+                ["-h", "--help"          , "Displays this help message",            { run: _ => _.help() }],
+                ["-p", "--repl"          , "Opens an interactive REPL",             { repl: true }],
+                ["-i", "--interactive"   , "Performs interactive compilation",      { interactive: true }],
+                ["-I", "--no-interactive", "Performs interactive compilation",      { interactive: false }],
+                ["--color"               , "Colorizes all output where applicable", { color: true }],
+                ["--no-color"            , "Disables output colorization",          { color: false }],
             ]],
             ["Debug Flags", [
                 ["-n", "--dry-run", "Checks the VSL code but does not compile or run",       { mode: "dryRun" }],
@@ -41,6 +45,8 @@ export default class Default extends CLIMode {
         this.previousContext = undefined;
         
         this.pendingString = "";
+        
+        this.repl = readline.createInterface(process.stdin, process.stdout);
     }
     
     run(args) {
@@ -49,6 +55,7 @@ export default class Default extends CLIMode {
         let mode = "";
         let repl = tty.isatty(0);
         let color = tty.isatty(0);
+        let interactive = tty.isatty(0);
         
         for (let i = 0; i < args.length; i++) {
             if (args[i] === "--") {
@@ -66,6 +73,7 @@ export default class Default extends CLIMode {
                 if (flagInfo.mode) mode = flagInfo.mode;
                 if (flagInfo.repl) repl = flagInfo.repl;
                 if (flagInfo.color) color = flagInfo.color;
+                if (flagInfo.interactive) interactive = flagInfo.interactive;
             } else {
                 files.push(args[i]);
             }
@@ -74,6 +82,7 @@ export default class Default extends CLIMode {
         // Determine whether to launch repl or not
         this.mode = mode;
         this.color = color;
+        this.interactive = interactive;
         
         this.error.shouldColor = this.color;
         
@@ -117,8 +126,8 @@ export default class Default extends CLIMode {
                 }
             }
             
-            astPromises[index] = new Promise((resolve, reject) => {
-                let res = this._parse(contents, { file, exit: true })
+            astPromises[index] = new Promise(async (resolve, reject) => {
+                let res = await this._parse(contents, { file, exit: true })
                 if (res === false) {
                     let lines = file.split("\n");
                     this.handle(
@@ -153,14 +162,14 @@ export default class Default extends CLIMode {
         })
     }
     
-    _parse(string, { file, exit = false } = {}) {
+    async _parse(string, { file, exit = false } = {}) {
         if (this.pendingString === "") {
             this.parser = new VSLParser();
         }
         
         this.pendingString += string;
         try {
-            let ast = this.parser.feed(string);
+            let ast = await this.parser.feed(string);
             if (ast.length === 0) {
                 return false;
             } else {
@@ -176,7 +185,7 @@ export default class Default extends CLIMode {
     }
     
     launchREPL() {
-        const REPL = readline.createInterface(process.stdin, process.stdout);
+        const REPL = this.repl;
         
         // Fix ANSI color bug
         REPL._setPrompt = REPL.setPrompt;
@@ -189,8 +198,8 @@ export default class Default extends CLIMode {
         REPL.setPrompt(prompt);
         
         let unfinished = false;
-        REPL.on('line', (input) => {
-            let res = this.feed(input);
+        REPL.on('line', async (input) => {
+            let res = await this.feed(input);
             
             if (res === false) {
                 unfinished = false;
@@ -207,6 +216,7 @@ export default class Default extends CLIMode {
             if (unfinished) {
                 REPL.setPrompt(unfinishedPrompt);
                 unfinished = false;
+                console.log('cl p');
                 return REPL.prompt();
             }
             REPL.close();
@@ -216,23 +226,48 @@ export default class Default extends CLIMode {
         process.stdin.resume();
     }
     
-    handle(error, src, { exit = false } = {}) {
+    async handle(error, src, { exit = false } = {}) {
         // console.log(error.node, typeof error.node.position)
         if (error.node && typeof error.node.position === 'number') {
             error.node.position = this.parser.parser.lexer.positions[error.node.position];
         }
+        
+        let passedExit = exit;
+        if (this.interactive) passedExit = false;
+        
         this.error.handle({
             error,
             src,
-            exit
+            passedExit
         })
+        
+        if (this.interactive && error.ref) {
+            // Do fix it
+            let controller = new FixItController(
+                (input) => new Promise((resolve, reject) => {
+                    this.repl.question(`    ${input}`, (res, error) => {
+                        this.repl.resume();
+                        error ? reject(error) : resolve(res)
+                    })
+                }),
+                async (output) => console.log(`    ${output}`)
+            );
+            controller.shouldColor = this.color;
+            
+            let res = await controller.receive(error, src);
+            if (res !== null) {
+                await this.feed(res);
+            }
+        }
+        
+        if (exit === true) process.exit(1);
     }
     
-    feed(string) {
+    async feed(string) {
         const modeFunc = this.getMode(this.mode, () => string);
         if (modeFunc === false) return;
         
-        let res = this._parse(string);
+        let res = await this._parse(string);
         if (res === false) return false;
         if (res === null) return;
         
@@ -240,7 +275,7 @@ export default class Default extends CLIMode {
             let ast = res.ast;
             modeFunc(ast);
         } catch(e) {
-            this.handle(e, res.str);
+            await this.handle(e, res.str);
         }
     }
     
@@ -291,3 +326,7 @@ export default class Default extends CLIMode {
         return m;
     }
 }
+
+process.on('unhandledRejection', (reason, error) => {
+    console.log(reason);
+});

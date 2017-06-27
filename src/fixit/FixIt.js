@@ -1,3 +1,5 @@
+import FixItManager from './FixItManager';
+
 /**
  * Fixes a thing as referenced from a FIX-IT
  */
@@ -38,6 +40,7 @@ export default class FixIt {
      */
     async applyFixIt(fixit) {
         let { d: name, f: callback, a: args = [] } = fixit;
+        let fixitManager = new FixItManager(this.source, this.node);
         
         let res;
         do {
@@ -46,8 +49,7 @@ export default class FixIt {
                 inputs.push(await this.input(args[i]));
             }
             
-            let fixitManager = new FixItManager(this.source, this.node);
-            res = fixit(fixitManager, inputs);
+            res = callback(fixitManager, inputs);
             
             if (typeof res === 'string') {
                 this.output(`FIX-IT Error: ${res}`);

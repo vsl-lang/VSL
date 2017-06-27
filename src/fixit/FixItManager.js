@@ -18,6 +18,13 @@ export default class FixItManager {
         this._node = node;
     }
     
+    /**
+     * Readonly, evaluates to source code
+     */
+    get source() {
+        return this._source;
+    }
+    
     /** @private */
     _splice(string, posA, length, replacement = "") {
         return string.substring(0, posA) + replacement + string.substring(posA + length);
@@ -28,7 +35,7 @@ export default class FixItManager {
      * @param  {Node} node the node to remove.
      */
     remove(node) {
-        this._splice(
+        this._source = this._splice(
             this._source,
             this._node.position.index,
             this._node.position.length,
@@ -42,7 +49,7 @@ export default class FixItManager {
      * @param {string} string string to replace node with
      */
     set(node, string) {
-        this._splice(
+        this._source = this._splice(
             this._source,
             this._node.position.index,
             this._node.position.length,

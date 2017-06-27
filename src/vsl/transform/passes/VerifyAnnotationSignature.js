@@ -18,8 +18,10 @@ export default class VerifyAnnotationSignature extends Transformation {
     /** @overide */
     modify(node: Node, tool: ASTTool) {
         let name = node.name;
-        let [res, nodeType = null] = Annotations.get(name);
-        if (res !== undefined) {
+        let response = Annotations.get(name);
+        if (response !== undefined) {
+            let [res, nodeType = null] = response;
+            
             // Check if correct type
             let parent = tool.nthParent(2);
             if (nodeType && !(parent instanceof nodeType)) {

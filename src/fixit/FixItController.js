@@ -1,4 +1,5 @@
 import FixIt from './FixIt';
+import colors from 'colors';
 
 /**
  * Controls and centralizes FIX-IT behavior. This is a helper class but if it
@@ -33,23 +34,36 @@ export default class FixItController {
         
         /** @private */
         this.output = output;
+        
+        /** @type {boolean} */
+        this.shouldColor = false;
     }
     
     /** @private */
     // Interfaces input from a FixIt
     async streamInput(input) {
-        await this.input(this._capitalize(input) + "? ");
+        return await this.input(this._colorText(this._capitalize(input) + "? "));
     }
     
     /** @private */
     // Interfaces output from a FixIt
     async streamOutput(value) {
-        await this.output(value);
+        return await this.output(value);
     }
     
     /** @private */
     _capitalize(string) {
         return string[0].toUpperCase() + string.substring(1);
+    }
+    
+    /** @private */
+    _color(string) {
+        return this.shouldColor ? string.green.bold : string;
+    }
+    
+    /** @private */
+    _colorText(string) {
+        return this.shouldColor ? string.bold : string;
     }
     
     /**
@@ -71,26 +85,26 @@ export default class FixItController {
         if (!ref || !node) return null;
         
         let { fixits } = ref;
-        if (fixits.length > 0) return null;
+        if (fixits.length <= 0) return null;
         
         let fixit = new FixIt(source, node, ::this.streamInput, ::this.streamOutput);
         
-        await this.output(`FIX-IT: `);
+        await this.output(this._color(`FIX-IT: `));
         await this.output(`    • ${fixits.length} available FIX-IT${fixits.length !== 1 ? "s" : ""}`);
         await this.output(``);
-        await this.output(`What would you like to do?`);
+        await this.output(this._colorText(`What would you like to do?`));
         
         for (let i = 0; i < fixits.length; i++) {
-            await this.output(`    [${i + 1}]. ${this._capitalize(fixits[i].d)}`);
+            await this.output(`    ${this._color(`[${i + 1}]`)}. ${this._capitalize(fixits[i].d)}`);
         }
         
-        await this.output(`    [${fixits.length + 1}]. Exit`);
+        await this.output(`    ${this._color(`[${fixits.length + 1}]`)}. Exit`);
         
         let response;
         do {
-            let input = await this.input(`Your selection: `);
+            let input = await this.input(this._colorText(`Your selection: `));
             response = +input - 1;
-        } while (Number.isInteger(response) && response >= 0 && response <= fixits.length);
+        } while (!(Number.isInteger(response) && response >= 0 && response <= fixits.length));
         
         if (response === fixits.length) return null;
         let chosenFixit = fixits[response];

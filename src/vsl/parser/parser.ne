@@ -69,7 +69,7 @@ Annotations
 Annotation
    -> "@" %identifier ("(" _ delimited[AnnotationValue {% id %}, _ "," _] _
         ")" {% nth(2) %}):? {%
-        (data, location) => new t.Annotation(data[1][0], data[2], location)
+        (data, location) => new t.Annotation(data[1][0], data[2], location + 1)
     %}
 AnnotationValue
    -> %identifier {% mid %}
