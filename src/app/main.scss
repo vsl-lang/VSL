@@ -6,6 +6,10 @@
 }
 
 $fgColor: white;
+$fgDim: #75715F;
+$fgAccent: #FEDB31;
+$fgAlert: #F63073;
+
 $bgColor: #222;
 
 $promptColor: orange;
@@ -23,7 +27,17 @@ html, body {
     display: flex;
     flex-direction: column;
     
+    * {
+        @media print {
+            color: black !important;
+        }
+    }
+    
     #header {
+        @media print {
+            display: none;
+        }
+        
         // Stolen from somewhere on google
         font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
         
@@ -62,6 +76,12 @@ html, body {
             
             background: $bgColor;
             
+            #vsl-prompt-intro {
+                @media print {
+                    display: none;
+                }
+            }
+            
             .prompt {
                 
                 &:after {
@@ -86,12 +106,32 @@ html, body {
                 
                 &.error {
                     .error-name {
-                        color: #F63073;
+                        color: $fgAlert;
                     }
                     
-                    .trace {
-                        margin-left: 1em;
-                        color: #75715F;
+                    .message {
+                        $indentWidth: 1em;
+                        
+                        margin-left: $indentWidth;
+                        text-indent: -$indentWidth;
+                        
+                        max-width: 605px;
+                        white-space: normal;
+                    }
+                    
+                    .desc {
+                        margin: {
+                            top: 1em;
+                            left: 1em;
+                        }
+                        
+                        &.indicator .accent {
+                            color: $fgAccent;
+                        }
+                        
+                        &.trace {
+                            color: $fgDim;
+                        }
                     }
                 }
             }

@@ -17,9 +17,9 @@
     </a>
   </p>
   <p align="center">
-    <a href="#">Website</a> &mdash;
+    <a href="https://staging.vihan.org/VSL/app">Website</a> &mdash;
     <a href="#">Download</a> &mdash;
-    <a href="#">Documentation</a>
+    <a href="https://staging.vihan.org/VSL/docs">Documentation</a>
   </p>
   <p align="center">
     Versatile Scripting Language
