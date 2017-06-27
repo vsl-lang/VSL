@@ -1,6 +1,7 @@
 import ParserError from '../../vsl/parser/parserError';
 import VSLParser from '../../vsl/parser/vslparser';
 import VSLTransform from '../../vsl/transform/transform';
+import VSLTokenizer from '../../vsl/parser/vsltokenizer';
 
 import CLIMode from '../CLIMode';
 
@@ -93,6 +94,12 @@ export default class Default extends CLIMode {
     }
     
     async fromFiles(files) {
+        
+        // Get the mode, we'll call this once per AST
+        // TODO: actual binding
+        let mode = this.getMode(this.mode, () => fs.readFileSync(files[0], 'utf-8'));
+        if (mode === false) return;
+        
         let astPromises = new Array(files.length);
         
         for (let [index, file] of files.entries()) {
@@ -140,11 +147,6 @@ export default class Default extends CLIMode {
         } catch(e) {
             throw e;
         }
-        
-        // Get the mode, we'll call this once per AST
-        // TODO: actual binding
-        let mode = this.getMode(this.mode);
-        if (!mode) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
         
         asts.forEach(ast => {
             mode(ast);
@@ -227,8 +229,8 @@ export default class Default extends CLIMode {
     }
     
     feed(string) {
-        const modeFunc = this.getMode(this.mode);
-        if (!modeFunc) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
+        const modeFunc = this.getMode(this.mode, () => string);
+        if (modeFunc === false) return;
         
         let res = this._parse(string);
         if (res === false) return false;
@@ -242,8 +244,17 @@ export default class Default extends CLIMode {
         }
     }
     
-    getMode(mode) {
+    getMode(mode, string) {
         const modes = {
+            
+            "lex": (_, { input }) => {
+                let tokenizer = new VSLTokenizer();
+                console.log(util.inspect(tokenizer.tokenize(input), {
+                    colors: this.color,
+                    showHidden: true,
+                    depth: null
+                }));
+            },
             
             "ast": (ast) => {
                 console.log(util.inspect(ast, {
@@ -270,6 +281,13 @@ export default class Default extends CLIMode {
             }
             
         };
-        return modes[mode];
+        
+        let m = modes[mode];
+        if (!m) this.error.cli(`Unhandled mode ${this.mode} (internal)`);
+        if (m.length > 1) {
+            m(null, { input: string() });
+            return false;
+        }
+        return m;
     }
 }
