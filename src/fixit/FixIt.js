@@ -12,7 +12,7 @@ export default class FixIt {
      * @param {Promise}  input  - Promise which takes an argument `name` which
      *                          is the name of the input value we need to get.
      */
-    constructor(source, node, input) {
+    constructor(source, node, input, output) {
         /** @private */
         this.source = source;
         
@@ -24,6 +24,9 @@ export default class FixIt {
         
         /** @private */
         this.input = input;
+        
+        /** @private */
+        this.output = output;
     }
     
     /**
@@ -33,7 +36,7 @@ export default class FixIt {
      *                           with new source. You should reparse as not sure
      *                           if AST is nonsense or makes sense
      */
-    async applyFixit(fixit) {
+    async applyFixIt(fixit) {
         let { d: name, f: callback, a: args = [] } = fixit;
         
         let res;
@@ -45,6 +48,10 @@ export default class FixIt {
             
             let fixitManager = new FixItManager(this.source, this.node);
             res = fixit(fixitManager, inputs);
+            
+            if (typeof res === 'string') {
+                this.output(`FIX-IT Error: ${res}`);
+            }
         } while (typeof res === 'string');
         
         return fixitManager.source;

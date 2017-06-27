@@ -7,3 +7,6 @@ export { default as Transformer } from './vsl/transform/transformer';
 
 export { default as Node } from './vsl/parser/nodes';
 export { default as TokenType } from './vsl/parser/vsltokentype';
+
+export { default as FixIt } from './fixit/FixIt';
+export { default as FixItController } from './fixit/FixItController';
