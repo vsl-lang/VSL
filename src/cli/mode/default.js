@@ -41,6 +41,8 @@ export default class Default extends CLIMode {
         
         this.parser = new VSLParser();
         
+        this.persistentScope = false;
+        
         this.previousScope = null;
         this.previousContext = undefined;
         
@@ -110,6 +112,7 @@ export default class Default extends CLIMode {
         if (mode === false) return;
         
         let astPromises = new Array(files.length);
+        let fileSources = new Array(files.length);
         
         for (let [index, file] of files.entries()) {
             let contents;
@@ -117,6 +120,7 @@ export default class Default extends CLIMode {
                 contents = await fs.readFile(file, {
                     encoding: 'utf-8'
                 });
+                fileSources[index] = contents;
             } catch(e) {
                 // Bork Alert
                 if (e.code === 'ENOENT') {
@@ -157,9 +161,14 @@ export default class Default extends CLIMode {
             throw e;
         }
         
-        asts.forEach(ast => {
-            mode(ast);
-        })
+        for (let i = 0; i < asts.length; i++) {
+            try {
+                mode(asts[i]);
+            } catch(e) {
+                await this.handle(e, fileSources[i]);
+            }
+        }
+        this.repl.close();
     }
     
     async _parse(string, { file, exit = false } = {}) {
@@ -185,6 +194,7 @@ export default class Default extends CLIMode {
     }
     
     launchREPL() {
+        this.persistentScope = true;
         const REPL = this.repl;
         
         // Fix ANSI color bug
@@ -216,7 +226,6 @@ export default class Default extends CLIMode {
             if (unfinished) {
                 REPL.setPrompt(unfinishedPrompt);
                 unfinished = false;
-                console.log('cl p');
                 return REPL.prompt();
             }
             REPL.close();
@@ -246,7 +255,6 @@ export default class Default extends CLIMode {
             let controller = new FixItController(
                 (input) => new Promise((resolve, reject) => {
                     this.repl.question(`    ${input}`, (res, error) => {
-                        this.repl.resume();
                         error ? reject(error) : resolve(res)
                     })
                 }),
@@ -300,7 +308,7 @@ export default class Default extends CLIMode {
             },
             
             "scope": (ast) => {
-                ast[0].scope.parentScope = this.previousScope;
+                if (this.persistentScope) ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
                 this.previousContext = VSLTransform(ast, this.previousContext);
@@ -308,7 +316,7 @@ export default class Default extends CLIMode {
             },
             
             "dryRunGen": (ast) => {
-                ast[0].scope.parentScope = this.previousScope;
+                if (this.persistentScope) ast[0].scope.parentScope = this.previousScope;
                 this.previousScope = ast[0].scope;
                 
                 this.previousContext = VSLTransform(ast, this.previousContext);
@@ -328,5 +336,7 @@ export default class Default extends CLIMode {
 }
 
 process.on('unhandledRejection', (reason, error) => {
+    console.log("INTERNAL BORK ALERT");
     console.log(reason);
+    console.log(error);
 });
