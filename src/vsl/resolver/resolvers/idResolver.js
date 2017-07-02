@@ -63,7 +63,8 @@ export default class IdResolver extends TypeResolver {
             // actually has the name
             if (this.node.typeCandidates.length === 0) {
                 this.emit(
-                    `Use of undeclared function ${rootId}`
+                    `Use of undeclared function ${rootId}`,
+                    e.UNDECLARED_FUNCTION
                 )
             }
                 
@@ -81,7 +82,8 @@ export default class IdResolver extends TypeResolver {
             this.emit(
                 `Use of undeclared identifier ${rootId}. If you wanted to ` +
                 `reference a function, make sure you specify a function type ` +
-                `somewhere.`
+                `somewhere.`,
+                e.UNDECLARED_IDENTIFIER
             );
         }
         
@@ -100,7 +102,8 @@ export default class IdResolver extends TypeResolver {
                 `Use of ${rootId} has no types which it can be deducted to\n` +
                 `in this context. This is likely an internal bug as this\n` +
                 `means that the identifier refers to a variable which\n` +
-                `already has no valid type candidates.`
+                `already has no valid type candidates.`,
+                e.CANNOT_RESOLVE_IDENTIFIER
             );
         }
     }

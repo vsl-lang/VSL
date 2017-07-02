@@ -42,7 +42,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
             if (!type) {
                 throw new TransformError(
                     `Expected to have a type but could not find any type.`,
-                    node.args[i]
+                    node.args[i], e.FUNCTION_ARG_MISSING_TYPE
                 )
             }
             
@@ -80,7 +80,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
             throw new TransformError(
                 "Redeclaration of function. This means you have a function " +
                 "with the exact same signature declared",
-                node
+                node, e.DUPLICATE_DECLARATION
             );
         }
     }

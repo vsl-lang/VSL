@@ -139,6 +139,34 @@ export function invalid(source) {
     });
 }
 
+export function validate(source) {
+    source = vslStr(source);
+    it(`should correctly validate \`${source.formattedLine}\``, () => {
+        try {
+            transform(source);
+        } catch(e) {
+            throw new TypeError(
+                `Validation Error: \`${source.formatted}\` expected to be valid but threw error` +
+                `: \n ${e}`
+            );
+        }
+    });
+};
+
+export function invalidate(source) {
+    source = vslStr(source);
+    it(`should correctly determine error for \`${source.formattedLine}\``, () => {
+        try {
+            transform(source);
+        } catch(e) {
+            return;
+        }
+        throw new TypeError(
+            `Validation Error; \`${source.formatted}\` expected to be invalid but succesfully worked`
+        )
+    });
+};
+
 /**
  * Returns the tokenizes array from a string.
  *

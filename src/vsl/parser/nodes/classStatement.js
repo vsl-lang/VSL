@@ -7,6 +7,9 @@ import CodeBlock from './codeBlock';
  */
 export default class ClassStatement extends Node {
 
+    /** @override */
+    get fancyName() { return "class" }
+    
     /**
      * Constructs a generic function statement
      *

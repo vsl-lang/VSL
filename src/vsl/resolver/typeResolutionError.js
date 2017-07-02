@@ -11,7 +11,7 @@ export default class TypeResolutionError {
      * reccomend using the `#emit(message:)` function which will automatically
      * handle all of this stuff.
      */
-    constructor(message: string, node: Node) {
+    constructor(message: string, node: Node, ref: Object) {
         /** @type {string} */
         this.message = message;
         
@@ -20,5 +20,10 @@ export default class TypeResolutionError {
         
         /** @type {Node} */
         this.node = node;
+        
+        /**
+         * @type {?Object}
+         */
+        this.ref = ref;
     }
 }

@@ -4,6 +4,14 @@
 export default class Node {
     
     /**
+     * Friendly name of node used in errors and such. Make sure to not capitalize
+     * @type {string}
+     */
+    get fancyName() {
+        return "node";
+    }
+    
+    /**
      * Creates a new Node object.
      */
     constructor(position: Object) {
