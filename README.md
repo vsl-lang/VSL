@@ -10,7 +10,7 @@
       <img src="https://travis-ci.org/vsl-lang/VSL.svg?branch=master" alt="Build Status"/>
     </a>
     <a href="https://codecov.io/gh/vsl-lang/VSL">
-      <img src="https://codecov.io/gh/vsl-lang/VSL/branch/master/graph/badge.svg" alt="Codecov" />
+      <img src="https://codecov.io/gh/vsl-lang/VSL/branch/develop/graph/badge.svg" alt="Codecov" />
     </a>
     <a href="https://codeclimate.com/github/vsl-lang/VSL/">
       <img src="https://codeclimate.com/github/vsl-lang/VSL/badges/gpa.svg" />

@@ -93,7 +93,9 @@
     ],
     "exclude": [
       "src/cli/**/*.js",
-      "src/app/**/*.js"
+      "src/app/**/*.js",
+      "src/fixit/**/*.js",
+      "src/vsl.js"
     ],
     "all": true,
     "sourceMap": false,

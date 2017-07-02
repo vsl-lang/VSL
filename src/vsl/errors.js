@@ -46,7 +46,7 @@ export default {
             {
                 d: "rename annotation",
                 a: ["new name"],
-                f: (n, a) => n.set(n.str.replace(n.node.name, a[0]))
+                f: (n, a) => n.set(n.node, n.str.replace(n.node.name, a[0]))
             },
             {
                 d: "delete annotation",

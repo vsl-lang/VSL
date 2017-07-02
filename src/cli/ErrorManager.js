@@ -29,9 +29,9 @@ export default class ErrorManager {
     /**
      * [handle description]
      * @param  {Object}  data
-     * @param  {boolean} data.error   error message
-     * @param  {string}  src          source file from error
-     * @param  {boolean} [exit=false] exit proc or throw?
+     * @param  {boolean} data.error        error message
+     * @param  {string}  data.src          source file from error
+     * @param  {boolean} [data.exit=false] exit proc or throw?
      */
     handle({ error, src, file, exit = false } = {}) {
         let fileName = file ? `${file}:` : ``;

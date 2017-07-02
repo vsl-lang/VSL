@@ -4,7 +4,7 @@
     "destination": "docs",
     "styles": ["misc/doc.css"],
     "scripts": ["misc/doc.js"],
-    "excludes": ["^src/app"],
+    "excludes": ["^app", "^cli"],
     "test": {
         "type": "mocha",
         "source": "./test",
