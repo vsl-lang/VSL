@@ -1,5 +1,6 @@
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
+import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 // import STL from '../../stl/stl';
@@ -80,7 +81,12 @@ export default class LiteralResolver extends TypeResolver {
         
         let { types: typeList, precType } = literalTypeContext;
         
-        this.node.typeCandidates = typeList.slice();
+        // Create TypeCandidate list.
+        this.node.typeCandidates = typeList
+            .map(
+                candidate =>
+                    new TypeCandidate(candidate, precType === candidate)
+            );
         
         if (response !== null) {
             this.mutableIntersect(response, this.node.typeCandidates)
