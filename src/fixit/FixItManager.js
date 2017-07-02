@@ -20,6 +20,8 @@ export default class FixItManager {
     
     /**
      * Readonly, evaluates to source code
+     *
+     * @type {string}
      */
     get source() {
         return this._source;

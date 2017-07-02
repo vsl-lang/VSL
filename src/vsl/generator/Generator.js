@@ -9,27 +9,21 @@ export default class Generator {
     constructor() {
         /**
          * A list of the forward or linkage declarations
-         * 
-         * @param {LLVMMethodPrototype[]}
+         *
+         * @type {LLVMMethodPrototype[]}
          */
         this.declarations = [];
         
         /**
-         * A list of type declarations
-         * 
-         * @type {LLVMType[]}
-         */
-        
-        /**
          * A list of LLVM method declarations
-         * 
-         * @param {LLVMMethod[]}
+         *
+         * @type {LLVMMethod[]}
          */
         this.methods = [];
         
         /**
-         * A list of top-level, global, LLVM attributes. 
-         * 
+         * A list of top-level, global, LLVM attributes.
+         *
          * @type {LLVMAttribute[]}
          */
         this.attributes = []
