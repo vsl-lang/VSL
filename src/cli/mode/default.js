@@ -4,6 +4,7 @@ import VSLTransform from '../../vsl/transform/transform';
 import VSLTokenizer from '../../vsl/parser/vsltokenizer';
 
 import FixItController from '../../fixit/FixItController';
+import FixItCLIColors from '../FixItCLIColors';
 
 import CLIMode from '../CLIMode';
 
@@ -193,6 +194,15 @@ export default class Default extends CLIMode {
         }
     }
     
+    setRed(text) {
+        if (!this.color) return;
+        return `\u001B[1;${
+            process.env.TERM.indexOf("256") > -1 ?
+            "38;5;202" :
+            "31"
+        }m${text}\u001B[0m`
+    }
+    
     launchREPL() {
         this.persistentScope = true;
         const REPL = this.repl;
@@ -203,7 +213,7 @@ export default class Default extends CLIMode {
             REPL._setPrompt(prompt, length ? length : prompt.split(/[\r\n]/).pop().stripColors.length);
         
         let rawPrompt = `vsl${this.mode ? `::${this.mode}` : ""}> `
-        let prompt = this.color ? rawPrompt.red.bold : rawPrompt;
+        let prompt = this.setRed(rawPrompt);
         let unfinishedPrompt = ">".repeat(rawPrompt.length - 1) + " ";
         REPL.setPrompt(prompt);
         
@@ -260,7 +270,7 @@ export default class Default extends CLIMode {
                 }),
                 async (output) => console.log(`    ${output}`)
             );
-            controller.shouldColor = this.color;
+            controller.colorizer = this.color ? new FixItCLIColors() : null;
             
             let res = await controller.receive(error, src);
             if (res !== null) {
@@ -335,8 +345,8 @@ export default class Default extends CLIMode {
     }
 }
 
-process.on('unhandledRejection', (reason, error) => {
+process.on('unhandledRejection', (reason) => {
     console.log("INTERNAL BORK ALERT");
     console.log(reason);
-    console.log(error);
+    process.exit(1);
 });

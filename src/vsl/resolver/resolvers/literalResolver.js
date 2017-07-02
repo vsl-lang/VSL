@@ -40,6 +40,7 @@ export default class LiteralResolver extends TypeResolver {
 
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        let debugResponse = response.slice(); // version for debugging info
         
         let literalTypeContext = null;
         // Specify default types for the candidates
@@ -97,8 +98,11 @@ export default class LiteralResolver extends TypeResolver {
         // type candidates.
         if (this.node.typeCandidates.length === 0) {
             this.emit(
-                `Conflicting types, the context for this node needs this to\n` +
-                `be a type which this literal cannot be.`
+                `This literal would need to be a type which it cannot be in\n` +
+                `order for everything to work. Candidates would include: \n\n` +
+                debugResponse.map(i => "    • " + i.candidate.rootId).join("\n") +
+                `\n\nHowever none of these are actually a type this literal could\n` +
+                `represent.`
             );
         }
 
