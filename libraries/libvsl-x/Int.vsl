@@ -1,0 +1,4 @@
+@primitive(Integer, _precType)
+public class Int {
+
+}

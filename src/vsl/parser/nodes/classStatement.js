@@ -45,7 +45,7 @@ export default class ClassStatement extends Node {
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
 
-        /** @type {ScopeTypeItem} */
+        /** @type {?ScopeTypeItem} */
         this.scopeRef = null;
     }
 

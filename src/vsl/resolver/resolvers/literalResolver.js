@@ -39,33 +39,33 @@ export default class LiteralResolver extends TypeResolver {
 
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-
+        
+        let literalTypeContext = null;
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
         // to be a default candidate but for now they are hardcoded here
         switch (this.node.type) {
             case VSLTokenType.Integer:
-                this.node.typeCandidates = context.get("Integer") || [];
+                literalTypeContext = context.get("Integer");
                 break;
 
             case VSLTokenType.Decimal:
-                this.node.typeCandidates = context.get("FloatingPoint") || [];
+                literalTypeContext = context.get("FloatingPoint");
                 break;
 
             case VSLTokenType.String:
-                this.node.typeCandidates = context.get("String") || [];
+                literalTypeContext = context.get("String");
                 break;
 
             case VSLTokenType.Regex:
-                this.node.typeCandidates = context.get("Regex") || [];
+                literalTypeContext = context.get("Regex");
                 break;
 
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
         
-        this.node.typeCandidates = this.node.typeCandidates.slice();
-        
-        if (this.node.typeCandidates.length === 0) {
+        // Make sure there is a type context that is valid and all
+        if (!literalTypeContext || literalTypeContext.types.length <= 0) {
             this.emit(
                 `Literal has no overlapping type candidates. ` +
                 `They are a few reasons this could happen: \n` +
@@ -77,6 +77,10 @@ export default class LiteralResolver extends TypeResolver {
                 `your own candidate using \`@primitive(...)\``
             );
         }
+        
+        let { types: typeList, precType } = literalTypeContext;
+        
+        this.node.typeCandidates = typeList.slice();
         
         if (response !== null) {
             this.mutableIntersect(response, this.node.typeCandidates)

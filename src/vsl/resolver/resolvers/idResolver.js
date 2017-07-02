@@ -51,6 +51,8 @@ export default class IdResolver extends TypeResolver {
             // they aren't need
             const allowVoid = negotiate(ConstraintType.VoidableContext);
             
+            // Basic filter which removed candidates which aren't either funcs
+            // or have less arguments than called with,
             this.node.typeCandidates = scope
                 .getAll(rootId)
                 .filter(

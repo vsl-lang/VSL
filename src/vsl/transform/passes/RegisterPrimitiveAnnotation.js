@@ -15,7 +15,8 @@ export default class RegisterPrimitiveAnnotation extends Transformation {
         // Check that it's the correct type
         if (node.name !== "primitive") return;
         
-        let [type, opt] = node.args[0]
-        tool.context.addPrimitive(type, tool.nthParent(2).scopeRef);
+        let [type, opt] = node.args[0];
+        let precType = node.args[1] === "_precType";
+        tool.context.addPrimitive(type, precType, tool.nthParent(2).scopeRef);
     }
 }
