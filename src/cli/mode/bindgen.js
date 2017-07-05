@@ -25,6 +25,13 @@ export default class Bindgen extends CLIMode {
         this.color = process.stdin.isTTY;
     }
     
+    appInfo() {
+        return (
+            `vsl bindgen takes C/C++ files and converts the applicable ` +
+            `declarations to a VSL binding file.`
+        );
+    }
+    
     run(args) {
         if (args[0] === "install") {
             this.install();

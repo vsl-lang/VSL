@@ -70,6 +70,10 @@ export default class CLIMode {
         process.exit(0);
     }
     
+    appInfo() {
+        return null;
+    }
+    
     help() {
         const version = this.version();
         const usageName = "Usage: ";
@@ -77,9 +81,13 @@ export default class CLIMode {
             .split("\n")
             .map((line, nu) => nu > 0 ? usageName.replace(/./g, " ") + line : line).join("\n");
             
+        let res = this.appInfo();
+        if (res === null) res = "";
+        else res = '\n' + res.match(/.{1,60}( |$)/g).join("\n  ") + '\n';
+            
         this.printAndDie(
             `VSL: Versatile Scripting Language v${version}\n` +
-            `${usageName}${formattedUsage}\n` +
+            `${usageName}${formattedUsage}\n` + res +
             `\n` + this.formatFlags()
         );
     }

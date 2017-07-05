@@ -49,10 +49,16 @@ export default class Default extends CLIMode {
         this.pendingString = "";
         
         this.repl = readline.createInterface(process.stdin, process.stdout);
+        
+        this.subcommands = [ "run" ];
+    }
+    
+    appInfo() {
+        return `Subcomamnds: ${this.subcommands.join(", ")}`
     }
     
     run(args, subcommands) {
-        this.usage += `\nvsl [ ${subcommands.join(" | ")} ]`;
+        this.subcommands = subcommands;
         
         let procArgs = [];
         let files = [];
