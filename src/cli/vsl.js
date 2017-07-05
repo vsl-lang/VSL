@@ -3,13 +3,13 @@ import * as modes from './mode';
 
 const subcommands = Object.create(null);
 subcommands["run"]   = modes.Default;
-subcommands["debug"] = modes.Debug;
+subcommands["bindgen"] = modes.Bindgen;
 
 let args = process.argv.slice(2);
-let cmd = subcommands[args[0]]
+let cmd = subcommands[args[0]];
 if (!cmd) {
     cmd = modes.Default;
 } else {
     args.shift();
 }
-(new cmd()).run(args);
+(new cmd()).run(args, Object.keys(subcommands));

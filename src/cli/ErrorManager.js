@@ -15,6 +15,12 @@ export default class ErrorManager {
          * @type {boolean}
          */
         this.shouldColor = shouldColor;
+        
+        /**
+         * prefix to prefix log messages with
+         * @type {String}
+         */
+        this.prefix = "vsl: ";
     }
     
     /**
@@ -22,7 +28,7 @@ export default class ErrorManager {
      * @param  {string} message Error message
      */
     cli(message) {
-        console.warn("vsl: " + message);
+        console.warn(this.prefix + message);
         process.exit(1);
     }
     

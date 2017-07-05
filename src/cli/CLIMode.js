@@ -27,6 +27,16 @@ export default class CLIMode {
         this.help();
     }
     
+    getFlagData(passed) {
+        let arg = this.allArgs[this.aliases[passed] || passed];
+        if (!arg) return null;
+        
+        return {
+            arg,
+            data: arg[3] || arg[2]
+        };
+    }
+    
     formatFlags() {
         return this.flags.map(section => {
             const format = section[1].map(
@@ -65,7 +75,7 @@ export default class CLIMode {
         const usageName = "Usage: ";
         const formattedUsage = this.usage
             .split("\n")
-            .map((line, nu) => nu > 0 ? usageName.replace(/./g, " ") + line : line);
+            .map((line, nu) => nu > 0 ? usageName.replace(/./g, " ") + line : line).join("\n");
             
         this.printAndDie(
             `VSL: Versatile Scripting Language v${version}\n` +

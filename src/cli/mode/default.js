@@ -51,7 +51,9 @@ export default class Default extends CLIMode {
         this.repl = readline.createInterface(process.stdin, process.stdout);
     }
     
-    run(args) {
+    run(args, subcommands) {
+        this.usage += `\nvsl [ ${subcommands.join(" | ")} ]`;
+        
         let procArgs = [];
         let files = [];
         let mode = "";
