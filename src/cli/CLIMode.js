@@ -38,11 +38,16 @@ export default class CLIMode {
     }
     
     formatFlags() {
+        function suffix(str) {
+            if (!str) return "";
+            else return `${str} `;
+        }
+        
         return this.flags.map(section => {
             const format = section[1].map(
-                flag => flag[0][1] !== "-" ?
+                flag => (flag[0][1] !== "-" ?
                     `${flag[0]}, ${flag[1]}` :
-                    flag[0]
+                    flag[0]) + ` ${suffix(this.getFlagData(flag[0]).data.arg)}`
             );
             
             let longest = Math.max(...format.map(i => i.length)) + 1;
