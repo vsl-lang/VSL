@@ -95,6 +95,20 @@ export default class Module {
         );
         
         ////////////////////////////////////////////////////////////////////////
+        // .TARGET
+        ////////////////////////////////////////////////////////////////////////
+        let target = yaml.target;
+        let targetTypes = Object.keys(VSLModule.TargetType);
+        if (typeof target === 'undefined') target = 'executable';
+        if (targetTypes.indexOf(target) === -1) throw new ModuleError(
+            `Target must of be one of: \`${targetTypes.join(", ")}\`.`,
+            ModuleError.type.invalidTargetType,
+            { type: target }
+        );
+        
+        this.module.target = VSLModule.TargetType[target];
+        
+        ////////////////////////////////////////////////////////////////////////
         // .SOURCES
         ////////////////////////////////////////////////////////////////////////
         let sources = yaml.sources || [];
@@ -112,11 +126,12 @@ export default class Module {
             );
             
             try {
-                let globs = await Module.moduleInterface(
+                let globs = await Module.moduleInterface.glob(
                     sources[i],
                     this.rootPath
                 );
-                res.push(...globs);
+                
+                expandedSources.push(...globs);
             } catch(e) {
                 throw e;
             }

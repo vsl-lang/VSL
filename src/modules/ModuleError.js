@@ -22,6 +22,7 @@ export default class ModuleError {
         moduleInvalidName: 3,
         invalidVersion: 4,
         invalidSourceType: 5,
-        invalidSourceItemType: 6
+        invalidSourceItemType: 6,
+        invalidTargetType: 7
     }
 }
