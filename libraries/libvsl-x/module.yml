@@ -1,0 +1,11 @@
+name: libvsl
+description: Standard Library for VSL source
+version: 0.0.1-alpha.1
+
+# Specify that this is library (i.e. not an executable)
+# Dynamic library because it doesn't make sense for each VSL proc to launch its
+# own copy of the STL
+target: dynamic
+
+sources:
+ - src/**/*.vsl
