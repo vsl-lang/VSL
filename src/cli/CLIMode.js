@@ -27,12 +27,27 @@ export default class CLIMode {
         this.help();
     }
     
+    getFlagData(passed) {
+        let arg = this.allArgs[this.aliases[passed] || passed];
+        if (!arg) return null;
+        
+        return {
+            arg,
+            data: arg[3] || arg[2]
+        };
+    }
+    
     formatFlags() {
+        function suffix(str) {
+            if (!str) return "";
+            else return `${str} `;
+        }
+        
         return this.flags.map(section => {
             const format = section[1].map(
-                flag => flag[0][1] !== "-" ?
+                flag => (flag[0][1] !== "-" ?
                     `${flag[0]}, ${flag[1]}` :
-                    flag[0]
+                    flag[0]) + ` ${suffix(this.getFlagData(flag[0]).data.arg)}`
             );
             
             let longest = Math.max(...format.map(i => i.length)) + 1;
@@ -60,16 +75,24 @@ export default class CLIMode {
         process.exit(0);
     }
     
+    appInfo() {
+        return null;
+    }
+    
     help() {
         const version = this.version();
         const usageName = "Usage: ";
         const formattedUsage = this.usage
             .split("\n")
-            .map((line, nu) => nu > 0 ? usageName.replace(/./g, " ") + line : line);
+            .map((line, nu) => nu > 0 ? usageName.replace(/./g, " ") + line : line).join("\n");
+            
+        let res = this.appInfo();
+        if (res === null) res = "";
+        else res = '\n' + res.match(/.{1,60}( |$)/g).join("\n  ") + '\n';
             
         this.printAndDie(
             `VSL: Versatile Scripting Language v${version}\n` +
-            `${usageName}${formattedUsage}\n` +
+            `${usageName}${formattedUsage}\n` + res +
             `\n` + this.formatFlags()
         );
     }
