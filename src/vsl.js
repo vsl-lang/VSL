@@ -10,3 +10,7 @@ export { default as TokenType } from './vsl/parser/vsltokentype';
 
 export { default as FixIt } from './fixit/FixIt';
 export { default as FixItController } from './fixit/FixItController';
+
+export { default as Module } from './modules/Module';
+export { default as ModuleError } from './modules/ModuleError';
+export { default as ModuleInterface } from './modules/ModuleInterface';

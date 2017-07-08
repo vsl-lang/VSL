@@ -155,7 +155,8 @@ export default class Module {
             ymlString = await Module.moduleInterface.readFile(requestPath);
         } catch(error) {
             throw new ModuleError(
-                error.message,
+                `${this.rootPath} is not a VSL module, could not locate a ` +
+                `\`module.yml\``,
                 ModuleError.type.moduleNoYml,
                 { error }
             )
