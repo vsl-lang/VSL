@@ -4,48 +4,56 @@
  */
 export default class CompilationStream {
     /**
-     * Create a compilation stream
-     *
-     * @param {func(data: string, close: func())} receiveData Called with data
-     *                                                        when data is
-     *                                                        obtained. The
-     *                                                        `close` callback
-     *                                                        is also called
-     *                                                        when the receiver
-     *                                                        will not receive
-     *                                                        any more data.
-     * @param {func()} receiveClose            Called when there is no more data
+     * Create a compilation stream. You can use the methods to send/recieve
+     * data.
      */
-    constructor(receiveData, receiveClose) {
-        this.receiveData = receiveData;
-        this.receiveClose = receiveClose;
+    constructor() {
+        /** @private */
+        this.dataBuffer = [];
         
-        this.cloesClient = null;
+        /** @private */
+        this.pushData = () => void 0;
+        
+        /** @private */
+        this.sender = (f) => f(null);
     }
     
     /**
-     * Sets up a client (sender) to the compilationStream
+     * Listens for data finishes evaluating when data is obtained.
      *
-     * @param {func()} close A function to signal to the sender to stop sending
-     *                       any more data.
+     * @return {?string} string with the data or null if there is no data
      */
-    setupClient(close) {
-        this.closeClient = close;
+    async receive() {
+        return new Promise((resolve, reject) => {
+            // If there is no buffered stuff let's manually request some more
+            // data
+            if (dataBuffer.length === 0) {
+                sender((data) => resolve(data));
+            } else {
+                resolve(this.dataBuffer.unshift());
+            }
+        });
     }
     
     /**
-     * _Send_ data to the stream.
+     * Sends a string of data to the receiver
+     * @param  {string} data The data to send.
+     */
+    send(data) {
+        this.dataBuffer.push(data);
+        this.pushData();
+    }
+    
+    /**
+     * Call this with a callback to specify behavior when the compiler wants
+     * more data.
      *
-     * @param {string} data the data to send
+     * @param {func(f: func(data: ?string))} callback - function which calls the
+     *                                                callback with the string
+     *                                                and null if there is no
+     *                                                more data.
      */
-    data(data) {
-        this.receiveClose(data, () => this.closeClient());
-    }
-    
-    /**
-     * Specify that there is no more data, do not call after a `.close()`
-     */
-    done() {
-        this.receiveClose();
+    handleRequest(callback) {
+        this.sender = callback;
     }
 }
