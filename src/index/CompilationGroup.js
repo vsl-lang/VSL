@@ -1,13 +1,28 @@
+import PropogateModifierTraverser, { Behavior as p } from './PropogateModifierTraverser';
+
 import CompilationStream from './CompilationStream';
 
 import ParserError from '../vsl/parser/parserError';
 import VSLParser from '../vsl/parser/vslparser';
 
 import Transform from '../vsl/transform/transform';
+import { CodeBlock } from '../vsl/parser/nodes/*';
 
 /**
- * Represents the compilation of a single module or such. This links with other
- * modules and manages dependencies
+ * Represents the compilation of a single module. This doesn't actually have any
+ * knoledge of a {@link VSLModule} or native modules, rather this represents a
+ * group of 'streams' and handled their accesss scopes through the
+ * {@link PropogateModifierTraverser}. This specifically uses:
+ *
+ *     {
+ *         protected: p.Propogate,
+ *         private: p.Hide,
+ *         public: p.Propogate
+ *     }
+ *
+ * If you want to inject modules you can set a shared scope instance by using
+ * the CompilationGroup.lazyHook() which will specify a scope hook to other
+ * {@link CompilationGroup}s.
  */
 export default class CompilationGroup {
     /**
@@ -51,7 +66,7 @@ export default class CompilationGroup {
             );
         }
         
-        return ast;
+        return ast[0];
     }
     
     /**
@@ -64,8 +79,24 @@ export default class CompilationGroup {
      *                                    {@link CompilationResult} for more
      *                                    information.
      */
-    async compile(stream) {
+    async compile(stream, { originStream, originModule }) {
+        // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );
-        console.log(asts);
+        
+        let block = new CodeBlock(asts, null);
+        
+        // Hook all the news ASTs together
+        new PropogateModifierTraverser(
+            {
+                protected: p.Propogate,
+                private: p.Hide,
+                public: p.Propogate,
+                none: p.Propogate
+            },
+            block.scope
+        ).queue(asts); // `asts` is already an ast of sorts.
+        
+        // Now `block` is our AST with all the important things.
+        console.log(block.scope);
     }
 }

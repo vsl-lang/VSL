@@ -1,15 +1,17 @@
-import Node from './node';
-import CodeBlock from './codeBlock';
+import DeclarationStatement from './declarationStatement';
 
 /**
  * Wraps an interfcae
- * 
+ *
  */
-export default class InterfaceStatement extends Node {
+export default class InterfaceStatement extends DeclarationStatement {
+
+    /** @override */
+    get fancyName() { return "interface" }
 
     /**
      * Constructs a generic function statement
-     * 
+     *
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the interface
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
@@ -25,10 +27,7 @@ export default class InterfaceStatement extends Node {
         annotations: Annotation[],
         position: Object
     ) {
-        super(position);
-
-        /** @type {string[]} */
-        this.access = access;
+        super(access, position);
 
         /** @type {Identifier} */
         this.name = name;

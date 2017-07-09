@@ -16,12 +16,29 @@ export default class CompilationStream {
         
         /** @private */
         this.sender = (f) => f(null);
+        
+        /**
+         * You can set this for better error reporting and debug info by
+         * naming the streams. Optimally with the file path if applicable in
+         * your environment.
+         *
+         * This is set to hoisted nodes (shared).
+         *
+         * @type {string}
+         */
+        this.sourceName = null;
     }
     
     /**
-     * Listens for data finishes evaluating when data is obtained.
+     * Listens for data finishes evaluating when data is obtained. Call this in
+     * a loop checking for `null`.
      *
      * @return {?string} string with the data or null if there is no data
+     * @example
+     * let data;
+     * while(null !== (data = await stream.receive())) {
+     *     output.feed(data);
+     * }
      */
     async receive() {
         return new Promise((resolve, reject) => {
@@ -52,6 +69,11 @@ export default class CompilationStream {
      *                                                callback with the string
      *                                                and null if there is no
      *                                                more data.
+     *
+     * @example
+     * stream.handleRequest(callback => {
+     *      getData(data => callback(data));
+     * })
      */
     handleRequest(callback) {
         this.sender = callback;
