@@ -1,10 +1,10 @@
-import Node from './node';
+import DeclarationStatement from './declarationStatement';
 
 /**
  * Matches an assignment statement, anything which declares an alias at the type
  * scope level.
  */
-export default class AssignmentStatement extends Node {
+export default class AssignmentStatement extends DeclarationStatement {
     
     /**
      * Creates a AssignmentStatement

@@ -44,10 +44,10 @@ export default class CompilationStream {
         return new Promise((resolve, reject) => {
             // If there is no buffered stuff let's manually request some more
             // data
-            if (dataBuffer.length === 0) {
-                sender((data) => resolve(data));
+            if (this.dataBuffer.length === 0) {
+                this.sender((data) => resolve(data));
             } else {
-                resolve(this.dataBuffer.unshift());
+                resolve(this.dataBuffer.shift());
             }
         });
     }

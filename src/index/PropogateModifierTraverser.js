@@ -48,7 +48,7 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         let accessModifiers = node.access;
         const is = (modifier) => accessModifiers.indexOf(modifier) > -1;
         const shouldPropogate = (modifier) =>
-            this.config[modifier] === Behavior.propogate;
+            this.config[modifier] === Behavior.Propogate;
         
         if (is('public')) if (!shouldPropogate('public')) return;
         else if (is('private'))   if (!shouldPropogate('private'))   return;
@@ -56,6 +56,6 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         else if (!shouldPropogate('none')) return;
         
         let ref = node.scopeRef;
-        this.target.set(ref);
+        if (ref !== null) this.target.set(ref);
     }
 }

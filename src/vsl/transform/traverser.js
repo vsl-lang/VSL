@@ -4,16 +4,16 @@ import Node from '../parser/nodes/node';
  * Traverses the AST. The backbone of transformers and other times. If you ever
  * need to climb the AST of unknown types, use this. Do note that if you're
  * dealing with a transformation, that does already have a `Transformer` (which
- * is a subclass of this), so you might not need a subclass of this. 
- * 
- * Subclassing is easy, check the API, but the most likely method you want to 
+ * is a subclass of this), so you might not need a subclass of this.
+ *
+ * Subclassing is easy, check the API, but the most likely method you want to
  * override is `receivedNode` which gets the parent, and name, you can get the
  * node then using `parent[name]`. Both values are passed as if the node is
  * changed you can still obtain a reference to it. Again, it's reccomended to
  * try to use `ASTTool` and modify your transformations before creating a
  * traverser objects as the queue generation is blocking and GC iterations can
  * be slow as they need to iterate yet again.
- * 
+ *
  * @abstract
  */
 export default class Traverser {
@@ -22,7 +22,7 @@ export default class Traverser {
      * Instantiates a traverser object. Note: This must be subclassed to be
      * used. See {@link Transformer} or {@link ASTGarbageCollector} for more
      * information.
-     * 
+     *
      * @param {boolean} shouldProcess - Whether or not the node should be setup
      *     with special data. (Note: if false, only assume the raw node will be
      *     passed.)
@@ -36,23 +36,26 @@ export default class Traverser {
      * Queues an AST to be traversed, this in turn calls the abstract function
      * `#receivedNode(parent:name:)` which can be used to determine what to do
      * with the node. The AST is recursed in order.
-     * 
+     *
      * This method runs top-down in a deterministic order and is not specifically
      * run async. If it is, you can safely assume that the order of execution
      * will be the same and for every `#processsedNode` there will be an equiv.
      * `#finishedNode` call.
-     * 
+     *
      * This method handles strings and arrays but behavior can be overloaded to
      * add the ability to handle nodes of a non-conforming type to `Node` or a
      * `Node[]`. An example of such would be:
-     * 
+     *
      *     /** @override *\/
-     *     queue(ast: any) {
+     *     queue(nodes: any) {
      *         if (ast instanceof MyClass) handle(ast);
      *         else super.queue(ast);
      *     }
-     * 
-     * @param {any} ast - An AST as outputted by a `Parser`
+     *
+     * @param {any} nodes - This **must** either be an array of nodes to queue
+     *                    or the element whose _children_ you want to traverse.
+     *                    If you pass a node itself, it itself won't be visited,
+     *                    only its children.
      */
     queue(ast: any) {
         // Recursively add all AST nodes in an array
@@ -94,7 +97,7 @@ export default class Traverser {
      * Override this method if you'd like to process each node that comes
      * through. Don't forget to call `super.processNode`! You don't have to but
      * you probably want to.
-     * 
+     *
      * @param {Node | Node[]} parent - The parent node of the given node being
      *     processed
      * @param {string} name - The name of the current node being processed
@@ -122,10 +125,10 @@ export default class Traverser {
     
     /**
      * Called everytime the traverser encounters a node
-     * 
+     *
      * @param {Node|Node[]} parent - The parent node of the given ast
      * @param {any} name - The reference to the child relative to the parent.
-     * 
+     *
      * @abstract
      */
     receivedNode(parent: Node | Node[], name: string) {
@@ -136,10 +139,10 @@ export default class Traverser {
     /**
      * _Optional_ method which is called once the traverser finishes processing
      * a node's children
-     * 
+     *
      * @param {Node|Node[]} parent - The parent node of the given ast
      * @param {any} name - The reference to the child relative to the parent.
-     * 
+     *
      * @abstract
      */
     finishedNode(parent: Node | Node[], name: string) {

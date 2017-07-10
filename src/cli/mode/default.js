@@ -15,6 +15,9 @@ import tty from 'tty';
 
 import fs from 'fs-extra';
 
+import CompilationGroup from '../../index/CompilationGroup';
+import CompilationStream from '../../index/CompilationStream';
+
 export default class Default extends CLIMode {
     usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]"
     
@@ -114,24 +117,14 @@ export default class Default extends CLIMode {
     }
     
     async fromFiles(files) {
-        
-        // Get the mode, we'll call this once per AST
-        // TODO: actual binding
-        let mode = this.getMode(this.mode, () => fs.readFileSync(files[0], 'utf-8'));
-        if (mode === false) return;
-        
-        let astPromises = new Array(files.length);
-        let fileSources = new Array(files.length);
-        
-        for (let [index, file] of files.entries()) {
-            let contents;
+        let compilationGroup = new CompilationGroup();
+        for (let i = 0; i < files.length; i++) {
+            let stream = compilationGroup.createStream();
+            
+            let data;
             try {
-                contents = await fs.readFile(file, {
-                    encoding: 'utf-8'
-                });
-                fileSources[index] = contents;
+                data = await fs.readFile(files[i], { encoding: 'utf-8' });
             } catch(e) {
-                // Bork Alert
                 if (e.code === 'ENOENT') {
                     this.error.cli(`Could not find file ${file}`);
                 } else {
@@ -139,44 +132,11 @@ export default class Default extends CLIMode {
                 }
             }
             
-            astPromises[index] = new Promise(async (resolve, reject) => {
-                let res = await this._parse(contents, { file, exit: true })
-                if (res === false) {
-                    let lines = file.split("\n");
-                    this.handle(
-                        new ParserError(
-                            `Unexpected EOF. Perhaps you forgot a closing bracket?`,
-                            {
-                                line: lines.length - 1,
-                                column: lines[lines.length - 1].length - 1,
-                                index:file.length - 1,
-                                length: 1
-                            }
-                        ),
-                        file,
-                        { file, exit: true }
-                    );
-                }
-                
-                resolve(res.ast);
-            });
+            stream.send(data);
         }
         
-        // List of ours ASTs
-        let asts;
-        try {
-            asts = await Promise.all(astPromises);
-        } catch(e) {
-            throw e;
-        }
+        let res = compilationGroup.compile();
         
-        for (let i = 0; i < asts.length; i++) {
-            try {
-                mode(asts[i]);
-            } catch(e) {
-                await this.handle(e, fileSources[i]);
-            }
-        }
         this.repl.close();
     }
     

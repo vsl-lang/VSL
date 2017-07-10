@@ -5,7 +5,9 @@ import CompilationStream from './CompilationStream';
 import ParserError from '../vsl/parser/parserError';
 import VSLParser from '../vsl/parser/vslparser';
 
-import Transform from '../vsl/transform/transform';
+import TransformationContext from '../vsl/transform/transformationContext';
+import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
+import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import { CodeBlock } from '../vsl/parser/nodes/*';
 
 /**
@@ -36,7 +38,7 @@ import { CodeBlock } from '../vsl/parser/nodes/*';
  *
  * @example
  * let compilationGroup = new CompilationGroup();
- * 
+ *
  * let stream = compilationGroup.createStream();
  * stream.send(prompt('vsl> '));
  * stream.handleRequest(done => done(prompt('>>>> ')));
@@ -104,6 +106,14 @@ export default class CompilationGroup {
         // scope
         let block = new CodeBlock(asts, null);
         
+        // Shared context between *entire* group, in fact we'd want to share
+        // this amount the CompilationIndex if it has one..
+        let context = new TransformationContext();
+        
+        // Queue each ast for pre-processing, this is important because we need
+        // the registrant info for the PropogateModifier
+        asts.forEach(ast => new VSLPreprocessor(context).queue([ ast ]));
+        
         // Hook all the news ASTs together
         // This will addd the public, protected, and no-access-modifier
         // declarations to our new scope (`block`).
@@ -118,6 +128,8 @@ export default class CompilationGroup {
         ).queue(asts); // `asts` is already an ast of sorts.
         
         // Now `block` is our AST with all the important things.
-        console.log(block.scope);
+        // The VSLTransformer will do remaining checks so we'll use it to do the
+        // type checking etc.
+        new VSLTransformer(context).queue(block);
     }
 }

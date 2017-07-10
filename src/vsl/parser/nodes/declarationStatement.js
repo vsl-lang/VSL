@@ -15,8 +15,8 @@ export default class DeclarationStatement extends Node {
      * @param {string[]} access - The access modifiers of the node
      * @param {Object} position - A position object from nearley.
      */
-    constructor(accessModifiers, position) {
-        super(accessModifiers, position);
+    constructor(access, position) {
+        super(position);
         
         /**
          * List of access modifiers
