@@ -1,8 +1,48 @@
 # Parses an expression
 # `Expression` may be empty
 
+@{%
+const literal = (d, l) => new t.Literal(d[0][0], d[0][1], l),
+  expr = (d, l) => new t.ExpressionStatement(d[0], d.some(item => item.isClosure || item instanceof t.Whatever) ? d.forEach(item => item.isClosure && (item.isClosure = false)) || true : false, l);
 
+function recursiveProperty(head, tail, optional) {
+  if (tail.length === 0)
+    return head;
+  for (let i = 0; i < tail.length - 1; i++)
+    tail[i + 1].head = tail[i];
+  tail[0].head = head;
+  tail[tail.length - 1].optional = optional;
+  return tail[tail.length - 1];
+}
 
+function recursiveCommandChain(head, tail, optional) {
+  while (head.head) {
+      tail.unshift(head);
+      head = head.head;
+  }
+  if (tail.length === 0)
+    return head;
+  for (let i = 0, current = tail[0]; i < tail.length - 1; current = tail[++i]) {
+    if (tail[i + 1].isClosure) {
+      tail[i].isClosure = true;
+      tail[i + 1].isClosure = false;
+    }
+    if (tail[i + 1].arguments && tail[i + 1].arguments.length === 1 && tail[i + 1].arguments[0].value instanceof t.CodeBlock) {
+      if (tail[i] instanceof t.PropertyExpression)
+        tail[i] = new t.FunctionCall(tail[i].head, [tail[i].tail].concat(tail[i + 1].arguments[0].value));
+      else
+        tail[i].arguments.push(tail[i + 1].arguments[0].value);
+      tail[i + 1] = tail[i];
+      i++;
+    } else
+      tail[i + 1].head = tail[i];
+  }
+  tail[0].head = head;
+  tail[tail.length - 1].optional = optional;
+  return tail[tail.length - 1];
+}
+
+%}
 
 @builtin "postprocessors.ne"
 @include "ws.ne"
@@ -17,7 +57,6 @@ CommandChain -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStateme
 
 Closure -> "{" CodeBlock[Expression {% id %}] "}" {% (d, l) => d[1] %}
 
-# TODO: optional (foo? bar == foo?.bar)
 CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, (d[0] || []).concat([new t.ArgumentCall(d[1], null, l)]), false, l) %}
                   | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
                   | %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
@@ -25,7 +64,7 @@ CommandChainPart -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% d
                     (d, l, f) => ([t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever, t.ParenthesizedExpression, t.Subscript, t.PropertyExpression].some(type => d[0].expression instanceof type)) ?
                       f :
                       d[0].expression instanceof t.Identifier ?
-                        new t.PropertyExpression(null, d[0].expression, false, l) :
+                        new t.PropertyExpression(null, d[0].expression, false, false, l) :
                         new t.FunctionCall(null, [new t.ArgumentCall(d[0], null, l)], false, l)
                   %}
 
@@ -46,12 +85,12 @@ propertyHead -> Literal                {% id %}
               | "(" _ Expression _ ")" {% (d, l) => new t.ParenthesizedExpression(d[2], l) %}
               | FunctionizedOperator   {% id %}
 
-propertyTail -> "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
-              | Array            {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
+propertyTail -> "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[2], false, false, l) %}
+              | Array            {% (d, l) => new t.Subscript(null, d[0].array, false, false, l) %}
               | nullableProperty {% id %}
               
-nullableProperty -> "?" "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
-                  | "?" Array                                               {% (d, l) => new t.Subscript(null, d[1].array, true, l) %}
+nullableProperty -> "?" "." _ Identifier                                    {% (d, l) => new t.PropertyExpression(null, d[3], true, true, l) %}
+                  | "?" Array                                               {% (d, l) => new t.Subscript(null, d[1].array, true, true, l) %}
                   | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")" {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
                   | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
                   | "(" _ Expression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
@@ -102,8 +141,8 @@ Argument -> TypedIdentifier ( _ "=" _ (Expression {% id %}) {% nth(3) %}):? {% (
 
 ## Match a generic operator
 ## This handles whitespace
-BinaryOp[self, ops, next] -> $self $ops _ $next {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, l) %} | $next {% mid %}
-BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, l) %} | $next {% mid %}
+BinaryOp[self, ops, next] -> $self $ops _ $next {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, d[0][0].isClosure ? (d[0][0].isClosure = false) || true : d[3][0].isClosure ? (d[3][0].isClosure = false) || true : d[0][0] instanceof t.Whatever || d[3][0] instanceof t.Whatever, l) %} | $next {% mid %}
+BinaryOpRight[self, ops, next] -> $next $ops _ $self {% (d, l) => new t.BinaryExpression(d[0][0], d[3][0], d[1][0][0].value, d[0][0].isClosure ? (d[0][0].isClosure = false) || true : d[3][0].isClosure ? (d[3][0].isClosure = false) || true : d[0][0] instanceof t.Whatever || d[3][0] instanceof t.Whatever, l) %} | $next {% mid %}
 
 # Top level assignment
 BinaryExpression -> Ternary {% id %}
@@ -124,7 +163,7 @@ Bitwise -> BinaryOp[Bitwise, ("&" | "|" | "^"), Chain]  {% id %}
 Chain -> BinaryOp[Chain, ("~>" | ":>"), Range]          {% id %}
 Range -> BinaryOp[Range, (".." | "..."), Cast]          {% id %}
 Cast -> BinaryOpRight[Cast, ("::"), Prefix]             {% id %}
-Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix   {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, l) %}
+Prefix -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix   {% (d, l) => new t.UnaryExpression(d[1], d[0][0].value, d[0].isClosure ? (d[0].isClosure = false) || true : d[0] instanceof t.Whatever, l) %}
         | Property {% id %}
 
 ## TODO: do we include short-circuit (&& and ||)? if so, how to implement?

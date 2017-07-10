@@ -16,6 +16,11 @@ function slice (start, end) {
     };
 }
 const slice1 = slice(1);
+function ret (item) {
+    return function transform () {
+        return item;
+    };
+}
 
 // from https://github.com/iamakulov/unescape-js/blob/master/src/index.js
 
@@ -144,6 +149,7 @@ export default class VSLTokenizer extends Tokenizer {
             ['let', passThrough],
             ['final', passThrough],
             ['const', passThrough],
+            ['constant', ret('const')],
 
             ['static', passThrough],
             ['lazy', passThrough],
@@ -156,8 +162,8 @@ export default class VSLTokenizer extends Tokenizer {
             ['is', passThrough],
 
             ['function', passThrough],           
-            ['func', passThrough],
-            ['fn', passThrough],
+            ['func', ret('function')],
+            ['fn', ret('function')],
             ['class', passThrough],
             ['struct', passThrough],
             ['interface', passThrough],

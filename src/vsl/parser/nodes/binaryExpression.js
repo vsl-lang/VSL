@@ -17,7 +17,7 @@ export default class BinaryExpression extends Node {
      * @param {string} operator the operator for the expression
      * @param {Object} position a position from nearley
      */
-    constructor (lhs: Expression, rhs: Expression, operator: string, position: Object) {
+    constructor (lhs: Expression, rhs: Expression, operator: string, isClosure: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
@@ -26,6 +26,8 @@ export default class BinaryExpression extends Node {
         this.rhs = rhs;
         /** @type {string} */
         this.op = operator;
+        /** @type {boolean} */
+        this.isClosure = isClosure;
     }
     
     /** @override */

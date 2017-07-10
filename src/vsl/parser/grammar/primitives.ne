@@ -20,6 +20,7 @@ function recursiveTypeDeclaration(types, optional, parent, fallback, location) {
 TypedIdentifier -> Identifier (_ ":" _ type {% nth(3) %}):? {% (d, l) => new t.TypedIdentifier(d[0], d[1], l) %}
 type -> delimited[className {% id  %}, _ "." _] "?":? {% (d, l) => recursiveType(d[0], !!d[1], l) %}
 className -> Identifier {% id %}
+           | Identifier "[" "]" {% (d, l) => new t.Generic(new t.Identifier("Array", false, l), [d[0]], l) %}
            | Identifier "<" delimited[type {% id %}, _ "," _] ">" {% (d, l) => new t.Generic(d[0], d[2], l) %}
            # TODO: location is incorrect for inner type
            | Identifier "<" Identifier "<" delimited[type {% id %}, _ "," _] ">>" {% (d, l) => new t.Generic(d[0], [new t.Generic(d[2], d[4], l)], l) %}
@@ -27,6 +28,7 @@ className -> Identifier {% id %}
 
 typeDeclaration -> delimited[classDeclaration {% id %}, _ "." _] "?":? (":" delimited[classDeclaration {% id %}, _ "." _] "?":? {% (d, l) => recursiveTypeDeclaration(d[1], !!d[2], null, null, l) %}):? ("=" type {% nth(1) %}):? {% (d, l) => recursiveTypeDeclaration(d[0], !!d[1], d[2], d[3], l) %}
 classDeclaration -> Identifier {% id %}
+                  | Identifier "[" "]" {% (d, l) => new t.GenericDeclaration(new t.Identifier("Array", false, l), [d[0]], l) %}
                   | Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">" {% (d, l) => new t.GenericDeclaration(d[0], d[2], l) %}
                   | Identifier "<" Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">>" {% (d, l) => new t.GenericDeclaration(d[0], [new t.GenericDeclaration(d[2], d[4], l)], l) %}
                   | Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] "," Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">>" {% (d, l) => new t.GenericDeclaration(d[0], d[2].concat([new t.GenericDeclaration(d[4], d[6], l)]), l) %}

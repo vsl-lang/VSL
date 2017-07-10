@@ -68,13 +68,13 @@ export function valid(source) {
         } catch(e) {
             throw new TypeError(
                 `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
-                `: \n ${e}`
+                `: \n ${e.toString()}`
             );
         }
         if (res.length === 0) {
             throw new TypeError(
-            `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
-            ` (incomplete source)`
+                `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
+                ` (incomplete source)`
             );
         }
     });
@@ -97,6 +97,15 @@ export function invalid(source) {
             );
         }
     });
+}
+
+export function validDir(path) {
+    if (path instanceof Array)
+        path = path[0];
+    let fs = require('fs'),
+        pathModule = require('path');
+    for (let file of fs.readdirSync(pathModule.join(__dirname, path)))
+        valid(fs.readFileSync(pathModule.join(__dirname, path, file)).toString());
 }
 
 /**

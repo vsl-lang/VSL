@@ -1,4 +1,4 @@
-import { valid } from '../hooks';
+import { valid, validDir } from '../hooks';
 
 describe('Parser', () => {
     require('./expressions')();
@@ -7,6 +7,11 @@ describe('Parser', () => {
     require('./classes')();
     require('./comments')();
     require('./collections')();
+    require('./examples')();
+
+    validDir`../libraries/libc`;
+    validDir`../libraries/libcurl`;
+    validDir`../libraries/libvsl`;
     
     // Global codeblock
     valid``;
