@@ -26,6 +26,6 @@ export default class GetterSetter extends Node {
     
     /** @override */
     toString() {
-        return (this.getter || ''.toString() + (this.setter || '').toString();
+        return (this.getter || '').toString() + (this.setter || '').toString();
     }
 }

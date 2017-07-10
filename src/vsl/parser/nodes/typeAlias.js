@@ -7,11 +7,15 @@ import Node from './node';
 export default class TypeAlias extends Node {
     
     constructor(
+        modifiers: string[],
         name: Identifier,
         type: Type,
         position: Object
     ) {
         super(position);
+        
+        /** @type {string[]} */
+        this.modifiers = modifiers;
         
         /** @type {Identifier} */
         this.name = name;
@@ -22,6 +26,6 @@ export default class TypeAlias extends Node {
     
     /** @override */
     get children() {
-        return ['name', 'type']
+        return ['modifiers', 'name', 'type']
     }
 }

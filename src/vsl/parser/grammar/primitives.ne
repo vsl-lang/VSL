@@ -33,7 +33,9 @@ classDeclaration -> Identifier {% id %}
                   | Identifier "<" Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">>" {% (d, l) => new t.GenericDeclaration(d[0], [new t.GenericDeclaration(d[2], d[4], l)], l) %}
                   | Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] "," Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">>" {% (d, l) => new t.GenericDeclaration(d[0], d[2].concat([new t.GenericDeclaration(d[4], d[6], l)]), l) %}
 
-TypeAlias -> "typealias" Identifier "=" TypedIdentifier {% (d, l) => new t.TypeAlias(d[1], d[3]) %}
+# TODO: whitespace between modifier and typealias
+
+TypeAlias -> Modifier "typealias" _ Identifier _ "=" _ type {% (d, l) => new t.TypeAlias(d[0], d[4], d[8], l) %}
 
 # Identifier
-Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], false, l) %}
+Identifier -> %identifier {% (d, l) => new t.Identifier(d[0][0], l) %}
