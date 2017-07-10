@@ -23,14 +23,31 @@ import { CodeBlock } from '../vsl/parser/nodes/*';
  * If you want to inject modules you can set a shared scope instance by using
  * the CompilationGroup.lazyHook() which will specify a scope hook to other
  * {@link CompilationGroup}s.
+ *
+ * @example
+ * let compilationGroup = new CompilationGroup()
+ *
+ * for (let file in files) {
+ * 	let fileStream = compilationGroup.createStream()
+ * 	fileStream.send(fs.readFileSync(file));
+ * }
+ *
+ * let result = await compilationGroup.compile();
+ *
+ * @example
+ * let compilationGroup = new CompilationGroup();
+ * 
+ * let stream = compilationGroup.createStream();
+ * stream.send(prompt('vsl> '));
+ * stream.handleRequest(done => done(prompt('>>>> ')));
+ *
+ * compilationGroup.compile();
  */
 export default class CompilationGroup {
     /**
      * Creates compilation group from VSLModule. This will take the streams from
-     * there and open up a compilation instance for them.
-     *
-     * @param {CompilationStream[]} sources A stream for each input. Parsed in
-     *                                      parallel but hoisted in order.
+     * there and open up a compilation instance for them. Use `.createStream()`
+     * to add a stream, then call compile.
      */
     constructor() {
         /** @private */
@@ -79,13 +96,17 @@ export default class CompilationGroup {
      *                                    {@link CompilationResult} for more
      *                                    information.
      */
-    async compile(stream, { originStream, originModule }) {
+    async compile(stream) {
         // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );
         
+        // This will be our new AST of the entire module with a global shared
+        // scope
         let block = new CodeBlock(asts, null);
         
         // Hook all the news ASTs together
+        // This will addd the public, protected, and no-access-modifier
+        // declarations to our new scope (`block`).
         new PropogateModifierTraverser(
             {
                 protected: p.Propogate,

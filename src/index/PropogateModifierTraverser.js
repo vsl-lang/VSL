@@ -31,15 +31,6 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         super(true);
         
         /** @private */
-        // Override behavior for child propogation
-        // We'll provide an explicit tool for checking if we should recurse
-        // into the children of a given node.
-        this.explicitChildRecurse = node => {
-            if (node.parentScope.rootScope !== true) return false;
-            else return true;
-        };
-        
-        /** @private */
         this.config = config;
         
         /** @private */
