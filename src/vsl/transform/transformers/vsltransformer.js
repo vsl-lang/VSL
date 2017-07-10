@@ -6,16 +6,15 @@ import * as pass from '../passes/';
  * Most language features are implemented here. Particullarially scope-sensitive
  * features. If you are writing a transformation here, make sure you tell the
  * scope what was mutated so the scope tree can be correctly modified.
- * 
+ *
  * See: {@link Transformer}
  */
 export default class VSLTransformer extends Transformer {
-    constructor() {
+    constructor(context: TransformationContext) {
         super([
-            pass.ResolveFunctionDeclaration,
-            
+            pass.TypeDeductExpression,
             pass.TypeDeductAssignment,
             pass.TypeDeductClassDeclaration
-        ]);
+        ], context);
     }
 }

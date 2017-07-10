@@ -1,6 +1,6 @@
 export default class LLVMType {
     /**
-     * @param {LLVMType|LLVMIdentifier|LLVMVector|LLVMIntType}
+     * @param {LLVMType|LLVMIdentifier|LLVMVector|LLVMIntType} - root type
      */
     constructor(root: LLVMType, isPointer: bool) {
         this.root = root;

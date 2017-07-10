@@ -216,3 +216,7 @@ hr {
 .search-input-edge {
     background: none;
 }
+
+.github-markdown img:not([src*=".svg"]) {
+    box-shadow: none;
+}

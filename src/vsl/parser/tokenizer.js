@@ -1,6 +1,3 @@
-import bound from './indicator';
-import highlight from './highlight';
-
 /**
  * Tokenizer class.
  */
@@ -51,7 +48,7 @@ export default class Tokenizer {
     
     /**
      * @param {string} code New code.
-     * @param {Info} info Position info for 
+     * @param {Info} info Position info for
      */
     reset (code: string, info: Object=null) {
         this.code = code;
@@ -130,7 +127,7 @@ export default class Tokenizer {
     
     /**
      * Returns a formatted error message given a token.
-     * 
+     *
      * @param {Token} token The token causing the error.
      */
     formatError (token: Object) {

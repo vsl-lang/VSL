@@ -10,16 +10,16 @@
       <img src="https://travis-ci.org/vsl-lang/VSL.svg?branch=master" alt="Build Status"/>
     </a>
     <a href="https://codecov.io/gh/vsl-lang/VSL">
-      <img src="https://codecov.io/gh/vsl-lang/VSL/branch/master/graph/badge.svg" alt="Codecov" />
+      <img src="https://codecov.io/gh/vsl-lang/VSL/branch/develop/graph/badge.svg" alt="Codecov" />
     </a>
     <a href="https://codeclimate.com/github/vsl-lang/VSL/">
       <img src="https://codeclimate.com/github/vsl-lang/VSL/badges/gpa.svg" />
     </a>
   </p>
   <p align="center">
-    <a href="#">Website</a> &mdash;
+    <a href="https://staging.vihan.org/VSL/app">Website</a> &mdash;
     <a href="#">Download</a> &mdash;
-    <a href="#">Documentation</a>
+    <a href="https://staging.vihan.org/VSL/docs">Documentation</a>
   </p>
   <p align="center">
     Versatile Scripting Language

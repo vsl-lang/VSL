@@ -5,6 +5,7 @@ describe('Parser', () => {
     require('./whatever')();
     require('./functions')();
     require('./classes')();
+    require('./interfaces')();
     require('./comments')();
     require('./collections')();
     require('./examples')();

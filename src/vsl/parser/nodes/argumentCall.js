@@ -1,8 +1,9 @@
 import Node from './node';
 
 /**
- * Matches an argument inside a FunctionCall
- * 
+ * Matches an argument inside a FunctionCall. This supports both the named
+ * parameter's name and the value of parameter.
+ *
  * @example
  * argument
  * name: argument
@@ -11,7 +12,7 @@ import Node from './node';
 export default class ArgumentCall extends Node {
     /**
      * Creates a argument
-     * 
+     *
      * @param {Expression} value - the argument value
      * @param {?Identifier} name - the name of the argument
      * @param {Object} position a position from nearley

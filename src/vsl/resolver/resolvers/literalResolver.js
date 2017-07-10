@@ -10,7 +10,7 @@ import VSLTokenType from '../../parser/vsltokentype.js';
  * Resolves any atomic literal described by an `Literal` token class.
  */
 export default class LiteralResolver extends TypeResolver {
-    
+
     /**
      * @param {Node} node - The node to resolve.
      * @param {function(from: Node): TypeResolver} getChild - Takes a node and
@@ -24,49 +24,74 @@ export default class LiteralResolver extends TypeResolver {
     ) {
         super(node, getChild);
     }
-    
+
     /**
      * Resolves types for a given node.
-     * 
+     *
      * @param {function(offer: ConstraintType): ?TypeConstraint} negotiate - The
      *     function which will handle or reject all negotiation requests. Use
      *     `{ nil }` to reject all offers (bad idea though).
      */
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
+        // Get context for primitive resolution
+        const context = negotiate(ConstraintType.TransformationContext).primitives;
+
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-        
+
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
         // to be a default candidate but for now they are hardcoded here
         switch (this.node.type) {
             case VSLTokenType.Integer:
-                this.node.typeCandidates = [STL.Int, STL.Float, STL.Double]
+                this.node.typeCandidates = context.get("Integer") || [];
                 break;
-                
+
             case VSLTokenType.Decimal:
-                this.node.typeCandidates = [STL.Float, STL.Double]
+                this.node.typeCandidates = context.get("FloatingPoint") || [];
                 break;
-                
+
             case VSLTokenType.String:
-                this.node.typeCandidates = [STL.String]
+                this.node.typeCandidates = context.get("String") || [];
                 break;
-                
+
             case VSLTokenType.Regex:
+                this.node.typeCandidates = context.get("Regex") || [];
                 break;
-                
+
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
         
-        if (response !== null) {
-            this.node.typeCandidates = this.node.typeCandidates.filter(::response.includes)
-        }
+        this.node.typeCandidates = this.node.typeCandidates.slice();
         
         if (this.node.typeCandidates.length === 0) {
-            throw new Error(`Literal has no overlapping type candidates`);
+            this.emit(
+                `Literal has no overlapping type candidates. ` +
+                `They are a few reasons this could happen: \n` +
+                `  1. The STL is not linked\n` +
+                `  2. You are using a literal which doesn't have a class ` +
+                `associated with it.\n` +
+                `This is likely an internal bug, but check for an existing\n` +
+                `report before leaving your own. You can also try to define\n` +
+                `your own candidate using \`@primitive(...)\``
+            );
         }
         
+        if (response !== null) {
+            this.mutableIntersect(response, this.node.typeCandidates)
+        }
+        
+        // Okay if this is 0 that means you have conflicting things
+        // This is because errors have already been thrown for no actually
+        // type candidates.
+        if (this.node.typeCandidates.length === 0) {
+            this.emit(
+                `Conflicting types, the context for this node needs this to\n` +
+                `be a type which this literal cannot be.`
+            );
+        }
+
         if (this.node.typeCandidates.length === 1) {
             this.node.exprType = this.node.typeCandidates[0];
         }

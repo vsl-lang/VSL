@@ -6,24 +6,20 @@ import Node from './node';
  * This matches a tuple literal.
  */
 export default class Tuple extends Node {
-    
+
     /**
      * Creates a wrapper for tuples
      * 
      * @param {array} tuple the literal tuple value of the literal
-     * @param {number} type The literal type as from a TokenType
      * @param {Object} position a position from nearley
      */
-    constructor (tuple: array, type: number, position: Object) {
+    constructor (tuple: array, position: Object) {
         // TODO: remember a tuple has multiple types, we need to implement that
-        
+
         super(position);
-        
+
         /** @type {array} */
         this.tuple = tuple;
-        
-        /** @type {VSLTokenType} */
-        this.type = type;
     }
     
     /** @override */

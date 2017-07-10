@@ -1,15 +1,14 @@
 import Node from './node';
 
 /**
- * Matches any assignment type.
- * 
- * This matches any generic binary expression.
+ * Matches an assignment statement, anything which declares an alias at the type
+ * scope level.
  */
 export default class AssignmentStatement extends Node {
     
     /**
-     * Creates a wrapper ExperssionStatement
-     * 
+     * Creates a AssignmentStatement
+     *
      * @param {AssignmentType} type The assignment type
      * @param {TypedIdentifier} identifier The variable's identifier & type
      * @param {Expression} value The variable's inital value
@@ -18,12 +17,23 @@ export default class AssignmentStatement extends Node {
     constructor (type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
         super(position);
         
-        /** @type {AssignmentType} */
+        /**
+         * Specifies whether the assignment is a constant or variable
+         * @type {AssignmentType}
+         */
         this.type = type;
+        
         /** @type {TypedIdentifier} */
         this.identifier = identifier;
+        
         /** @type {Expression} */
         this.value = value;
+        
+        /**
+         * The ref in a scope this declares the alias too
+         * @type {?ScopeAliasItem}
+         */
+        this.ref = null;
     }
     
     /** @override */
@@ -36,19 +46,12 @@ export default class AssignmentStatement extends Node {
         return ['identifier', 'value'];
     }
     
-    /**
-     * Gets the type of the assignment
-     */
-    get exprType() {
-        return this.identifier.type || this.value.exprType || null;
-    }
-    
     /** @override */
     toString() {
         let t;
         return (this.type === 0 ? "var" : "let") +
             ` ${this.identifier.identifier}` +
-            ` ${(t = this.exprType) ? `: ${t} ` : ""}` +
+            ` ${(t = this.identifier.type || (this.value && this.value.exprType) || null) ? `: ${t} ` : ""}` +
             (this.value ? "= " + this.value : "");
     }
 }

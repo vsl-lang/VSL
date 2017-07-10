@@ -31,7 +31,7 @@ export default class VerifyFunctionAccessScope extends Transformation {
         
         if (node.parentScope.rootScope === true) {
             // Top-level function
-            if (AccessModifiers.Membership.some(i => accessModifiers.includes(i))) {
+            if (AccessModifiers.Membership.some(i => accessModifiers.find(x => x === i))) {
                 throw new TransformError("Non-methods may not be defined as static.", node)
             }
             return;

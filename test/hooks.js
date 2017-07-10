@@ -6,10 +6,20 @@ export VSLTokenizer from '../src/vsl/parser/vsltokenizer';
 import VSLParser from '../src/vsl/parser/vslparser';
 export VSLParser from '../src/vsl/parser/vslparser';
 
+import VSLTransform from '../src/vsl/transform/transform';
+export VSLTransform from '../src/vsl/transform/transform';
+
 export VSLTokenType from '../src/vsl/parser/vsltokentype';
 
 function vslStr(source) {
     return source.isVSL ? source : vsl(source);
+}
+
+/**
+ * Transform a VSL template
+ */
+export function transform(template) {
+    VSLTransform(template.ast);
 }
 
 /**
@@ -38,13 +48,43 @@ export function vsl(source) {
 }
 
 /**
+ * Tests scope (also does transform)
+ */
+export function compareScope(src, expected) {
+    it(`should generate \`${src.formattedLine}\` correctly`, () => {
+        try {
+            transform(src);
+        } catch(e) {
+            throw new Error(
+                `An error occured in transforming ${src.formattedLine}. ` +
+                `This may not be a scope generation error so check the transformation ` +
+                `instead.`
+            );
+        }
+        
+        function format(str) { return str.replace(/\s|├/g, "") }
+        
+        let scopeTree = format(src.ast[0].scope.toString())
+        if (scopeTree !== format(expected)) {
+            throw new Error(
+                `Expected to generate:\n ${expected} but instead generated:\n ${src.ast[0].scope.toString()}`
+            );
+        }
+    })
+}
+
+/**
  * Regenerate VSL code. Run through `parseVSL` first.
  */
-export function regenerate(source, expected) {
-    it(`should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
+export function regenerate(source, expected, { full = false, testText, trim = false } = {}) {
+    it(testText || `should gen \`${source.formattedLine}\` to \`${expected}\``, () => {
         try {
             if (source.ast === null) return;
-            let str = source.ast[0].statements[0].toString();
+            let str = full ? source.ast[0].toString() : source.ast[0].statements[0].toString();
+            if (trim) {
+                str = str.replace(/\s/g, "");
+                expected = expected.replace(/\s/g, "");
+            }
             if (str === expected) return;
             else throw new Error(`Regenerating to ${expected} resulted in ${str}`);
         } catch(e) {
@@ -56,7 +96,7 @@ export function regenerate(source, expected) {
 
 /**
  * Verifies if a syntax is a valid syntax
- * 
+ *
  * @param {string} source - string to validate
  */
 export function valid(source) {
@@ -107,10 +147,37 @@ export function validDir(path) {
     for (let file of fs.readdirSync(pathModule.join(__dirname, path)))
         valid(fs.readFileSync(pathModule.join(__dirname, path, file)).toString());
 }
+export function validate(source) {
+    source = vslStr(source);
+    it(`should correctly validate \`${source.formattedLine}\``, () => {
+        try {
+            transform(source);
+        } catch(e) {
+            throw new TypeError(
+                `Validation Error: \`${source.formatted}\` expected to be valid but threw error` +
+                `: \n ${e}`
+            );
+        }
+    });
+};
+
+export function invalidate(source) {
+    source = vslStr(source);
+    it(`should correctly determine error for \`${source.formattedLine}\``, () => {
+        try {
+            transform(source);
+        } catch(e) {
+            return;
+        }
+        throw new TypeError(
+            `Validation Error; \`${source.formatted}\` expected to be invalid but succesfully worked`
+        )
+    });
+};
 
 /**
  * Returns the tokenizes array from a string.
- * 
+ *
  * @param {string} source - string to tokenize
  * @return {(Object|string)[]} - result
  */
@@ -120,7 +187,7 @@ export function tokenize( string ) {
 
 /**
  * Determines if two tokenized items are equal.
- * 
+ *
  * @param {(Object|string)[]} actual - Actual value
  * @param {(Object|string)[]} expected - Expected value
  * @return {boolean|Objcet} True if worked, otherwise returns object
@@ -154,19 +221,19 @@ export function compareToken(actual, expected) {
  * Expects the function to break
  */
 export function expectBork(f, desc = "") {
-    return () => {
+    it(`should ${desc}`, () => {
         try {
             f()
-            throw new Error(`Expected \`${desc}\` to break but worked.`);
         } catch(e) {
             return true;
         }
-    }
+        throw new Error(`Expected to \`${desc}\` to break but worked.`);
+    });
 }
 
 /**
  * Determines if two tokenized items are equal.
- * 
+ *
  * @param {string} source - Actual value
  * @param {(Object|string)[]} expected - Expected value
  * @return {boolean} True if same, false otherwise

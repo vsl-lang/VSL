@@ -24,7 +24,7 @@ export default class ExpressionStatement extends Node {
      * @param {Expression} expression the expression to wrap
      * @param {Object} position a position from nearley
      */
-    constructor (expression: any, isClosure: boolean, position: Object) {
+    constructor (expression: any, isClosure: boolean, parenthesized: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
@@ -32,6 +32,9 @@ export default class ExpressionStatement extends Node {
         
         /** @type {boolean} */
         this.isClosure = isClosure;
+        
+        /** @type {boolean} */
+        this.parenthesized = parenthesized;
     }
     
     /** @override */
