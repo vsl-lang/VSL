@@ -52,7 +52,7 @@ export default class Traverser {
      *         else super.queue(ast);
      *     }
      *
-     * @param {any} nodes - This **must** either be an array of nodes to queue
+     * @param {any} ast - This **must** either be an array of nodes to queue
      *                    or the element whose _children_ you want to traverse.
      *                    If you pass a node itself, it itself won't be visited,
      *                    only its children.
@@ -66,7 +66,7 @@ export default class Traverser {
                 this.processNode(ast, i);
                 
                 // Requeue the further children
-                this.queue(ast[i], ast);
+                this.queue(ast[i]);
                 
                 // Notify that the node is finished if defined
                 this.finishedNode(ast, i);
@@ -82,7 +82,7 @@ export default class Traverser {
                     
                     child = ast[ name ];
                     
-                    if (child != null) this.queue(child, ast);
+                    if (child != null) this.queue(child);
                     
                     this.finishedNode(ast, name);
                 }

@@ -37,6 +37,20 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         this.target = target;
     }
     
+    /**
+     * Do NOT pass a top-level config. Rather pass an array of root ASTs.
+     *
+     * @param {CodeBlock[]} ast Root array of all ASTs.
+     * @override
+     */
+    queue(ast: any) {
+        // Overriden to ensure that we only go over top-level declrations and
+        // don't waste time going over non-top level decls.
+        let parentScope = this.scope[this.scope.length - 1];
+        if (parentScope && parentScope.rootScope !== true) return;
+        else super.queue(ast);
+    }
+    
     /** @override */
     receivedNode(parent, name) {
         let node = parent[name];

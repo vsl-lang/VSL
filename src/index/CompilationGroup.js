@@ -8,7 +8,10 @@ import VSLParser from '../vsl/parser/vslparser';
 import TransformationContext from '../vsl/transform/transformationContext';
 import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
+import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
+
+import e from '../vsl/errors'
 
 /**
  * Represents the compilation of a single module. This doesn't actually have any
@@ -19,7 +22,8 @@ import { CodeBlock } from '../vsl/parser/nodes/*';
  *     {
  *         protected: p.Propogate,
  *         private: p.Hide,
- *         public: p.Propogate
+ *         public: p.Propogate,
+ *         none: p.Propogate
  *     }
  *
  * If you want to inject modules you can set a shared scope instance by using
@@ -54,6 +58,22 @@ export default class CompilationGroup {
     constructor() {
         /** @private */
         this.sources = [];
+        
+        // Map<name, CompilationHook>
+        /** @private */
+        this.hooks = new Map();
+        
+        // Manages global scope
+        /** @private */
+        this.globalScope = null;
+        
+        /**
+         * An auto-generated list of metadata for this group. It may not be
+         * fully filled so make sure you specify fields that you know the values
+         * of before passing it to other functions & classes.
+         * @type {GroupMetadata}
+         */
+        this.metadata = new GroupMetadata();
     }
     
     /**
@@ -89,6 +109,16 @@ export default class CompilationGroup {
     }
     
     /**
+     * Lazily 'hooks' a CompilationHook to the current one. Call this *before*
+     * {@link CompilationGroup~compile}.
+     *
+     * @param  {CompilationHook} hooks A compiltion bound to this one.
+     */
+    lazyHook(compilationGroup) {
+        this.hooks.set(compilationGroup.name, compilationGroup);
+    }
+    
+    /**
      * Compiles the sources. It's reccomended to use a `CompilationIndex` to
      * manage this because configuration and modules happen there.
      *
@@ -99,21 +129,26 @@ export default class CompilationGroup {
      *                                    information.
      */
     async compile(stream) {
+        // === 1: Parse ===
         // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );
         
+        // === 2: Environment Setup ===
         // This will be our new AST of the entire module with a global shared
         // scope
         let block = new CodeBlock(asts, null);
+        this.globalScope = block;
         
         // Shared context between *entire* group, in fact we'd want to share
         // this amount the CompilationIndex if it has one..
         let context = new TransformationContext();
         
+        // === 3: Preprocessing ===
         // Queue each ast for pre-processing, this is important because we need
         // the registrant info for the PropogateModifier
         asts.forEach(ast => new VSLPreprocessor(context).queue([ ast ]));
         
+        // === 4: Scope Sharing ===
         // Hook all the news ASTs together
         // This will addd the public, protected, and no-access-modifier
         // declarations to our new scope (`block`).
@@ -127,6 +162,33 @@ export default class CompilationGroup {
             block.scope
         ).queue(asts); // `asts` is already an ast of sorts.
         
+        // Handle modules, this adds lazyHooks to the scope
+        // Each file manages its own imports so we'll check here
+        asts.forEach(file => {
+            // Go through each import statement that each file specifies
+            file.lazyHooks.forEach(hookNode => {
+                let hook = this.hooks.get(hookNode.name);
+                    
+                if (!hook) throw new TransformError(
+                    `Could not find module named ${hookNode.name}`,
+                    hookNode,
+                    e.UNDEFINED_MODULE
+                );
+                
+                hook.scope.forEach(scopeItem => {
+                    let res =  file.scope.set(scopeItem);
+                    if (res === false) throw new TransformError(
+                        `Importing module \`${hookNode.name}\` results in ` +
+                        `duplicate declaration of \`${scopeItem.toString()}\``,
+                        hookNode,
+                        e.DUPLICATE_BY_IMPORT
+                    );
+                });
+            });
+        });
+        
+        console.log(block.scope);
+        asts.forEach(file => console.log(file.scope));
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.

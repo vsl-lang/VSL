@@ -9,12 +9,3 @@ target: dynamic
 
 sources:
     - src/**/*.vsl
-    - bindgen/*.vsl
-
-# Place generated files in `gen/` so that can be .gitignored and such
-bindgen:
-    - out: bindgen/libc.vsl
-      src: @libc.h
-      linkage:
-          lib: @libc
-          type: dynamic
