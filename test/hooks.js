@@ -108,7 +108,7 @@ export function valid(source) {
         } catch(e) {
             throw new TypeError(
                 `Parser Error: \`${source.formatted}\` expected to be valid but threw error` +
-                `: \n ${e.toString()}`
+                `: \n ${util.inspect(e)}`
             );
         }
         if (res.length === 0) {

@@ -87,8 +87,10 @@ export default class Tokenizer {
                         this.column += length;
                         this.index += length;
                         return typeof type === 'undefined' ? {value} : [value, type];
-                    } else
+                    } else {
+                        this.column += length;
                         this.index += length;
+                    }
                     success = true;
                     break;
                 }

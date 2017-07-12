@@ -58,9 +58,10 @@ export default class VSLParser {
         try {
             results = this.parser.feed(string);
         } catch(e) {
+            // console.log(e.toString());
             let pos = this.parser.lexer.positions[e.offset];
             throw new ParserError(
-                `Unexpected token`,
+                `Unexpected token ${e.message.match(/Unexpected (.+)\n/)[1]}`,
                 pos
             );
         }

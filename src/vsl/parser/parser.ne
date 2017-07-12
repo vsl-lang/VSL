@@ -13,6 +13,7 @@ const NodeTypes = require('./vsltokentype'),
   special_identifier = freeze({ test: x => x[1] ===
             NodeTypes.SpecialIdentifier }),
   unwrap = d => d[0].value,
+  rewrap = d => [d[0]],
   mid = d => d[0][0];
 %}
 
@@ -40,11 +41,32 @@ seperator
 statement
    -> ClassStatement      {% id %}
     | InterfaceStatement  {% id %}
+    | IfStatement         {% id %}
     | AssignmentStatement {% id %}
     | FunctionStatement   {% id %}
     | Expression          {% id %}
     | CommandChain        {% id %}
     | TypeAlias           {% id %}
+
+# ============================================================================ #
+#                                Control Flow                                  #
+# ============================================================================ #
+
+IfStatement
+   -> "if" _ Expression _ CodeBlock[statement] (
+        _ "else" _ (
+            CodeBlock[statement]  {% id %} |
+            IfStatement           {% rewrap %}
+        ):? {% nth(3) %}
+    ) {%
+        (data, location) =>
+            new t.IfStatement(
+                data[2],
+                data[4],
+                data[5],
+                location
+            )
+    %}
 
 # ============================================================================ #
 #                            Classes and Interfaces                            #
@@ -67,7 +89,7 @@ InterfaceStatement
     %}
 
 Annotations
-   -> delimited[Annotation {% id %}, _]:? {% d => d[0] || [] %}
+   -> (Annotation _ {% id %}):* {% id %}
 Annotation
    -> "@" %identifier ("(" _ delimited[AnnotationValue {% id %}, _ "," _] _
         ")" {% nth(2) %}):? {%
@@ -94,8 +116,7 @@ ClassItems
 
 ClassItem
    -> InterfaceItem {% id %}
-    | Field {% id %}
-    | InitalizerStatement {% id %}
+    | InitializerStatement {% id %}
 
 Field
    -> Modifier AssignmentStatement {%
@@ -104,12 +125,12 @@ Field
                 data[1].value, location)
     %}
 
-InitalizerStatement
-   -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _ "{"
-        CodeBlock[statement {% id %}] "}" {%
+InitializerStatement
+   -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
+        CodeBlock[statement {% id %}] {%
         (data, location) =>
-            new t.InitalizerStatement(data[0] ? data[0].value : "", !!data[2],
-                data[4] || [], data[7], location)
+            new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
+                data[4] || [], data[6], location)
     %}
 
 InterfaceItems
@@ -171,7 +192,10 @@ OverridableOperator
     %}
 
 ArgumentList
-   -> "(" delimited[Argument {% id %}, _ "," _]:? ")" {% nth(1) %}
+   -> "(" _ (delimited[Argument {% id %}, _ "," _] _ {% id %}):? ")" {%
+        (data) =>
+            data[2] || []
+        %}
 
 Argument
    -> TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
@@ -192,11 +216,11 @@ BinaryOp[self, ops, next]
    -> $self $ops _ $next {%
         (data, location) =>
             new t.BinaryExpression(data[0][0], data[3][0], data[1][0][0].value,
-                d[0][0].isClosure ?
-                    (d[0][0].isClosure = false) || true :
-                    d[3][0].isClosure ?
-                        (d[3][0].isClosure = false) || true :
-                        d[0][0] instanceof t.Whatever || d[3][0] instanceof t.Whatever,
+                data[0][0].isClosure ?
+                    (data[0][0].isClosure = false) || true :
+                    data[3][0].isClosure ?
+                        (data[3][0].isClosure = false) || true :
+                        data[0][0] instanceof t.Whatever || data[3][0] instanceof t.Whatever,
                 location)
     %}
     | $next {% mid %}
@@ -204,11 +228,11 @@ BinaryOpRight[self, ops, next]
    -> $next $ops _ $self {%
         (data, location) =>
             new t.BinaryExpression(data[0][0], data[3][0], data[1][0][0].value,
-                d[0][0].isClosure ?
-                    (d[0][0].isClosure = false) || true :
-                    d[3][0].isClosure ?
-                        (d[3][0].isClosure = false) || true :
-                        d[0][0] instanceof t.Whatever || d[3][0] instanceof t.Whatever,
+                data[0][0].isClosure ?
+                    (data[0][0].isClosure = false) || true :
+                    data[3][0].isClosure ?
+                        (data[3][0].isClosure = false) || true :
+                        data[0][0] instanceof t.Whatever || data[3][0] instanceof t.Whatever,
                 location)
     %}
     | $next {% mid %}
@@ -256,12 +280,12 @@ Prefix
    -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {%
         (data, location) =>
             new t.UnaryExpression(
-                d[1],
-                d[0][0].value,
-                d[0].isClosure ?
-                    (d[0].isClosure = false) || true :
-                    d[0] instanceof t.Whatever,
-                l
+                data[1],
+                data[0][0].value,
+                data[0].isClosure ?
+                    (data[0].isClosure = false) || true :
+                    data[0] instanceof t.Whatever,
+                location
             )
     %}
     | Property {% id %}
@@ -331,7 +355,7 @@ CommandChainPart
                 t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever,
                 t.Subscript, t.PropertyExpression
             ].some(type => d[0].expression instanceof type) || (
-                d[0].expression instanceof t.Expression && d[0].parenthesized
+                d[0].expression instanceof t.ExpressionStatement && d[0].expression.parenthesized
             ) ?
                 f :
                 d[0].expression instanceof t.Identifier ?
@@ -400,13 +424,17 @@ nullableProperty
     # function with at least one named arg
     | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")"
         {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
-    # function with no named args
+    # function with no named args (including empty arglist)
     | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
     # function with 1 unnamed arg
     | "(" _ Expression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
-    # function with no args
-    | "(" ")" {% (d, l) => new t.FunctionCall(null, [], l) %}
 
+ArgumentCall -> NamedArgumentCall   {% id %}
+              | UnnamedArgumentCall {% id %}
+
+NamedArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
+
+UnnamedArgumentCall -> Expression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
 FunctionCallList
    -> delimited[FunctionCallArgument {% id %}, _ "," _]:? {% (d, l) => new t.FunctionCall(null, d[0] || [], l) %}
@@ -461,7 +489,7 @@ Tuple
             if (data[6]) {
                 tuple = tuple.concat(data[6]);
             }
-            new t.Tuple(tuple, location);
+            return new t.Tuple(tuple, location);
         }
     %}
 
