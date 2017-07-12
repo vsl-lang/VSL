@@ -1,6 +1,7 @@
 import PropogateModifierTraverser, { Behavior as p } from './PropogateModifierTraverser';
 
 import CompilationStream from './CompilationStream';
+import GroupMetadata from './GroupMetadata';
 
 import ParserError from '../vsl/parser/parserError';
 import VSLParser from '../vsl/parser/vslparser';
@@ -63,8 +64,18 @@ export default class CompilationGroup {
         /** @private */
         this.hooks = new Map();
         
-        // Manages global scope
+        // Strong hooks = hooks that are binded to every stream in the group.
         /** @private */
+        this.strongHooks = new Map();
+        
+        // Manages global scope
+        /**
+         * The root global scope of the entire module, each child statement is
+         * an individual stream.
+         *
+         * @readonly
+         * @type {?CodeBlock}
+         */
         this.globalScope = null;
         
         /**
@@ -112,10 +123,24 @@ export default class CompilationGroup {
      * Lazily 'hooks' a CompilationHook to the current one. Call this *before*
      * {@link CompilationGroup~compile}.
      *
-     * @param  {CompilationHook} hooks A compiltion bound to this one.
+     * @param  {CompilationHook} hook A compilation hook with the desirded
+     *                                module and metadata setup. This name is
+     *                                the reference it's added by.
      */
-    lazyHook(compilationGroup) {
-        this.hooks.set(compilationGroup.name, compilationGroup);
+    lazyHook(hook) {
+        this.hooks.set(hook.name, hook);
+    }
+    
+    /**
+     * Te name of a {@link ComilationHook} which should be binded and hooked to
+     * every file rather than on-demand. Examples of this are the standard
+     * library.
+     *
+     * @param  {CompilationHook} hook Name of the module exactly as it appears
+     *                                in the {@link CompilationHook}
+     */
+    strongHook(hook) {
+        this.strongHooks.set(hook.name, hook);
     }
     
     /**
@@ -138,6 +163,13 @@ export default class CompilationGroup {
         // scope
         let block = new CodeBlock(asts, null);
         this.globalScope = block;
+        
+        // Go through each import statement that each file specifies
+        this.strongHooks.forEach(hook => {
+            hook.scope.forEach(scopeItem => {
+                block.set(scopeItem)
+            });
+        });
         
         // Shared context between *entire* group, in fact we'd want to share
         // this amount the CompilationIndex if it has one..
@@ -165,7 +197,9 @@ export default class CompilationGroup {
         // Handle modules, this adds lazyHooks to the scope
         // Each file manages its own imports so we'll check here
         asts.forEach(file => {
-            // Go through each import statement that each file specifies
+            // Also lets setup CodeBlock as a top-level scope
+            file.scope.parentScope = block.scope;
+            
             file.lazyHooks.forEach(hookNode => {
                 let hook = this.hooks.get(hookNode.name);
                     
@@ -187,8 +221,6 @@ export default class CompilationGroup {
             });
         });
         
-        console.log(block.scope);
-        asts.forEach(file => console.log(file.scope));
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.

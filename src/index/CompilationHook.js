@@ -1,5 +1,5 @@
 /**
- *
+ * A hook for compilation see {@link CompilationGroup}
  */
 export default class CompilationHook {
     /**
