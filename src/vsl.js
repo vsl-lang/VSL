@@ -14,3 +14,9 @@ export { default as FixItController } from './fixit/FixItController';
 export { default as Module } from './modules/Module';
 export { default as ModuleError } from './modules/ModuleError';
 export { default as ModuleInterface } from './modules/ModuleInterface';
+
+export { default as CompilationGroup } from './index/CompilationGroup';
+export { default as CompilationStream } from './index/CompilationStream';
+export { default as CompilationIndex } from './index/CompilationIndex';
+export { default as CompilationHook } from './index/CompilationHook';
+export { default as CompilationModule } from './index/CompilationModule';
