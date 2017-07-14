@@ -1,0 +1,6 @@
+dir: src
+branch:
+    - master
+    - develop
+    - docs/try-doclets
+packageJson: package.json
