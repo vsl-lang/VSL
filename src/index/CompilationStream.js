@@ -12,9 +12,6 @@ export default class CompilationStream {
         this.dataBuffer = [];
         
         /** @private */
-        this.pushData = () => void 0;
-        
-        /** @private */
         this.sender = (f) => f(null);
         
         /**
@@ -58,7 +55,6 @@ export default class CompilationStream {
      */
     send(data) {
         this.dataBuffer.push(data);
-        this.pushData();
     }
     
     /**

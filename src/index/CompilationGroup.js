@@ -49,12 +49,21 @@ import e from '../vsl/errors'
  * stream.handleRequest(done => done(prompt('>>>> ')));
  *
  * compilationGroup.compile();
+ *
+ * @example
+ * let compilationGroup = new CompilationGroup()
+ *
+ * for (let file of files) {
+ *     let fileStream = compilationGroup.createStream()
+ *     let res = await fs.
+ * }
  */
 export default class CompilationGroup {
     /**
-     * Creates compilation group from VSLModule. This will take the streams from
-     * there and open up a compilation instance for them. Use `.createStream()`
-     * to add a stream, then call compile.
+     * Creates an empty compilation group. If using a VSLModule object or
+     * similar you can access the {@link GroupMetadata} field for providing
+     * applicable info. Use `.createStream()` to add a stream, then call
+     * compile. Streams are the input source for compilation.
      */
     constructor() {
         /** @private */

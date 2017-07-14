@@ -31,7 +31,7 @@ export default class CompilationIndex {
      * @param {CompilationModule[]} modules CompilationIndexes for the other
      *                                      modules.
      */
-    constructor(root, modules) {
+    constructor(name, root, modules) {
         /**
          * The main compilation group which will be compiled.
          * @type {CompilationGroup}

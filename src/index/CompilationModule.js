@@ -19,8 +19,6 @@ export default class CompilationModule {
      * already setup.
      *
      * @param {HookType} hookType - a compilation hook
-     * @param {CompilationHook} hook - Compilation hook, optimally the metadata
-     *                               from `index.root.metadata`.
      * @param {CompilationIndex} index - The compilationIndex to wrap.
      */
     constructor(hookType, hook, index) {
@@ -29,12 +27,6 @@ export default class CompilationModule {
          * @type {HookType}
          */
         this.hookType = type;
-        
-        /**
-         * Hook object containing hook information & metadata
-         * @type {CompilationHook}
-         */
-        this.hook = hook;
         
         /**
          * CompilationIndex for recursive compilation.
