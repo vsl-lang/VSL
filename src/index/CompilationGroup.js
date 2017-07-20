@@ -157,6 +157,8 @@ export default class CompilationGroup {
      * manage this because configuration and modules happen there.
      *
      * @param  {CompilationStream} stream A compilation stream which will be
+     *                                    where all compilation data will be
+     *                                    piped.
      * @return {CompilationResult}        An object describing all the
      *                                    compilation infos. See
      *                                    {@link CompilationResult} for more
@@ -200,7 +202,7 @@ export default class CompilationGroup {
                 public: p.Propogate,
                 none: p.Propogate
             },
-            block.scope
+            (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
         
         // Handle modules, this adds lazyHooks to the scope

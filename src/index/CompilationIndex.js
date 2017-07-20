@@ -1,4 +1,5 @@
 import CompilationModule, { HookType } from './CompilationModule';
+import CompilationHook from './CompilationHook';
 
 /**
  * Manages an entire compilation. This manages multiple CompilationGroups
@@ -29,7 +30,9 @@ export default class CompilationIndex {
      *                                     The rest will just have their scope
      *                                     (re)-traversed
      * @param {CompilationModule[]} modules CompilationIndexes for the other
-     *                                      modules.
+     *                                      modules. MAKE SURE you have already
+     *                                      compiled the other
+     *                                      CompilationIndexes.
      */
     constructor(name, root, modules) {
         /**
@@ -46,23 +49,42 @@ export default class CompilationIndex {
      * Compiles to a stream. Encapsulates {@link CompilationGroup~compile}, for
      * linkage, bitcode compilation this offers function for those.
      *
-     * @return {Promise} Does not have any resolution value.
+     * @param  {CompilationStream} stream A compilation stream which will be
+     *                                    where all compilation data will be
+     *                                    piped.
+     * @return {Promise} Resolves to a {@link CompilationResult} or null
      */
-    async compile() {
-        // Wait for all the submodules to compile, they'll throw their own
-        // errors if they want
-        await Promise.all(
-            this.modules.map(module => module.index.compile())
-        );
-        
-        for (let module of modules) {
-            if (module.type === HookType.Lazy)
-                this.root.lazyHook(module.index.hook);
-                
-            if (module.type === HookType.Strong)
-                this.root.strongHook(module.index.hook);
+    async compile(stream) {
+        for (let module of this.modules) {
+            let items = [];
+            
+            // Propogate the new items from the scope of the module
+            new PropogateModifierTraverser(
+                {
+                    protected: p.Hide,
+                    private: p.Hide,
+                    public: p.Propogate,
+                    none: p.Hide
+                },
+                (scopeItem) => items.push(scoeItem)
+            ).queue(module.index.root.globalScope);
+            
+            // Create compilation hook for the module
+            let hook = new CompilationHook(
+                module.name,
+                module.index.root.metadata,
+                items
+            );
+            
+            // Check hook type and hook the generated hook
+            if (module.hookType === HookType.Strong) {
+                this.root.strongHook(hook);
+            } else {
+                this.root.lazyHook(hook);
+            }
         }
         
-        await this.root.compile();
+        // Now we can compile the group
+        return await this.root.compile(stream);
     }
 }

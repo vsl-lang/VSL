@@ -18,10 +18,17 @@ export default class CompilationModule {
      * Creates CompilationModule over a {@link CompilationIndex}. Assumes
      * already setup.
      *
+     * @param {string} name - name of this module
      * @param {HookType} hookType - a compilation hook
      * @param {CompilationIndex} index - The compilationIndex to wrap.
      */
-    constructor(hookType, hook, index) {
+    constructor(name, hookType, index) {
+        /**
+         * Name of the compilation module
+         * @type {string}
+         */
+        this.name = name;
+        
         /**
          * Type of the hook (Lazy, or Storng)
          * @type {HookType}

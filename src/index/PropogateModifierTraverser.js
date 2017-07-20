@@ -25,16 +25,18 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
      *                         `p.None` and `p.Propogate` are usually one of the
      *                         two you want. This **must** specify at least
      *                         `public`, `private`, `protected`, and `none`.
-     * @param  {Scope} target  The target scope to connect the global things to.
+     * @param  {func(item: ScopeItem)} callback Called with a ScopeItem which
+     *                                          should be propogated, do as you
+     *                                          want with this
      */
-    constructor(config, target) {
+    constructor(config, callback) {
         super(true);
         
         /** @private */
         this.config = config;
         
         /** @private */
-        this.target = target;
+        this.callback = callback;
     }
     
     /**
@@ -70,6 +72,6 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         else if (!shouldPropogate('none')) return;
         
         let ref = node.scopeRef;
-        if (ref !== null) this.target.set(ref);
+        if (ref !== null) this.callback(ref);
     }
 }
