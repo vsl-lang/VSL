@@ -13,13 +13,18 @@ import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
 
+import path from 'path';
 import fs from 'fs-extra';
 
+import CompilationIndex from '../../index/CompilationIndex';
+import CompilationModule, { HookType } from '../../index/CompilationModule';
 import CompilationGroup from '../../index/CompilationGroup';
 import CompilationStream from '../../index/CompilationStream';
 
+import Module from '../../modules/Module';
+
 export default class Default extends CLIMode {
-    usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]"
+    usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]\nvsl"
     
     constructor() {
         super([
@@ -63,6 +68,11 @@ export default class Default extends CLIMode {
     
     run(args, subcommands) {
         this.subcommands = subcommands;
+        
+        if (args.length === 0) {
+            this.executeDirectory('.');
+            return;
+        }
         
         let procArgs = [];
         let files = [];
@@ -114,6 +124,56 @@ export default class Default extends CLIMode {
                 }
             });
         }
+    }
+    
+    async executeDirectory(directory) {
+        let stdlibpath = path.join(__dirname, '../../../libraries/libvsl-x');
+        let fileMap = new Map(); // <moduleRoot, value>
+        
+        async function execute(directory) {
+            let dirpath = path.resolve(directory);
+            
+            if (fileMap.has(dirpath)) return fileMap.get(dirpath);
+            // First get the module
+            let moduleLoader = new Module(dirpath);
+            await moduleLoader.load();
+            let module = moduleLoader.module;
+            
+            let group = new CompilationGroup();
+            for (let file of module.sources) {
+                let fileStream = group.createStream()
+                fileStream.send(await fs.readFile(file));
+            }
+            
+            group.metadata.name = module.name;
+            
+            let modules = [];
+            
+            // Hook stdlib if it's enabled
+            if (module.stdlib) {
+                // We'll rexecute using the cache, what this means is that if
+                // there is a cyclic dependency we'll end up with an infinite
+                // loop. We stop this so the stdlib doesn't load the stdlib.
+                let stdlibIndex = await execute(stdlibpath);
+                modules.push(new CompilationModule(
+                    stdlibIndex.root.metadata.name,
+                    HookType.Strong,
+                    stdlibIndex
+                ));
+            }
+            
+            let index = new CompilationIndex(
+                group,
+                modules
+            );
+            
+            await index.compile();
+            fileMap.set(dirpath, index);
+            return index;
+        }
+        
+        let res = await execute(directory);
+        this.repl.close();
     }
     
     async fromFiles(files) {
@@ -315,6 +375,6 @@ export default class Default extends CLIMode {
 
 process.on('unhandledRejection', (reason) => {
     console.log("INTERNAL BORK ALERT");
-    console.log(reason);
+    console.log(util.inspect(reason, false, null));
     process.exit(1);
 });

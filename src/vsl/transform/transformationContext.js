@@ -24,6 +24,16 @@ export default class TransformationContext {
          */
         this.primitives = new Map();
     }
+    
+    /**
+     * Merges another transformation context into the current one (used in
+     * modules for example)
+     * @param {TransformationContext} target - The transformation context which
+     *                                       is merged into the _current_ one
+     */
+    merge(target) {
+        target.primitives.forEach((context, name) => this.primitives.set(name, context));
+    }
 
     /**
      * Adds a primitive link (e.g. Integer -> class Int) to the context.

@@ -33,7 +33,7 @@ export default class CompilationModule {
          * Type of the hook (Lazy, or Storng)
          * @type {HookType}
          */
-        this.hookType = type;
+        this.hookType = hookType;
         
         /**
          * CompilationIndex for recursive compilation.

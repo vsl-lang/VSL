@@ -15,7 +15,7 @@ export default class AssignmentStatement extends DeclarationStatement {
      * @param {Object} position a position from nearley
      */
     constructor (type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
-        super(position);
+        super([], position);
         
         /**
          * Specifies whether the assignment is a constant or variable

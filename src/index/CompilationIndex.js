@@ -1,3 +1,4 @@
+import PropogateModifierTraverser, { Behavior as p } from './PropogateModifierTraverser';
 import CompilationModule, { HookType } from './CompilationModule';
 import CompilationHook from './CompilationHook';
 
@@ -28,13 +29,14 @@ export default class CompilationIndex {
      * @param {CompilationGroup}   root    The main compilation group which will
      *                                     be the one which is fully compiled.
      *                                     The rest will just have their scope
-     *                                     (re)-traversed
+     *                                     (re)-traversed. Don't compile this
+     *                                     one
      * @param {CompilationModule[]} modules CompilationIndexes for the other
      *                                      modules. MAKE SURE you have already
      *                                      compiled the other
      *                                      CompilationIndexes.
      */
-    constructor(name, root, modules) {
+    constructor(root, modules) {
         /**
          * The main compilation group which will be compiled.
          * @type {CompilationGroup}
@@ -66,7 +68,7 @@ export default class CompilationIndex {
                     public: p.Propogate,
                     none: p.Hide
                 },
-                (scopeItem) => items.push(scoeItem)
+                (scopeItem) => items.push(scopeItem)
             ).queue(module.index.root.globalScope);
             
             // Create compilation hook for the module

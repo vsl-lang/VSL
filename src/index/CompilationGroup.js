@@ -87,6 +87,9 @@ export default class CompilationGroup {
          */
         this.globalScope = null;
         
+        /** @private */
+        this.context = new TransformationContext()
+        
         /**
          * An auto-generated list of metadata for this group. It may not be
          * fully filled so make sure you specify fields that you know the values
@@ -176,20 +179,17 @@ export default class CompilationGroup {
         this.globalScope = block;
         
         // Go through each import statement that each file specifies
+        // O: KEEP
         this.strongHooks.forEach(hook => {
             hook.scope.forEach(scopeItem => {
-                block.set(scopeItem)
+                block.scope.set(scopeItem)
             });
         });
-        
-        // Shared context between *entire* group, in fact we'd want to share
-        // this amount the CompilationIndex if it has one..
-        let context = new TransformationContext();
         
         // === 3: Preprocessing ===
         // Queue each ast for pre-processing, this is important because we need
         // the registrant info for the PropogateModifier
-        asts.forEach(ast => new VSLPreprocessor(context).queue([ ast ]));
+        asts.forEach(ast => new VSLPreprocessor(this.context).queue([ ast ]));
         
         // === 4: Scope Sharing ===
         // Hook all the news ASTs together
@@ -235,6 +235,6 @@ export default class CompilationGroup {
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.
-        new VSLTransformer(context).queue(block);
+        new VSLTransformer(this.context).queue(block);
     }
 }

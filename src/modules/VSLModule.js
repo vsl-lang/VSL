@@ -31,6 +31,12 @@ export default class VSLModule {
         this.target = VSLModule.TargetType.executable;
         
         /**
+         * `true` if stdlib *should* be loaded
+         * @type {string}
+         */
+        this.stdlib = true;
+        
+        /**
          * Raw list of all source files. This is a list with all globs and such
          * expanded. Paths should be absolute
          *
