@@ -93,14 +93,9 @@
       "text"
     ],
     "include": [
-      "src/**/*.js"
+      "src/vsl/**/*.js"
     ],
-    "exclude": [
-      "src/cli/**/*.js",
-      "src/app/**/*.js",
-      "src/fixit/**/*.js",
-      "src/vsl.js"
-    ],
+    "exclude": [],
     "all": true,
     "sourceMap": false,
     "instrument": false
