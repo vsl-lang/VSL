@@ -181,6 +181,7 @@ export default class CompilationGroup {
         // Go through each import statement that each file specifies
         // O: KEEP
         this.strongHooks.forEach(hook => {
+            if (hook.context) this.context.merge(hook.context);
             hook.scope.forEach(scopeItem => {
                 block.scope.set(scopeItem)
             });

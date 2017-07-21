@@ -32,6 +32,7 @@ export default class TransformationContext {
      *                                       is merged into the _current_ one
      */
     merge(target) {
+        // O: KEEP
         target.primitives.forEach((context, name) => this.primitives.set(name, context));
     }
 

@@ -375,6 +375,6 @@ export default class Default extends CLIMode {
 
 process.on('unhandledRejection', (reason) => {
     console.log("INTERNAL BORK ALERT");
-    console.log(util.inspect(reason, false, null));
+    console.log(reason);
     process.exit(1);
 });

@@ -1,4 +1,5 @@
 @primitive(Integer, _precType)
 public class Int {
-
+    public static func +(lhs: Int, rhs: Int) -> Int {
+    }
 }

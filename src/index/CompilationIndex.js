@@ -75,7 +75,8 @@ export default class CompilationIndex {
             let hook = new CompilationHook(
                 module.name,
                 module.index.root.metadata,
-                items
+                items,
+                module.index.root.context
             );
             
             // Check hook type and hook the generated hook

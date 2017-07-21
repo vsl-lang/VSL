@@ -17,8 +17,10 @@ export default class CompilationHook {
      *                             you can get this instance from there.
      * @param {ScopeItem[]} hooks - Array of {@link ScopeItem}s which will
      *                            be hooks onto
+     * @param {?TransformationContext} context - TransformationContext of the
+     *                                        hook or null if there isn't one.
      */
-    constructor(name, info, scope) {
+    constructor(name, info, scope, context) {
         /**
          * @type {string}
          */
@@ -34,5 +36,10 @@ export default class CompilationHook {
          * @type {ScopeItem[]}
          */
         this.scope = scope;
+        
+        /**
+         * @type {?TransformationContext}
+         */
+        this.context = context;
     }
 }

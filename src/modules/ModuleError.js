@@ -15,7 +15,7 @@ export default class ModuleError {
         this.data = data;
     }
     
-    static Type = {
+    static type = {
         modulePathNotFound: 0,
         moduleNoYml: 1,
         moduleNoName: 2,
