@@ -73,6 +73,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
             rootId,
             args
         );
+        node.scopeRef = type;
 
         // Register the type in the parent scope
         let res = node.parentScope.scope.set(type);

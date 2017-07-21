@@ -8,6 +8,7 @@ export default class TransformError {
     /**
      * @param {string} message - error message
      * @param {Node} node - erroring node
+     * @param {Object} ref - Specific error item (from errors.js)
      */
     constructor(message, node, ref) {
         /** @type {string} */

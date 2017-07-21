@@ -108,7 +108,7 @@ export default class TypeResolver {
             let match = null;
             
             for (let j = appliedSet.length - 1; j >= 0; j--) {
-                if (rootItem.validCandidate(appliedSet[j])) {
+                if (rootItem.candidate.validCandidate(appliedSet[j].candidate)) {
                     match = appliedSet[j];
                     break;
                 }

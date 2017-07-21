@@ -1,5 +1,6 @@
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
+import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 // import STL from '../../stl/stl';
@@ -39,35 +40,35 @@ export default class LiteralResolver extends TypeResolver {
 
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-
+        
+        let literalTypeContext = null;
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
         // to be a default candidate but for now they are hardcoded here
         switch (this.node.type) {
             case VSLTokenType.Integer:
-                this.node.typeCandidates = context.get("Integer") || [];
+                literalTypeContext = context.get("Integer");
                 break;
 
             case VSLTokenType.Decimal:
-                this.node.typeCandidates = context.get("FloatingPoint") || [];
+                literalTypeContext = context.get("FloatingPoint");
                 break;
 
             case VSLTokenType.String:
-                this.node.typeCandidates = context.get("String") || [];
+                literalTypeContext = context.get("String");
                 break;
 
             case VSLTokenType.Regex:
-                this.node.typeCandidates = context.get("Regex") || [];
+                literalTypeContext = context.get("Regex");
                 break;
 
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
         
-        this.node.typeCandidates = this.node.typeCandidates.slice();
-        
-        if (this.node.typeCandidates.length === 0) {
+        // Make sure there is a type context that is valid and all
+        if (!literalTypeContext || literalTypeContext.types.length <= 0) {
             this.emit(
-                `Literal has no overlapping type candidates. ` +
+                `Literal has no overlapping type candidates.\n` +
                 `They are a few reasons this could happen: \n` +
                 `  1. The STL is not linked\n` +
                 `  2. You are using a literal which doesn't have a class ` +
@@ -78,18 +79,35 @@ export default class LiteralResolver extends TypeResolver {
             );
         }
         
-        if (response !== null) {
-            this.mutableIntersect(response, this.node.typeCandidates)
-        }
+        let { types: typeList, precType } = literalTypeContext;
         
-        // Okay if this is 0 that means you have conflicting things
-        // This is because errors have already been thrown for no actually
-        // type candidates.
-        if (this.node.typeCandidates.length === 0) {
-            this.emit(
-                `Conflicting types, the context for this node needs this to\n` +
-                `be a type which this literal cannot be.`
+        // Create TypeCandidate list.
+        this.node.typeCandidates = typeList
+            .map(
+                candidate =>
+                    new TypeCandidate(candidate, precType === candidate)
             );
+        
+        // Match literal type to context-based candidates
+        if (response !== null) {
+            // Just for error message store a copy of candidates
+            let debugResponse = response.slice();
+            
+            // Actual type intersect
+            this.mutableIntersect(response, this.node.typeCandidates)
+        
+            // Okay if this is 0 that means you have conflicting things
+            // This is because errors have already been thrown for no actually
+            // type candidates.
+            if (this.node.typeCandidates.length === 0) {
+                this.emit(
+                    `This literal would need to be a type which it cannot be in\n` +
+                    `order for everything to work. Candidates would include: \n\n` +
+                    debugResponse.map(i => "    • " + i.candidate.rootId).join("\n") +
+                    `\n\nHowever none of these are actually a type this literal could\n` +
+                    `represent.`
+                );
+            }
         }
 
         if (this.node.typeCandidates.length === 1) {

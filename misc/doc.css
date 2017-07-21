@@ -187,6 +187,10 @@ hr {
     width: 32px;
 }
 
+.inherited-summary thead a {
+    color: #555;
+}
+
 .layout-container > header > a {
     color: white;
     font-weight: 400;

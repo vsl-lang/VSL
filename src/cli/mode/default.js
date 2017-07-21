@@ -4,6 +4,7 @@ import VSLTransform from '../../vsl/transform/transform';
 import VSLTokenizer from '../../vsl/parser/vsltokenizer';
 
 import FixItController from '../../fixit/FixItController';
+import FixItCLIColors from '../FixItCLIColors';
 
 import CLIMode from '../CLIMode';
 
@@ -12,10 +13,18 @@ import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
 
+import path from 'path';
 import fs from 'fs-extra';
 
+import CompilationIndex from '../../index/CompilationIndex';
+import CompilationModule, { HookType } from '../../index/CompilationModule';
+import CompilationGroup from '../../index/CompilationGroup';
+import CompilationStream from '../../index/CompilationStream';
+
+import Module from '../../modules/Module';
+
 export default class Default extends CLIMode {
-    usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]"
+    usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]\nvsl"
     
     constructor() {
         super([
@@ -59,6 +68,11 @@ export default class Default extends CLIMode {
     
     run(args, subcommands) {
         this.subcommands = subcommands;
+        
+        if (args.length === 0) {
+            this.executeDirectory('.');
+            return;
+        }
         
         let procArgs = [];
         let files = [];
@@ -112,25 +126,65 @@ export default class Default extends CLIMode {
         }
     }
     
+    async executeDirectory(directory) {
+        let stdlibpath = path.join(__dirname, '../../../libraries/libvsl-x');
+        let fileMap = new Map(); // <moduleRoot, value>
+        
+        async function execute(directory) {
+            let dirpath = path.resolve(directory);
+            
+            if (fileMap.has(dirpath)) return fileMap.get(dirpath);
+            // First get the module
+            let moduleLoader = new Module(dirpath);
+            await moduleLoader.load();
+            let module = moduleLoader.module;
+            
+            let group = new CompilationGroup();
+            for (let file of module.sources) {
+                let fileStream = group.createStream()
+                fileStream.send(await fs.readFile(file));
+            }
+            
+            group.metadata.name = module.name;
+            
+            let modules = [];
+            
+            // Hook stdlib if it's enabled
+            if (module.stdlib) {
+                // We'll rexecute using the cache, what this means is that if
+                // there is a cyclic dependency we'll end up with an infinite
+                // loop. We stop this so the stdlib doesn't load the stdlib.
+                let stdlibIndex = await execute(stdlibpath);
+                modules.push(new CompilationModule(
+                    stdlibIndex.root.metadata.name,
+                    HookType.Strong,
+                    stdlibIndex
+                ));
+            }
+            
+            let index = new CompilationIndex(
+                group,
+                modules
+            );
+            
+            await index.compile();
+            fileMap.set(dirpath, index);
+            return index;
+        }
+        
+        let res = await execute(directory);
+        this.repl.close();
+    }
+    
     async fromFiles(files) {
-        
-        // Get the mode, we'll call this once per AST
-        // TODO: actual binding
-        let mode = this.getMode(this.mode, () => fs.readFileSync(files[0], 'utf-8'));
-        if (mode === false) return;
-        
-        let astPromises = new Array(files.length);
-        let fileSources = new Array(files.length);
-        
-        for (let [index, file] of files.entries()) {
-            let contents;
+        let compilationGroup = new CompilationGroup();
+        for (let i = 0; i < files.length; i++) {
+            let stream = compilationGroup.createStream();
+            
+            let data;
             try {
-                contents = await fs.readFile(file, {
-                    encoding: 'utf-8'
-                });
-                fileSources[index] = contents;
+                data = await fs.readFile(files[i], { encoding: 'utf-8' });
             } catch(e) {
-                // Bork Alert
                 if (e.code === 'ENOENT') {
                     this.error.cli(`Could not find file ${file}`);
                 } else {
@@ -138,44 +192,11 @@ export default class Default extends CLIMode {
                 }
             }
             
-            astPromises[index] = new Promise(async (resolve, reject) => {
-                let res = await this._parse(contents, { file, exit: true })
-                if (res === false) {
-                    let lines = file.split("\n");
-                    this.handle(
-                        new ParserError(
-                            `Unexpected EOF. Perhaps you forgot a closing bracket?`,
-                            {
-                                line: lines.length - 1,
-                                column: lines[lines.length - 1].length - 1,
-                                index:file.length - 1,
-                                length: 1
-                            }
-                        ),
-                        file,
-                        { file, exit: true }
-                    );
-                }
-                
-                resolve(res.ast);
-            });
+            stream.send(data);
         }
         
-        // List of ours ASTs
-        let asts;
-        try {
-            asts = await Promise.all(astPromises);
-        } catch(e) {
-            throw e;
-        }
+        let res = compilationGroup.compile();
         
-        for (let i = 0; i < asts.length; i++) {
-            try {
-                mode(asts[i]);
-            } catch(e) {
-                await this.handle(e, fileSources[i]);
-            }
-        }
         this.repl.close();
     }
     
@@ -201,6 +222,15 @@ export default class Default extends CLIMode {
         }
     }
     
+    setRed(text) {
+        if (!this.color) return;
+        return `\u001B[1;${
+            process.env.TERM.indexOf("256") > -1 ?
+            "38;5;202" :
+            "31"
+        }m${text}\u001B[0m`
+    }
+    
     launchREPL() {
         this.persistentScope = true;
         const REPL = this.repl;
@@ -211,7 +241,7 @@ export default class Default extends CLIMode {
             REPL._setPrompt(prompt, length ? length : prompt.split(/[\r\n]/).pop().stripColors.length);
         
         let rawPrompt = `vsl${this.mode ? `::${this.mode}` : ""}> `
-        let prompt = this.color ? rawPrompt.red.bold : rawPrompt;
+        let prompt = this.setRed(rawPrompt);
         let unfinishedPrompt = ">".repeat(rawPrompt.length - 1) + " ";
         REPL.setPrompt(prompt);
         
@@ -268,7 +298,7 @@ export default class Default extends CLIMode {
                 }),
                 async (output) => console.log(`    ${output}`)
             );
-            controller.shouldColor = this.color;
+            controller.colorizer = this.color ? new FixItCLIColors() : null;
             
             let res = await controller.receive(error, src);
             if (res !== null) {
@@ -343,8 +373,12 @@ export default class Default extends CLIMode {
     }
 }
 
-process.on('unhandledRejection', (reason, error) => {
-    console.log("INTERNAL BORK ALERT");
-    console.log(reason);
-    console.log(error);
+process.on('unhandledRejection', (reason) => {
+    let name = reason.constructor.name;
+    let desc = reason.message;
+    
+    console.error(`${name}: ${desc}`);
+    console.error(util.inspect(reason).replace(/^|\n/g, "\n    "));
+    
+    process.exit(1);
 });

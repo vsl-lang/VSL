@@ -1,10 +1,10 @@
-import Node from './node';
+import DeclarationStatement from './declarationStatement';
 
 /**
  * Matches an assignment statement, anything which declares an alias at the type
  * scope level.
  */
-export default class AssignmentStatement extends Node {
+export default class AssignmentStatement extends DeclarationStatement {
     
     /**
      * Creates a AssignmentStatement
@@ -15,7 +15,7 @@ export default class AssignmentStatement extends Node {
      * @param {Object} position a position from nearley
      */
     constructor (type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
-        super(position);
+        super([], position);
         
         /**
          * Specifies whether the assignment is a constant or variable

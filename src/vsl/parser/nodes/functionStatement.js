@@ -1,10 +1,10 @@
-import Node from './node';
+import DeclarationStatement from './declarationStatement';
 
 /**
  * Wraps a function
  *
  */
-export default class FunctionStatement extends Node {
+export default class FunctionStatement extends DeclarationStatement {
     
     /** @override */
     get fancyName() { return "function" }
@@ -29,12 +29,9 @@ export default class FunctionStatement extends Node {
         statements: Node[],
         position: Object
     ) {
-        super(position);
+        super(access, position);
         
         this.annotations = annotations;
-        
-        /** @type {string} */
-        this.access = access;
         
         /** @type {Identifier} */
         this.name = name;
