@@ -10,7 +10,7 @@ function getSupport() {
         // won't work. However, here we target Node.js 8 at minimum as it is an LTS
         // release, and Node.js 7 is not. Windows 10 build 10586 is the first Windows
         // release that supports 256 colors.
-	var os = require('os');
+        var os = require('os');
         const osRelease = os.release().split('.');
         if (
             Number(process.version.split('.')[0]) >= 8 &&
