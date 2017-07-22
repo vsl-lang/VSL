@@ -1,4 +1,4 @@
-import CompilationStream from '../../../../index/CompilationStream';
+import BackendStream from './BackendStream';
 import Traverser from '../transform/traverser';
 import ASTTool from '../transform/asttool';
 
@@ -15,16 +15,12 @@ export default class Backend {
     /**
      * Creates a new backend with 'watcher's for each node
      *
-     * @param  {CompilationStream} stream Handled compilation where all output
-     *                                    will be. Just append to a giant string
-     *                                    as the IR will not be finished until
-     *                                    a while so be patient.
      * @param  {BackendWatcher[]} watchers There should be ONE BackendWatcher
      *                                     for each node type. If there is more
      *                                     than one it will bork I mean what can
      *                                     I say.
      */
-    constructor(stream, watchers) {
+    constructor(watchers) {
         let handlers = new Map();
         watchers.forEach(
             watcher =>
@@ -32,10 +28,20 @@ export default class Backend {
         );
         
         /** @private */
-        this.stream = stream;
+        this.stream = new BackendStream();
         
         /** @private */
         this.handlers = handlers;
+    }
+    
+    /**
+     * Redirects a stream to a lambda where you can do something else with it
+     * @param {func(data: string)} callback - callback which redirects data
+     * @return {BackendStream} stream to pass to a regen callback for
+     *                                    example.
+     */
+    redirect(callback) {
+        return new BackendStream(callback);
     }
     
     /**
@@ -47,7 +53,7 @@ export default class Backend {
     /**
      * @private
      */
-    generate(name, parent) {
+    generate(name, parent, stream = this.stream) {
         let node = parent[name];
         
         let handler = this.handlers.get(node.constructor);
@@ -60,9 +66,7 @@ export default class Backend {
             node,
             this,
             tool,
-            (name, parent) => {
-                generate(name, parent);
-            }
+            ::this.generate
         );
     }
     
