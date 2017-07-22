@@ -44,6 +44,12 @@ export default class FunctionStatement extends DeclarationStatement {
         
         /** @type {Node[]} */
         this.statements = statements;
+        
+        /**
+         * For generation, stores register index.
+         * @type {number}
+         */
+        this.registerIndex = 0;
     }
     
     /** @override */
