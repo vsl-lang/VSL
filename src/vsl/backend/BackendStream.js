@@ -20,6 +20,14 @@ export default class BackendStream {
     }
     
     /**
+     * Evaluates to output as a UTF-8 encoded string
+     * @tyoe {string}
+     */
+    get utf8Value() {
+        return this.data;
+    }
+    
+    /**
      * Wr
      * @param  {strnig} string String to append/write to the stream
      * @return {BackendStream} same object for chaining

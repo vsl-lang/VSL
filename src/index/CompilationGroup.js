@@ -3,6 +3,8 @@ import PropogateModifierTraverser, { Behavior as p } from './PropogateModifierTr
 import CompilationStream from './CompilationStream';
 import GroupMetadata from './GroupMetadata';
 
+import BackendStream from '../vsl/backend/BackendStream';
+
 import ParserError from '../vsl/parser/parserError';
 import VSLParser from '../vsl/parser/vslparser';
 
@@ -11,6 +13,8 @@ import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
+
+import LLIR from '../vsl/backend/llir';
 
 import e from '../vsl/errors'
 
@@ -237,5 +241,13 @@ export default class CompilationGroup {
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.
         new VSLTransformer(this.context).queue(block);
+        
+        // Run it through the backend by default we'll use LLIR but
+        if (stream) {
+            let backend = new LLIR();
+            let output = new BackendStream();
+            backend.run(block.statements, output);
+            console.log('=== begin ===');console.log(output.data);console.log('=== end ===')
+        }
     }
 }

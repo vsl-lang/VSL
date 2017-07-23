@@ -5,12 +5,12 @@ export default class LLIRCodeBlock extends BackendWatcher {
     static type = t.CodeBlock
     
     receive(node, backend, stream, tool, regen) {
-        let children = node.children;
-        
+        let children = node.statements;
+
         // i.e. top level; then we'll do different things (like moving top-
         // level code to the main block).
         if (node.rootScope === true) {
-            for (let i = 0; i < children; i++) {
+            for (let i = 0; i < children.length; i++) {
                 // We want to have declaration statements to be top-level
                 // compiled. Example: functions, classes. Assignments do NOT go
                 // into as a declaration. They are treated specially

@@ -15,12 +15,16 @@ export default class Backend {
     /**
      * Creates a new backend with 'watcher's for each node
      *
+     * @param  {BackendStream} stream output stream which backend will put all
+     *                                backend output into. Do note that this
+     *                                will only be guarunteed to be usable once
+     *                                the whole backend finishes running.
      * @param  {BackendWatcher[]} watchers There should be ONE BackendWatcher
      *                                     for each node type. If there is more
      *                                     than one it will bork I mean what can
      *                                     I say.
      */
-    constructor(watchers) {
+    constructor(stream, watchers) {
         let handlers = new Map();
         watchers.forEach(
             watcher =>
@@ -28,7 +32,7 @@ export default class Backend {
         );
         
         /** @private */
-        this.stream = new BackendStream();
+        this.stream = stream;
         
         /** @private */
         this.handlers = handlers;
@@ -61,10 +65,11 @@ export default class Backend {
             `No handler for node ${node.constructor.name}`
         );
         
-        let tool = new ASTTool(name, parent, null);
+        let tool = new ASTTool(parent, name, null);
         handler(
             node,
             this,
+            stream,
             tool,
             ::this.generate
         );
@@ -87,18 +92,18 @@ export default class Backend {
      * @param  {CodeBlock[]} inputs All the input files, see description for
      *                              more info on what specific format this
      *                              should be.
-     * @param {CompilationStream} stream Stream which compilation will be
-     *                                   outputted to. Wait until all stuff is
-     *                                   done before using the output.
+     * @param {BackendStream} stream Stream which compilation will be outputted
+     *                               to. Wait until all stuff is done before
+     *                               using the output.
      */
     run(inputs, stream) {
         this.stream = stream;
-        pregen();
+        this.pregen();
         
         for (let i = 0; i < inputs.length; i++) {
-            generate(i, inputs);
+            this.generate(i, inputs);
         }
         
-        postgen();
+        this.postgen();
     }
 }

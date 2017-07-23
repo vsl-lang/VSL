@@ -130,7 +130,7 @@ export default class Default extends CLIMode {
         let stdlibpath = path.join(__dirname, '../../../libraries/libvsl-x');
         let fileMap = new Map(); // <moduleRoot, value>
         
-        async function execute(directory) {
+        async function execute(directory, stream) {
             let dirpath = path.resolve(directory);
             
             if (fileMap.has(dirpath)) return fileMap.get(dirpath);
@@ -167,12 +167,12 @@ export default class Default extends CLIMode {
                 modules
             );
             
-            await index.compile();
+            await index.compile(stream);
             fileMap.set(dirpath, index);
             return index;
         }
         
-        let res = await execute(directory);
+        let res = await execute(directory, new CompilationStream());
         this.repl.close();
     }
     

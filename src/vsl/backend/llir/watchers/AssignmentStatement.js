@@ -1,4 +1,5 @@
 import BackendWatcher from '../../BackendWatcher';
+import * as utils from '../utils';
 import t from '../../../parser/nodes';
 
 export default class LLIRAssignmentStatement extends BackendWatcher {
@@ -10,12 +11,35 @@ export default class LLIRAssignmentStatement extends BackendWatcher {
         // we'd need to layout that literal in the DATA section and assign the
         // register for this statement to it.
         
+        let name = node.identifier.identifier.identifier.rootId;
+
         // If this is top-level we're going to do some special assignment
         if (node.parentScope.rootScope === true) {
             // In this case we're going to need to verify that this top-level
             // value is indeed a constant
             
             // Additionally the context is needed to check for constant-ness
+            // we can obviously assume that the transformers have checked that
+            // but we'll choose how to carry on
+            let statement = `@${name} = `;
+
+            let access;
+            if (node.access.indexOf('public') > -1) access = 'global';
+            else access = 'private';
+
+            // Add access of declaration (used in ELF linkage).
+            statement += access;
+
+            // Again if it's a `const` vs `let` we'd do `constant` in the IR
+            
+            if (node.type === t.AssignmentType.Constant) {
+                statement += " constant ";
+            }
+
+            let value = node.value;
+            console.log(utils.GetCandidate(node.value));
+
+            backend.declarations.push(statement);
         } else {
             
         }

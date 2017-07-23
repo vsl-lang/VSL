@@ -1,7 +1,16 @@
 import Backend from '../Backend';
 import * as w from './watchers';
 
+/**
+ * ## LLIR
+ * LLIR is the default VSL
+ */
 export default class LLIR extends Backend {
+    /**
+     * Creates LLIR backend with given output stream/output location/
+     * @param  {BackendStream} stream A backend stream object set to receive the
+     *                                LLVM IR output.
+     */
     constructor(stream) {
         super(stream, [
             w.CodeBlock,
@@ -38,7 +47,7 @@ export default class LLIR extends Backend {
     }
     
     pregen() {
-        this.stream.send(
+        this.stream.write(
             `; VSL LLIR Compiler\n`
         );
     }
@@ -48,29 +57,29 @@ export default class LLIR extends Backend {
         ////////////////////////////////////////////////////////////////////////
         //                             postgen                                //
         ////////////////////////////////////////////////////////////////////////
-        for (let i = 0; i < declarations.length; i++) {
-            this.stream.send(declarations[i][j]);
-            this.stream.send('\n\n\n');
+        for (let i = 0; i < this.declarations.length; i++) {
+            this.stream.write(this.declarations[i]);
+            this.stream.write('\n\n');
         }
         
         ////////////////////////////////////////////////////////////////////////
         //                             rootMain                               //
         ////////////////////////////////////////////////////////////////////////
-        this.stream.send(
+        this.stream.write(
             `define i32 @main(i8**, i32) #0 {\nentry:\n`
         );
         
         for (let i = 0; i < this.rootMain.length; i++) {
-            this.stream.send(`    ${this.rootMain[i]}\n`);
+            this.stream.write(`${this.rootMain[i]}\n`);
         }
         
-        this.stream.send(`ret i32 0\n}\n\n`)
+        this.stream.write(`    ret i32 0\n}\n\n`)
         
         ////////////////////////////////////////////////////////////////////////
         //                           attributes                               //
         ////////////////////////////////////////////////////////////////////////
         for (let i = 0; i < this.attributes.length; i++) {
-            this.stream.send(`attributes #${i} = { ${ this.attributes[i] } }\n`)
+            this.stream.write(`attributes #${i} = { ${ this.attributes[i] } }\n`)
         }
     }
 }
