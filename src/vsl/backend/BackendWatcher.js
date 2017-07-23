@@ -19,10 +19,11 @@ export default class BackendWatcher {
      * @param {Node} node The node which is a subclass of `Self.type`
      * @param {Backend} backend The backend calling this watcher
      * @param {ASTTool} tool AST for node.
-     * @param {func(name: string|number, parent:Node|Node[])} regen callback to
-     *                                                              regenerate a
-     *                                                              specific
-     *                                                              node.
+     * @param {function(name: any, parent: any)} regen callback
+     *                                                                to
+     *                                                                regenerate
+     *                                                                a specific
+     *                                                                node.
      * @abstract
      */
     receive(node, backend, tool, regen) {
