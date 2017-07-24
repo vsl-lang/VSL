@@ -55,23 +55,34 @@ export default class IdResolver extends TypeResolver {
             
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,
-            this.node.typeCandidates = scope
-                .getAll(rootId)
-                .filter(
-                    candidate =>
-                        candidate instanceof ScopeFuncItem &&
-                        callArgs <= candidate.args.length
-                );
+            let candidates = scope.getAll(rootId);
             
             // If they are 0 candidates that means there is no function which
             // actually has the name
-            if (this.node.typeCandidates.length === 0) {
+            if (candidates.length === 0) {
                 this.emit(
                     `Use of undeclared function ${rootId}`,
                     e.UNDECLARED_FUNCTION
                 )
             }
-                
+            
+            // Filter down the candidates
+            this.node.typeCandidates = candidates.filter(
+                candidate =>
+                    candidate instanceof ScopeFuncItem &&
+                    callArgs <= candidate.args.length
+            );
+            
+            // If they are no candidates with the previous filter applied. This
+            // means there is too many args
+            if (this.node.typeCandidates.length === 0) {
+                this.emit(
+                    `Function ${rootId} is declared but is called with too ` +
+                    `many arguments`,
+                    e.FUNCTION_TOO_MANY_ARGS
+                )
+            }
+            
             return;
         }
         

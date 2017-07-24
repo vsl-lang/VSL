@@ -71,6 +71,7 @@ export default {
     UNDECLARED_FUNCTION: {},
     UNDECLARED_IDENTIFIER: {},
     CANNOT_RESOLVE_IDENTIFIER: {},
+    FUNCTION_TOO_MANY_ARGS: {},
     
     // Modules
     UNDEFINED_MODULE: {},

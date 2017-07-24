@@ -10,8 +10,10 @@ export default class ScopeFuncItemArgument {
      * default value for the param, mark that parameter as optional if
      * applicable, meaning that it does not create any conflicts.
      *
-     * @param  {string} name     The name of the function argument, leave
-     *                           empty if there is none
+     * @param  {string} name     The name of the function argument.
+     * @param  {bool}   paramOptional If the parameter name is optional. This is
+     *                                always `false` except for when you don't
+     *                                have `f(!a: T)` or `f(a b: T)`.
      * @param  {bool}   optional Whether the argument is optional, if the
      *                           argument has a default value, then you may mark
      *                           this.
@@ -21,15 +23,19 @@ export default class ScopeFuncItemArgument {
      *                           was declared, this is used for deffered
      *                           resolution
      */
-    constructor(name: string, optional: bool, type: ScopeTypeItem | string, node: Node) {
+    constructor(name, paramOptional, optional, type, node) {
         /** @type {string} */
         this.name = name;
+        
+        /** @type {bool} */
+        this.paramOptional = paramOptional;
 
         /** @type {bool} */
         this.optional = optional;
 
+        // TODO: create type resolver based on recursive types.
         /**
-         * The type of the argument, use `getArg` as this may be unresolved
+         * The type of the argument, use `getType` as this may be unresolved
          * @type {ScopeTypeItem|string}
          * @protected
          */
@@ -43,13 +49,10 @@ export default class ScopeFuncItemArgument {
      * Gets the type at the index, performs resolution if needed because cannot
      * always be done on the first pass.
      *
-     * @param  {number} at        The index to which to obtain the type at. make
-     *                            sure this is inbounds otherwise major bork may
-     *                            occur
      * @return {ScopeTypeItem}    The resolved ScopeTypeItem, this will throw if
      *                            a bork occurs (such as no type existing).
      */
-    getType(at: number) {
+    getType() {
         if (typeof this.type === "string") {
             let res = this.node.parentScope.scope.get(new ScopeTypeItem(this.type));
             if (res === null) {

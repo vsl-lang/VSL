@@ -62,6 +62,7 @@ export default class DescribeFunctionDeclaration extends Transformation {
             args.push(
                 new ScopeFuncItemArgument(
                     name,
+                    false, // TODO: add parser support for `a b: T` and `!a: T`
                     isOptional,
                     typeItem,
                     type
