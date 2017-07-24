@@ -156,6 +156,7 @@ export default class Module {
         // Path to module.yml
         let requestPath = path.join(this.rootPath, 'module.yml');
         this.ymlPath = requestPath;
+        
         let ymlString;
         try {
             ymlString = await Module.moduleInterface.readFile(requestPath);

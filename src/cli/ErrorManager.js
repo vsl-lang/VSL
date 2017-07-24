@@ -53,10 +53,14 @@ export default class ErrorManager {
             )
         }
         else if (error instanceof ParserError) {
+            let positionData = error.position ?
+                ` (${fileName}${error.position.line}:${error.position.column})` :
+                "";
+            
             this.rawError(
                 "Syntax Error",
-                error.message + ` (${fileName}${error.position.line}:${error.position.column})`,
-                this._highlight(src, error.position)
+                error.message + positionData,
+                error.position ? this._highlight(src, error.position) : ""
             )
         }
         else {
