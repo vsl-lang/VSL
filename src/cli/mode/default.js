@@ -3,7 +3,7 @@ import FixItCLIColors from '../FixItCLIColors';
 
 import CLIMode from '../CLIMode';
 
-import prompt from 'syncprompt';
+import readline from 'readline';
 import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
@@ -19,6 +19,20 @@ import CompilationGroup from '../../index/CompilationGroup';
 import CompilationStream from '../../index/CompilationStream';
 
 import Module from '../../modules/Module';
+
+// Returns promise
+function prompt(string) {
+    return new Promise((resolve, reject) => {
+        let rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        rl.question(string, (res) => {
+            resolve(res);
+            rl.close();
+        });
+    });
+}
 
 export default class Default extends CLIMode {
     usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]\nvsl"
@@ -218,16 +232,14 @@ export default class Default extends CLIMode {
             let group = new CompilationGroup();
             let input = group.createStream();
             
-            let inputString = prompt(vsl);
-            if (inputString === null) return;
+            let inputString = await prompt(vsl);
             
             input.send(lastCalls + inputString);
             input.handleRequest(
-                done => {
-                    let value = prompt(vslCont);
-                    inputString += '\n' + value;
-                    done(value);
-                }
+                done => prompt(vslCont).then(value => {
+                        inputString += '\n' + value;
+                        done(value);
+                })
             );
             
             let worked = true;
@@ -268,7 +280,7 @@ export default class Default extends CLIMode {
         if (this.interactive && error.ref) {
             // Do fix it
             let controller = new FixItController(
-                async (input) => prompt(`    ${input}`),
+                async (input) => await prompt(`    ${input}`),
                 async (output) => console.log(`    ${output}`)
             );
             controller.colorizer = this.color ? new FixItCLIColors() : null;

@@ -45,7 +45,6 @@
     "react-contenteditable": "^2.0.2",
     "react-dom": "^15.6.1",
     "semver": "^5.3.0",
-    "syncprompt": "^2.0.0",
     "vsl-nearley": "^2.9.5"
   },
   "devDependencies": {
