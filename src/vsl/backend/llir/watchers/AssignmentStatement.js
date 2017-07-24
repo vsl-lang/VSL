@@ -28,16 +28,18 @@ export default class LLIRAssignmentStatement extends BackendWatcher {
             else access = 'private';
 
             // Add access of declaration (used in ELF linkage).
-            statement += access;
+            statement += access + " ";
 
             // Again if it's a `const` vs `let` we'd do `constant` in the IR
-            
             if (node.type === t.AssignmentType.Constant) {
-                statement += " constant ";
+                statement += "constant ";
             }
 
             let value = node.value;
-            console.log(utils.GetCandidate(node.value));
+            let typeName = utils.TypeName(utils.GetCandidate(node.value));
+            
+            statement += typeName + " ";
+            statement += utils.Repr(value.expression);
 
             backend.declarations.push(statement);
         } else {

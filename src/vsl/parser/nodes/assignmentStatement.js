@@ -9,13 +9,14 @@ export default class AssignmentStatement extends DeclarationStatement {
     /**
      * Creates a AssignmentStatement
      *
+     * @param {string[]} access A list of access modifiers for the statement
      * @param {AssignmentType} type The assignment type
      * @param {TypedIdentifier} identifier The variable's identifier & type
      * @param {Expression} value The variable's inital value
      * @param {Object} position a position from nearley
      */
-    constructor (type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
-        super([], position);
+    constructor (access: string[], type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
+        super(access, position);
         
         /**
          * Specifies whether the assignment is a constant or variable

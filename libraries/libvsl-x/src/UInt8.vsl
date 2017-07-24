@@ -1,0 +1,4 @@
+@primitive(Integer)
+public class UInt8 {
+
+}

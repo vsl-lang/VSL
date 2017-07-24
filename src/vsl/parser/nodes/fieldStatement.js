@@ -24,14 +24,6 @@ export default class FieldStatement extends AssignmentStatement  {
         position: Object
     ) {
         super(type, identifier, value, position);
-
-        /** @type {string[]} */
-        this.modifiers = modifiers;
-    }
-
-    /** @override */
-    get children() {
-        return ['modifiers'].concat(super.children);
     }
 
     /** @override */

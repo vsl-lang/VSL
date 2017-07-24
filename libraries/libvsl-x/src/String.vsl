@@ -1,0 +1,13 @@
+@primitive(String, _precType)
+public class String {
+    
+    // NOTE: Positioning of first couple fields is very important. Usually
+    // this is internally defined as:
+    //     struct libvsl.String {
+    //         size_t length;
+    //         char* value;
+    //     }
+
+    private let length: UInt64
+    private let byte: Pointer<UInt8>
+}

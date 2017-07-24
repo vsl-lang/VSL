@@ -11,6 +11,8 @@
     "babel": "babel src/ -d lib/ -s",
     "webpack": "webpack",
     "nearley": "mkdirp lib/vsl/parser && nearleyc src/vsl/parser/parser.ne -o src/vsl/parser/parser.js",
+    "compileParser": "babel src/vsl/parser/parser.js -o lib/vsl/parser/parser.js",
+    "parser": "npm run nearley && npm run compileParser",
     "watch": "babel src/ -d lib/ -s --watch",
     "clean": "rm -r lib",
     "lint": "eslint src",

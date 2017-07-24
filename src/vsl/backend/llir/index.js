@@ -36,6 +36,12 @@ export default class LLIR extends Backend {
         this.declarations = [];
         
         /**
+         * ScopeTypeItem declaration map (type item -> IR)
+         * @type {Map<ScopeTypeItem, string>}
+         */
+        this.typeDecls = new Map();
+        
+        /**
          * attribute counter.
          *
          * 1 = attributes for `main`

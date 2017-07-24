@@ -83,15 +83,8 @@ ClassItems
    -> CodeBlock[ClassItem {% id %}] {% id %}
 ClassItem
    -> InterfaceItem {% id %}
-    | Field {% id %}
+    | AssignmentStatement {% id %}
     | InitalizerStatement {% id %}
-
-Field
-   -> Modifier AssignmentStatement {%
-        (data, location) =>
-            new t.FieldStatement(data[0], data[1].type, data[1].identifier,
-                data[1].value, location)
-    %}
 
 InitalizerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _ "{"
@@ -119,10 +112,10 @@ const assignmentTypes = freeze({
 %}
 
 AssignmentStatement
-   -> AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
+   -> Modifier AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
         (data, location) =>
-            new t.AssignmentStatement(assignmentTypes[data[0].value], data[2],
-                data[3], location)
+            new t.AssignmentStatement(data[0], assignmentTypes[data[1].value], data[3],
+                data[4], location)
     %}
 
 AssignmentType

@@ -127,7 +127,8 @@ export default class Default extends CLIMode {
         this.error.shouldColor = this.color;
         
         if (directory) {
-            this.executeModule(directory);
+            let output = new CompilationStream();
+            this.executeModule(directory, output);
         } else if (files.length > 0) {
             this.fromFiles(files);
         } else if (repl) {
@@ -147,7 +148,7 @@ export default class Default extends CLIMode {
         );
     }
     
-    async executeModule(directory) {
+    async executeModule(directory, stream) {
         let dirpath = path.resolve(directory);
         
         if (this.fileMap.has(dirpath)) return this.fileMap.get(dirpath);
@@ -179,7 +180,7 @@ export default class Default extends CLIMode {
             modules
         );
         
-        await index.compile();
+        await index.compile(stream);
         this.fileMap.set(dirpath, index);
         
         return index;
