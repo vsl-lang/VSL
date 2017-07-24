@@ -84,7 +84,7 @@ export default class FixItController {
         if (!ref || !node) return null;
         
         let { fixits } = ref;
-        if (fixits.length <= 0) return null;
+        if (!fixits || fixits.length <= 0) return null;
         
         let fixit = new FixIt(source, node, ::this.streamInput, ::this.streamOutput);
         

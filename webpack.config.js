@@ -8,10 +8,13 @@ module.exports = {
     devtool: 'source-map',
     output: {
         path: path.join(__dirname, "./app"),
-        filename: '[name].bundle.js',
-        
-        libraryTarget: "var",
-        library: "VSL"
+        filename: '[name].bundle.js'
+    },
+    resolve: {
+        alias: {
+            'fs-extra$': path.resolve(__dirname, './mock/index.js'),
+            'glob$': path.resolve(__dirname, './mock/index.js')
+        }
     },
     module: {
         loaders: [

@@ -1,7 +1,6 @@
 import fs from 'fs-extra';
 import _glob from 'glob';
 
-
 // Because node-glob refuses Promise PRs this is a wrapper
 const globSearch = (source, options) => new Promise(
     (resolve, reject) =>

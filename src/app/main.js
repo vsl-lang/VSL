@@ -11,3 +11,6 @@ const render = (Component) => {
 };
 
 render(App);
+
+import * as VSL from '../vsl.js';
+if (typeof window !== "undefined") window.VSL = VSL;
