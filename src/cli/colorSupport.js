@@ -1,3 +1,4 @@
+import os from 'os';
 const env = process.env;
 function getSupport() {
     if (process.stdout && !process.stdout.isTTY) {

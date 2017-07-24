@@ -45,7 +45,7 @@ export default class ModuleInterface {
         try {
             return await fs.readFile(path, {
                 encoding: 'utf-8'
-            })
+            });
         } catch(e) {
             throw e;
         }
