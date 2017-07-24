@@ -12,12 +12,13 @@ export default class CLIMode {
         
         flags.forEach(
             type => type[1]
-                .filter(flag => flag[0][1] !== "-")
+                .filter(flag => flag.length === 4)
                 .forEach(flag => this.aliases[flag[0]] = flag[1])
         );
+        
         flags.forEach(
             type => type[1]
-                .forEach(flag => this.allArgs[flag[0][1] !== "-" ? flag[1] : flag[0]] = flag)
+                .forEach(flag => this.allArgs[flag.length === 4 ? flag[1] : flag[0]] = flag)
         );
         
         this.error = new ErrorManager();
@@ -45,7 +46,7 @@ export default class CLIMode {
         
         return this.flags.map(section => {
             const format = section[1].map(
-                flag => (flag[0][1] !== "-" ?
+                flag => (flag.length === 4 ?
                     `${flag[0]}, ${flag[1]}` :
                     flag[0]) + ` ${suffix(this.getFlagData(flag[0]).data.arg)}`
             );
@@ -55,7 +56,7 @@ export default class CLIMode {
             const res = format.map(
                 (line, i) => (
                     line + " ".repeat(longest - line.length) + (
-                        section[1][i][0][1] !== "-" ?
+                        section[1][i].length === 4 ?
                         section[1][i][2] :
                         section[1][i][1]
                     )

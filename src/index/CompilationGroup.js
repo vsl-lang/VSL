@@ -123,6 +123,7 @@ export default class CompilationGroup {
         
         while (null !== (dataBlock = await stream.receive())) {
             ast = parser.feed(dataBlock);
+            if (ast.length > 0) break;
         }
         
         if (ast.length === 0) {
