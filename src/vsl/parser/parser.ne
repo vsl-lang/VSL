@@ -136,18 +136,29 @@ AssignmentType
 FunctionStatement
    -> FunctionHead FunctionBody {%
         data => {
-            data[0].statements = data[1];
+            if (data[0].isLLVM) {
+                data[0].llvmStatements = data[1];
+            } else {
+                data[0].statements = data[1];
+            }
+            
             return data[0];
         }
     %}
 
 FunctionHead
-   -> Annotations Modifier "func"
+   -> Annotations Modifier "llvm":? "func"
         (Identifier {% id %} | OverridableOperator {% id %})
         ArgumentList (_ "->" _ type {% nth(3) %}):? {%
-        (data, location) =>
-            new t.FunctionStatement(data[0], data[1], data[3],
-                data[4], data[5], null, location)
+        (data, location) => {
+            let func = new t.FunctionStatement(
+                data[0], data[1], data[4], data[5], data[6], null, location
+            );
+            
+            func.isLLVM = true;
+            
+            return func;
+        }
     %}
 
 OverridableOperator

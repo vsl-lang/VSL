@@ -17,6 +17,7 @@ export default class VSLPreprocessor extends Transformer {
             // Registers a @primitive mark specifying that a class defines
             // behavior for one.
             pass.RegisterPrimitiveAnnotation,
+            pass.RegisterPassAnnotation,
 
             // Converts a type to what it will
             // be after mangling, not sure how

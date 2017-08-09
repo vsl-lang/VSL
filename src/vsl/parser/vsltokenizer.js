@@ -147,6 +147,8 @@ export default class VSLTokenizer extends Tokenizer {
             ['final', passThrough],
             ['const', passThrough],
 
+            ['llvm', passThrough],
+
             ['static', passThrough],
             ['lazy', passThrough],
 

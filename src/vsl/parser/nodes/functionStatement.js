@@ -44,6 +44,15 @@ export default class FunctionStatement extends DeclarationStatement {
         
         /** @type {Node[]} */
         this.statements = statements;
+        
+        /** @type {boolean} */
+        this.validateReturn = true;
+        
+        /** @type {boolean} */
+        this.isLLVM = false;
+        
+        /** @type {?Node[]} */
+        this.llvmStatements = null;
     }
     
     /** @override */
