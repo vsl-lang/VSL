@@ -1,5 +1,6 @@
 # VSL - Primary Parser
 @{%
+"use strict";
 let t = require('./nodes');
 let lexer = new (require('./vsltokenizer'))();
 
@@ -10,8 +11,9 @@ const NodeTypes = require('./vsltokentype'),
   string = freeze({ test: x => x[1] === NodeTypes.String }),
   identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
   special_loop = freeze({ test: x => x[1] === NodeTypes.SpecialArgument }),
-  special_identifier = freeze({ test: x => x[1] ===
-            NodeTypes.SpecialIdentifier }),
+  special_identifier = freeze({ test: x => x[1] === NodeTypes.SpecialIdentifier }),
+  documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
+  not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
   mid = d => d[0][0];
@@ -24,7 +26,7 @@ const NodeTypes = require('./vsltokentype'),
 @builtin "postprocessors.ne"
 
 CodeBlock[s]
-   -> seperator:* (delimited[$s {% id %}, seperator:+] seperator:*
+   -> separator:* (delimited[$s {% id %}, separator:+] separator:*
             {% id %}):? {%
         (data, location) => new t.CodeBlock(data[1] || [], location)
     %}
@@ -34,58 +36,68 @@ main
         data => (data[0].rootScope = true, data[0])
     %}
 
-seperator
+separator
    -> ";"
     | "\n"
 
 statement
-   -> ClassStatement      {% id %}
-    | InterfaceStatement  {% id %}
-    | IfStatement         {% id %}
-    | AssignmentStatement {% id %}
-    | FunctionStatement   {% id %}
-    | Expression          {% id %}
-    | CommandChain        {% id %}
-    | TypeAlias           {% id %}
+   -> ClassStatement       {% id %}
+    | InterfaceStatement   {% id %}
+    | EnumerationStatement {% id %}
+    | IfStatement          {% id %}
+    | ForStatement         {% id %}
+    | WhileStatement       {% id %}
+    | AssignmentStatement  {% id %}
+    | FunctionStatement    {% id %}
+    | BlockExpression      {% id %}
+    | CommandChain         {% id %}
+    | TypeAlias            {% id %}
 
 # ============================================================================ #
 #                                Control Flow                                  #
 # ============================================================================ #
 
 IfStatement
-   -> "if" _ Expression _ CodeBlock[statement] (
+   -> "if" _ InlineExpression _ CodeBlock[statement] (
         _ "else" _ (
-            CodeBlock[statement]  {% id %} |
-            IfStatement           {% rewrap %}
-        ):? {% nth(3) %}
-    ) {%
-        (data, location) =>
-            new t.IfStatement(
-                data[2],
-                data[4],
-                data[5],
-                location
-            )
+            "{" CodeBlock[statement] "}" {% nth(1) %} |
+            CodeBlock[statement]         {% id %}
+        ) {% nth(3) %}
+    ):? {% (d, l) => new t.IfStatement(d[2], d[4], d[5], l) %}
+
+ForStatement
+   -> "for" _ InlineExpression _ CodeBlock[statement] {%
+        (d, l) => new t.ForStatement(d[2], d[4], l)
+    %}
+WhileStatement
+   -> "while" _ InlineExpression _ CodeBlock[statement] {%
+        (d, l) => new t.WhileStatement(d[2], d[4], l)
     %}
 
 # ============================================================================ #
 #                            Classes and Interfaces                            #
 # ============================================================================ #
 
+# TODO: add _ after Modifier if it doesn't cause ambiguities
+
 ClassStatement
    -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" ClassItems "}" {%
-        (data, location) =>
-            new t.ClassStatement(data[1], data[4], data[6], data[8], data[0],
-                location)
+        (d, l) => new t.ClassStatement(d[1], d[4], d[6], d[8], d[0], l)
     %}
 
 InterfaceStatement
    -> Annotations Modifier "interface" _ classDeclaration _ (":" _
             ExtensionList _ {% nth(2) %}):? "{" InterfaceItems "}" {%
-        (data, location) =>
-            new t.InterfaceStatement(data[1], data[4], data[6], data[8],
-                data[0], location)
+        (d, l) => new t.InterfaceStatement(d[1], d[4], d[6], d[8], d[0], l)
+    %}
+
+#TODO: can enums even multiple inherit? of course we need to allow inheritance for Byte, Short etc
+
+EnumerationStatement
+   -> Annotations Modifier "enumeration" _ classDeclaration _ (":" _ ExtensionList _
+            {% nth(2) %}):? "{" EnumerationItems ClassItems "}" {%
+        (d, l) => new t.EnumerationStatement(d[1], d[4], d[6], d[8], d[9], d[0], l)
     %}
 
 Annotations
@@ -141,6 +153,9 @@ InterfaceItem
     | Field {% id %}
     | OnlyGetter {% id %}
 
+EnumerationItems
+   -> delimited[Identifier, _ "," _] (_ ";"):? {% id %}
+
 # ============================================================================ #
 #                             Assignment Statement                             #
 # ============================================================================ #
@@ -153,7 +168,7 @@ const assignmentTypes = freeze({
 %}
 
 AssignmentStatement
-   -> AssignmentType _ TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
+   -> AssignmentType _ TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
         (data, location) =>
             new t.AssignmentStatement(assignmentTypes[data[0].value], data[2],
                 data[3], location)
@@ -192,15 +207,26 @@ OverridableOperator
     %}
 
 ArgumentList
-   -> "(" _ (delimited[Argument {% id %}, _ "," _] _ {% id %}):? ")" {%
+   -> "(" _ (delimited[Argument ("(" _ ArgumentDocumentation _ ")"):? {% id %}, _ "," _] _ {% id %}):? ")" {%
         (data) =>
             data[2] || []
         %}
 
 Argument
-   -> TypedIdentifier ( _ "=" _ Expression {% nth(3) %}):? {%
+   -> TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
         (data, location) => new t.FunctionArgument(data[0], data[1], location)
     %}
+
+ArgumentDocumentation
+   -> %not_paren:+ {% (d, l) => new t.Documentation(d[0].map(i => i.value || i[0]).join(""), l) %}
+    | %not_paren:* "(" ArgumentDocumentation ")" %not_paren:* {% (d, l) => new t.Documentation(
+        d[0].map(i => i.value || i[0]).join("") +
+        "(" +
+        d[2].documentation +
+        ")" +
+        d[4].map(i => i.value || i[0]).join(""),
+        l
+    ) %}
 
 FunctionBody
    -> "{" (CodeBlock[statement {% id %}] {% id %}) "}" {% nth(1) %}
@@ -238,13 +264,15 @@ BinaryOpRight[self, ops, next]
     | $next {% mid %}
 
 
-
-Expression
+BlockExpression
+   -> InlineExpression {% id %}
+   | Closure {% id %}
+InlineExpression
    -> Ternary {%
         (data, location) => new t.ExpressionStatement(data[0], false, false, location)
     %}
 Ternary
-   -> Assign "?" Ternary ":" Assign {%
+   -> Assign _ "?" _ Ternary _ ":" _ Assign {%
         (data, location) => new t.Ternary(data[0], data[2], data[4], location)
     %}
     | Assign {% id %}
@@ -341,15 +369,13 @@ CommandChain
    -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStatement(recursiveCommandChain(d[0], d[1]), false, false, l) %}
 
 Closure
-   -> "{" CodeBlock[Expression {% id %}] "}" {%
-        (data) => data[1]
-    %}
+   -> "{" CodeBlock[InlineExpression {% id %}] "}" {% nth(1) %}
 
 CommandChainPart
    -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, (d[0] || []).concat([new t.ArgumentCall(d[1], null, l)]), false, l) %}
     | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
-    | %identifier ":" Expression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
-    | Expression {%
+    | %identifier ":" InlineExpression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
+    | InlineExpression {%
         (d, l, f) =>
             [
                 t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever,
@@ -364,13 +390,13 @@ CommandChainPart
     %}
 
 ArgumentCallHead
-   -> %identifier ":" Expression {%
+   -> %identifier ":" InlineExpression {%
         (d, l, f) =>
             d[2].expression instanceof t.UnaryExpression ?
             f :
             new t.ArgumentCall(d[2].expression, d[0], l)
         %}
-    | Expression {%
+    | InlineExpression {%
         (d, l, f) =>
             d[0].expression instanceof t.UnaryExpression ?
             f :
@@ -399,7 +425,7 @@ Property
 
 propertyHead
    -> Identifier             {% id %}
-    | "(" _ Expression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
+    | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
     | FunctionizedOperator   {% id %}
     | Literal                {% id %}
 
@@ -427,21 +453,21 @@ nullableProperty
     # function with no named args (including empty arglist)
     | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
     # function with 1 unnamed arg
-    | "(" _ Expression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
+    | "(" _ InlineExpression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
 
 ArgumentCall -> NamedArgumentCall   {% id %}
               | UnnamedArgumentCall {% id %}
 
-NamedArgumentCall -> %identifier ":" Expression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
+NamedArgumentCall -> %identifier ":" InlineExpression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
 
-UnnamedArgumentCall -> Expression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
+UnnamedArgumentCall -> InlineExpression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
 FunctionCallList
    -> delimited[FunctionCallArgument {% id %}, _ "," _]:? {% (d, l) => new t.FunctionCall(null, d[0] || [], l) %}
 
 FunctionCallArgument
-   -> %identifier _ ":" _ Expression {% (d, l) => new t.ArgumentCall(d[4].expression, d[0], l) %}
-    | Expression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
+   -> %identifier _ ":" _ InlineExpression {% (d, l) => new t.ArgumentCall(d[4].expression, d[0], l) %}
+    | InlineExpression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
 # ============================================================================ #
 #                                   Literals                                   #
@@ -466,7 +492,7 @@ Array
    -> "[" _ "]" {%
         (data, location) => new t.ArrayNode([], location)
     %}
-    | "[" _ delimited[Expression {% id %}, _ "," _] _ "]" {%
+    | "[" _ delimited[InlineExpression {% id %}, _ "," _] _ "]" {%
         (data, location) => new t.ArrayNode(data[2], location)
     %}
 
@@ -474,7 +500,7 @@ Dictionary
    -> "[" _ ":" _ "]" {%
         (data, location) => new t.Dictionary(new Map(), location)
     %}
-    | "[" _ delimited[Expression _ ":" _ Expression {%
+    | "[" _ delimited[InlineExpression _ ":" _ InlineExpression {%
             data => [data[0], data[4]]
         %}, _ "," _] _ "]" {%
         (data, location) => new t.Dictionary(new Map(data[2]), location)
@@ -482,21 +508,26 @@ Dictionary
 
 Tuple
    -> "(" _ ")" {% (data, location) => new t.Tuple([], location) %}
-    | "(" _ Expression _ "," _ (
-        delimited[Expression {% id %}, _ "," _] _ {% id %}):? ")" {%
+    | "(" _ InlineExpression _ "," _ (
+        delimited[InlineExpression {% id %}, _ "," _] _ {% id %}):? ")" {%
         (data, location) => {
             var tuple = [data[2]];
-            if (data[6]) {
+            if (data[6])
                 tuple = tuple.concat(data[6]);
-            }
             return new t.Tuple(tuple, location);
         }
     %}
 
 Set
-   -> "{" _ "}" {% (data, location) => new t.SetNode([], location) %}
-    | "{" _ delimited[Expression {% id %} , _ "," _]  _ "}" {%
-        (data, location) => new t.SetNode(data[2], location)
+   -> "{" _ "," _ "}" {% (data, location) => new t.SetNode([], location) %}
+    | "{" _ InlineExpression _ "," _ (
+        delimited[InlineExpression {% id %}, _ "," _] _ {% id %}):? "}" {%
+        (data, location) => {
+            var set = [data[2]];
+            if (data[6])
+                set = set.concat(data[6]);
+            return new t.SetNode(set, location);
+        }
     %}
 
 # ============================================================================ #
@@ -621,3 +652,10 @@ Identifier
 
 _
    -> "\n":*
+   
+# ============================================================================ #
+#                                Documentation                                 #
+# ============================================================================ #
+
+Documentation
+   -> %documentation:+ {% (d, l) => new t.Documentation(d[0].join('\n'), l) %}

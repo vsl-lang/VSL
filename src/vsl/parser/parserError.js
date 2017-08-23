@@ -14,5 +14,5 @@ export default class ParserError {
         
         /** @type {Object} */
         this.position = position;
-    }
+    }t
 }

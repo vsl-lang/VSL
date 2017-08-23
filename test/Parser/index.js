@@ -1,6 +1,8 @@
-import { valid, validDir } from '../hooks';
+'use strict';
 
-describe('Parser', () => {
+var _hooks = require('../hooks');
+
+describe('Parser', function () {
     require('./expressions')();
     require('./whatever')();
     require('./functions')();
@@ -14,15 +16,15 @@ describe('Parser', () => {
     // validDir`../libraries/libc`;
     // validDir`../libraries/libcurl`;
     // validDir`../libraries/libvsl`;
-    
+
     // Global codeblock
-    valid``;
-    valid`\n`;
-    valid`\n`;
-    valid`1 + 1`;
-    valid`\n1 + 1`;
-    valid`\n1 + 1\n`;
-    valid`\n\n`;
-    valid`\n\n1 + 1\n\n`;
-    valid`1 + 1\n\n1 + 1`;
-})
+    _hooks.valid``;
+    _hooks.valid`\n`;
+    _hooks.valid`\n`;
+    _hooks.valid`1 + 1`;
+    _hooks.valid`\n1 + 1`;
+    _hooks.valid`\n1 + 1\n`;
+    _hooks.valid`\n\n`;
+    _hooks.valid`\n\n1 + 1\n\n`;
+    _hooks.valid`1 + 1\n\n1 + 1`;
+});

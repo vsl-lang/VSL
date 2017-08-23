@@ -66,8 +66,10 @@ export default class VSLParser {
             );
         }
 
-        if (results.results.length > 1)
+        if (results.results.length > 1) {
             throw 'ono ambiguity ;_;';
+        }
+            
         return results.results;
     }
 }

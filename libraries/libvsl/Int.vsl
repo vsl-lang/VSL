@@ -1,7 +1,7 @@
 import libc
 
 /**
- * An integer. Defines as a 32-bit or 4-byte integer, use this for day-to-day
+ * An integer. Defined as a 32-bit or 4-byte integer, use this for day-to-day
  * numerical operations
  */
 public class Int: SignedNumber<Int> {

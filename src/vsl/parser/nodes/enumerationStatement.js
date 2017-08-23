@@ -8,14 +8,15 @@ import CodeBlock from './codeBlock';
 export default class ClassStatement extends Node {
 
     /** @override */
-    get fancyName() { return "class" }
+    get fancyName() { return "enum" }
     
     /**
-     * Constructs a generic class statement
+     * Constructs a generic enumeration statement
      *
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the class
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
+     * @param {Identifier[]} members - The members of the enumeration
      * @param {CodeBlock} statements - The class's body
      * @param {Annotation[]} annotations - The annotations of the class
      * @param {Object} position - a position from nearley
@@ -24,6 +25,7 @@ export default class ClassStatement extends Node {
         access: string[],
         name: Identifier,
         superclasses: Identifier[],
+        members: Identifier[],
         statements: CodeBlock,
         annotations: Annotation[],
         position: Object
@@ -39,6 +41,9 @@ export default class ClassStatement extends Node {
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
 
+        /** @type {Identifier[]} */
+        this.members = members;
+
         /** @type {CodeBlock} */
         this.statements = statements;
 
@@ -51,12 +56,13 @@ export default class ClassStatement extends Node {
 
     /** @override */
     toString() {
-        return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
+        return `${this.annotations.join("\n") + (this.annotations.length ? " " : "")}`+
         `${this.access.join(" ")}${this.access.length ? " " : ""}class` +
         ` ${this.name}: ${
             this.superclasses === null ?
             "Object" : this.superclasses.join(", ")
-        } ${this.statements}`
+        } ${this.members.join("\n")}
+        ${this.statements}`
     }
 
     /** @override */
