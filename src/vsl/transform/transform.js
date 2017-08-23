@@ -11,6 +11,8 @@ import VSLTransformer from './transformers/vsltransformer';
  * @param {?TransformationContext} context - The context to pass to the
  *                                         first transformer, should be
  *                                         propogated to the next.
+ * @throws {TransformError} Passes may throw TransformationErrors which should
+ *                          be handled.
  * @return {TransformationContext} The context of the last transformer
  */
 export default function transform(ast: CodeBlock[], context: TransformationContext) {

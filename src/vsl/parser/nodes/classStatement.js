@@ -1,11 +1,11 @@
-import Node from './node';
+import DeclarationStatement from './declarationStatement';
 import CodeBlock from './codeBlock';
 
 /**
  * Wraps a class
  *
  */
-export default class ClassStatement extends Node {
+export default class ClassStatement extends DeclarationStatement {
 
     /** @override */
     get fancyName() { return "class" }
@@ -28,10 +28,7 @@ export default class ClassStatement extends Node {
         annotations: Annotation[],
         position: Object
     ) {
-        super(position);
-
-        /** @type {string} */
-        this.access = access;
+        super(access, position);
 
         /** @type {Identifier} */
         this.name = name;
@@ -44,9 +41,6 @@ export default class ClassStatement extends Node {
 
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
-
-        /** @type {ScopeTypeItem} */
-        this.scopeRef = null;
     }
 
     /** @override */

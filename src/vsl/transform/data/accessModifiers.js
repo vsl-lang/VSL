@@ -1,4 +1,4 @@
 export default {
-    Scope: ["public", "private", "readonly"],
+    Scope: ["public", "private", "protected"],
     Membership: ["static"]
 };

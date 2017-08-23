@@ -9,9 +9,6 @@ import * as pass from '../passes/';
 export default class VSLPreprocessor extends Transformer {
     constructor(context: TransformationContext) {
         super([
-            // Minor optimizations which can usually be done by LLVM
-            pass.FoldBinaryIntegerExpression,
-
             // Checks, pretty important. Type checks are preformed by the
             // deductor.
             pass.VerifyFunctionAccessScope,

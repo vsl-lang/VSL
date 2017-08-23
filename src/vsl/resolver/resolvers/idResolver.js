@@ -5,6 +5,8 @@ import TypeResolver from '../typeResolver';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 
+import e from '../../errors';
+
 /**
  * Resolves `Idenifier`s in terms of type and declaration. This will do a lookup
  * but also check for valid candidates in terms of further chaining. This may
@@ -51,6 +53,8 @@ export default class IdResolver extends TypeResolver {
             // they aren't need
             const allowVoid = negotiate(ConstraintType.VoidableContext);
             
+            // Basic filter which removed candidates which aren't either funcs
+            // or have less arguments than called with,
             this.node.typeCandidates = scope
                 .getAll(rootId)
                 .filter(
@@ -100,9 +104,8 @@ export default class IdResolver extends TypeResolver {
         if (this.node.typeCandidates.length === 0) {
             this.emit(
                 `Use of ${rootId} has no types which it can be deducted to\n` +
-                `in this context. This is likely an internal bug as this\n` +
-                `means that the identifier refers to a variable which\n` +
-                `already has no valid type candidates.`,
+                `in this context. This means the variable is one type but  ` +
+                `everything to work it would need to be a different type.`,
                 e.CANNOT_RESOLVE_IDENTIFIER
             );
         }

@@ -18,7 +18,6 @@
   </p>
   <p align="center">
     <a href="https://staging.vihan.org/VSL/app">Website</a> &mdash;
-    <a href="#">Download</a> &mdash;
     <a href="https://staging.vihan.org/VSL/docs">Documentation</a>
   </p>
   <p align="center">
@@ -29,7 +28,20 @@
 VSL is a modern, powerful, fast, and easy to write programming language designed
 for the 21st century.
 
----
+
+## Download
+
+You can either build from source (see Building) or installed a pre-compiled
+binary/executable:
+
+|    Windows    |     macOS     |     Linux     |
+| :-----------: | :-----------: | :-----------: |
+| [Download][1] | [Download][2] | [Download][3] |
+
+
+  [1]: https://staging.vihan.org/VSL/vsl.exe
+  [2]: https://staging.vihan.org/VSL/macos/vsl
+  [3]: https://staging.vihan.org/VSL/linux/vsl
 
 ## Building
 

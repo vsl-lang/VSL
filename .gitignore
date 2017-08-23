@@ -13,3 +13,4 @@ src/vsl/parser/parser.js
 .nyc_output
 .on-save.json
 /app
+vsl-*

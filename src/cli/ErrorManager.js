@@ -1,5 +1,5 @@
 import ParserError from '../vsl/parser/parserError';
-import colors from 'colors';
+import c from './colorSupport';
 
 /**
  * Manages error handling for VSL
@@ -53,9 +53,13 @@ export default class ErrorManager {
             )
         }
         else if (error instanceof ParserError) {
+            let positionData = error.position ?
+                ` (${fileName}${error.position.line}:${error.position.column})` :
+                "";
+            
             this.rawError(
                 "Syntax Error",
-                error.message + ` (${fileName}:${error.position ? error.position.line : "?"}:${error.position ? error.position.column : ""})`,
+                error.message + positionData,
                 error.position ? this._highlight(src, error.position) : ""
             )
         }
@@ -93,17 +97,14 @@ export default class ErrorManager {
         let maxLineLength = (endLine + "").length;
         let res = [];
         
-        let prefix = " | ";
-        if (this.shouldColor) prefix = prefix.yellow;
+        let prefix = this.setYellow(" | ");
         
         for (let i = startLine; i <= endLine; i++) {
-            let start = this._leftPad(i + 1 + "", maxLineLength);
-            if (this.shouldColor) start = start.yellow;
+            let start = this.setYellow(this._leftPad(i + 1 + "", maxLineLength));
             
             res.push(start + prefix + lines[i]);
             if (i === pos.line) {
-                let carets = this._repeat("^", pos.length);
-                if (this.shouldColor) carets = carets.yellow;
+                let carets = this.setYellow(this._repeat("^", pos.length));
                 
                 res.push(
                     this._repeat(" ", maxLineLength) + prefix +
@@ -115,6 +116,26 @@ export default class ErrorManager {
         return res.join("\n");
     }
     
+    /** @private */
+    setYellow(text) {
+        if (!this.shouldColor) return;
+        return `\u001B[${
+            c.has16m ?
+            "38;2;251;150;51" :
+            "33"
+        }m${text}\u001B[0m`
+    }
+    
+    /** @private */
+    setRed(text) {
+        if (!this.shouldColor) return;
+        return `\u001B[1;${
+            c.has256 ?
+            "38;5;202" :
+            "31"
+        }m${text}\u001B[0m`
+    }
+    
     /**
      * Prints a raw error
      *
@@ -123,7 +144,7 @@ export default class ErrorManager {
      * @param {string} data  Following lines
      */
     rawError(type, title, data) {
-        process.stderr.write(`${this.shouldColor ? type.red.bold : type}: ${title}\n\n`)
+        process.stderr.write(`${this.setRed(type)}: ${title}\n\n`)
         process.stderr.write(data.replace(/^|\n/g, "$&    ") + "\n\n");
     }
 }

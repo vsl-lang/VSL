@@ -6,6 +6,7 @@ import t from '../../parser/nodes';
 import { RootResolver } from '../../resolver/resolvers';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
+import TypeCandidate from '../../resolver/typeCandidate';
 
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
@@ -32,7 +33,11 @@ export default class TypeDeductAssignment extends Transformation {
             if (evalType === null) return null;
 
             if (type === ConstraintType.RequestedTypeResolutionConstraint)
-                return [new ScopeTypeItem(evalType.identifier.rootId)];
+                return [
+                    new TypeCandidate(
+                        new ScopeTypeItem(evalType.identifier.rootId)
+                    )
+                ];
             else
                 return null;
         });

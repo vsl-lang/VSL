@@ -1,5 +1,4 @@
 import FixIt from './FixIt';
-import colors from 'colors';
 
 /**
  * Controls and centralizes FIX-IT behavior. This is a helper class but if it
@@ -35,8 +34,8 @@ export default class FixItController {
         /** @private */
         this.output = output;
         
-        /** @type {boolean} */
-        this.shouldColor = false;
+        /** @type {?FixItColors} */
+        this.colorizer = null;
     }
     
     /** @private */
@@ -58,12 +57,12 @@ export default class FixItController {
     
     /** @private */
     _color(string) {
-        return this.shouldColor ? string.green.bold : string;
+        return this.colorizer ? this.colorizer.accent(string) : string;
     }
     
     /** @private */
     _colorText(string) {
-        return this.shouldColor ? string.bold : string;
+        return this.colorizer ? this.colorizer.color(string) : string;
     }
     
     /**
