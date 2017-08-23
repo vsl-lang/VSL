@@ -105,7 +105,7 @@ Annotations
 Annotation
    -> "@" %identifier ("(" _ delimited[AnnotationValue {% id %}, _ "," _] _
         ")" {% nth(2) %}):? {%
-        (data, location) => new t.Annotation(data[1][0], data[2], location + 1)
+        (data, location) => new t.Annotation(data[1][0], data[2], location)
     %}
 AnnotationValue
    -> %identifier {% mid %}
@@ -277,8 +277,11 @@ Ternary
     %}
     | Assign {% id %}
 Assign
-   -> BinaryOpRight[Assign, ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
-        "*=" | "%=" | "**=" | "&=" | "|=" | "^="), Is] {% id %}
+   -> Lvalue ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
+        "*=" | "%=" | "**=" | "&=" | "|=" | "^=") _ Assign {%
+            (data, location) => new t.AssignmentExpression(data[1][0], data[0], data[3])
+        %}
+    | Is {% id %}
 Is
    -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison
@@ -485,7 +488,6 @@ Literal
     | %string    {% literal %}
     | Array      {% id %}
     | Dictionary {% id %}
-    | Tuple      {% id %}
     | Set        {% id %}
 
 Array

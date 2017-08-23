@@ -61,7 +61,7 @@ export default class VSLParser {
             // console.log(e.toString());
             let pos = this.parser.lexer.positions[e.offset];
             throw new ParserError(
-                `Unexpected token ${e.message.match(/Unexpected (.+)\n/)[1]}`,
+                `Unexpected token`,
                 pos
             );
         }
