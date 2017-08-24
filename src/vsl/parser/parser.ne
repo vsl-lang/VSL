@@ -239,26 +239,26 @@ FunctionBody
 # ============================================================================ #
 
 BinaryOp[self, ops, next]
-   -> $self $ops _ $next {%
+   -> $self _ $ops _ $next {%
         (data, location) =>
-            new t.BinaryExpression(data[0][0], data[3][0], data[1][0][0].value,
+            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value,
                 data[0][0].isClosure ?
                     (data[0][0].isClosure = false) || true :
-                    data[3][0].isClosure ?
-                        (data[3][0].isClosure = false) || true :
-                        data[0][0] instanceof t.Whatever || data[3][0] instanceof t.Whatever,
+                    data[4][0].isClosure ?
+                        (data[4][0].isClosure = false) || true :
+                        data[0][0] instanceof t.Whatever || data[4][0] instanceof t.Whatever,
                 location)
     %}
     | $next {% mid %}
 BinaryOpRight[self, ops, next]
-   -> $next $ops _ $self {%
+   -> $next _ $ops _ $self {%
         (data, location) =>
-            new t.BinaryExpression(data[0][0], data[3][0], data[1][0][0].value,
+            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value,
                 data[0][0].isClosure ?
                     (data[0][0].isClosure = false) || true :
-                    data[3][0].isClosure ?
-                        (data[3][0].isClosure = false) || true :
-                        data[0][0] instanceof t.Whatever || data[3][0] instanceof t.Whatever,
+                    data[4][0].isClosure ?
+                        (data[4][0].isClosure = false) || true :
+                        data[0][0] instanceof t.Whatever || data[4][0] instanceof t.Whatever,
                 location)
     %}
     | $next {% mid %}
@@ -277,7 +277,7 @@ Ternary
     %}
     | Assign {% id %}
 Assign
-   -> Lvalue ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
+   -> Assign _ ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
         "*=" | "%=" | "**=" | "&=" | "|=" | "^=") _ Assign {%
             (data, location) => new t.AssignmentExpression(data[1][0], data[0], data[3])
         %}
@@ -488,6 +488,7 @@ Literal
     | %string    {% literal %}
     | Array      {% id %}
     | Dictionary {% id %}
+    | Tuple      {% id %}
     | Set        {% id %}
 
 Array

@@ -68,6 +68,47 @@ export default class Node {
         throw new Error("Must implement Node#children");
     }
     
+    /**
+     * Returns the string representation of the Node.
+     * @return {string} Tree representation of this node.
+     */
+    toAst() {
+        let children = this.children;
+        let string = `\u001B[1m${this.constructor.name}\u001B[0m` + "\n";
+        let indentamt = " ";
+        
+        function indent(string, isLast) {
+            let marker = !isLast ? ' │ ' : '   ';
+            return string.replace(/\n(.)/g, `\n${marker}$1`)
+        }
+        
+        function addSpacing(string) {
+            return string.replace(/\n(.)/g, `\n $1`)
+        }
+        
+        if (!children) return string;
+        for (let i = 0; i < children.length; i++) {
+            let child = this[children[i]];
+            let isLast = i === children.length - 1;
+            let connector = isLast ? ` └ ` : ` ├ `// + `(${i} ${children.length - 1})`;
+            
+            if (child instanceof Array) {
+                string += connector + children[i] + "[]" + "\n";
+                for (let j = 0; j < child.length; j++) {
+                    let lastSub = j === child.length - 1;
+                    let subConnector = lastSub ? " └ " : " ├ ";
+                    let subchild = child[j];
+                    
+                    string += indentamt + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
+                }
+            } else {
+                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + indent(child.toAst(), isLast);
+            }
+        }
+        
+        return string;
+    }
+    
     // /**
     //  * Returns the string representation of the Node.
     //  * @param {string} padding String to add to the left of the tree

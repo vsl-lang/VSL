@@ -36,7 +36,7 @@ export default class Literal extends Node {
     
     /** @override */
     get children() {
-        return null;
+        return [];
     }
     
     /** @override */

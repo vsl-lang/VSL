@@ -31,6 +31,7 @@ export default class Default extends CLIMode {
                 ["-dregen", "--dry-run-gen", "Performs a dry-run but outputs the generated AST code", { mode: "dryRunGen" }],
                 ["-dscope", "--debug-scope", "Generates and outputs the scope tree",                  { mode: "scope" }],
                 ["-dast"  , "--debug-ast"  , "Sets the context mode to an AST printer.",              { mode: "ast" }],
+                ["-dasts" , "--debug-asts" , "Sets the context mode to an AST printer.",              { mode: "asts" }],
                 ["-dlex"  , "--debug-lexer", "Sets the context mode to the tokenizer output.",        { mode: "lex" }]
             ]]
         ]);
@@ -309,6 +310,10 @@ export default class Default extends CLIMode {
                     showHidden: true,
                     depth: null
                 }));
+            },
+            
+            "asts": (ast) => {
+                console.log(ast[0].toAst());
             },
             
             "scope": (ast) => {

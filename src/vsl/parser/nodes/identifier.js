@@ -28,7 +28,7 @@ export default class Identifier extends Node {
     
     /** @override */
     get children() {
-        return null;
+        return [];
     }
     
     /** @override */
