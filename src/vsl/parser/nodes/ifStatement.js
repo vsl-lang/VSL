@@ -25,4 +25,8 @@ export default class IfStatement extends Node {
         /** @type {falseBody} */
         this.falseBody = falseBody;
     }
+    
+    get children() {
+        return [ 'condition', 'trueBody', 'falseBody' ]
+    }
 }

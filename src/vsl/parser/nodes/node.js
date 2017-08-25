@@ -101,8 +101,10 @@ export default class Node {
                     
                     string += indentamt + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
                 }
-            } else {
+            } else if (child) {
                 string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + indent(child.toAst(), isLast);
+            } else {
+                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + "\u001B[31mnull\u001B[0m\n";
             }
         }
         

@@ -13,6 +13,7 @@ const NodeTypes = require('./vsltokentype'),
   special_loop = freeze({ test: x => x[1] === NodeTypes.SpecialArgument }),
   special_identifier = freeze({ test: x => x[1] === NodeTypes.SpecialIdentifier }),
   documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
+  nativeBlock = freeze({ test: x => x[1] === NodeTypes.NativeBlock }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
@@ -57,11 +58,14 @@ statement
 #                                Control Flow                                  #
 # ============================================================================ #
 
+CodeBlockBody
+    -> "{" CodeBlock[statement {% id %}] "}" {% nth(1) %}
+
 IfStatement
-   -> "if" _ InlineExpression _ CodeBlock[statement] (
+   -> "if" _ InlineExpression _ CodeBlockBody (
         _ "else" _ (
-            "{" CodeBlock[statement] "}" {% nth(1) %} |
-            CodeBlock[statement]         {% id %}
+            CodeBlockBody {% id %} |
+            IfStatement   {% id %}
         ) {% nth(3) %}
     ):? {% (d, l) => new t.IfStatement(d[2], d[4], d[5], l) %}
 
@@ -232,6 +236,12 @@ FunctionBody
    -> "{" (CodeBlock[statement {% id %}] {% id %}) "}" {% nth(1) %}
     | "external" "(" %identifier ")" {%
         (data, location) => new t.ExternalMarker(data[2][0], location)
+    %}
+    | NativeBlock {% id %}
+
+NativeBlock
+    -> %nativeBlock {%
+        (data, location) => new t.NativeBlock(data[0].value, location)
     %}
 
 # ============================================================================ #
