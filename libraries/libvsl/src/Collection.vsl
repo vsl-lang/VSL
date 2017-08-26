@@ -1,0 +1,24 @@
+/**
+ * A collection is a finite 'collection' of objects. These can all be accessed
+ * in any direction or way whether it be linear etc. Collections can have
+ * implicitly async interation.
+ */
+public interface Collection<
+    Key,
+    Value = Key,
+    IteratorType = Value
+>: Iterable<IteratorType> {
+    
+    public func contains(value: Value) -> Bool
+    
+}
+
+extend Collection where IteratorType is Equatable {
+    public func contains(value: Value) -> Bool default {
+        for collectionItem in self:
+            if collectionItem == value:
+                return true
+        
+        return false
+    }
+}

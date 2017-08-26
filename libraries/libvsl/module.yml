@@ -11,7 +11,7 @@ version: 0.0.1-alpha.1
 # stdlib. Yes, there is infinite loop protection but not for the stdlib because
 # why would you remove this. If you can provide me a half-decent reason for why
 # it should exist I'll add it but that reason does not exist.
-nostdlib: true
+stdlib: false
 
 # Specify that this is library (i.e. not an executable)
 # Dynamic library because it doesn't make sense for each VSL proc to launch its

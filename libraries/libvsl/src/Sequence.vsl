@@ -1,0 +1,18 @@
+/**
+ * A sequence is any indexable collection which can be iterated through.
+ */
+public interface Sequence<Type>: Collection<Key: IndexingType, Value: Type, IteratorType: Type> {
+    public typealias IndexingType = Int
+    
+    public var length: IndexingType { get }
+    public subscript(value: Int) -> Type { get set }
+    
+    public var iterator: Iterable { get }
+}
+
+extend Sequence: Equatable where Type is Equatable {
+    public static func ==(lhs: Sequence, rhs: Sequence) -> Bool {
+        if lhs.length != rhs.length: return false
+        func
+    }
+}

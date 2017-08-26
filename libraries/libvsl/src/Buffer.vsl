@@ -1,0 +1,138 @@
+/**
+ * Describes a buffer which is a stored sequence of bytes optimized for forward
+ * reading & writing. Use this as an efficient function to safely perform
+ * byte/bit-level actions.
+ *
+ * This works by tracking an 'offset' from the beginning of the buffer and can
+ * be moved.
+ *
+ * Uses are for memory-work but also as a backing layer for collections such as
+ * arrays, lists, and hash buckets.
+ */
+public class Buffer: Iterable<Byte> {
+    private var back: Pointer<Byte>
+    private var lastOffset: Pointer<Byte>
+    private var size: UInt
+    
+    /**
+     * Represents the method which should be used for allocation. This generally
+     * delegates to libc functions such as `malloc`, `calloc` and `realloc`
+     */
+    public enum AllocType = {
+        // Allocates a raw section of memory. The result may have random bytes
+        raw,
+        
+        // Allocates a section of memory. This zero-initalizes it
+        zero
+    }
+    
+    /**
+     * Creates a new buffer of a given size
+     *  - size: The amount of bytes the buffer should be allocated with
+     *  - fill: The fill type, see @`AllocType`
+     */
+    public init(size: UInt, fill: AllocType = .raw) {
+        if AllocType == .raw:
+            self.back = malloc(length: size)
+        else:
+            self.back = calloc(length: size, size: 8)
+        
+        self.lastOffset = self.back
+        self.size = size
+    }
+    
+    /**
+     * Reads the byte at the current offset. Does not increment
+     * returns: the read byte
+     */
+    public func read() -> Byte {
+        return self.lastOffset.value()
+    }
+    
+    /**
+     * Writes a byte at the current offset
+     * - byte: byte placed with endianness of system
+     * return: true if was succesful. false if out-of-bounds
+     */
+    public func write(byte: Byte) -> Bool {
+        if (self.lastOffset - self.back) == self.size: return false
+        
+        self.lastOffset.store(byte)
+        self.lastOffset += 1
+        
+        return true
+    }
+    
+    /**
+     * Writes another buffer to the current one. This writes from the current
+     * offset. To copy a buffer you may want to `.move(to: 0)`
+     * - buffer: The source buffer which to read from. This should be smaller
+     *   than the current one.
+     * return: true if succesful. false if out-of-bounds
+     */
+    public func write(buffer: Buffer) -> Bool {
+        let offset = self.lastOffset - self.back
+        let remainingWidth = self.size - offset
+        
+        if remainingWidth < buffer.size: return false
+        
+        for byte in buffer { self.write(byte: byte) }
+        return true
+    }
+    
+    public func move(down offset: UInt) -> Bool {
+        while offset --> 0 {
+            if self.lastOffset == self.back: return false
+            
+            self.lastOffset -= 1
+            offset -= 1
+        }
+        
+        return true
+    }
+    
+    public func move(up offset: UInt) -> Bool {
+        while offset --> 0 {
+            if (self.lastOffset - self.back) == self.size: return false
+            
+            self.lastOffset += 1
+            offset -= 1
+        }
+        
+        return true
+    }
+    
+    public func move(to offset: UInt) -> Bool {
+        if self.size >= offset: return false
+        
+        self.lastOffset = self.back + offset
+        
+        return true
+    }
+    
+    public class Iterator: VSL.Iterator<Byte> {
+        private let buf: Buffer
+        private let offset: UInt = 0
+        
+        init(buffer: Buffer) {
+            self.buf = buffer
+        }
+        
+        public func next() -> Byte? {
+            let mainOffset = self.buf.lastOffset
+            defer {
+                self.offset += 1
+                self.buf.lastOffset = mainOffset
+            }
+            
+            if !self.buf.move(to: self.offset): return nil
+            return self.buf.read()
+        }
+    }
+    
+    public var iterator: {
+        return Buffer.Iterator(self)
+    }
+    
+    deinit { free(self.back) }
+}

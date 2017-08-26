@@ -1,0 +1,11 @@
+/**
+ * Describes an object which can be iterated through, optionally lazily. You can
+ * use this along with `Iteratable` to create an object which can use native
+ * iteration constructs. It is reccomended to minimize polymorphism to allow for
+ * optimizations. If only static fields, initalizers, and the `next()` function
+ * are implemented (with no dynamic polymorphism) this will be optimized to be
+ * as fast (or faster) than a typical for(;;) loop.
+ */
+public interface Iterator<T> {
+    public func next() -> T?
+}
