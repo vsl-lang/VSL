@@ -35,4 +35,9 @@ export default class Identifier extends Node {
     toString() {
         return this.identifier.rootId;
     }
+
+    /** @override */
+    toAst() {
+        return `\u001B[1mIdentifier\u001B[0m ${this.identifier.rootId}\n`;
+    }
 }

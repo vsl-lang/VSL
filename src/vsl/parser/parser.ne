@@ -8,6 +8,7 @@ const NodeTypes = require('./vsltokentype'),
   freeze = Object.freeze,
   integer = freeze({ test: x => x[1] === NodeTypes.Integer }),
   decimal = freeze({ test: x => x[1] === NodeTypes.Decimal }),
+  regex = freeze({ test: x => x[1] === NodeTypes.Regex }),
   string = freeze({ test: x => x[1] === NodeTypes.String }),
   identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
   special_loop = freeze({ test: x => x[1] === NodeTypes.SpecialArgument }),
@@ -59,22 +60,22 @@ statement
 # ============================================================================ #
 
 CodeBlockBody
-    -> "{" CodeBlock[statement {% id %}] "}" {% nth(1) %}
+   -> "{" CodeBlock[statement {% id %}] "}" {% nth(1) %}
+    | statement {% (d, l, f) => d[0] instanceof t.CodeBlock ? f : d[0] %}
 
 IfStatement
    -> "if" _ InlineExpression _ CodeBlockBody (
         _ "else" _ (
-            CodeBlockBody {% id %} |
-            IfStatement   {% id %}
+            CodeBlockBody {% id %}
         ) {% nth(3) %}
     ):? {% (d, l) => new t.IfStatement(d[2], d[4], d[5], l) %}
 
 ForStatement
-   -> "for" _ InlineExpression _ CodeBlock[statement] {%
+   -> "for" _ InlineExpression _ CodeBlockBody {%
         (d, l) => new t.ForStatement(d[2], d[4], l)
     %}
 WhileStatement
-   -> "while" _ InlineExpression _ CodeBlock[statement] {%
+   -> "while" _ InlineExpression _ CodeBlockBody {%
         (d, l) => new t.WhileStatement(d[2], d[4], l)
     %}
 
@@ -349,6 +350,7 @@ function recursiveProperty(head, tail, optional) {
 }
 
 function recursiveCommandChain(head, tail, optional) {
+  // TODO: correct positions
   while (head.head) {
       tail.unshift(head);
       head = head.head;
@@ -362,9 +364,9 @@ function recursiveCommandChain(head, tail, optional) {
     }
     if (tail[i + 1].arguments && tail[i + 1].arguments.length === 1 && tail[i + 1].arguments[0].value instanceof t.CodeBlock) {
       if (tail[i] instanceof t.PropertyExpression)
-        tail[i] = new t.FunctionCall(tail[i].head, [tail[i].tail].concat(tail[i + 1].arguments[0].value));
+        tail[i] = new t.FunctionCall(tail[i].head, [tail[i].tail].concat([new t.ArgumentCall(tail[i + 1].arguments[0].value, null, tail[i + 1].arguments[0].position)]));
       else
-        tail[i].arguments.push(tail[i + 1].arguments[0].value);
+        tail[i].arguments.push(new t.ArgumentCall(tail[i + 1].arguments[0].value, null, tail[i + 1].arguments[0].position));
       tail[i + 1] = tail[i];
       i++;
     } else
@@ -379,21 +381,24 @@ function recursiveCommandChain(head, tail, optional) {
 
 # === Command Chain === #
 CommandChain
-   -> Property CommandChainPart:+ {% (d, l) => new t.ExpressionStatement(recursiveCommandChain(d[0], d[1]), false, false, l) %}
+   -> Property CommandChainPartHead CommandChainPart:* {%
+        (data, location, reject) => new t.ExpressionStatement(recursiveCommandChain(data[0], [data[1]].concat(data[2])), false, false, location)
+    %}
 
 Closure
    -> "{" CodeBlock[InlineExpression {% id %}] "}" {% nth(1) %}
 
+CommandChainPartHead
+   -> CommandChainPart {% id %}
+    | Closure          {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], null, l)], false, l) %}
+
 CommandChainPart
-   -> (ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% d => [d[0]].concat(d[1]) %}):? Closure {% (d, l) => new t.FunctionCall(null, (d[0] || []).concat([new t.ArgumentCall(d[1], null, l)]), false, l) %}
+   -> ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ Closure {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]).concat([new t.ArgumentCall(d[2], null, l)]), false, l) %}
     | ArgumentCallHead (_ "," _ ArgumentCall {% nth(3) %}):+ {% (d, l) => new t.FunctionCall(null, [d[0]].concat(d[1]), false, l) %}
-    | %identifier ":" InlineExpression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.ArgumentCall(d[2].expression, d[0], l) %}
+    | Identifier ":" InlineExpression {% (d, l, f) => d[2].expression instanceof t.UnaryExpression ? f : new t.FunctionCall(null, [new t.ArgumentCall(d[2].expression, d[0], l)], false, l) %}
     | InlineExpression {%
         (d, l, f) =>
-            [
-                t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever,
-                t.Subscript, t.PropertyExpression
-            ].some(type => d[0].expression instanceof type) || (
+            [t.UnaryExpression, t.Tuple, t.SetNode, t.ArrayNode, t.Whatever, t.Subscript, t.PropertyExpression].some(type => d[0].expression instanceof type) || (
                 d[0].expression instanceof t.ExpressionStatement && d[0].expression.parenthesized
             ) ?
                 f :
@@ -403,17 +408,14 @@ CommandChainPart
     %}
 
 ArgumentCallHead
-   -> %identifier ":" InlineExpression {%
-        (d, l, f) =>
-            d[2].expression instanceof t.UnaryExpression ?
-            f :
-            new t.ArgumentCall(d[2].expression, d[0], l)
+   -> Identifier ":" InlineExpression {%
+        (d, l) => new t.ArgumentCall(d[2].expression, d[0], l)
         %}
-    | InlineExpression {%
+    | Property {%
         (d, l, f) =>
-            d[0].expression instanceof t.UnaryExpression ?
+            d[0] instanceof t.UnaryExpression ?
             f :
-            new t.ArgumentCall(d[0].expression, null, l)
+            new t.ArgumentCall(d[0], null, l)
         %}
 
 # === Properties === #
@@ -464,14 +466,14 @@ nullableProperty
     | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")"
         {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
     # function with no named args (including empty arglist)
-    | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item)), l) %}
+    | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item, null, l)), l) %}
     # function with 1 unnamed arg
-    | "(" _ InlineExpression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], d[2].expression.position)], l) %}
+    | "(" _ InlineExpression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], null, d[2].expression.position)], l) %}
 
 ArgumentCall -> NamedArgumentCall   {% id %}
               | UnnamedArgumentCall {% id %}
 
-NamedArgumentCall -> %identifier ":" InlineExpression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
+NamedArgumentCall -> Identifier ":" InlineExpression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
 
 UnnamedArgumentCall -> InlineExpression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
@@ -479,7 +481,7 @@ FunctionCallList
    -> delimited[FunctionCallArgument {% id %}, _ "," _]:? {% (d, l) => new t.FunctionCall(null, d[0] || [], l) %}
 
 FunctionCallArgument
-   -> %identifier _ ":" _ InlineExpression {% (d, l) => new t.ArgumentCall(d[4].expression, d[0], l) %}
+   -> Identifier _ ":" _ InlineExpression {% (d, l) => new t.ArgumentCall(d[4].expression, d[0], l) %}
     | InlineExpression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
 # ============================================================================ #
@@ -496,6 +498,7 @@ Literal
    -> %decimal   {% literal %}
     | %integer   {% literal %}
     | %string    {% literal %}
+    | %regex     {% literal %}
     | Array      {% id %}
     | Dictionary {% id %}
     | Tuple      {% id %}

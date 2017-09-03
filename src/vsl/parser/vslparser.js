@@ -58,20 +58,19 @@ export default class VSLParser {
         try {
             results = this.parser.feed(string);
         } catch(e) {
-            if (e.offset) {
-                let pos = this.parser.lexer.positions[e.offset];
-                throw new ParserError(
-                    `Unexpected token`,
-                    pos
-                );
-            } else {
+            if (!e.offset)
                 throw e;
-            }
+            let pos = this.parser.lexer.positions[e.offset];
+            throw new ParserError(
+                `Unexpected token`,
+                pos
+            );
         }
 
         if (results.results.length > 1) {
             throw new ParserError(
-                `Ambigous parsing (${results.results.length})`
+                `Ambigous parsing (${results.results.length}) for:\n` +
+                results.results.map(result => result.toAst()).join("\n")
             );
         }
             

@@ -7,6 +7,7 @@ print("Hello, World")`;
 func main(args: String[]) {
   print("Hello, World!")
 }`;
+/*
     valid`\
 let fizzbuzz :: (of: Int) -> String
 fizzbuzz(i where i % 3, i % 5) -> "FizzBuzz"
@@ -19,4 +20,5 @@ func fizzbuzz(to i: Int) {
         print fizzbuzz(of: i)
     }
 }`;
+*/
 })

@@ -57,7 +57,6 @@ export default class ErrorManager {
                 ` (${fileName}${error.position.line}:${error.position.column})` :
                 "";
             
-            console.log(error.message);
             this.rawError(
                 "Syntax Error",
                 error.message + positionData,

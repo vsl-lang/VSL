@@ -71,5 +71,6 @@ export default () => describe('Expressions', () => {
         valid`thingy foo, bar {baz}`;
         valid`thingy foo, bar {baz; 1+1}`;
         valid`thingy (foo, bar) {baz; 1+1}`;
+        valid`thingy {foo}`;
     });
 });

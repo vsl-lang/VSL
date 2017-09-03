@@ -74,38 +74,33 @@ export default class Node {
      */
     toAst() {
         let children = this.children;
-        let string = `\u001B[1m${this.constructor.name}\u001B[0m` + "\n";
-        let indentamt = " ";
+        let string = `\u001B[1m${this.constructor.name}\u001B[0m\n`;
         
         function indent(string, isLast) {
-            let marker = !isLast ? ' │ ' : '   ';
-            return string.replace(/\n(.)/g, `\n${marker}$1`)
+            return string.replace(/(?!\n$)\n/g, isLast ? '\n   ' : '\n │ ')
         }
         
         function addSpacing(string) {
-            return string.replace(/\n(.)/g, `\n $1`)
+            return string.replace(/(?!\n$)\n/g, '\n   ')
         }
         
         if (!children) return string;
         for (let i = 0; i < children.length; i++) {
             let child = this[children[i]];
             let isLast = i === children.length - 1;
-            let connector = isLast ? ` └ ` : ` ├ `// + `(${i} ${children.length - 1})`;
+            let connector = isLast ? ' └ ' : ' ├ '; // + `(${i} ${children.length - 1})`;
             
             if (child instanceof Array) {
-                string += connector + children[i] + "[]" + "\n";
+                string += connector + children[i] + '[]\n';
                 for (let j = 0; j < child.length; j++) {
                     let lastSub = j === child.length - 1;
-                    let subConnector = lastSub ? " └ " : " ├ ";
+                    let subConnector = lastSub ? ' └ ' : ' ├ ';
                     let subchild = child[j];
                     
-                    string += indentamt + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
+                    string += '   ' + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
                 }
-            } else if (child) {
-                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + indent(child.toAst(), isLast);
-            } else {
-                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + "\u001B[31mnull\u001B[0m\n";
-            }
+            } else
+                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + (child ? indent(child.toAst(), isLast) : '\u001B[31mnull\u001B[0m\n');
         }
         
         return string;
