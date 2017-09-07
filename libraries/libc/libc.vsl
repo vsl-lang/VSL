@@ -3,7 +3,7 @@
 // VSL is dynamically linked to libc (usually glibc) at runtime. However since
 // the standard library for VSL is itself implemented in VSL. This adds a series
 // of bindings, a "header" file of sorts for VSL, marking the names of which the
-// functions are internally binded too. 
+// functions are externally binded too. 
 // 
 // Note: Not all functions are binded. Only ones used in the VSL standard
 // library.
@@ -36,8 +36,8 @@ public typealias CString = Pointer<Char>
  * @param {Double|Float} base - The base of the power
  * @param {Double|Float} power - The number to raise the base by
  */
-public func pow(base: Double, power: Double) -> Double internal(pow)
-public func pow(base: Float, power: Float) -> Float internal(powf)
+public func pow(base: Double, power: Double) -> Double external(pow)
+public func pow(base: Float, power: Float) -> Float external(powf)
 
 /**
  * Given a pointer to a CString, returns the length as an `Int`. This calls the
@@ -48,7 +48,7 @@ public func pow(base: Float, power: Float) -> Float internal(powf)
  *
  * @param {CString} cstring - A `CString` object which to calculate length of
  */
-public func strlen(cstring: CString) -> CSize internal(strlen)
+public func strlen(cstring: CString) -> CSize external(strlen)
 
 /**
  * Given two CStrings, compares the two C-Strings and determines equality. This
@@ -59,7 +59,7 @@ public func strlen(cstring: CString) -> CSize internal(strlen)
  *
  * @return {Int} `== 0`: The two are equal. `< 0`: `s1` < `s2`. `> 0`: `s1` > `s2`
  */
-public func strcmp(s1: CString, s2: CString) -> Int internal(strcmp)
+public func strcmp(s1: CString, s2: CString) -> Int external(strcmp)
 
 /**
  * Given a CString, copies each byte of the string to the new pointer. This
@@ -68,7 +68,7 @@ public func strcmp(s1: CString, s2: CString) -> Int internal(strcmp)
  * @param {CString} s1 - The source string
  * @param {CString} s2 - The destination pointer which the string will be placed
  */
-public func strcpy(s1: CString, s2: CString) -> Void internal(strcpy)
+public func strcpy(s1: CString, s2: CString) -> Void external(strcpy)
 
 
 // -----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ typealias FILE = OpaquePointer
  *     null-pointer, check for errors. Using the other functions. If you don't
  *     know how to do this (because I don't), go read the C docs.
  */
-public func fopen(filename: CString, opentype: CString) -> FILE internal(fopen)
+public func fopen(filename: CString, opentype: CString) -> FILE external(fopen)
 
 /**
  * This function causes stream to be closed and the connection to the
@@ -115,4 +115,4 @@ public func fopen(filename: CString, opentype: CString) -> FILE internal(fopen)
  *     closed. Check this as the buffer may of not been fully written and that
  *     is usually not good.
  */
-public func fclose(stream: FILE) -> Int internal(fclose)
+public func fclose(stream: FILE) -> Int external(fclose)

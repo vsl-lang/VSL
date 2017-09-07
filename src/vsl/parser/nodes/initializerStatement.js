@@ -3,7 +3,7 @@ import Node from './node'
 /**
  * Matches a class initializer/constructor.
  */
-export default class InitalizerStatement extends Node {
+export default class InitializerStatement extends Node {
     /**
      * Constructs the constructor. A constructor that constructs a constructor
      * is also known as constructorception.

@@ -11,7 +11,10 @@
         "babel-plugin-transform-do-expressions",
         "babel-plugin-transform-function-bind",
         "babel-plugin-transform-export-extensions",
-        "babel-plugin-transform-object-rest-spread"
+        "babel-plugin-transform-object-rest-spread",
+        ["babel-plugin-transform-builtin-extend", {
+            globals: ["Error"]
+        }]
     ],
     "presets": [
         "react",

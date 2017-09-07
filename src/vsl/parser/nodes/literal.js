@@ -36,11 +36,16 @@ export default class Literal extends Node {
     
     /** @override */
     get children() {
-        return null;
+        return [];
     }
     
     /** @override */
     toString() {
         return this.literal;
+    }
+
+    /** @override */
+    toAst() {
+        return `\u001B[1mLiteral\u001B[0m ${this.type === 2 ? JSON.stringify(this.literal) : this.literal}\n`;
     }
 }

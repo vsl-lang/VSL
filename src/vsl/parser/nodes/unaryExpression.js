@@ -16,7 +16,7 @@ export default class UnaryExpression extends Node {
      * @param {string} operator the operator for the expression
      * @param {Object} position a position from nearley
      */
-    constructor (expression: any, operator: string, position: Object) {
+    constructor (expression: any, operator: string, isClosure: boolean, position: Object) {
         super(position);
         
         /** @type {Expression} */
@@ -24,6 +24,9 @@ export default class UnaryExpression extends Node {
         
         /** @type {string} */
         this.op = operator;
+        
+        /** @type {boolean} */
+        this.isClosure = isClosure;
     }
     
     /** @override */

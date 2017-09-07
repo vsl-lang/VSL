@@ -7,7 +7,8 @@ import Node from './node';
 export default class TypeDeclaration extends Node {
     
     constructor(
-        path: Identifier[],
+        head: Identifier,
+        tail: Identifier,
         optional: bool,
         parent: TypeDeclaration,
         fallback: TypeDeclaration,
@@ -15,8 +16,11 @@ export default class TypeDeclaration extends Node {
     ) {
         super(position);
         
-        /** @type {Identifier[]} */
-        this.path = path;
+        /** @type {Identifier} */
+        this.head = head;
+        
+        /** @type {Identifier} */
+        this.tail = tail;
         
         /** @type {bool} */
         this.optional = optional;

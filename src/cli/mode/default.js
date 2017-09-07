@@ -27,8 +27,18 @@ function prompt(string) {
             input: process.stdin,
             output: process.stdout
         });
+        
+        // Handles ANSI colors
+        let _setPrompt = rl.setPrompt;
+        rl.setPrompt = (prompt) => {
+            if (typeof prompt !== 'undefined') {
+                _setPrompt.call(rl, prompt, prompt.split(/[\r\n]/).pop().replace(/\u001b.+?m/g, "").length);
+            }
+        };
+        
         rl.question(string, (res) => {
             resolve(res);
+            rl.setPrompt = _setPrompt;
             rl.close();
         });
     });
@@ -196,8 +206,8 @@ export default class Default extends CLIMode {
             } catch(e) {
                 this.error.cli(
                     e.code === 'ENOENT' ?
-                    `Could not find file ${file}` :
-                    `Could not read file ${file} (${e.code})`
+                    `Could not find file ${files[i]}` :
+                    `Could not read file ${files[i]} (${e.code})`
                 );
             }
             
@@ -219,7 +229,7 @@ export default class Default extends CLIMode {
                 colorSupport.has256 ?
                 "38;5;202" :
                 "31"
-            }m${text}\u001B[0m`
+            }m${text}\u001B[0m`;
         }
         
         let lastCalls = "";
@@ -264,10 +274,6 @@ export default class Default extends CLIMode {
     }
     
     async handle(error, src, { exit = false } = {}) {
-        // console.log(error.node, typeof error.node.position)
-        // if (error.node && typeof error.node.position === 'number') {
-        //     error.node.position = this.parser.parser.lexer.positions[error.node.position];
-        // }
         
         let passedExit = exit;
         if (this.interactive) passedExit = false;

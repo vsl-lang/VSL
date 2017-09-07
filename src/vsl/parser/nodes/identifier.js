@@ -28,11 +28,16 @@ export default class Identifier extends Node {
     
     /** @override */
     get children() {
-        return null;
+        return [];
     }
     
     /** @override */
     toString() {
         return this.identifier.rootId;
+    }
+
+    /** @override */
+    toAst() {
+        return `\u001B[1mIdentifier\u001B[0m ${this.identifier.rootId}\n`;
     }
 }

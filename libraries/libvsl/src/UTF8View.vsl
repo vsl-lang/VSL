@@ -4,7 +4,7 @@
 public class UTF8View: String {
     
     // Internally holds the string
-    private let string: String
+    private const string: String
     
     /**
      * Constructs a UTF8View of a given string. This is the best way and fastest
@@ -25,5 +25,4 @@ public class UTF8View: String {
         // }
         // return counter
     }
-
 }
