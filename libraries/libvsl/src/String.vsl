@@ -21,7 +21,7 @@ import libc
  * Strings are designed to offer a layer of abstraction over their C-counterpart
  * to achieve this, most of the low-level C interfaces have been removed and are
  * marked `@unsafe`, using these will break type-safety. Be advised that in 99%
- * of senarios there is a better way to do something than use these. If you do
+ * of scenarios there is a better way to do something than use these. If you do
  * need a C-String, use `.cString` to obtain a copy of the string (a `CString`).
  */
 public class String<T: StringView = UTF8View>: Equatable {
@@ -33,8 +33,8 @@ public class String<T: StringView = UTF8View>: Equatable {
     //         size_t length;
     //     }
     
-    private let value: CString
-    private let length: CSize
+    private const value: CString
+    private const length: CSize
     
     /**
      * Given a C-String (optionally null-termianted) along with a defined
@@ -120,7 +120,7 @@ public class String<T: StringView = UTF8View>: Equatable {
     @inline @unsafe
     public func byte(at index: Int64) -> Char {
         // Copy pointer, increment by `index`
-        let ptr: Pointer<Char> = self.value.getptr(at: index)
+        const ptr: Pointer<Char> = self.value.getptr(at: index)
         
         // Return the value
         return ptr.dereference()
@@ -150,7 +150,7 @@ public class String<T: StringView = UTF8View>: Equatable {
     
     
     // Internally maintains a CharacterView of this string
-    private lazy let characterView: T = T(of: self)
+    private lazy const characterView: T = T(of: self)
     
     /**
      * Determine the UTF-8 length of this string. This means glyphs such as

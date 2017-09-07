@@ -49,7 +49,7 @@ export default class AssignmentStatement extends DeclarationStatement {
     /** @override */
     toString() {
         let t;
-        return (this.type === 0 ? "var" : "let") +
+        return (this.type === 0 ? "let" : "const") +
             ` ${this.identifier.identifier}` +
             ` ${(t = this.identifier.type || (this.value && this.value.exprType) || null) ? `: ${t} ` : ""}` +
             (this.value ? "= " + this.value : "");

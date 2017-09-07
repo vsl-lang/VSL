@@ -15,7 +15,7 @@ export default class Subscript extends Node {
      * @param {Expression} expression the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor (head: Expression, expression: Expression, nullable: boolean, position: Object) {
+    constructor (head: Expression, expression: Expression, nullable: boolean, isClosure: boolean, position: Object) {
         super(position);
 
         /** @type {Expression} */
@@ -26,6 +26,9 @@ export default class Subscript extends Node {
         
         /** @type {boolean} */
         this.nullable = nullable;
+        
+        /** @type {boolean} */
+        this.isClosure = isClosure;
     }
     
     /** @override */

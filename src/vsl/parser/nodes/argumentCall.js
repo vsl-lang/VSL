@@ -24,12 +24,12 @@ export default class ArgumentCall extends Node {
         this.value = value;
         
         /** @type {?Identifier} */
-        this.name = name ? name[0] : name;
+        this.name = name;
     }
     
     /** @override */
     get children () {
-        return ['value'];
+        return this.name ? ['name', 'value'] : ['value'];
     }
     
     /** @override */

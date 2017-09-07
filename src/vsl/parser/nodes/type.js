@@ -7,14 +7,18 @@ import Node from './node';
 export default class Type extends Node {
     
     constructor(
-        path: Node[],
+        head: Node,
+        tail: Node,
         optional: bool,
         position: Object
     ) {
         super(position);
         
-        /** @type {Node[]} */
-        this.path = path;
+        /** @type {Node} */
+        this.head = head;
+        
+        /** @type {Node} */
+        this.tail = tail;
         
         /** @type {bool} */
         this.optional = optional;
@@ -22,11 +26,11 @@ export default class Type extends Node {
     
     /** @override */
     get children() {
-        return ['path'];
+        return ['head', 'tail'];
     }
     
     /** @override */
     toString() {
-        return this.path[0] + (this.optional ? "?" : "");
+        return this.head.toString() + '.' + this.tail.toString() + (this.optional ? "?" : "");
     }
 }
