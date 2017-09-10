@@ -99,8 +99,10 @@ export default class Node {
                     
                     string += '   ' + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
                 }
-            } else
-                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + (child ? indent(child.toAst(), isLast) : '\u001B[31mnull\u001B[0m\n');
+            } else {
+                let childBody = child ? child.toAst ? indent(child.toAst(), isLast) : '\u001B[31mbad node\u001B[0m\n' : '\u001B[31mnull\u001B[0m\n';
+                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + childBody;
+            }
         }
         
         return string;

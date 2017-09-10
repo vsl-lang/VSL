@@ -23,6 +23,7 @@ export default class ModuleError {
         invalidVersion: 4,
         invalidSourceType: 5,
         invalidSourceItemType: 6,
+        invalidStdlibSpec: 6,
         invalidTargetType: 7
     }
 }

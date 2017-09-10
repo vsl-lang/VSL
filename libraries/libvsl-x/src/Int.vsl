@@ -1,5 +1,9 @@
 @primitive(Integer, _precType)
 public class Int {
-    public static func +(lhs: Int, rhs: Int) -> Int {
+
+    @backend(js)
+    public static func +(lhs: Int, rhs: Int) -> Int native {
+        return lhs + rhs
     }
+    
 }

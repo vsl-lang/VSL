@@ -1,0 +1,24 @@
+/**
+ * Represents a DOM Event
+ */
+public interface Event {
+
+    public enum Phase: Int {
+        none = 0,
+        capturingPhase = 1,
+        atTarget = 2,
+        bubblingPhase = 3
+    }
+
+    var bubbles: Bool { get }
+    var cancelBubble: Bool { get set }
+    var cancelable: Bool { get }
+    var composed: Bool { get }
+    var currentTarget: Any { get }
+    var defaultPrevented: Bool { get }
+    var eventPhase: Phase { get }
+    var target: Any { get }
+    var timeStamp: Int { get }
+    var type: String { get }
+    var isTrusted: Bool { get }
+}

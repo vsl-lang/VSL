@@ -175,8 +175,8 @@ const assignmentTypes = freeze({
 AssignmentStatement
    -> AssignmentType _ TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
         (data, location) =>
-            new t.AssignmentStatement(data[0], assignmentTypes[data[1].value], data[3],
-                data[4], location)
+            new t.AssignmentStatement([], assignmentTypes[data[0].value], data[2],
+                data[3], location)
     %}
 
 AssignmentType

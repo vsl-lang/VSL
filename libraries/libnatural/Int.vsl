@@ -1,8 +1,0 @@
-// reopen class ruby style
-public class Int {
-    // Ordinals
-    st => this
-    nd => this
-    rd => this
-    th => this
-}

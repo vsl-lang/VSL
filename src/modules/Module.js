@@ -70,12 +70,14 @@ export default class Module {
             ModuleError.type.moduleNoName
         );
         
-        if (!/^[A-Za-z_][A-Za-z_0-9]*$/.test(yaml.name)) throw new ModuleError(
-            `Modules can only have names with letters and underscores, ` +
-            `numbers for following characters`,
-            ModuleError.type.moduleInvalidName,
-            { name: yaml.name }
-        )
+        if (!/^[A-Za-z_-][A-Za-z_0-9-]*$/.test(yaml.name)) {
+            throw new ModuleError(
+                `Modules can only have names with letters, dashes, and ` +
+                `underscores; numbers for following characters`,
+                ModuleError.type.moduleInvalidName,
+                { name: yaml.name }
+            )
+        }
         
         this.module.name = yaml.name;
         
@@ -109,10 +111,19 @@ export default class Module {
         this.module.target = VSLModule.TargetType[target];
         
         ////////////////////////////////////////////////////////////////////////
-        // .NOSTDLIB
+        // .STDLIB
         ////////////////////////////////////////////////////////////////////////
-        let nostdlib = yaml.nostdlib || false;
-        this.module.stdlib = !nostdlib;
+        let yamlValue = yaml.stdlib;
+        let stdlib = typeof yamlValue === 'undefined' ? true : yamlValue;
+        if (typeof stdlib !== 'string' && typeof stdlib !== 'boolean') {
+            throw new ModuleError(
+                `STDLIB must be a boolean (if enabled) or a string ` +
+                `representing the name of a custom stdlib`,
+                ModuleError.type.invalidStdlibSpec,
+                { type: stdlib }
+            )
+        }
+        this.module.stdlib = stdlib;
         
         ////////////////////////////////////////////////////////////////////////
         // .SOURCES

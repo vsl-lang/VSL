@@ -38,6 +38,6 @@ export default class Identifier extends Node {
 
     /** @override */
     toAst() {
-        return `\u001B[1mIdentifier\u001B[0m ${this.identifier.rootId}\n`;
+        return `\u001B[1mIdentifier\u001B[0m; ${this.identifier.rootId}\n`;
     }
 }
