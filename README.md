@@ -25,6 +25,10 @@
   </p>
 </p>
 
+VSL is a modern, powerful, fast, and easy to write programming language designed
+for the 21st century.
+
+
 ## Download
 
 You can either build from source (see Building) or installed a pre-compiled
@@ -87,24 +91,31 @@ one _wants_ from a programming language:
  - Bare-metal speed (yeah...)
  - Powerful and close-to-hardware (JS, Python, and Java lack)
 
-So VSL aims to solve _all_ of these problems. By leveraging the [LLVM](http://llvm.org/)
-bytecode engine you're able to reach the limits of portability.
+So VSL aims to solve _all_ of these problems
 
-Additionally due to careful design and implementation choices, VSL compiles to
-very similar ASM to what a C-implementation would produce.
+ - **Portability**: By leveraging the [LLVM](http://llvm.org/)
+bytecode engine VSL can compile to almost all targets and is designed for simple
+compatibility with existing C projects.
 
-By using syntax sugar, and powerful type-negotiation, VSL has one of the best
-type deduction algorithms. Combined with low compilation overhead, VSL can
-generate code with bare minimum boilerplate and guarunteed saftey at compile-time.
+ - **Fast**: Due to careful design and implementation choices, VSL compiles to
+very similar ASM to what something written in a low-level language such as C
+would produce.
 
-VSL uses high-level syntax to be able to write code that works for all types of
-programmers, whether you are functional, OO, scripting, or low-level engineer,
-VSL works for embedded applications up to server apps.
+ - **Safe**: By using syntax sugar, and powerful type-negotiation, VSL has one
+of the best type deduction algorithms. Combined with low compilation overhead,
+VSL can generate code with bare minimum boilerplate and guarunteed saftey at
+compile-time.
 
-VSL is also reliable by using trusted libcurl, and glibc backends which are well
-established and highly developed libraries for performing tasks at the low-level.
-Due to this, VSL has powerful low-level pointer interopability and the power of
-full OO-classes, but assembly-level bit alignment.
+ - **Powerful**: VSL uses high-level syntax to be able to write code that works
+for all types of programmers, whether you are functional, OO, scripting, or
+low-level engineer. Through both high-level interfaces for low-level functions,
+you can use VSL for tasks low-level such as read/writing bits from a serial port
+to running a server.
+
+ - **Reliability**: through bindings of reliable, trusted, and industry-standard
+libraries such as libcurl, and glibc backends, VSL has powerful low-level
+pointer interopability and the power of full OO-classes, but assembly-level bit
+alignment.
 
 ## Examples
 VSL functions both as a scripting and a full-blown language so two alterntaives
@@ -131,12 +142,4 @@ fizzbuzz(i where i % 3, i % 5) -> "FizzBuzz"
 fizzbuzz(i where i % 3) -> "Fizz"
 fizzbuzz(i where i % 5) -> "Buzz"
 fizzbuzz(i) -> String(for: i)
-```
-
-```
-func fizzbuzz(to i: Int) {
-    for i in 0..i {
-        print fizzbuzz(of: i)
-    }
-}
 ```

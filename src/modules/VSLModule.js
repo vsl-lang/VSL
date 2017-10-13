@@ -31,7 +31,8 @@ export default class VSLModule {
         this.target = VSLModule.TargetType.executable;
         
         /**
-         * `true` if stdlib *should* be loaded
+         * falsey if stdlib *should not* be loaded, otherwise is the name of the
+         * stdlib to load.
          * @type {string}
          */
         this.stdlib = true;

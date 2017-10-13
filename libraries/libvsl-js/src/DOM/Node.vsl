@@ -1,0 +1,14 @@
+/**
+ * Represents DOM Node
+ */
+public class Node {
+    private let rawBaseURI: DOMString native { return self.baseURI }
+    
+    let baseUri: String { return String(dom: self.rawBaseURI) }
+    let childNodes: Node[] native {
+        var res=[];
+        for (var i=0;i<self.childNodes.length;i++)
+            res.push(self.childNodes[i]);
+        return res;
+    }
+}

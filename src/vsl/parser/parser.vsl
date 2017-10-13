@@ -1,0 +1,50 @@
+public interface Parser {
+    public fn parse(code: String) -> Node
+}
+
+public class RecursiveDescentParser : Parser {
+    public fn parse(code: String) -> Node {
+        // TODO
+    }
+
+    public fn lexeme(*tokens: Token) -> Node {}
+
+    public fn delimited(tokens: Token[], delimiter: Token[]) -> Node -> delimited(
+        lexeme(*tokens), lexeme(*delimiter)
+    )
+
+    public fn delimited(tokens: Lexeme, delimiter: Lexeme) -> Node {}
+
+    public fn repeated(*tokens: Token) -> Node -> repeated(lexeme(*tokens))
+
+    public fn repeated(lexeme: Lexeme) -> Node {
+        //
+    }
+
+    public fn _try(*foo: () -> Node) -> Node {}
+}
+
+public class VSLParser : RecursiveDescentParser {
+    public fn _() {
+        //
+    }
+    
+    public fn codeBlock(foo: () -> Node) -> Node
+
+    public fn statement() -> Node -> _try(
+        typeDeclaration,
+        _if,
+        _for,
+        _while,
+        declaration,
+        _function,
+        block,
+        commandChain,
+        typeAlias // TODO: move
+    );
+    
+    public fn _if() -> Node -> lexeme(
+        "if", _, inlineExpression, _, codeBlock(statement),
+        optional(_, "else", _, )
+    );
+}

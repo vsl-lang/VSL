@@ -4,15 +4,14 @@
  * exactly where the error occured.
  *
  */
-export default class TransformError {
+export default class TransformError extends Error {
     /**
      * @param {string} message - error message
      * @param {Node} node - erroring node
      * @param {Object} ref - Specific error item (from errors.js)
      */
     constructor(message, node, ref) {
-        /** @type {string} */
-        this.message = message;
+        super(message);
 
         /** @type {string} */
         this.name = 'Transform Error';

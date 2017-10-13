@@ -11,7 +11,7 @@ export default class ClassStatement extends DeclarationStatement {
     get fancyName() { return "class" }
     
     /**
-     * Constructs a generic function statement
+     * Constructs a generic class statement
      *
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the class

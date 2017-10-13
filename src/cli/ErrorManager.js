@@ -33,6 +33,28 @@ export default class ErrorManager {
     }
     
     /**
+     * Prints a module error.
+     * 
+     * @param {Module} obj - Module object (before run)
+     * @param {ModuleError} error - Error object.
+     */
+    module(obj, error) {
+        let moduleDescribedName = obj.module.name ? " " + obj.module.name : "";
+        let moduleDescribedNameColored = this.shouldColor ?
+            `\u001B[1m${moduleDescribedName}\u001B[0m` :
+            moduleDescribedName;
+        
+        let modulePrefixColor = this.shouldColor ?
+            `\u001B[35mModule\u001B[0m` :
+            `Module`;
+        
+        let modulePrefix = modulePrefixColor + moduleDescribedNameColored + ": ";
+        console.warn(this.setRed(this.prefix) + modulePrefix + error.message);
+        console.warn(`  module @ ${obj.rootPath}`);
+        process.exit(1);
+    }
+    
+    /**
      * [handle description]
      * @param  {Object}  data
      * @param  {boolean} data.error        error message
@@ -118,7 +140,7 @@ export default class ErrorManager {
     
     /** @private */
     setYellow(text) {
-        if (!this.shouldColor) return;
+        if (!this.shouldColor) return text;
         return `\u001B[${
             c.has16m ?
             "38;2;251;150;51" :
@@ -128,7 +150,7 @@ export default class ErrorManager {
     
     /** @private */
     setRed(text) {
-        if (!this.shouldColor) return;
+        if (!this.shouldColor) return text;
         return `\u001B[1;${
             c.has256 ?
             "38;5;202" :

@@ -15,4 +15,10 @@ export default class ParserError {
         /** @type {Object} */
         this.position = position;
     }
+
+    toString() {
+        return this.position ?
+            `${this.message} (${this.position.line}:${this.position.column})` :
+            this.message;
+    }
 }

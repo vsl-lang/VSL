@@ -15,8 +15,7 @@ export default class Node {
      * Creates a new Node object.
      */
     constructor(position: Object) {
-        if (process.env["VSL_ENV"] != "dev_debug")
-            this.position = position;
+        this.position = position;
         
         /**
          * If exists, references the closest scope. Use an ASTTool to perform
@@ -67,6 +66,46 @@ export default class Node {
      */
     get children() {
         throw new Error("Must implement Node#children");
+    }
+    
+    /**
+     * Returns the string representation of the Node.
+     * @return {string} Tree representation of this node.
+     */
+    toAst() {
+        let children = this.children;
+        let string = `\u001B[1m${this.constructor.name}\u001B[0m\n`;
+        
+        function indent(string, isLast) {
+            return string.replace(/(?!\n$)\n/g, isLast ? '\n   ' : '\n │ ')
+        }
+        
+        function addSpacing(string) {
+            return string.replace(/(?!\n$)\n/g, '\n   ')
+        }
+        
+        if (!children) return string;
+        for (let i = 0; i < children.length; i++) {
+            let child = this[children[i]];
+            let isLast = i === children.length - 1;
+            let connector = isLast ? ' └ ' : ' ├ '; // + `(${i} ${children.length - 1})`;
+            
+            if (child instanceof Array) {
+                string += connector + children[i] + '[]\n';
+                for (let j = 0; j < child.length; j++) {
+                    let lastSub = j === child.length - 1;
+                    let subConnector = lastSub ? ' └ ' : ' ├ ';
+                    let subchild = child[j];
+                    
+                    string += '   ' + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
+                }
+            } else {
+                let childBody = child ? child.toAst ? indent(child.toAst(), isLast) : '\u001B[31mbad node\u001B[0m\n' : '\u001B[31mnull\u001B[0m\n';
+                string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + childBody;
+            }
+        }
+        
+        return string;
     }
     
     // /**

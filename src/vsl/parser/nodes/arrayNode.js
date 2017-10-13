@@ -22,6 +22,6 @@ export default class ArrayNode extends Node {
 
     /** @override */
     get children() {
-        return null;
+        return ['array'];
     }
 }

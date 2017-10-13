@@ -20,6 +20,9 @@
             "rootPathPrefix": "@",
             "rootPathSuffix": "node_modules/llir/lib/"
         }]],
+        ["babel-plugin-transform-builtin-extend", {
+            globals: ["Error"]
+        }]
     ],
     "presets": [
         "react",

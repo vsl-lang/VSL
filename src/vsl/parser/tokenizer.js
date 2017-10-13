@@ -15,11 +15,8 @@ export default class Tokenizer {
      */
     constructor (tokenMatchers, scope: number = 0, tokenTypes: string[] = []) {
         this.tokenMatchers = tokenMatchers.map(tokenMatcher => tokenMatcher.map(object => {
-            object[0] = object[0] instanceof RegExp ? object[0] : new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
-                '/': '/',
-                '\r': 'r',
-                '\n': 'n',
-                '\t': 't'
+            object[0] = object[0] instanceof RegExp ? new RegExp('^' + object[0].source, object[0].flags) : new RegExp('^' + object[0].replace(/[\/\r\n\t]/g, match => ('\\' + {
+                '/': '/', '\r': 'r', '\n': 'n', '\t': 't'
             }[match])).replace(/^[a-zA-Z]+$/, '$&(?=$|[^a-zA-Z0-9_])'));
             return object;
         }));
@@ -63,9 +60,9 @@ export default class Tokenizer {
      */
     next () {
         let code = this.code,
-            token = [],
             success = false;
         while (true) {
+            success = false;
             if (code.length === 0)
                 return undefined;
             for (let [regex, onSuccess, type] of this.tokenMatcher) {
@@ -87,8 +84,10 @@ export default class Tokenizer {
                         this.column += length;
                         this.index += length;
                         return typeof type === 'undefined' ? {value} : [value, type];
-                    } else
+                    } else {
+                        this.column += length;
                         this.index += length;
+                    }
                     success = true;
                     break;
                 }
