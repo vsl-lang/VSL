@@ -18,13 +18,6 @@ export default class VSLPreprocessor extends Transformer {
             // behavior for one.
             pass.RegisterPrimitiveAnnotation,
 
-            // Converts a type to what it will
-            // be after mangling, not sure how
-            // typealiases will be handled.
-            pass.ResolveFunctionDeclaration,
-            pass.ResolveTypePath,
-            pass.ResolveGenericArgument,
-
             // Add to first scope pass
             // adds just the name and ref to class
             pass.DescribeClassDeclaration,

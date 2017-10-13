@@ -18,6 +18,8 @@ export default class ScopeTypeItem extends ScopeItem {
      *     cast to. We'll assume that you've done all the checks because if
      *     something is wrong here expect big giant segfaults. If you have a
      *     superclass, specified it'll go both in the superclass field and here.
+     * @param {?(ScopeTypeItem[])} data.genericParents - A series of parents
+     *     which match the generic templates.
      * @param {ScopeTypeItem} data.superclass - The superclass (not interface)
      *     of the current class, don't specify if there is none. You don't need
      *     to resolve inheritance or anything.
@@ -25,40 +27,18 @@ export default class ScopeTypeItem extends ScopeItem {
      *     This is used to determine how casting will occur and dynamic dispatch
      *     so ensure that it is not possible to declare fields.
      */
-    constructor(
-        rootId: string,
-        subscope: Scope = null,
-        {
-            castables = [],
-            superclass = ScopeTypeItem.RootClass,
-            isInterface = false
-        } = {}
-    ) {
-        super(rootId);
-
-        this.isInterface = isInterface;
-
-        this.castsables = castables;
-        this.superclass = superclass;
-
-        this.subscope = subscope;
+    constructor(form, rootId, options) {
+        super(form, rootId);
     }
 
-    /** @override */
-    equal(ref: ScopeItem): boolean {
-        return ref.rootId === this.rootId;
-    }
-
-    /**
-     * Specifies if an object of the passed type can be passed for a parameter
-     * of the current type.
-     *
-     * @param  {ScopeTypeItem} ref The object to check if applicable.
-     * @return {boolean} `true` if it can, `false` if it cannot.
-     */
-    validCandidate(ref: ScopeTypeItem) {
-        // TODO: expand
-        return ref.rootId === this.rootId;
+    /** @protected */
+    init({
+        castables = [],
+        isGeneric = false,
+        superclass = ScopeTypeItem.RootClass,
+        isInterface = false
+    } = {}) {
+        
     }
 
     /**

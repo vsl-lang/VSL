@@ -1,6 +1,8 @@
-/** @private */
+import ScopeForm from './scopeForm';
+
 // This counts the amount of unique IDs. This is suffixes to always ensure a
 // unique name which makes life much easier.
+/** @private */
 let ID_COUNTER = 0;
 
 /**
@@ -75,11 +77,12 @@ export default class Scope {
      * Matches an associated `ScopeItem`. Returns null if it can't find that
      * reference.
      *
-     * @param {ScopeItem} item - An item to lookup for an applicable matching
-     *     scope item.
+     * @param {ScopeItem} item - Indefinite scope item. For a lookup for an
+     *     applicable matching scope item. **Query** type.
      * @return {?ScopeItem} A reference to the matching scope item
      */
-    get(item: ScopeItem): ?ScopeItem {
+    get(item) {
+        if (item.form !== ScopeForm.query) return null;
         let candidates = this.getAll(item.rootId);
         if (!candidates) return null;
 
@@ -88,6 +91,21 @@ export default class Scope {
         }
 
         return null;
+    }
+    
+    /**
+     * The exact same as {@link Scope#get} however also sets a reference for
+     * the {@link ScopeItem#references} if exists.
+     *
+     * @param {ScopeItem} item - An item to lookup for an applicable matching
+     *     scope item. **Query type**.
+     * @param {Node} node - referencing node that the requestor is delegating.
+     * @return {?ScopeItem} A reference to the matching scope item.
+     */
+    getAsDelegate(item, node) {
+        let reference = this.get(item);
+        reference?.references.push(node);
+        return reference;
     }
 
     /**

@@ -1,21 +1,28 @@
 {
     "plugins": [
         "babel-plugin-include",
-        "babel-plugin-loop-optimizer",
         "babel-plugin-wildcard",
         "babel-plugin-add-module-exports",
         ["babel-plugin-transform-runtime", {
             "polyfill": false
         }],
-        "babel-plugin-transform-class-properties",
+        ["babel-plugin-transform-class-properties", { "loose": true }],
         "babel-plugin-transform-do-expressions",
         "babel-plugin-transform-function-bind",
         "babel-plugin-transform-export-extensions",
-        "babel-plugin-transform-object-rest-spread"
+        "babel-plugin-transform-object-rest-spread",
+        "babel-plugin-transform-flow-strip-types",
+        "babel-plugin-transform-optional-chaining",
+        ["babel-plugin-root-import", [{
+            "rootPathPrefix": "~",
+            "rootPathSuffix": "src/"
+        }, {
+            "rootPathPrefix": "@",
+            "rootPathSuffix": "node_modules/llir/lib/"
+        }]],
     ],
     "presets": [
         "react",
-        "flow",
         ["env", {
             "targets": {
                 "node": "4.8"

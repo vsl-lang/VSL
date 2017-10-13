@@ -111,8 +111,9 @@ export default class Module {
         ////////////////////////////////////////////////////////////////////////
         // .NOSTDLIB
         ////////////////////////////////////////////////////////////////////////
-        let nostdlib = yaml.nostdlib || false;
-        this.module.stdlib = !nostdlib;
+        if (typeof yaml.stdlib === 'undefined') yaml.stdlib = true;
+        let useStdlib = yaml.stdlib
+        this.module.stdlib = useStdlib;
         
         ////////////////////////////////////////////////////////////////////////
         // .SOURCES

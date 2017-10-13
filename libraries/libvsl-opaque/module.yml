@@ -12,9 +12,11 @@ stdlib: false
 # Specify that this is library (i.e. not an executable)
 # Dynamic library because it doesn't make sense for each VSL proc to launch its
 # own copy of the STL
-target: dynamic
+target: static
 
 # One-depth wildcard can be used but this also serves as an example module.ymlPath
 # and you usually in 99% of cases want a recursive vsl source path
 sources:
     - src/*.vsl
+
+#include <vsl.h>

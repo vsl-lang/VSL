@@ -1,3 +1,6 @@
+import ExecutionGraph from '@/LLIR/ExecutionGraph/ExecutionGraph';
+import Serialize from '@/LLIR/Serializer/Serialize';
+
 import Backend from '../Backend';
 import * as w from './watchers';
 
@@ -17,75 +20,20 @@ export default class LLIR extends Backend {
             w.AssignmentStatement
         ]);
         
-        /**
-         * Expression counter. Intermediate values stored here
-         * @type {string}
-         */
-        this.register = 0;
-        
-        /**
-         * Instruction list for top-level expressions
-         * @type {string[]}
-         */
-        this.rootMain = [];
-        
-        /**
-         * Top-level declrations
-         * @type {string[]}
-         */
-        this.declarations = [];
-        
-        /**
-         * ScopeTypeItem declaration map (type item -> IR)
-         * @type {Map<ScopeTypeItem, string>}
-         */
-        this.typeDecls = new Map();
-        
-        /**
-         * attribute counter.
-         *
-         * 1 = attributes for `main`
-         * @type {Number}
-         */
-        this.attributes = [
-            `noinline nounwind`
-        ];
-    }
-    
-    pregen() {
-        this.stream.write(
-            `; VSL LLIR Compiler\n`
-        );
+        this.instance = new ExecutionGraph();
     }
     
     postgen() {
-        
         ////////////////////////////////////////////////////////////////////////
         //                             postgen                                //
         ////////////////////////////////////////////////////////////////////////
-        for (let i = 0; i < this.declarations.length; i++) {
-            this.stream.write(this.declarations[i]);
-            this.stream.write('\n\n');
-        }
+        
         
         ////////////////////////////////////////////////////////////////////////
-        //                             rootMain                               //
+        //                            serialize                               //
         ////////////////////////////////////////////////////////////////////////
-        this.stream.write(
-            `define i32 @main(i8**, i32) #0 {\nentry:\n`
-        );
-        
-        for (let i = 0; i < this.rootMain.length; i++) {
-            this.stream.write(`${this.rootMain[i]}\n`);
-        }
-        
-        this.stream.write(`    ret i32 0\n}\n\n`)
-        
-        ////////////////////////////////////////////////////////////////////////
-        //                           attributes                               //
-        ////////////////////////////////////////////////////////////////////////
-        for (let i = 0; i < this.attributes.length; i++) {
-            this.stream.write(`attributes #${i} = { ${ this.attributes[i] } }\n`)
-        }
+        let serializer = new Serialize();
+        serializer.serializeGraph(this.instance);
+        this.stream.write(serializer.buffer.toString('binary'));
     }
 }

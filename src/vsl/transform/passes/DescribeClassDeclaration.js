@@ -1,6 +1,7 @@
 import Transformation from '../transformation';
 import t from '../../parser/nodes';
 
+import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 /**
@@ -14,40 +15,40 @@ export default class DescribeClassDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
+        // Scope class is in
         let scope = node.parentScope.scope;
+        
+        // Class name
         let rootId = node.name.identifier.rootId;
 
         // Okay do a lookup for these
         let parentRefs = node.superclasses;
         let parents = [];
+        
         let options = {
+            subscope: node.statements.scope,
             isInterface: false
         };
 
-        // Transform
-        if (parentRefs !== null) {
-            parentRefs.forEach((_, i) => {
-                // Transform the children (i.e. resolve paths)
-                tool.queueThenDeep(parentRefs[i], parentRefs, i, null);
-
-                let candidateId = parentRefs[i].identifier.rootId;
-
-                // Lookup
-                let candidateResult = scope.get(new ScopeTypeItem(candidateId));
-                if (candidateResult === null) parents.push(candidateId);
-                else parents.push(candidateResult);
-            });
-
-            options.superclasses = parents;
-        }
+        // Resolve the superclasses/super-interfaces
+        options.supertypes = parentRefs?.map((_, i) => {
+            // Transform the children (i.e. resolve paths)
+            tool.queueThenDeep(parentRefs[i], parentRefs, i, null);
+            
+            let parentName = parentRefs[i].identifier.rootId;
+            
+            return new ScopeTypeItem(
+                ScopeForm.indefinite,
+                parentName
+            );
+        });
 
         let type = new ScopeTypeItem(
+            ScopeForm.definite,
             rootId,
-            node.statements.scope,
             options
         );
 
-        node.scopeRef = type
         scope.set(type);
     }
 }
