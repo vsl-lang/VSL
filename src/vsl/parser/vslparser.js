@@ -58,7 +58,7 @@ export default class VSLParser {
         try {
             results = this.parser.feed(string);
         } catch(e) {
-            if (!e.offset)
+            if (typeof e.offset !== 'number')
                 throw e;
             let pos = this.parser.lexer.positions[e.offset];
             throw new ParserError(

@@ -45,6 +45,12 @@ export default class CodeBlock extends Node {
          * @type {ImportStatement[]}
          */
         this.lazyHooks = [];
+        
+        /**
+         * Sometimes references a compilation stream for top-level modules.
+         * @type {?CompilationStream}
+         */
+        this.stream = null;
     }
     
     /** @override */

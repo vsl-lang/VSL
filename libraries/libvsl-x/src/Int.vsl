@@ -2,8 +2,6 @@
 public class Int {
 
     @backend(js)
-    public static func +(lhs: Int, rhs: Int) -> Int native {
-        return lhs + rhs
-    }
+    public static func +(lhs: Int, rhs: Int) -> Int native { }
     
 }

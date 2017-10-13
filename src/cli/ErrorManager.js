@@ -61,8 +61,12 @@ export default class ErrorManager {
      * @param  {string}  data.src          source file from error
      * @param  {boolean} [data.exit=false] exit proc or throw?
      */
-    handle({ error, src, file, exit = false } = {}) {
-        let fileName = file ? `${file}:` : ``;
+    handle({ error, src, exit = false } = {}) {
+        let fileName = error.stream && error.stream.sourceName ?
+                `${error.stream.sourceName}:` : "";
+        
+        let position = error.position ? `${error.position.line + 1}:${error.position.column}` : "";
+        let location = !(position || fileName) ? "" : ` (${fileName}${position})`;
         
         // Check if the node has positional information
         if (error.node) {
@@ -70,18 +74,14 @@ export default class ErrorManager {
             
             this.rawError(
                 name,
-                error.message + ` (${fileName}${error.node.position.line}:${error.node.position.column})`,
+                error.message + location,
                 this._highlight(src, error.node.position)
             )
         }
         else if (error instanceof ParserError) {
-            let positionData = error.position ?
-                ` (${fileName}${error.position.line}:${error.position.column})` :
-                "";
-            
             this.rawError(
                 "Syntax Error",
-                error.message + positionData,
+                error.message + location,
                 error.position ? this._highlight(src, error.position) : ""
             )
         }

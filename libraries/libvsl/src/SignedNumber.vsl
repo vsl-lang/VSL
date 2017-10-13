@@ -3,32 +3,29 @@
  * operations such as `sgt`.
  */
 public class SignedNumber<T>: Number<T> {
-    override public static func >(lhs: T, rhs: T) -> Bool llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
+
+    @backend(llvm)
+    override public static func >(lhs: T, rhs: T) -> Bool native {
         %2 = icmp sgt <param> %0, %1
         ret i1 %2
     }
-    }
     
-    override public static func <(lhs: T, rhs: T) -> Bool llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    override public static func <(lhs: T, rhs: T) -> Bool native {
         %2 = icmp slt <param> %0, %1
         ret i1 %2
     }
-    }
     
-    public static func /(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func /(lhs: T, rhs: T) -> T native {
         %2 = sdiv <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func %(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func %(lhs: T, rhs: T) -> T native {
         %2 = srem <param> %0, %1
         ret <param> %2
-    }
     }
 
 }

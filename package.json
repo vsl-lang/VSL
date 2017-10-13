@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/vsl-lang/VSL#readme",
   "dependencies": {
+    "llir": "~0.0.1-alpha.1",
     "babel-runtime": "^6.23.0",
     "browser-process-hrtime": "^0.1.2",
     "colors": "^1.1.2",

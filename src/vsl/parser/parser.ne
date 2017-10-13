@@ -52,7 +52,7 @@ statement
     | AssignmentStatement  {% id %}
     | FunctionStatement    {% id %}
     | BlockExpression      {% id %}
-    | CommandChain         {% id %}
+#    | CommandChain         {% id %}
     | TypeAlias            {% id %}
 
 # ============================================================================ #
