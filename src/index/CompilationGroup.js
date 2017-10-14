@@ -261,7 +261,7 @@ export default class CompilationGroup {
             let backend = new LLIR();
             let output = new BackendStream();
             backend.run(block.statements, output);
-            console.log('=== begin ===');console.log(output.data);console.log('=== end ===')
+            stream.send(output.utf8Value);
         }
     }
 }

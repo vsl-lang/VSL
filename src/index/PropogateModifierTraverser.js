@@ -58,7 +58,7 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         let node = parent[name];
         
         // Only want to run for top-level declarations.
-        if (node.parentScope.rootScope !== true) return;
+        if (node.parentScope?.rootScope !== true) return;
         if (!(node instanceof DeclarationStatement)) return;
         
         let accessModifiers = node.access;

@@ -1,4 +1,5 @@
 @primitive(Integer)
+@_mockType(llvm, i8, unsigned)
 public class UInt8 {
 
 }

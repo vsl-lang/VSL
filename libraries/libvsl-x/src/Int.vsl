@@ -1,7 +1,10 @@
 @primitive(Integer, _precType)
+@_mockType(llvm, "i32", signed)
 public class Int {
 
-    @backend(js)
-    public static func +(lhs: Int, rhs: Int) -> Int native { }
+    @backend(llvm)
+    public static func +(lhs: Int, rhs: Int) -> Int native {
+        ret i32 ( add i32 %1, %2 )
+    }
     
 }

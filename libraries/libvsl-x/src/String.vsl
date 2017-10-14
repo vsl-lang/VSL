@@ -1,4 +1,5 @@
 @primitive(String, _precType)
+@_mockType(llvm, "i8*", *)
 public class String {
     
     // NOTE: Positioning of first couple fields is very important. Usually

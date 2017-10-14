@@ -316,19 +316,21 @@ export default class Default extends CLIMode {
             );
             
             let worked = true;
+            
+            // Create index + other execution info.
+            let index = new CompilationIndex(group, stl)
+            let output = new CompilationStream();
             try {
-                
-                await (new CompilationIndex(
-                    group,
-                    stl
-                )).compile();
-                
+                await index.compile(output);
             } catch(error) {
                 worked = false;
                 await this.handle(error, lastCalls + inputString, { exit: false });
             }
             
-            if (worked) lastCalls += inputString + '\n';
+            if (worked) {
+                console.log(await output.receive());
+                lastCalls += inputString + '\n';
+            }
             
             await repl();
         }

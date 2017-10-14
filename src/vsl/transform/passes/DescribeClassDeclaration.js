@@ -1,4 +1,6 @@
 import Transformation from '../transformation';
+import TransformError from '../transformError.js';
+import e from '../../errors';
 import t from '../../parser/nodes';
 
 import ScopeForm from '../../scope/scopeForm';
@@ -49,6 +51,12 @@ export default class DescribeClassDeclaration extends Transformation {
             options
         );
 
-        scope.set(type);
+        if (scope.set(type) === false) {
+            throw new TransformError(
+                `Duplicate declaration of class ${rootId}. In this scope ` +
+                `there is already another class with that name.`,
+                node, e.DUPLICATE_DECLARATION
+            )
+        }
     }
 }

@@ -114,6 +114,7 @@ Annotation
     %}
 AnnotationValue
    -> %identifier {% mid %}
+    | %string {% mid %}
     | "*" {% unwrap %}
     | "nil" {% unwrap %}
 
@@ -188,9 +189,9 @@ AssignmentType
 # ============================================================================ #
 
 FunctionStatement
-   -> FunctionHead FunctionBody {%
+   -> FunctionHead _ FunctionBody {%
         data => {
-            data[0].statements = data[1];
+            data[0].statements = data[2];
             return data[0];
         }
     %}

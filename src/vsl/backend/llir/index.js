@@ -33,7 +33,7 @@ export default class LLIR extends Backend {
         //                            serialize                               //
         ////////////////////////////////////////////////////////////////////////
         let serializer = new Serialize();
-        serializer.serializeGraph(this.instance);
+        this.instance.serialize(serializer);
         this.stream.write(serializer.buffer.toString('binary'));
     }
 }
