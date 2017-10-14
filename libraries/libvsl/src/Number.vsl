@@ -4,82 +4,71 @@
  */
 public class Number<T>: Comparable {
 
-    public static func ==(lhs: T, rhs: T) -> Bool llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func ==(lhs: T, rhs: T) -> Bool native {
         %2 = icmp eq <param> %0, %1
         ret i1 %2
     }
-    }
     
-    public static func >(lhs: T, rhs: T) -> Bool llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func >(lhs: T, rhs: T) -> Bool native {
         %2 = icmp ugt <param> %0, %1
         ret i1 %2
     }
-    }
     
-    public static func <(lhs: T, rhs: T) -> Bool llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func <(lhs: T, rhs: T) -> Bool native {
         %2 = icmp ult <param> %0, %1
         ret i1 %2
     }
-    }
     
-    public static func +(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func +(lhs: T, rhs: T) -> T native {
         %2 = add <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func -(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func -(lhs: T, rhs: T) -> T native {
         %2 = sub <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func /(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func /(lhs: T, rhs: T) -> T native {
         %2 = udiv <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func *(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func *(lhs: T, rhs: T) -> T native {
         %2 = mul <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func %(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func %(lhs: T, rhs: T) -> T native {
         %2 = urem <param> %0, %1
         ret <param> %2
     }
-    }
     
     
-    public static func ^(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func ^(lhs: T, rhs: T) -> T native {
         %2 = xor <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func &(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func &(lhs: T, rhs: T) -> T native {
         %2 = and <param> %0, %1
         ret <param> %2
     }
-    }
     
-    public static func |(lhs: T, rhs: T) -> T llvm {
-    define <param> <name>(<param>, <param>) alwaysinline {
+    @backend(llvm)
+    public static func |(lhs: T, rhs: T) -> T native {
         %2 = or <param> %0, %1
         ret <param> %2
-    }
     }
     
     

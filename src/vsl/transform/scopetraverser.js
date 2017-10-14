@@ -62,6 +62,12 @@ export default class ScopeTraverser extends Traverser {
         // Ignore empty nodes
         if (node === null) return;
         
+        // Store the current scope for brevity
+        const currentScope = this.scope[this.scope.length - 1];
+        
+        // Set parent scope for transformers
+        node.parentScope = currentScope || null;
+        
         // If the parent is a code block, we want to add it to the scope
         // This builds a stack of the scope tree, so for a typical top-level
         // class this might look like:
@@ -76,12 +82,6 @@ export default class ScopeTraverser extends Traverser {
             
             this.scope.push(node);
         }
-        
-        // Store the current scope for brevity
-        const currentScope = this.scope[this.scope.length - 1];
-        
-        // Set parent scope for transformers
-        node.parentScope = currentScope || null;
         
         super.processNode(parent, name);
     }

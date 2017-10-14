@@ -1,7 +1,7 @@
 public interface Comparable: Comparable, Equatable {
-    public static func >=(lhs: Self, rhs: Self) llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
-    entry:
+
+    @backend(llvm)
+    public static func >=(lhs: Self, rhs: Self) -> Bool native {
         %2 = call i1 "<methodRoot>.=="(<param> %0, <param> %1)
         br i1 %2, label %isTrue, %tryGt
     isTrue:
@@ -11,12 +11,10 @@ public interface Comparable: Comparable, Equatable {
     tryGt:
         %3 = call i1 "<methodRoot>.>"(<param> %0, <param> %1)
         br i1 %3, label %isTrue, %isFalse
-    }
     }
     
-    public static func <=(lhs: Self, rhs: Self) llvm {
-    define i1 <name>(<param>, <param>) alwaysinline {
-    entry:
+    @backend(llvm)
+    public static func <=(lhs: Self, rhs: Self) -> Bool native {
         %2 = call i1 "<methodRoot>.=="(<param> %0, <param> %1)
         br i1 %2, label %isTrue, %tryGt
     isTrue:
@@ -26,6 +24,5 @@ public interface Comparable: Comparable, Equatable {
     tryGt:
         %3 = call i1 "<methodRoot>.>"(<param> %0, <param> %1)
         br i1 %3, label %isTrue, %isFalse
-    }
     }
 }

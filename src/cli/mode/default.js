@@ -195,17 +195,19 @@ export default class Default extends CLIMode {
         try {
             await moduleLoader.load();
         } catch(error) {
-            if (error instanceof ModuleError)
+            if (error instanceof ModuleError) {
                 this.error.module(moduleLoader, error);
-            else
+            } else {
                 throw error;
+            }
         }
         
         let module = moduleLoader.module;
         
         let group = new CompilationGroup();
         for (let file of module.sources) {
-            let fileStream = group.createStream()
+            let fileStream = group.createStream();
+            fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));
         }
         
@@ -224,7 +226,33 @@ export default class Default extends CLIMode {
             modules
         );
         
-        await index.compile(stream);
+        try {
+            await index.compile(stream);
+        } catch(error) {
+            let stream = null;
+                
+            if (error.stream) { stream = error.stream }
+            else if (error.node) {
+                let trackingNode = error.node;
+                do {
+                    if (trackingNode.stream) {
+                        stream = trackingNode.stream;
+                        break;
+                    }
+                } while(
+                    trackingNode.rootScope !== true &&
+                    (trackingNode = trackingNode.parentScope)
+                );
+            }
+            
+            if (stream) {
+                error.stream = stream;
+                this.handle(error, stream.data, { exit: true });
+            } else {
+                throw error;
+            }
+        }
+        
         this.fileMap.set(dirpath, index);
         
         return index;
@@ -289,6 +317,7 @@ export default class Default extends CLIMode {
             
             let worked = true;
             try {
+                
                 await (new CompilationIndex(
                     group,
                     stl

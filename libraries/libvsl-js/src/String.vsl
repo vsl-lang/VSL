@@ -1,0 +1,13 @@
+@target(VSLString)
+public class String<View: StringView = UTF16View> {
+    private let backing: DOMString
+    private lazy let view: View = View(for: self)
+    
+    public init(domstring: DOMString) {
+        self.backing = domstring
+    }
+    
+    public init(string: String) {
+        self.backing = string.backing
+    }
+}

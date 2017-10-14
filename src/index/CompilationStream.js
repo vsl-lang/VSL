@@ -15,6 +15,12 @@ export default class CompilationStream {
         this.sender = (f) => f(null);
         
         /**
+         * All data emitted by the stream
+         * @param {string}
+         */
+        this.data = "";
+        
+        /**
          * You can set this for better error reporting and debug info by
          * naming the streams. Optimally with the file path if applicable in
          * your environment.
@@ -39,12 +45,17 @@ export default class CompilationStream {
      */
     async receive() {
         return new Promise((resolve, reject) => {
+            const res = (data) => {
+                this.data += data;
+                resolve(data);
+            }
+            
             // If there is no buffered stuff let's manually request some more
             // data
             if (this.dataBuffer.length === 0) {
-                this.sender((data) => resolve(data));
+                this.sender((data) => res(data));
             } else {
-                resolve(this.dataBuffer.shift());
+                res(this.dataBuffer.shift());
             }
         });
     }

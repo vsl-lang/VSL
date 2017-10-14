@@ -122,16 +122,29 @@ export default class CompilationGroup {
         let parser = new VSLParser();
         
         while (null !== (dataBlock = await stream.receive())) {
-            ast = parser.feed(dataBlock);
+            try {
+                ast = parser.feed(dataBlock);
+            } catch(error) {
+                // Re-add sourceName if applicable
+                if (error instanceof ParserError)
+                    error.stream = stream;
+                
+                // Rethrow error
+                throw error;
+            }
             if (ast.length > 0) break;
         }
         
         if (ast.length === 0) {
             // TODO: expand error handling here
             throw new ParserError(
-                `Unexpected token EOF`
+                `Unexpected token EOF`,
+                null,
+                stream
             );
         }
+        
+        ast[0].stream = stream;
         
         return ast[0];
     }
