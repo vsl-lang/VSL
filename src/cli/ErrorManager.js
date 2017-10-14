@@ -63,10 +63,14 @@ export default class ErrorManager {
      */
     handle({ error, src, exit = false } = {}) {
         let fileName = error.stream && error.stream.sourceName ?
-                `${error.stream.sourceName}:` : "";
+                `${error.stream.sourceName}` : "";
+        
+        if (!error.position && error.node) error.position = error.node.position || null;
         
         let position = error.position ? `${error.position.line + 1}:${error.position.column}` : "";
-        let location = !(position || fileName) ? "" : ` (${fileName}${position})`;
+        let location = !(position || fileName) ? "" : ` (${[fileName, position].filter(Boolean).join(":")})`;
+        
+
         
         // Check if the node has positional information
         if (error.node) {

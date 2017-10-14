@@ -239,7 +239,10 @@ export default class Default extends CLIMode {
                         stream = trackingNode.stream;
                         break;
                     }
-                } while(trackingNode = trackingNode.parentScope);
+                } while(
+                    trackingNode.rootScope !== true &&
+                    (trackingNode = trackingNode.parentScope)
+                );
             }
             
             if (stream) {
