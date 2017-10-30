@@ -17,7 +17,8 @@ export default class LLIR extends Backend {
     constructor(stream) {
         super(stream, [
             w.CodeBlock,
-            w.AssignmentStatement
+            w.AssignmentStatement,
+            w.FunctionStatement
         ]);
         
         this.instance = new ExecutionGraph();

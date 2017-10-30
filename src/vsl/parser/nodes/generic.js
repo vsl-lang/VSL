@@ -2,7 +2,6 @@ import Node from './node';
 
 /**
  * Wraps a generic type
- * 
  */
 export default class Generic extends Node {
     
@@ -22,11 +21,11 @@ export default class Generic extends Node {
     
     /** @override */
     get children() {
-        return ['parameters'];
+        return ['type', 'parameters'];
     }
     
     /** @override */
     toString() {
-        return `${this.type.identifier.rootId}<${this.parameters.join(", ")}>`
+        return `${this.type}<${this.parameters.join(", ")}>`
     }
 }

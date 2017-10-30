@@ -24,7 +24,7 @@ export default class VSLParser {
          * You probably should not directly use, but hey why not make this
          * public.
          */
-        this.parser = new nearley.Parser(parser.ParserRules, parser.ParserStart, {lexer: this.tokenizer});
+        this.parser = new nearley.Parser(parser.ParserRules, parser.ParserStart, { lexer: this.tokenizer });
     }
     
     /**
@@ -60,9 +60,11 @@ export default class VSLParser {
         } catch(e) {
             if (typeof e.offset !== 'number')
                 throw e;
+            
             let pos = this.parser.lexer.positions[e.offset];
+            let desc = pos.value ? ` \`${pos.value}\`` : "";
             throw new ParserError(
-                `Unexpected token`,
+                `Unexpected token${desc}`,
                 pos
             );
         }

@@ -34,7 +34,7 @@ export default class ErrorManager {
     
     /**
      * Prints a module error.
-     * 
+     *
      * @param {Module} obj - Module object (before run)
      * @param {ModuleError} error - Error object.
      */
@@ -71,7 +71,6 @@ export default class ErrorManager {
         let location = !(position || fileName) ? "" : ` (${[fileName, position].filter(Boolean).join(":")})`;
         
 
-        
         // Check if the node has positional information
         if (error.node) {
             let name = error.name || "Compiler Error";

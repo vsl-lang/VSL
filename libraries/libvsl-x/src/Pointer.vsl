@@ -1,0 +1,4 @@
+@_mockType(llvm, pointer)
+public class Pointer<Type> {
+
+}

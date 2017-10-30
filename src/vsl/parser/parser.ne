@@ -86,21 +86,37 @@ WhileStatement
 # TODO: add _ after Modifier if it doesn't cause ambiguities
 
 ClassStatement
-   -> Annotations Modifier "class" _ classDeclaration _ (":" _ ExtensionList _
+   -> Annotations Modifier "class" _ Identifier (_ genericDeclaration {% mid %}):? _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" ClassItems "}" {%
-        (d, l) => new t.ClassStatement(d[1], d[4], d[6], d[8], d[0], l)
+        (d, l) => new t.ClassStatement(
+            d[1], // access
+            d[4], // name
+            d[5] || [], // generics
+            d[7], // superclasses
+            d[9], // statements
+            d[0], // annotations
+            l // location
+        )
     %}
 
 InterfaceStatement
-   -> Annotations Modifier "interface" _ classDeclaration _ (":" _
+   -> Annotations Modifier "interface" _ Identifier _ genericDeclaration _ (":" _
             ExtensionList _ {% nth(2) %}):? "{" InterfaceItems "}" {%
-        (d, l) => new t.InterfaceStatement(d[1], d[4], d[6], d[8], d[0], l)
+        (d, l) => new t.InterfaceStatement(
+            d[1], // access
+            d[4], // name
+            d[6], // generics
+            d[8], // superclasses
+            d[10], // statements
+            d[0], // annotations
+            l // location
+        )
     %}
 
 #TODO: can enums even multiple inherit? of course we need to allow inheritance for Byte, Short etc
 
 EnumerationStatement
-   -> Annotations Modifier "enumeration" _ classDeclaration _ (":" _ ExtensionList _
+   -> Annotations Modifier "enumeration" _ Identifier _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" EnumerationItems ClassItems "}" {%
         (d, l) => new t.EnumerationStatement(d[1], d[4], d[6], d[8], d[9], d[0], l)
     %}
@@ -115,6 +131,7 @@ Annotation
 AnnotationValue
    -> %identifier {% mid %}
     | %string {% mid %}
+    | %integer {% mid %}
     | "*" {% unwrap %}
     | "nil" {% unwrap %}
 
@@ -139,7 +156,7 @@ ClassItem
 Field
    -> Modifier AssignmentStatement {%
         (data, location) =>
-            new t.FieldStatement(data[0], data[1].type, data[1].identifier,
+            new t.FieldStatement(data[0], data[1].type, data[1].name,
                 data[1].value, location)
     %}
 
@@ -153,6 +170,7 @@ InitializerStatement
 
 InterfaceItems
    -> CodeBlock[InterfaceItem {% id %}] {% id %}
+   
 InterfaceItem
    -> FunctionHead {% id %}
     | FunctionStatement {% id %}
@@ -577,14 +595,14 @@ function recursiveType(types, optional, location) {
   return types[types.length - 1];
 }
 
-function recursiveTypeDeclaration(types, optional, parent, fallback, location) {
-  for (let i = 1; i < types.length; i++)
-    types[i] = new t.TypeDeclaration(types[i - 1], types[i], false, null, location);
-  types[types.length - 1].optional = optional;
-  types[types.length - 1].parent = parent;
-  types[types.length - 1].fallback = fallback;
-  return types[types.length - 1];
-}
+// function recursiveTypeDeclaration(types, optional, parent, fallback, location) {
+//  for (let i = 1; i < types.length; i++)
+//    types[i] = new t.TypeDeclaration(types[i - 1], types[i], false, null, location);
+//  types[types.length - 1].optional = optional;
+//  types[types.length - 1].parent = parent;
+//  types[types.length - 1].fallback = fallback;
+//  return types[types.length - 1];
+// }
 %}
 
 
@@ -622,40 +640,12 @@ className
     %}
 
 typeDeclaration
-   -> delimited[classDeclaration {% id %}, _ "." _] "?":?
-        (":" delimited[classDeclaration {% id %}, _ "." _] "?":? {%
-            (data, location) =>
-                recursiveTypeDeclaration(data[1], !!data[2], null, null, location)
-        %}):? ("=" delimited[classDeclaration {% id %}, _ "." _] "?":? {%
-            (data, location) =>
-                recursiveTypeDeclaration(data[1], !!data[2], null, null, location)
-        %}):? {%
-        (data, location) =>
-            recursiveTypeDeclaration(data[0], !!data[1], data[2], data[3], location)
-    %}
-classDeclaration
-   -> Identifier {% id %}
-    | Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">" {%
-        (data, location) => new t.GenericDeclaration(data[0], data[2], location)
-    %}
-    | Identifier "<" Identifier "<" delimited[typeDeclaration {% id %}, _ "," _]
-        ">>" {%
-        (data, location) =>
-            new t.GenericDeclaration(
-                data[0],
-                [new t.GenericDeclaration(data[2], data[4], location)],
-                location
-            )
-    %}
-    | Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ","
-        Identifier "<" delimited[typeDeclaration {% id %}, _ "," _] ">>" {%
-        (data, location) =>
-            new t.GenericDeclaration(
-                data[0],
-                data[2].concat([new t.GenericDeclaration(data[4], data[6], location)]),
-                location
-            )
-    %}
+   -> Identifier (_ "=" _ type {% nth(3) %}):? {%
+        (data, location) => new t.TypeDeclaration(data[0], data[1])
+       %}
+
+genericDeclaration
+   -> "<" _ delimited[typeDeclaration {% id %}, _ "," _] _ ">" {% nth(2) %}
 
 TypeAlias
    -> Modifier _ "typealias" _ Identifier _ "=" _ type {%

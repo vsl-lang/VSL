@@ -1,5 +1,5 @@
 @primitive(Integer)
-@_mockType(llvm, "i8", signed)
+@_mockType(llvm, int, 8)
 public class Int8 {
 
 }

@@ -25,10 +25,13 @@ const INSTALLATION_PATH = path.join(__dirname, '../../..');
 const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl-x";
 
+let interrupt = null;
+let rl;
+
 // Returns promise
 function prompt(string) {
     return new Promise((resolve, reject) => {
-        let rl = readline.createInterface({
+        rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
         });
@@ -306,13 +309,22 @@ export default class Default extends CLIMode {
             let input = group.createStream();
             
             let inputString = await prompt(vsl);
+            interrupt = null;
             
             input.send(lastCalls + inputString);
             input.handleRequest(
-                done => prompt(vslCont).then(value => {
+                done => {
+                    interrupt = async () => {
+                        rl.close();
+                        await repl();
+                    }
+                    
+                    prompt(vslCont).then(value => {
                         inputString += '\n' + value;
+                        interrupt = null;
                         done(value);
-                })
+                    })
+                }
             );
             
             let worked = true;
@@ -325,6 +337,8 @@ export default class Default extends CLIMode {
             } catch(error) {
                 worked = false;
                 await this.handle(error, lastCalls + inputString, { exit: false });
+            } finally {
+                interrupt = null;
             }
             
             if (worked) {
@@ -375,4 +389,12 @@ process.on('unhandledRejection', (reason) => {
     console.error(util.inspect(reason).replace(/^|\n/g, "\n    "));
     
     process.exit(1);
+});
+
+process.on('beforeExit', () => {
+    if (interrupt) {
+        interrupt();
+    } else {
+        process.exit(1)
+    };
 });

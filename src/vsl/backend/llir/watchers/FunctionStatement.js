@@ -1,9 +1,8 @@
 import BackendWatcher from '../../BackendWatcher';
-import * as utils from '../utils';
 import t from '../../../parser/nodes';
 
-export default class LLIRAssignmentStatement extends BackendWatcher {
-    static type = t.AssignmentStatement
+export default class LLIRFunctionStatement extends BackendWatcher {
+    static type = t.CodeBlock
     
     receive(node, backend, stream, tool, regen) {
         

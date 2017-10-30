@@ -1,3 +1,4 @@
+/** @type {Object<string, TokenizerType>} */
 const VSLTokenType = Object.freeze({
     Integer: 0,
     Decimal: 1,
@@ -8,6 +9,6 @@ const VSLTokenType = Object.freeze({
     Identifier: 6,
     Documentation: 7,
     NativeBlock: 8
-}); 
+});
 
 export default VSLTokenType;

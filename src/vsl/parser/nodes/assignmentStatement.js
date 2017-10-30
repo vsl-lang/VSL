@@ -11,11 +11,11 @@ export default class AssignmentStatement extends DeclarationStatement {
      *
      * @param {string[]} access A list of access modifiers for the statement
      * @param {AssignmentType} type The assignment type
-     * @param {TypedIdentifier} identifier The variable's identifier & type
+     * @param {TypedIdentifier} name The variable's identifier & type
      * @param {Expression} value The variable's inital value
      * @param {Object} position a position from nearley
      */
-    constructor (access: string[], type: AssignmentType, identifier: TypedIdentifier, value: Expression, position: Object) {
+    constructor(access, type, name, value, position) {
         super(access, position);
         
         /**
@@ -25,10 +25,16 @@ export default class AssignmentStatement extends DeclarationStatement {
         this.type = type;
         
         /** @type {TypedIdentifier} */
-        this.identifier = identifier;
+        this.name = name;
         
         /** @type {Expression} */
         this.value = value;
+        
+        /**
+         * Expected evaluation type of assignment.
+         * @type {?ScopeTypeItem}
+         */
+        this.expectedType = null;
         
         /**
          * The ref in a scope this declares the alias too
@@ -38,13 +44,8 @@ export default class AssignmentStatement extends DeclarationStatement {
     }
     
     /** @override */
-    get identifierPath() {
-        return this.identifier;
-    }
-    
-    /** @override */
     get children() {
-        return ['identifier', 'value'];
+        return ['name', 'value'];
     }
     
     /** @override */

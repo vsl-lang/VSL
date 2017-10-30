@@ -10,6 +10,7 @@ import VSLParser from '../vsl/parser/vslparser';
 
 import TransformationContext from '../vsl/transform/transformationContext';
 import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
+import VSLScopeTransformer from '../vsl/transform/transformers/vslscopetransformer';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
@@ -205,12 +206,7 @@ export default class CompilationGroup {
             });
         });
         
-        // === 3: Preprocessing ===
-        // Queue each ast for pre-processing, this is important because we need
-        // the registrant info for the PropogateModifier
-        asts.forEach(ast => new VSLPreprocessor(this.context).queue([ ast ]));
-        
-        // === 4: Scope Sharing ===
+        // === 3: Scope Sharing ===
         // Hook all the news ASTs together
         // This will addd the public, protected, and no-access-modifier
         // declarations to our new scope (`block`).
@@ -250,6 +246,16 @@ export default class CompilationGroup {
                 });
             });
         });
+        
+        // === 4: Pre-processor ===
+        // Now that basic STL etc. are registered, we can pre-proc the AST
+        // and pre-populate compilation info.
+        new VSLPreprocessor(this.context).queue(block);
+        
+        // === 5: Scope Generation ===
+        // This will finish generating the type scope. The next transformer
+        // performs type deduction.
+        new VSLScopeTransformer(this.context).queue(block);
         
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the

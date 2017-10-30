@@ -54,7 +54,7 @@ export default class ScopeFuncItemArgument {
             let res = this.node.parentScope.scope.get(new ScopeTypeItem(this.type));
             if (res === null) {
                 throw new ScopeError(
-                    `\`${this.node.identifier.rootId}\` is not a type.`,
+                    `\`${this.node}\` is not a type.`,
                     this.node
                 );
             }
@@ -65,6 +65,6 @@ export default class ScopeFuncItemArgument {
 
     /** @override */
     toString() {
-        return `${this.name || "*"}: ${this.type.rootId || this.type}${this.optional ? "?" : ""}`;
+        return `${this.name || "*"}: ${this.type}${this.optional ? "?" : ""}`;
     }
 }

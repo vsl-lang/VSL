@@ -16,11 +16,11 @@ export default class Identifier extends Node {
      * @param {string} identifier the identifier
      * @param {Object} position a position from nearley
      */
-    constructor (identifier: string, position: Object) {
+    constructor(identifier: string, position: Object) {
         super(position);
         
         /** @type {ScopeItem} */
-        this.identifier = new Id(identifier, null);
+        this.value = identifier;
         
         /** @type {string} */
         this.original = identifier;
@@ -33,11 +33,11 @@ export default class Identifier extends Node {
     
     /** @override */
     toString() {
-        return this.identifier.rootId;
+        return this.value;
     }
 
     /** @override */
     toAst() {
-        return `\u001B[1mIdentifier\u001B[0m; ${this.identifier.rootId}\n`;
+        return `\u001B[1mIdentifier\u001B[0m; ${this}\n`;
     }
 }

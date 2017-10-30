@@ -61,7 +61,6 @@ function unescapeString(_, match) {
 let tokenMatchers = Array(VSLScope.MAX);
 tokenMatchers[VSLScope.Normal] = [
     [/(?:\s|\\\n)*[\r\n](?:\s|\\\n)*/, (self, match) => {
-        self.newline(match.match(/(?:\r|\n|\r\n)/).length, match.match(/[ \t\v\f]*$/)[0].length - 1);
         return '\n';
     }],
     [/(?:\s|\\\n)+/, noop],
@@ -95,18 +94,18 @@ tokenMatchers[VSLScope.Normal] = [
     [';', passThrough],
     [':', passThrough],
     [',', passThrough],
-    [/\+=/, passThrough],
+    ['+=', passThrough],
     ['-=', passThrough],
-    [/\*\*=/, passThrough],
-    [/\*=/, passThrough],
+    ['**=', passThrough],
+    ['*=', passThrough],
     ['/=', passThrough],
     ['%=', passThrough],
-    ['\\+', passThrough],
+    ['+', passThrough],
     ['-', passThrough],
     ['/', passThrough],
     ['%', passThrough],
-    ['\\*\\*', passThrough],
-    ['\\*', passThrough],
+    ['**', passThrough],
+    ['*', passThrough],
     ['<<=', passThrough],
     ['>>=', passThrough],
     ['<<', passThrough],
@@ -122,16 +121,16 @@ tokenMatchers[VSLScope.Normal] = [
     ['=', passThrough],
     [':=', passThrough],
     ['&=', passThrough],
-    ['\\|=', passThrough],
-    ['\\^=', passThrough],
+    ['|=', passThrough],
+    ['^=', passThrough],
     ['&&', passThrough],
-    ['\\|\\|', passThrough],
+    ['||', passThrough],
     ['!', passThrough],
     ['&', passThrough],
-    ['\\|', passThrough],
+    ['|', passThrough],
     ['~', passThrough],
-    ['\\^', passThrough],
-    ['\\?', passThrough],
+    ['^', passThrough],
+    ['?', passThrough],
     ['and', passThrough],
     ['or', passThrough],
     ['not', passThrough],
@@ -139,10 +138,10 @@ tokenMatchers[VSLScope.Normal] = [
     ['::', passThrough],
     ['{', passThrough],
     ['}', passThrough],
-    ['\\(', passThrough],
-    ['\\)', passThrough],
-    ['\\[', passThrough],
-    ['\\]', passThrough],
+    ['(', passThrough],
+    [')', passThrough],
+    ['[', passThrough],
+    [']', passThrough],
     
     ['var', passThrough],
     ['let', passThrough],
@@ -218,7 +217,10 @@ tokenMatchers[VSLScope.DocumentationComment] = tokenMatchers[VSLScope.Comment];
  * This defines tokens for VSL. For further information see {@link Tokenizer}
  */
 export default class VSLTokenizer extends Tokenizer {
-    constructor () {
+    /**
+     * New VSL Tokenizer
+     */
+    constructor() {
         super(tokenMatchers, VSLScope.Normal);
         this.variables = {
             commentDepth: 0,

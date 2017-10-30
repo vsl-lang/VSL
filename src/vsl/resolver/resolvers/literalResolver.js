@@ -81,7 +81,8 @@ export default class LiteralResolver extends TypeResolver {
         
         let { types: typeList, precType } = literalTypeContext;
         
-        // Create TypeCandidate list.
+        // Create TypeCandidate list for the literal.
+        // This is not yet intersected with the requested resolutions
         this.node.typeCandidates = typeList
             .map(
                 candidate =>

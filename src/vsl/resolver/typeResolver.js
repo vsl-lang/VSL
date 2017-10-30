@@ -107,13 +107,15 @@ export default class TypeResolver {
             let rootItem = rootSet.pop();
             let match = null;
             
+            // Look for an applied candidate that matches the current rootSet.
             for (let j = appliedSet.length - 1; j >= 0; j--) {
-                if (rootItem.candidate.validCandidate(appliedSet[j].candidate)) {
+                if (appliedSet[j].candidate.resolved().castableTo(rootItem.candidate)) {
                     match = appliedSet[j];
                     break;
                 }
             }
             
+            // If there is one, this is a succesful candidate match.
             if (match !== null) {
                 derivedCandidates.push({
                     root: rootItem,

@@ -9,6 +9,6 @@ public class String {
     //         char* value;
     //     }
 
-    private let length: UInt64
-    private let byte: Pointer<UInt8>
+//     private let length: UInt64
+//     private let byte: Pointer<UInt8>
 }

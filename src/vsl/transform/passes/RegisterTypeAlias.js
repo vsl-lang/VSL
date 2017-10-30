@@ -4,7 +4,7 @@ import e from '../../errors';
 import t from '../../parser/nodes';
 
 import ScopeForm from '../../scope/scopeForm';
-import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeTypeAliasItem from '../../scope/items/scopeTypeAliasItem';
 
 /**
  * A pre-processing entry for a class declaration. This goes top-down and
@@ -13,26 +13,19 @@ import ScopeTypeItem from '../../scope/items/scopeTypeItem';
  */
 export default class DescribeClassDeclaration extends Transformation {
     constructor() {
-        super(t.ClassStatement, "Describe::ClassDeclaration");
+        super(t.TypeAlias, "Describe::ClassDeclaration");
     }
 
     modify(node: Node, tool: ASTTool) {
         let scope = node.parentScope.scope;
-        let className = node.name.value;
         
-        let type = new ScopeTypeItem(
-            ScopeForm.definite,
-            className,
-            {
-                subscope: node.statements.scope,
-                isInterface: false
-            }
-        );
+        let name = node.name.value;
+        let aliasedType = node.type;
 
         if (scope.set(type) === false) {
             throw new TransformError(
-                `Duplicate declaration of class ${className}. In this scope ` +
-                `there is already another class with that name.`,
+                `Duplicate declaration of typealias ${name}. In this scope `
+                + `there is already another typealias with that name.`,
                 node, e.DUPLICATE_DECLARATION
             )
         } else {

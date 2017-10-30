@@ -38,7 +38,7 @@ export default class IdResolver extends TypeResolver {
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         const scope = this.node.parentScope.scope;
-        const rootId = this.node.identifier.rootId;
+        const rootId = this.node.value;
         
         // If passed callArgs we know it's a fucntion
         // that is the number of args so we can use this as a basic filter to

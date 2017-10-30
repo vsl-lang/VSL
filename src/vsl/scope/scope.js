@@ -45,7 +45,7 @@ export default class Scope {
     constructor(parentScope: Scope = null) {
         /**
          * Contains all scope data. DO NOT directly modify.
-         * @type {Map<string, ScopeItem>}
+         * @type {Map<string, ScopeItem[]>}
          */
         this.ids = new Map();
 
@@ -83,11 +83,12 @@ export default class Scope {
      */
     get(item) {
         if (item.form !== ScopeForm.query) return null;
+        
         let candidates = this.getAll(item.rootId);
         if (!candidates) return null;
 
         for (let i = 0; i < candidates.length; i++) {
-            if (candidates[i].equal(item)) return candidates[i];
+            if (item.equal(candidates[i])) return candidates[i].resolved();
         }
 
         return null;

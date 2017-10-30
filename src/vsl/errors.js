@@ -1,5 +1,21 @@
 import t from './parser/nodes';
 
+/**
+ * @typedef {func(FixItManager, Node)} FixItCallback
+ */
+
+/**
+ * @typedef {Object} FixItDeclaration
+ * @property {string} d - name of fixit.
+ * @property {?(string[])} a - args if any.
+ * @property {FixItCallback} f - Fixit handler
+ */
+
+/**
+ * @typedef {Object} ErrorRef
+ * @property {FixItDeclaration[]} fixits
+ */
+
 // remove - remove Node/Node[]
 // set - replace literal string val w/
 // insertAfter - inserts a string after a node

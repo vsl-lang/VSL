@@ -42,7 +42,7 @@ export default class TypeCandidate {
             if (candidates[i].precType === null) return [];
             if (candidates[i].precType === true) {
                 if (fixed !== null) return [];
-                fixed = candidates[i];
+                fixed = candidates[i].resolved();
             }
         }
         

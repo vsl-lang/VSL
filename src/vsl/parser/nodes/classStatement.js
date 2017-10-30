@@ -15,23 +15,20 @@ export default class ClassStatement extends DeclarationStatement {
      *
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the class
+     * @param {TypeDeclaration[]} generics - Generic templates of the class.
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
      * @param {CodeBlock} statements - The class's body
      * @param {Annotation[]} annotations - The annotations of the class
      * @param {Object} position - a position from nearley
      */
-    constructor(
-        access: string[],
-        name: Identifier,
-        superclasses: Identifier[],
-        statements: CodeBlock,
-        annotations: Annotation[],
-        position: Object
-    ) {
+    constructor(access, name, generics, superclasses, statements, annotations, position) {
         super(access, position);
 
         /** @type {Identifier} */
         this.name = name;
+        
+        /** @type {TypeDeclaration[]} */
+        this.generics = generics;
 
         /** @type {Identifier[]} */
         this.superclasses = superclasses;
@@ -55,6 +52,6 @@ export default class ClassStatement extends DeclarationStatement {
 
     /** @override */
     get children() {
-        return ['name', 'superclasses', 'statements', 'annotations'];
+        return ['name', 'generics', 'superclasses', 'statements', 'annotations'];
     }
 }

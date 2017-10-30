@@ -6,7 +6,7 @@ import t from '../../parser/nodes';
  * This resolves and mangles a function declaration. This applies to functions
  * and does not support lambdas or such.
  */
-export default class RegisterPrimitiveAnnotation extends Transformation {
+export default class DescribePrimitiveAnnotation extends Transformation {
     constructor() {
         super(t.Annotation, "Register::PrimitiveAnnotation");
     }

@@ -33,7 +33,7 @@ export default class FixIt {
     
     /**
      * Async function which applies a specific FIX-IT.
-     * @param  {Object}  fixit Fix-It object
+     * @param  {FixItDeclaration}  fixit Fix-It object
      * @return {Promise}       A promise which is called when finished. Resolves
      *                           with new source. You should reparse as not sure
      *                           if AST is nonsense or makes sense

@@ -16,7 +16,7 @@ export default class VSLPreprocessor extends Transformer {
 
             // Registers a @primitive mark specifying that a class defines
             // behavior for one.
-            pass.RegisterPrimitiveAnnotation,
+            pass.DescribePrimitiveAnnotation,
 
             // Add to first scope pass
             // adds just the name and ref to class

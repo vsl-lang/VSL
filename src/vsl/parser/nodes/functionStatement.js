@@ -66,7 +66,7 @@ export default class FunctionStatement extends DeclarationStatement {
     toString() {
         return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}` +
             `${this.access.join(" ")}${this.access.length ? " " : ""}` +
-            `func ${this.name.identifier.rootId}(${this.args.join(", ")})` +
+            `func ${this.name}(${this.args.join(", ")})` +
             `${this.returnType ? " -> " + this.returnType : ""} ${this.statements}`
     }
 }

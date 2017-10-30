@@ -88,4 +88,12 @@ export default class ScopeItem {
     equal(ref: ScopeItem): boolean {
         return ref.rootId === this.rootId;
     }
+    
+    /**
+     * Resolves a {@link ScopeItem} to its canolical form.
+     * @return {ScopeItem} normalized etc.
+     */
+    resolved() {
+        return this;
+    }
 }

@@ -9,28 +9,16 @@ export default class ScopeAliasItem extends ScopeItem {
     /**
      * Creates an alias, an item representing a value. This will store a
      * ScopeItem for the instance which it represents. For example an object of
-     * type `class A {}` would be `ScopeAliasItem(of: A.ref)`
+     * type `class A {}`'s metaclass could be `ScopeAliasItem(of: A.ref)`
      *
-     * Additionally we'll keep track of variable candidates here. This will be
-     * verified as the code is generated which will allow us to maintain
-     * ambiguity for deffered resolution
-     *
-     * @param {string} rootId - The root primary identifier of this type.
-     * @param {ScopeItem[]} candidates - The possible type of the item.
-     * @param {Node} source - The source expression which the item was declared.
+     * @param {ScopeForm} form - The form or type of the scope item.
+     * @param {string} rootId - the root identifier in a scope.
+     * @param {Object} data - Information about the class
+     * @param {Node} data.source - The source expression which the item was
+     *                           declared.
      */
-    constructor(rootId: string, candidates: ScopeItem[], source: Node) {
-        super(rootId);
-
-        /**
-         * All the possible types the alias can have. The generator will resolve
-         * ambiguity between multiple but if they are 0 we can do nothing.
-         *
-         * Make sure to bind to the reference for type updating.
-         *
-         * @type {ScopeItem[]}
-         */
-        this.candidates = candidates;
+    constructor(form, rootId, object) {
+        super(form, rootId, object);
 
         /**
          * `true` if the type ever escapes the scope this means it is places
@@ -51,16 +39,20 @@ export default class ScopeAliasItem extends ScopeItem {
          *
          * @type {Node}
          */
+        this.source;
+    }
+    
+    init({ source }) {
         this.source = source;
     }
 
     /** @override */
     equal(ref: ScopeItem): boolean {
-        return ref instanceof ScopeAliasItem && ref.rootId === this.rootId;
+        return ref === this;
     }
 
     /** @return {string} */
     toString() {
-        return `${this.rootId}: ${this.candidates ? this.candidates.join(", ") : "n/a"}`;
+        return `${this.rootId}`;
     }
 }

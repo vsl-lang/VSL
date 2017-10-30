@@ -13,6 +13,6 @@ export default class TypeDeductClassDeclaration extends Transformation {
     }
     
     modify(node: Node, tool: ASTTool) {
-        // TODO: 
+        // TODO:
     }
 }

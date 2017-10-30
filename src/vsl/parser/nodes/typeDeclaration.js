@@ -1,39 +1,27 @@
 import Node from './node';
 
 /**
- * Wraps a type declaration
- * 
+ * Wraps a generic value
  */
 export default class TypeDeclaration extends Node {
     
-    constructor(
-        head: Identifier,
-        tail: Identifier,
-        optional: bool,
-        parent: TypeDeclaration,
-        fallback: TypeDeclaration,
-        position: Object
-    ) {
+    /**
+     * @param  {Identifier} name Generic name.
+     * @param  {?Type} defaultType Default generic value
+     * @param  {Object} position Position from nearley
+     */
+    constructor(name, defaultType, position) {
         super(position);
         
         /** @type {Identifier} */
-        this.head = head;
+        this.name = name;
         
-        /** @type {Identifier} */
-        this.tail = tail;
-        
-        /** @type {bool} */
-        this.optional = optional;
-        
-        /** @type {TypeDeclaration} */
-        this.parent = parent;
-        
-        /** @type {TypeDeclaration} */
-        this.fallback = fallback;
+        /** @type {Type} */
+        this.defaultType = defaultType;
     }
     
     /** @override */
     get children() {
-        return this.path ? [this.path[0]] : null;
+        return [ 'defaultType' ];
     }
 }

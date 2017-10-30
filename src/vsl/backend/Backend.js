@@ -32,20 +32,7 @@ export default class Backend {
         );
         
         /** @private */
-        this.stream = stream;
-        
-        /** @private */
         this.handlers = handlers;
-    }
-    
-    /**
-     * Redirects a stream to a lambda where you can do something else with it
-     * @param {func(data: string)} callback - callback which redirects data
-     * @return {BackendStream} stream to pass to a regen callback for
-     *                                    example.
-     */
-    redirect(callback) {
-        return new BackendStream(callback);
     }
     
     /**
@@ -57,7 +44,7 @@ export default class Backend {
     /**
      * @private
      */
-    generate(name, parent, stream = this.stream) {
+    generate(name, parent) {
         let node = parent[name];
         
         let handler = this.handlers.get(node.constructor);
@@ -69,7 +56,6 @@ export default class Backend {
         handler(
             node,
             this,
-            stream,
             tool,
             ::this.generate
         );
