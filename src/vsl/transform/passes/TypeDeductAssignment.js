@@ -10,6 +10,9 @@ import TypeCandidate from '../../resolver/typeCandidate';
 
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
+import TypeLookup from '../../typeLookup/typeLookup';
+import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
+
 /**
  * Type deducts basic assignment statements
  *
@@ -22,20 +25,22 @@ export default class TypeDeductAssignment extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let types = null;
+        let scope = tool.scope;
+        
+        let types = [];
         
         // If we have an expected type (e.g. let a: T) then this passes T.
-        if (node.expectedType) {
-            types = [
-                new TypeCandidate(node.expectedType)
-            ];
+        if (node.name.type) {
+            types.push(
+                new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
+            );
         }
         
         let resolver = new RootResolver(node.value, vslGetChild, tool.context)
             .resolve((constraint) => {
                 switch (constraint) {
                     case ConstraintType.RequestedTypeResolutionConstraint:
-                        return types;
+                        return types.length === 0 ? null : [];
                     default:
                         return null;
                 }

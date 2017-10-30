@@ -46,11 +46,6 @@ export default class ScopeAliasItem extends ScopeItem {
         this.source = source;
     }
 
-    /** @override */
-    equal(ref: ScopeItem): boolean {
-        return ref === this;
-    }
-
     /** @return {string} */
     toString() {
         return `${this.rootId}`;

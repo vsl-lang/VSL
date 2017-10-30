@@ -15,7 +15,7 @@ export default class ScopeTypeAliasItem extends ScopeItem {
      * @param {Object} data - Information about the class
      * @param {ScopeTypeItem} data.item - Referenced item.
      */
-    constructor(form, rotoId, data) {
+    constructor(form, rootId, data) {
         super(form, rootId, data);
     }
     

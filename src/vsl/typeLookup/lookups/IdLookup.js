@@ -20,7 +20,9 @@ export default class IdLookup extends TypeLookup {
         if (result === null) {
             this.emit(
                 `There is no type with name \`${name}\` in this scope. Check ` +
-                `for typos or if this type declared.`
+                `for typos or if this type declared in the current scope. If ` +
+                `this is a module, check you are using the right version and ` +
+                `it is imported properly.`
             )
         } else {
             return result;

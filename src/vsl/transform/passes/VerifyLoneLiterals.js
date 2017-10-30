@@ -45,9 +45,8 @@ import t from '../../parser/nodes';
          let isLiteralExpression = node.expression instanceof t.Literal;
          
          // If both of these are true then it's a lone expression and we'll
-         // remove it
+         // remove it.
          if (isTopLevel && isLiteralExpression) {
-             // TODO: warn
              tool.remove();
          }
      }

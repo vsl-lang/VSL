@@ -14,7 +14,7 @@ export default class VSLTransformer extends Transformer {
         super([
             pass.TypeDeductExpression,
             pass.TypeDeductAssignment,
-            pass.TypeDeductClassDeclaration
+            // pass.TypeDeductClassDeclaration
         ], context);
     }
 }

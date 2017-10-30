@@ -31,12 +31,6 @@ export default class AssignmentStatement extends DeclarationStatement {
         this.value = value;
         
         /**
-         * Expected evaluation type of assignment.
-         * @type {?ScopeTypeItem}
-         */
-        this.expectedType = null;
-        
-        /**
          * The ref in a scope this declares the alias too
          * @type {?ScopeAliasItem}
          */

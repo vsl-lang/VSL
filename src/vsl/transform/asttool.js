@@ -53,6 +53,14 @@ export default class ASTTool {
     }
     
     /**
+     * Returns the scope the node is in
+     * @type {?Scope}
+     */
+    get scope() {
+        return this.fragment?.parentScope?.scope;
+    }
+    
+    /**
      * Access the nth parent. This traverses up the AST tree and if the parent
      * could not be found, or another error occurs, this returns nil. Passing 0
      * will return the node itself.

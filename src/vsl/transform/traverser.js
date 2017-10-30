@@ -60,13 +60,20 @@ export default class Traverser {
     queue(ast: any) {
         // Recursively add all AST nodes in an array
          if (ast instanceof Array) {
+            let lastLength = ast.length;
             for (let i = 0; i < ast.length; i++) {
                 // If it's a node array. Then we also want to queue itself and queue
                 // the node itself so its children will be added.
                 this.processNode(ast, i);
                 
-                // Requeue the further children
-                this.queue(ast[i]);
+                // Array has gotten smaller
+                if (ast.length < lastLength) {
+                    lastLength = ast.length;
+                    i--;
+                } else {
+                    // Requeue the further children
+                    this.queue(ast[i]);
+                }
                 
                 // Notify that the node is finished if defined
                 this.finishedNode(ast, i);
@@ -88,7 +95,6 @@ export default class Traverser {
                 }
              }
          } else {
-             if (process.env["VSL_ENV"] != "dev_debug") console.log(ast);
              throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
          }
     }
@@ -107,16 +113,6 @@ export default class Traverser {
         let node = parent[name];
         
         if (this.shouldProcess) {
-            if (process.env.VSL_ENV === "dev_debug") {
-                console.log("-- Received Node --");
-                console.log("Parent: ", parent.constructor.name);
-                console.log("Name: ", name);
-                console.log("Exists: ", !!(parent[name]));
-                // console.log("Node: ", parent[name]);
-                // console.log("Scope: ", this.scope);
-                console.log("\n\n");
-            }
-            
             if (node) node.parentNode = parent;
         }
         

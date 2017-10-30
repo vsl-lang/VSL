@@ -214,10 +214,15 @@ ng to the setup transformer. This is recursively
             );
             
             if (result === false) {
-                // Requeue with remaining transformations. Excluding current
-                let queuedTransforms = passes.slice(i + 1);
-                if (queuedTransforms.length > 0)
-                    this.transform(parent[name], parent, name, queuedTransforms);
+                let newInstance = parent[name];
+                
+                if (newInstance) {
+                    // Requeue with remaining transformations. Excluding current
+                    let queuedTransforms = passes.slice(i + 1);
+                    if (queuedTransforms.length > 0)
+                        this.transform(parent[name], parent, name, queuedTransforms);
+                }
+                
                 break;
             }
         }

@@ -1,10 +1,11 @@
 import Transformation from '../transformation';
 import t from '../../parser/nodes';
 
-import TypeLookup from '../../typeLookup/typeLookup';
-import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
+import TransformError from '../transformError';
+import e from '../../errors';
 
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
+import ScopeForm from '../../scope/scopeForm';
 
 /**
  * A pre-processing assignment value. So for `var x = a`. This will register
@@ -23,17 +24,21 @@ export default class DescribeVariableAssignment extends Transformation {
         let expression = node.value;
         let scope = node.parentScope.scope;
         
-        // Resolve the given type if it exists.
-        if (variableType !== null) {
-            node.expectedType = new TypeLookup(variableType, vslGetTypeChild)
-                .resolve(scope);
-        }
-        
-        scope.set(
+        let result = scope.set(
             new ScopeAliasItem(
+                ScopeForm.definite,
                 variableName,
                 node
             )
-        )
+        );
+        
+        if (result === false) {
+            throw new TransformError(
+                `Redeclaration of variable \`${variableName}\` in scope. Did ` +
+                `you mean to use the assignment operator (\`=\`)?`,
+                node.name.identifier,
+                e.DUPLICATE_DECLARATION
+            );
+        }
     }
 }

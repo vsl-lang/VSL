@@ -2,6 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeResolver from '../typeResolver';
 
+import ScopeForm from '../../scope/scopeForm';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 
@@ -78,8 +79,12 @@ export default class IdResolver extends TypeResolver {
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
         
-        let result = scope.get(
-            new ScopeAliasItem(rootId)
+        // Get the variable this references
+        // Pass this.node so we can know that this node referenced the
+        // variable we are trying to get.
+        let result = scope.getAsDelegate(
+            new ScopeAliasItem(ScopeForm.query, rootId),
+            this.node
         );
         
         if (!result) {
@@ -91,12 +96,8 @@ export default class IdResolver extends TypeResolver {
             );
         }
         
-        // Atomic type so no further requeuing
-        // This marks a reference that this node ref'd the ID
-        result.references.push(this.node);
-        
         // And this sets the candidates to the same one the ID had
-        this.node.typeCandidates = result.candidates;
+        this.node.typeCandidates = [ result ];
         
         // Filter amongst response
         this.mutableIntersect(response, this.node.typeCandidates);
