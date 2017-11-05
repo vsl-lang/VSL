@@ -9,14 +9,14 @@ export default class FunctionArgument extends Node {
     constructor(typedId: TypedIdentifier, defaultValue: Expression, position: Object) {
         super(position);
         
-        /** @type {string} */
+        /** @type {TypedIdentifier} */
         this.typedId = typedId;
         this.defaultValue = defaultValue;
     }
     
     /** @override */
     get children() {
-        return ['defaultValue'];
+        return ['typedId', 'defaultValue'];
     }
     
     /** @override */

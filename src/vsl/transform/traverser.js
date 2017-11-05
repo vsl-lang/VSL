@@ -59,13 +59,13 @@ export default class Traverser {
      */
     queue(ast: any) {
         // Recursively add all AST nodes in an array
-         if (ast instanceof Array) {
+        if (ast instanceof Array) {
             let lastLength = ast.length;
             for (let i = 0; i < ast.length; i++) {
                 // If it's a node array. Then we also want to queue itself and queue
                 // the node itself so its children will be added.
                 this.processNode(ast, i);
-                
+            
                 // Array has gotten smaller
                 if (ast.length < lastLength) {
                     lastLength = ast.length;
@@ -78,10 +78,10 @@ export default class Traverser {
                 // Notify that the node is finished if defined
                 this.finishedNode(ast, i);
             }
-         } else if (ast instanceof Node) {
-             let children = ast.children, name, child;
+        } else if (ast instanceof Node) {
+            let children = ast.children, name, child;
              
-             if (children) {
+            if (children) {
                 for (let i = 0; i < children.length; i++) {
                     name = children[i];
                     
@@ -89,14 +89,16 @@ export default class Traverser {
                     
                     child = ast[ name ];
                     
-                    if (child != null) this.queue(child);
+                    if (child != null) {
+                        this.queue(child);
+                    }
                     
                     this.finishedNode(ast, name);
                 }
-             }
-         } else {
-             throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
-         }
+            }
+        } else {
+            throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
+        }
     }
     
     /**

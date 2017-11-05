@@ -42,6 +42,12 @@ export default class FunctionStatement extends DeclarationStatement {
         /** @type {Type} */
         this.returnType = returnType;
         
+        /** @type {?ScopeTypeItem} */
+        this.returnRef = null;
+        
+        /** @type {?(ScopeTypeItem[])} */
+        this.argRefs = [];
+        
         /** @type {Node[]} */
         this.statements = statements;
         
@@ -59,7 +65,7 @@ export default class FunctionStatement extends DeclarationStatement {
     
     /** @override */
     get children() {
-        return ['annotations', 'name', 'args', 'statements'];
+        return ['annotations', 'name', 'args', 'returnType', 'statements'];
     }
     
     /** @override */

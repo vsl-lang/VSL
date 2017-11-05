@@ -24,12 +24,8 @@ export default class RegisterFunctionDeclaration extends Transformation {
         let name = node.name.value;
         
         // Handle -> Void.
-        if (node.returnType?.value === "Void") {
-            node.returnType = null;
-        }
-        
-        if (node.returnType instanceof t.Identifier) {
-            node.returnType = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
+        if (node.returnType instanceof t.Identifier && node.returnType.value !== "Void") {
+            node.returnRef = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
         }
         
         
@@ -52,7 +48,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
             name,
             {
                 args: argList,
-                returnType: node.returnType
+                returnType: node.returnRef
             }
         );
         
