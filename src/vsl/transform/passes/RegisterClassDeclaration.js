@@ -20,25 +20,6 @@ export default class RegisterClassDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let ref = node.scopeRef;
-        let scope = node.parentScope.scope;
-        
-        if (!ref) {
-            throw new TransformError(
-                `Internal Error: Malformed class without scope reference.`,
-                node, e.DUPLICATE_DECLARATION
-            );
-        }
-        
-        if (node.generics.length > 0) {
-            let generics = node.generics.map(
-                generic =>
-                    new TypeLookup(generic, vslGetTypeChild)
-                        .resolve(scope)
-            )
-        }
-        
-        this.scopeRef.genericParents = generics;
-        this.scopeRef.updateReferenceValidity();
+        node.scopeRef.resolve();
     }
 }

@@ -1,4 +1,5 @@
 import ScopeItem from '../scopeItem';
+import ScopeForm from '../scopeForm';
 
 /**
  * Represents a Type Alias. You can use {@link ScopeTypeAliasItem#resolve} to
@@ -13,14 +14,16 @@ export default class ScopeTypeAliasItem extends ScopeItem {
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
      * @param {Object} data - Information about the class
-     * @param {ScopeTypeItem} data.item - Referenced item.
+     * @param {ScopeTypeItem|Node} data.item - Referenced item.
+     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
     }
     
     /** @protected */
-    init({ item }) {
+    init({ item, ...opts }) {
+        super.init(opts);
         this._ref = item;
     }
 
@@ -34,6 +37,7 @@ export default class ScopeTypeAliasItem extends ScopeItem {
      * @return {ScopeItem} normalized etc.
      */
     resolved() {
-        return this._ref;
+        this.resolve();
+        return this._ref.resolved();
     }
 }

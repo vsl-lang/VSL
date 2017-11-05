@@ -30,6 +30,7 @@ export default class ScopeItem {
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
      * @param {?Object} data - See {@link ScopeItem#init} for info.
+     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
      */
     constructor(form, rootId, data = {}) {
         /**
@@ -70,9 +71,12 @@ export default class ScopeItem {
 
     /**
      * Called to initalize type with object.
+     * @param {ScopeItemResolver} resolver - Function to resolve if node.
      * @abstract
      */
-    init(object) { void 0; }
+    init({ resolver = null }) {
+        this._resolver = resolver;
+    }
 
     /**
      * Determines whether two `ScopeItem`s matches each other. You can use this
@@ -90,10 +94,22 @@ export default class ScopeItem {
     }
     
     /**
-     * Resolves a {@link ScopeItem} to its canolical form.
+     * Resolves the current node using a passed resolver
+     */
+    resolve() {
+        if (this.form === ScopeForm.indefinite && this._resolver) {
+            this._resolver(this);
+            this.form = ScopeForm.definite;
+        }
+    }
+    
+    /**
+     * Resolves a {@link ScopeItem} to its canolical object.
      * @return {ScopeItem} normalized etc.
+     * @abstract
      */
     resolved() {
+        this.resolve();
         return this;
     }
 }

@@ -22,8 +22,8 @@ export default class VSLPreprocessor extends Transformer {
             // Add to first scope pass
             // adds just the name and ref to class
             pass.DescribeClassDeclaration,
-            pass.DescribeFunctionDeclaration,
-            pass.DescribeVariableAssignment
+            pass.DescribeVariableAssignment,
+            pass.DescribeTypeAlias
         ], context);
     }
 }

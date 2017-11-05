@@ -28,6 +28,7 @@ export default class ScopeGenericItem extends ScopeTypeItem {
      * @param {boolean} data.isInterface - Whether the type is an interface.
      *     This is used to determine how casting will occur and dynamic dispatch
      *     so ensure that it is not possible to declare fields.
+     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);
@@ -63,13 +64,6 @@ export default class ScopeGenericItem extends ScopeTypeItem {
         }
         
         this.types.add(typeList);
-    }
-    
-    /**
-     * Updates reference validity
-     */
-    updateReferenceValidity() {
-        // TODO: implement
     }
 
     /** @return {string} */

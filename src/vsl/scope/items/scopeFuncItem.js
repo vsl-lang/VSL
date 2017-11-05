@@ -13,9 +13,6 @@ export default class ScopeFuncItem extends ScopeItem {
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
      * @param {Object} data - Information about the class
-     * @param {ScopeFuncItemArgument[]} data.args - The args of the function
-     * @param {ScopeTypeItem} [data.returnType=null] - The return type of the
-     *                                           function. `null` if void.
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
@@ -34,7 +31,8 @@ export default class ScopeFuncItem extends ScopeItem {
     }
     
     /** @override */
-    init({ args, returnType = null }) {
+    init({ args, returnType = null, ...opts }) {
+        super.init(opts);
         this.args = args;
         this.returnType = returnType?.resolved();
     }

@@ -59,7 +59,7 @@ export default class FunctionStatement extends DeclarationStatement {
     
     /** @override */
     get children() {
-        return ['annotations', 'name', 'args', 'returnType', 'statements'];
+        return ['annotations', 'name', 'args', 'statements'];
     }
     
     /** @override */

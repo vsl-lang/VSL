@@ -23,7 +23,7 @@ export default class GenericLookup extends TypeLookup {
             param => this.getChild(param).resolve(scope)
         );
         
-        let result = scope.get(new ScopeGenericItem(ScopeForm.query, name));
+        let result = scope.get(new ScopeGenericItem(ScopeForm.query, name))?.resolved();
         
         if (result === null) {
             this.emit(

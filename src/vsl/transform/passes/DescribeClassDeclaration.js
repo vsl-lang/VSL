@@ -7,6 +7,9 @@ import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 
+import TypeLookup from '../../typeLookup/typeLookup';
+import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
+
 /**
  * A pre-processing entry for a class declaration. This goes top-down and
  * "registers" or adds the class to a global table of all items for at least
@@ -24,13 +27,20 @@ export default class DescribeClassDeclaration extends Transformation {
         
         let opts = {
             subscope: node.statements.scope,
-            isInterface: false
+            isInterface: false,
+            resolver: (self) => {
+                if (self instanceof ScopeGenericItem) {
+                    self.genericParents = self.genericParents.map(
+                        generic => ScopeTypeItem.RootClass
+                    );
+                }
+            }
         };
         
         if (node.generics.length === 0) {
         
             type = new ScopeTypeItem(
-                ScopeForm.definite,
+                ScopeForm.indefinite,
                 className,
                 opts
             );
@@ -38,10 +48,10 @@ export default class DescribeClassDeclaration extends Transformation {
         } else {
             
             type = new ScopeGenericItem(
-                ScopeForm.definite,
+                ScopeForm.indefinite,
                 className,
                 {
-                    genericParents: node.generics.map(_ => ScopeTypeItem.RootClass),
+                    genericParents: node.generics,
                     ...opts
                 }
             );

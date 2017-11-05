@@ -26,6 +26,7 @@ export default class ScopeTypeItem extends ScopeItem {
      * @param {boolean} data.isInterface - Whether the type is an interface.
      *     This is used to determine how casting will occur and dynamic dispatch
      *     so ensure that it is not possible to declare fields.
+     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);
@@ -35,8 +36,10 @@ export default class ScopeTypeItem extends ScopeItem {
     init({
         interfaces = [],
         superclass = ScopeTypeItem.RootClass,
-        isInterface = false
+        isInterface = false,
+        ...opts
     } = {}) {
+        super.init(opts);
         this.interfaces = interfaces;
         this.superclass = superclass;
         this.isInterface = isInterface;
