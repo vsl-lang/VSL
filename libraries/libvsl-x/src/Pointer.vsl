@@ -2,3 +2,6 @@
 public class Pointer<Type> {
 
 }
+
+@_mockType(llvm, opaquepointer)
+public class OpaquePointer { }

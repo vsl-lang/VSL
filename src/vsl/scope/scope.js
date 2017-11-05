@@ -65,11 +65,12 @@ export default class Scope {
      * @return {?ScopeItem[]} null if the item could not be obtained
      */
     getAll(id: string): ?ScopeItem[] {
-        let items = this.ids.get(id) || [];
-        if (this.parentScope !== null) {
-            let res = this.parentScope && this.parentScope.getAll(id);
-            if (res !== null) items = items.concat(res);
-        }
+        let items = (this.ids.get(id) || []).slice();
+        
+        this.parentScope?.getAll(id).forEach(
+            item => items.push(item)
+        );
+        
         return items;
     }
 
@@ -141,11 +142,17 @@ export default class Scope {
         let candidates = this.ids.get(item.rootId);
         if (candidates) {
             candidates.push(item);
-            return this.get(item) === item;
+            
+            if (this.get(item) !== item) {
+                candidates.pop();
+                return false;
+            }
+            
         } else {
             this.ids.set(item.rootId, [item])
-            return true;
         }
+        
+        return true;
     }
 
     /**

@@ -15,10 +15,13 @@ const NodeTypes = require('./vsltokentype'),
   special_identifier = freeze({ test: x => x[1] === NodeTypes.SpecialIdentifier }),
   documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
   nativeBlock = freeze({ test: x => x[1] === NodeTypes.NativeBlock }),
+  importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
+  mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p })
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
-  mid = d => d[0][0];
+  mid = d => d[0][0],
+  importMark = Symbol('import');
 %}
 
 @lexer lexer
@@ -34,8 +37,18 @@ CodeBlock[s]
     %}
 
 main
-   -> CodeBlock[statement {% id %}] {%
-        data => (data[0].rootScope = true, data[0])
+   -> CodeBlock[(statement {% id %} | %importStatement {% mark(importMark) %}) {% id %}] {%
+        data => {
+            for (let i = data[0].statements.length - 1; i >= 0; i--) {
+                if (data[0].statements[i].type === importMark) {
+                    data[0].lazyHooks.push(data[0].statements[i]);
+                    data[0].statements.splice(i, 1);
+                }
+            }
+            
+            data[0].rootScope = true;
+            return data[0];
+        }
     %}
 
 separator
@@ -86,7 +99,7 @@ WhileStatement
 # TODO: add _ after Modifier if it doesn't cause ambiguities
 
 ClassStatement
-   -> Annotations Modifier "class" _ Identifier (_ genericDeclaration {% mid %}):? _ (":" _ ExtensionList _
+   -> Annotations Modifier "class" _ Identifier (_ genericDeclaration {% nth(1) %}):? _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" ClassItems "}" {%
         (d, l) => new t.ClassStatement(
             d[1], // access

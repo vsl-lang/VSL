@@ -12,6 +12,7 @@
                     ["babel-plugin-transform-class-properties", { "loose": true }],
                     "babel-plugin-transform-do-expressions",
                     "babel-plugin-transform-optional-chaining",
+                    "babel-plugin-transform-object-rest-spread",
                     "babel-plugin-transform-function-bind",
                     "babel-plugin-transform-export-extensions"
                 ]

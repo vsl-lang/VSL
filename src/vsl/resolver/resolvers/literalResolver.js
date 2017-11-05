@@ -91,9 +91,6 @@ export default class LiteralResolver extends TypeResolver {
         
         // Match literal type to context-based candidates
         if (response !== null) {
-            // Just for error message store a copy of candidates
-            let debugResponse = response.slice();
-            
             // Actual type intersect
             this.mutableIntersect(response, this.node.typeCandidates)
         
@@ -104,7 +101,7 @@ export default class LiteralResolver extends TypeResolver {
                 this.emit(
                     `This literal would need to be a type which it cannot be in\n` +
                     `order for everything to work. Candidates would include: \n\n` +
-                    debugResponse.map(i => "    • " + i.candidate.rootId).join("\n") +
+                    typeList.map(i => "    • " + i.toString()).join("\n") +
                     `\n\nHowever none of these are actually a type this literal could\n` +
                     `represent.`
                 );

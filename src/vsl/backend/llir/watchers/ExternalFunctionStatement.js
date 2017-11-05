@@ -1,11 +1,9 @@
 import BackendWatcher from '../../BackendWatcher';
 import t from '../../../parser/nodes';
 
-import Chain from '@/LLIR/ExecutionGraph/Node/Nodes/Chain';
-
-export default class LLIRCodeBlock extends BackendWatcher {
+export default class LLIRExternalFunctionStatement extends BackendWatcher {
     match(type) {
-        return type instanceof t.CodeBlock;
+        return type instanceof t.FunctionStatement && type.statements instanceof t.ExternalMarker;
     }
     
     receive(node, tool, regen, context) {

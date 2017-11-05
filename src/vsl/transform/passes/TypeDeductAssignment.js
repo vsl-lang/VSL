@@ -32,18 +32,22 @@ export default class TypeDeductAssignment extends Transformation {
         // If we have an expected type (e.g. let a: T) then this passes T.
         if (node.name.type) {
             types.push(
-                new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
+                new TypeCandidate(
+                    new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
+                )
             );
         }
         
-        let resolver = new RootResolver(node.value, vslGetChild, tool.context)
-            .resolve((constraint) => {
-                switch (constraint) {
-                    case ConstraintType.RequestedTypeResolutionConstraint:
-                        return types.length === 0 ? null : [];
-                    default:
+        if (node.value) {
+            let resolver = new RootResolver(node.value, vslGetChild, tool.context)
+                .resolve((constraint) => {
+                    if (constraint === ConstraintType.RequestedTypeResolutionConstraint &&
+                        types.length > 0) {
+                        return types;
+                    } else {
                         return null;
-                }
-            });
+                    }
+                });
+        }
     }
 }

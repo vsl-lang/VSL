@@ -119,20 +119,22 @@ export default class ErrorManager {
         let startLine = Math.max(0, pos.line - 2);
         let endLine   = Math.min(lines.length - 1, pos.line + 2);
         
-        let maxLineLength = (endLine + "").length;
+        let prefix = this.setYellow(" | ");
+        let lineIndicator = "> ";
+        
+        let maxLineLength = (endLine + "").length + 2;
         let res = [];
         
-        let prefix = this.setYellow(" | ");
-        
         for (let i = startLine; i <= endLine; i++) {
-            let start = this.setYellow(this._leftPad(i + 1 + "", maxLineLength));
+            let isLine = i === pos.line ? lineIndicator : "";
+            let start = this.setYellow(this._leftPad(`${isLine}${i + 1}`, maxLineLength));
             
             res.push(start + prefix + lines[i]);
             if (i === pos.line) {
                 let carets = this.setYellow(this._repeat("^", pos.length));
                 
                 res.push(
-                    this._repeat(" ", maxLineLength) + prefix +
+                    this._repeat(" ", maxLineLength ) + prefix +
                     this._repeat(" ", pos.column) + carets
                 );
             }

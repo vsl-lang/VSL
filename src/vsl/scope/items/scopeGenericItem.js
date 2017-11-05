@@ -1,10 +1,10 @@
+import ScopeTypeItem from './scopeTypeItem';
 import ScopeForm from '../scopeForm';
-import ScopeItem from '../scopeItem';
 
 /**
  * Describes a declaration of a type.
  */
-export default class ScopeTypeItem extends ScopeItem {
+export default class ScopeGenericItem extends ScopeTypeItem {
     /**
      * Creates an intenral declaration of a type. When passing the "subscope",
      * don't create a new one or anything, just pass the `CodeBlock`'s `Scope`
@@ -20,6 +20,8 @@ export default class ScopeTypeItem extends ScopeItem {
      *     something is wrong here expect big giant segfaults. If you have a
      *     superclass, specified it'll just go in the superclass field.
      *     Interfaces go here for example.
+     * @param {?(ScopeTypeItem[])} data.genericParents - A series of parents
+     *     which match the generic templates.
      * @param {?ScopeTypeItem} data.superclass - The superclass (not interface)
      *     of the current class, don't specify if there is none. You don't need
      *     to resolve inheritance or anything. This is null for interfaces.
@@ -33,53 +35,45 @@ export default class ScopeTypeItem extends ScopeItem {
 
     /** @protected */
     init({
-        interfaces = [],
-        superclass = ScopeTypeItem.RootClass,
-        isInterface = false
+        genericParents, ...options
     } = {}) {
-        this.interfaces = interfaces;
-        this.superclass = superclass;
-        this.isInterface = isInterface;
+        super.init(options);
+        this.genericParents = genericParents;
+        this.types = new Set();
     }
     
     /**
-     * Determines if the current type can be cast to `type` is castable.
-     *
-     * @param {ScopeTypeItem} type - If the current type can be cast to this
-     *                             type.
-     * @return {number} can be treated as a boolean. 0 if cannot be cast, else,
-     *                  this is the distance of the cast (lower = more specific)
+     * Notifies that this generic was used with a types.
+     * @param  {ScopeTypeItem[]} types - The generic types this was used with.
      */
-    castableTo(type) {
-        type = type.resolved();
+    usedWith(types) {
+        let typeList = types.map(type => type.resolved());
         
-        // Check if cast to the same type
-        if (type === this) return 1;
-        
-        // Check if casting to new type
-        let canCastSuperclass = this.superclass?.castableTo(type);
-        if (canCastSuperclass) return canCastSuperclass + 1;
-        for (let i = 0; i < this.interfaces; i++) {
-            let canCastInterface = this.interfaces[i].castableTo(type);
-            if (canCastInterface) {
-                return canCastInterface + 1;
+        main: for (let existingType of this.types) {
+            if (existingType.length === types.length) {
+                for (let i = 0; i < existingType.length; i++) {
+                    if (existingType[i] !== typeList[i]) {
+                        continue main;
+                    }
+                }
+                
+                // Already added
+                return;
             }
         }
         
-        return 0;
+        this.types.add(typeList);
     }
-
+    
     /**
-     * The default classes all items inherit from.
+     * Updates reference validity
      */
-    static RootClass = do {
-        new ScopeTypeItem(ScopeForm.definite, "Object", {
-            superclass: null
-        });
+    updateReferenceValidity() {
+        // TODO: implement
     }
 
     /** @return {string} */
     toString() {
-        return `${this.isInterface ? "interface" : "class"} ${this.rootId}`
+        return super.toString() + `<<Generic>>`
     }
 }

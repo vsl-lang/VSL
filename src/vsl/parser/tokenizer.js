@@ -50,7 +50,7 @@ export default class Tokenizer {
         this.tokenMatchers = tokenMatchers.map(tokenMatcher =>
             tokenMatcher.map(object => {
                 if (object[0] instanceof RegExp) {
-                    object[0] = new RegExp(object[0], 'g');
+                    object[0] = new RegExp(object[0], 'gu');
                 }
                 
                 return object;
@@ -165,7 +165,7 @@ export default class Tokenizer {
                     let literalMatch = match[0];
                     if (literalMatch.length === 0) continue;
                     
-                    value = onSuccess(this, literalMatch);
+                    value = onSuccess(this, literalMatch, match);
                     this._positionFor(literalMatch, typeof value !== 'undefined');
                 } else {
                     continue;

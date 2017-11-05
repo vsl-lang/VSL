@@ -85,4 +85,13 @@ export default class ScopeTraverser extends Traverser {
         
         super.processNode(parent, name);
     }
+    
+    /**
+     * @override
+     */
+    finishedNode(parent, name) {
+        if (parent[name] instanceof t.CodeBlock) {
+            this.scope.pop();
+        }
+    }
 }

@@ -28,9 +28,19 @@ export default class DescribeVariableAssignment extends Transformation {
             new ScopeAliasItem(
                 ScopeForm.definite,
                 variableName,
-                node
+                { source: node }
             )
         );
+        
+        if (expression === null && variableType === null) {
+            // TODO: TAG
+            throw new TransformError(
+                `Variable \`${variableName}\` is declared without a type or ` +
+                `a value. Provide at least one as the type cannot be ` +
+                `deducted without an expression.`,
+                node
+            );
+        }
         
         if (result === false) {
             throw new TransformError(

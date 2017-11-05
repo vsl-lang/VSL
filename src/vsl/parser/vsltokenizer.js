@@ -57,6 +57,10 @@ function unescapeString(_, match) {
     });
 }
 
+function nthmatch(matchNum) {
+    return (a, b, n) => n[matchNum];
+}
+
 
 let tokenMatchers = Array(VSLScope.MAX);
 tokenMatchers[VSLScope.Normal] = [
@@ -69,8 +73,9 @@ tokenMatchers[VSLScope.Normal] = [
         self.variables.commentDepth++;
         self.begin(VSLScope.Comment);
     }, null],
-    [/"(?:\\["bfnrt\/\\]|\u[a-fA-F0-9]{4}|[^"\\])*"/, unescapeString, VSLTokenType.String],
-    [/'(?:\\['bfnrt\/\\]|\u[a-fA-F0-9]{4}|[^'\\])*'/, unescapeString, VSLTokenType.String],
+    [/"(?:\\["bfnrt\/\\]|\\u\{[a-fA-F0-9]+\}|[^"\\])*"/, unescapeString, VSLTokenType.String],
+    [/'(?:\\['bfnrt\/\\]|\\u\{[a-fA-F0-9]+\}|[^'\\])*'/, unescapeString, VSLTokenType.String],
+    [/import[ \t]+([A-Za-z_-][A-Za-z_0-9-]*)/, nthmatch(1), VSLTokenType.ImportStatement],
     [/\$+[0-9]+/, passThrough, VSLTokenType.SpecialArgument],
     [/\$[a-zA-Z_][a-zA-Z0-9_]*/, slice1, VSLTokenType.SpecialIdentifier],
     [/\.[0-9_]+/, strip_, VSLTokenType.Decimal],
@@ -81,7 +86,7 @@ tokenMatchers[VSLScope.Normal] = [
     [/\.\.\./, passThrough],
     [/\.\./, passThrough],
     [/\./, passThrough],
-    [/native\s*{/, self => {
+    [/native\s*\{/, self => {
         self.variables.nativeBlockData = "";
         self.variables.nativeBlockDepth = 1;
         self.begin(VSLScope.NativeBlock);
@@ -191,11 +196,11 @@ tokenMatchers[VSLScope.Comment] = [
     }]
 ];
 tokenMatchers[VSLScope.NativeBlock] = [
-    [/{/, self => {
+    ['{', self => {
         self.variables.nativeBlockDepth++;
         self.variables.nativeBlockData += "{";
     }],
-    [/}/, self => {
+    ['}', self => {
         self.variables.nativeBlockDepth--;
         if (self.variables.nativeBlockDepth <= 0) {
             self.begin(VSLScope.Normal);

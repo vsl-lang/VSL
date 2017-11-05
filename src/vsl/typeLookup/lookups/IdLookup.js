@@ -1,5 +1,6 @@
 import TypeLookup from '../typeLookup';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeForm from '../../scope/scopeForm';
 
 /**
@@ -23,9 +24,15 @@ export default class IdLookup extends TypeLookup {
                 `for typos or if this type declared in the current scope. If ` +
                 `this is a module, check you are using the right version and ` +
                 `it is imported properly.`
-            )
-        } else {
-            return result;
+            );
+        } else if (result instanceof ScopeGenericItem) {
+            this.emit(
+                `The class \`${name}\` is a generic class. This means you ` +
+                `must specify the generic types and parameters using ` +
+                `\`${name}<...>\``
+            );
         }
+        
+        return result;
     }
 }

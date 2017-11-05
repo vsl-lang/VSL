@@ -13,27 +13,11 @@ import ASTTool from '../transform/asttool';
  */
 export default class Backend {
     /**
-     * Creates a new backend with 'watcher's for each node
-     *
-     * @param  {BackendStream} stream output stream which backend will put all
-     *                                backend output into. Do note that this
-     *                                will only be guarunteed to be usable once
-     *                                the whole backend finishes running.
-     * @param  {BackendWatcher[]} watchers There should be ONE BackendWatcher
-     *                                     for each node type. If there is more
-     *                                     than one it will bork I mean what can
-     *                                     I say.
+     * Returns the watchers for this backend to subclass use
+     * `yield* super.watchers()` to inherit parent.
+     * @return {BackendWatcher} watchers in order to try.
      */
-    constructor(stream, watchers) {
-        let handlers = new Map();
-        watchers.forEach(
-            watcher =>
-                handlers.set(watcher.type, new watcher().receive)
-        );
-        
-        /** @private */
-        this.handlers = handlers;
-    }
+    *watchers() {}
     
     /**
      * Run before generation begins
@@ -42,23 +26,36 @@ export default class Backend {
     pregen() { return }
     
     /**
-     * @private
+     * Generates a node.
+     * @param {string | number} name - node name
+     * @param {Node | array} parent - parent node
+     * @param {Object} context - any context
+     * @protected
      */
-    generate(name, parent) {
+    generate(name, parent, context) {
         let node = parent[name];
         
-        let handler = this.handlers.get(node.constructor);
-        if (!handler) throw new TypeError(
-            `No handler for node ${node.constructor.name}`
-        );
+        let didRun = false;
+        for (let watcher of this.watchers()) {
+            if (watcher.match(parent[name])) {
+                let tool = new ASTTool(parent, name, null);
+                
+                watcher.receive(
+                    node,
+                    tool,
+                    ::this.generate,
+                    context
+                );
+                
+                didRun = true;
+            }
+        }
         
-        let tool = new ASTTool(parent, name, null);
-        handler(
-            node,
-            this,
-            tool,
-            ::this.generate
-        );
+        if (didRun === false) {
+            throw new TypeError(
+                `No handler for node ${node.constructor.name}`
+            );
+        }
     }
     
     /**
@@ -68,6 +65,13 @@ export default class Backend {
     postgen() { return }
     
     /**
+     * Begins generation.
+     * @param {CodeBlock} input
+     * @abstract
+     */
+    start(input) {}
+    
+    /**
      * Runs a list of ASTs through this backend. MAKE SURE you have ran through
      * `transform` and all types and such are available. Provide the output
      * stream here.
@@ -75,9 +79,7 @@ export default class Backend {
      * Do NOT provide a global AST, please provide file-specific ASTs otherwise
      * expect wack generation.
      *
-     * @param  {CodeBlock[]} inputs All the input files, see description for
-     *                              more info on what specific format this
-     *                              should be.
+     * @param  {CodeBlock[]} input Code-block to start as 'entry' point.
      * @param {BackendStream} stream Stream which compilation will be outputted
      *                               to. Wait until all stuff is done before
      *                               using the output.
@@ -87,7 +89,7 @@ export default class Backend {
         this.pregen();
         
         for (let i = 0; i < inputs.length; i++) {
-            this.generate(i, inputs);
+            this.start(inputs[i]);
         }
         
         this.postgen();

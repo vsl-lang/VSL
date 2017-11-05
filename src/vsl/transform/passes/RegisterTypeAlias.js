@@ -10,13 +10,12 @@ import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
 
 /**
- * A pre-processing entry for a class declaration. This goes top-down and
- * "registers" or adds the class to a global table of all items for at least
- * that scope.
+ * Creates a TypeAlias. This takes a created type and creates the reference for
+ * it in the scope.
  */
-export default class DescribeClassDeclaration extends Transformation {
+export default class RegisterTypeAlias extends Transformation {
     constructor() {
-        super(t.TypeAlias, "Describe::ClassDeclaration");
+        super(t.TypeAlias, "Register::TypeAlias");
     }
 
     modify(node: Node, tool: ASTTool) {

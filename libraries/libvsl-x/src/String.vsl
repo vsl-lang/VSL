@@ -1,14 +1,17 @@
+public typealias CString = Pointer<UInt8>
+
 @primitive(String, _precType)
 @_mockType(llvm, "i8*", *)
 public class String {
     
     // NOTE: Positioning of first couple fields is very important. Usually
-    // this is internally defined as:
+    // this will be compiled as if it is in the format of
     //     struct libvsl.String {
     //         size_t length;
     //         char* value;
     //     }
+    // if you change these then you won't get a sane string.
 
-//     private let length: UInt64
-//     private let byte: Pointer<UInt8>
+    public const byteCount: Int
+    const value: Pointer<UInt8>
 }

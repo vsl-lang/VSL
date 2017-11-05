@@ -22,6 +22,6 @@ export default class TypeDeclaration extends Node {
     
     /** @override */
     get children() {
-        return [ 'defaultType' ];
+        return [ 'name', 'defaultType' ];
     }
 }

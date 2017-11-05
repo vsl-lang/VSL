@@ -12,7 +12,9 @@
  * @abstract
  */
 export default class BackendWatcher {
-    static type = null;
+    match(type) {
+        return false;
+    }
     
     /**
      * Function which handles a node and outputs IR.

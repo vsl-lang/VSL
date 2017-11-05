@@ -26,15 +26,15 @@ const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl-x";
 
 let interrupt = null;
-let rl;
+let rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 // Returns promise
 function prompt(string) {
     return new Promise((resolve, reject) => {
-        rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
+        rl.resume();
         
         // Handles ANSI colors
         let _setPrompt = rl.setPrompt;
@@ -47,13 +47,13 @@ function prompt(string) {
         rl.question(string, (res) => {
             resolve(res);
             rl.setPrompt = _setPrompt;
-            rl.close();
+            rl.pause();
         });
     });
 }
 
 export default class Default extends CLIMode {
-    usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]\nvsl"
+    usage = "vsl [options] <module | files> [ -- args ]\nvsl [options] <module | files> -c out.bc\nvsl"
     
     constructor() {
         super([

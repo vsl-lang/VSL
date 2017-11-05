@@ -54,6 +54,7 @@ export default class IdResolver extends TypeResolver {
             // they aren't need
             const allowVoid = negotiate(ConstraintType.VoidableContext);
             
+            console.log(scope.parentScope);
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,
             this.node.typeCandidates = scope
@@ -61,7 +62,7 @@ export default class IdResolver extends TypeResolver {
                 .filter(
                     candidate =>
                         candidate instanceof ScopeFuncItem &&
-                        callArgs <= candidate.args.length
+                        callArgs === candidate.args.length
                 );
             
             // If they are 0 candidates that means there is no function which

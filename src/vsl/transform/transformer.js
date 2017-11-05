@@ -136,13 +136,6 @@ export default class Transformer extends ScopeTraverser {
         // Add to queue
         this.appendNodeQueue(parent, name);
     }
-    
-    /** @override */
-    finishedNode(parent: Node | Node[], name: string) {
-        if (parent[name] instanceof t.CodeBlock) {
-            this.scope.pop()
-        }
-    }
      
     /**
      * Adds item to the end node queue (reccomended).

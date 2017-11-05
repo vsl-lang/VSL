@@ -10,44 +10,47 @@ export default class ScopeFuncItem extends ScopeItem {
      * Creates a spot for a function in a scope. Use this when you need to
      * handle overloading etc. For lambdas you probably want to use a normal
      *
-     * @param {string} rootId - The root primary identifier of this type. (not mangled)
-     * @param {ScopeFuncItemArgument[]} args - The arguments of the function.
+     * @param {ScopeForm} form - The form or type of the scope item.
+     * @param {string} rootId - the root identifier in a scope.
+     * @param {Object} data - Information about the class
+     * @param {ScopeFuncItemArgument[]} data.args - The args of the function
+     * @param {ScopeTypeItem} [data.returnType=null] - The return type of the
+     *                                           function. `null` if void.
      */
-    constructor(rootId: string, args: ScopeFuncItemArgument[]) {
-        super(rootId);
+    constructor(form, rootId, data) {
+        super(form, rootId, data);
 
         /**
          * The list of arguments that a function has.
          * @type {ScopeFuncItemArgument[]}
          */
+        this.args;
+        
+        /**
+         * The return type of the function if it returns.
+         * @type {?ScopeTypeItem}
+         */
+        this.returnType;
+    }
+    
+    /** @override */
+    init({ args, returnType = null }) {
         this.args = args;
+        this.returnType = returnType?.resolved();
     }
 
     /** @override */
     equal(ref: ScopeItem): boolean {
-        if (!(ref instanceof ScopeFuncItem)) return false;
-        if (ref.args.length > this.args.length) return false;
-
-        // Basically go left -> right filling in each arg, placing default if
-        // applicable.
-        let i = 0;
-        for (; i < ref.args.length; i++) {
-            // If they have different names that's a bork.
-            if (ref.args[i].name !== this.args[i].name) {
-                return false;
-            }
-
-            // Check the arg types match
-            if (this.args[i].type !== ref.args[i].type) {
-                return false;
-            }
+        let target = ref.resolved();
+        if (!(target instanceof ScopeFuncItem)) return false;
+        
+        let matchArgs = target.query.args;
+        if (matchArgs.length !== this.args.length) return false;
+        
+        for (let i = 0; i < this.args.length; i++) {
+            if (this.args[i].equal(matchArgs[i])) return true;
         }
-
-        // If they are remaining arguments, ensure they are all optional
-        for (; i < this.args.length; i++) {
-            if (this.args[i].optional === false) return false;
-        }
-
+        
         return true;
     }
 

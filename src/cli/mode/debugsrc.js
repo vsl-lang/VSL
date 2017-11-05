@@ -45,7 +45,11 @@ export default class Default extends CLIMode {
         
         this.pendingString = "";
         
-        this.repl = readline.createInterface(process.stdin, process.stdout);
+        this.repl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+            terminal: true
+        });
         
         this.subcommands = [ "run" ];
     }
@@ -237,7 +241,6 @@ export default class Default extends CLIMode {
         })
         
         REPL.prompt();
-        process.stdin.resume();
     }
     
     async handle(error, src, { exit = false } = {}) {

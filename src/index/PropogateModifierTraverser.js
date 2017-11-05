@@ -72,6 +72,8 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         else if (!shouldPropogate('none')) return;
         
         let ref = node.scopeRef;
-        if (ref !== null) this.callback(ref);
+        if (ref !== null) {
+            this.callback(ref);
+        }
     }
 }

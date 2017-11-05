@@ -17,8 +17,8 @@ export default class ScopeAliasItem extends ScopeItem {
      * @param {Node} data.source - The source expression which the item was
      *                           declared.
      */
-    constructor(form, rootId, object) {
-        super(form, rootId, object);
+    constructor(form, rootId, data) {
+        super(form, rootId, data);
 
         /**
          * `true` if the type ever escapes the scope this means it is places

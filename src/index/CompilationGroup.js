@@ -206,20 +206,6 @@ export default class CompilationGroup {
             });
         });
         
-        // === 3: Scope Sharing ===
-        // Hook all the news ASTs together
-        // This will addd the public, protected, and no-access-modifier
-        // declarations to our new scope (`block`).
-        new PropogateModifierTraverser(
-            {
-                protected: p.Propogate,
-                private: p.Hide,
-                public: p.Propogate,
-                none: p.Propogate
-            },
-            (scopeItem) => block.scope.set(scopeItem)
-        ).queue(asts); // `asts` is already an ast of sorts.
-        
         // Handle modules, this adds lazyHooks to the scope
         // Each file manages its own imports so we'll check here
         asts.forEach(file => {
@@ -227,10 +213,10 @@ export default class CompilationGroup {
             file.scope.parentScope = block.scope;
             
             file.lazyHooks.forEach(hookNode => {
-                let hook = this.hooks.get(hookNode.name);
+                let hook = this.hooks.get(hookNode.value);
                     
                 if (!hook) throw new TransformError(
-                    `Could not find module named ${hookNode.name}`,
+                    `Could not find module named ${hookNode.value}`,
                     hookNode,
                     e.UNDEFINED_MODULE
                 );
@@ -238,7 +224,7 @@ export default class CompilationGroup {
                 hook.scope.forEach(scopeItem => {
                     let res =  file.scope.set(scopeItem);
                     if (res === false) throw new TransformError(
-                        `Importing module \`${hookNode.name}\` results in ` +
+                        `Importing module \`${hookNode.value}\` results in ` +
                         `duplicate declaration of \`${scopeItem.toString()}\``,
                         hookNode,
                         e.DUPLICATE_BY_IMPORT
@@ -252,10 +238,35 @@ export default class CompilationGroup {
         // and pre-populate compilation info.
         new VSLPreprocessor(this.context).queue(block);
         
+        // === 4B: Scope Sharing ===
+        // Hook all the news ASTs together
+        // This will addd the public, protected, and no-access-modifier
+        // declarations to our new scope (`block`).
+        new PropogateModifierTraverser(
+            {
+                protected: p.Propogate,
+                private: p.Hide,
+                public: p.Propogate,
+                none: p.Propogate
+            },
+            (scopeItem) => block.scope.set(scopeItem)
+        ).queue(asts); // `asts` is already an ast of sorts.
+        
         // === 5: Scope Generation ===
         // This will finish generating the type scope. The next transformer
         // performs type deduction.
         new VSLScopeTransformer(this.context).queue(block);
+        // === 5B: Scope Sharing ===
+        // Hook all the news ASTs together (again)
+        new PropogateModifierTraverser(
+            {
+                protected: p.Propogate,
+                private: p.Hide,
+                public: p.Propogate,
+                none: p.Propogate
+            },
+            (scopeItem) => block.scope.set(scopeItem)
+        ).queue(asts); // `asts` is already an ast of sorts.
         
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
@@ -264,7 +275,10 @@ export default class CompilationGroup {
         
         // Run it through the backend by default we'll use LLIR but
         if (stream) {
-            let backend = new LLIR();
+            let backend = new LLIR({
+                LLIPath: '/usr/local/bin/lli',
+                libcPath: '/usr/lib/libc.dylib'
+            });
             let output = new BackendStream();
             backend.run(block.statements, output);
             stream.send(output.utf8Value);

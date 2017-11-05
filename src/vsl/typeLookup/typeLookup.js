@@ -34,12 +34,13 @@ export default class TypeLookup {
     /**
      * Emits error with message & ref
      * @param {string} message - Error message
+     * @param {Node} [node=this.node] - node to error for
      * @param {ErrorRef} ref - error ref.
      */
-    emit(message, ref) {
+    emit(message, node = this.node, ref) {
         throw new TypeLookupError(
             message,
-            this.node,
+            node,
             ref
         )
     }
