@@ -16,8 +16,8 @@ export default class FunctionStatement extends DeclarationStatement {
      * @param {string[]} access - The access modifiers of the node
      * @param {Identifier} name - The name of the given function
      * @param {FunctionArgument[]} args - The arguments of the function
-     * @param {Type} returnType - The function's returnType.
-     * @param {Node[]} statements - The statements in the function body.
+     * @param {?Type} returnType - The function's returnType.
+     * @param {CodeBlock} statements - The statements in the function body.
      * @param {Object} position - a position from nearley
      */
     constructor(
@@ -31,6 +31,7 @@ export default class FunctionStatement extends DeclarationStatement {
     ) {
         super(access, position);
         
+        /** @type {Annotation[]} */
         this.annotations = annotations;
         
         /** @type {Identifier} */
@@ -39,7 +40,7 @@ export default class FunctionStatement extends DeclarationStatement {
         /** @type {FunctionArgument[]} */
         this.args = args || [];
         
-        /** @type {Type} */
+        /** @type {?Type} */
         this.returnType = returnType;
         
         /** @type {?ScopeTypeItem} */
@@ -48,14 +49,19 @@ export default class FunctionStatement extends DeclarationStatement {
         /** @type {?(ScopeTypeItem[])} */
         this.argRefs = [];
         
-        /** @type {Node[]} */
+        /** @type {CodeBlock} */
         this.statements = statements;
-        
-        /**
-         * For generation, stores register index.
-         * @type {number}
-         */
-        this.registerIndex = 0;
+    }
+    
+    clone() {
+        return new FunctionStatement(
+            this.annotations.map(annotation => annotation.clone()),
+            this.access.slice(),
+            this.name.clone(),
+            this.args.map(arg => arg.clone()),
+            this.returnType?.clone(),
+            this.statements.clone()
+        )
     }
     
     /** @override */

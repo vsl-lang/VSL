@@ -3,7 +3,7 @@ import Node from './node';
 /**
  * Matches a decorator/annotation, an array of these is kept inside a class or
  * whatever node it is applied too.
- * 
+ *
  * @example
  * @foo(bar)
  *
@@ -14,7 +14,7 @@ import Node from './node';
 export default class Annotation extends Node {
     /**
      * Creates an annotation
-     * 
+     *
      * @param {string} name - name of the annotation
      * @param {?Node[]} args - The arguments (if exist) of it.
      * @param {Object} position - A position from nearley
@@ -32,6 +32,10 @@ export default class Annotation extends Node {
     /** @override */
     get children() {
         return null;
+    }
+    
+    clone() {
+        return new Annotation(this.name, this.args?.map(arg => arg.clone()));
     }
     
     /** @override */

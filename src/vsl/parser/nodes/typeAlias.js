@@ -26,6 +26,14 @@ export default class TypeAlias extends DeclarationStatement {
         this.type = type;
     }
     
+    clone() {
+        return new TypeAlias(
+            this.access,
+            this.name,
+            this.type
+        );
+    }
+    
     /** @override */
     get children() {
         return ['name', 'type']

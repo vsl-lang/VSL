@@ -15,6 +15,12 @@ export default class NativeBlock extends Node {
         this.value = value;
     }
     
+    clone() {
+        return new NativeBlock(
+            this.value
+        )
+    }
+    
     /** @override */
     get children() {
         return [];

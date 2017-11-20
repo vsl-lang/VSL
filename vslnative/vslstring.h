@@ -11,7 +11,7 @@ struct VSLString {
 typedef VSLString* vslstring_t;
 
 vslstring_t init_VSLString(const char* source) {
-        vslstring_t string = (VSLString*) malloc(sizeof(VSLString));
+    vslstring_t string = (VSLString*) malloc(sizeof(VSLString));
     string->length = strlen(source);
     string->value = source;
     return string;

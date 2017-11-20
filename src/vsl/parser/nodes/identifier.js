@@ -19,11 +19,17 @@ export default class Identifier extends Node {
     constructor(identifier: string, position: Object) {
         super(position);
         
-        /** @type {ScopeItem} */
+        /** @type {string} */
         this.value = identifier;
         
         /** @type {string} */
         this.original = identifier;
+    }
+    
+    clone() {
+        return new Identifier(
+            this.original
+        );
     }
     
     /** @override */

@@ -113,5 +113,6 @@
     "all": true,
     "sourceMap": false,
     "instrument": false
-  }
+  },
+  "pkg": {}
 }

@@ -53,6 +53,12 @@ export default class CodeBlock extends Node {
         this.stream = null;
     }
     
+    clone() {
+        return new CodeBlock(
+            this.statements.map(node => clone())
+        )
+    }
+    
     /** @override */
     get children() {
         return ['statements'];

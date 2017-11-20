@@ -1,9 +1,7 @@
 import DeclarationStatement from './declarationStatement';
-import CodeBlock from './codeBlock';
 
 /**
  * Wraps a class
- *
  */
 export default class ClassStatement extends DeclarationStatement {
 
@@ -31,13 +29,24 @@ export default class ClassStatement extends DeclarationStatement {
         this.generics = generics;
 
         /** @type {Identifier[]} */
-        this.superclasses = superclasses;
+        this.superclasses = superclasses || [];
 
         /** @type {CodeBlock} */
         this.statements = statements;
 
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
+    }
+    
+    clone() {
+        return new ClassStatement(
+            this.access.slice(),
+            this.name.clone(),
+            this.generics.map(generic => generic.clone()),
+            this.superclasses.map(superclass => superclass.clone()),
+            this.statements.clone(),
+            this.annotations.map(annotation => annotation.clone())
+        )
     }
 
     /** @override */

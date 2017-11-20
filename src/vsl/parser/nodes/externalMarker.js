@@ -15,6 +15,10 @@ export default class ExternalMarker extends Node {
         this.rootId = id;
     }
     
+    clone() {
+        return new ExternalMarker(this.rootId);
+    }
+    
     /** @override */
     get children() {
         return null;

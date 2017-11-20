@@ -32,6 +32,10 @@ export default class ArgumentCall extends Node {
         return this.name ? ['name', 'value'] : ['value'];
     }
     
+    clone() {
+        return new ArgumentCall(value.clone(), name?.clone());
+    }
+    
     /** @override */
     toString() {
         return this.name ? `${this.name}: ${this.value}` : `${this.value}`;

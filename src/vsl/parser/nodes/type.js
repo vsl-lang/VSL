@@ -1,8 +1,7 @@
 import Node from './node';
 
 /**
- * Wraps a type
- * 
+ * Type chain expression such as `A.B`
  */
 export default class Type extends Node {
     
@@ -19,9 +18,13 @@ export default class Type extends Node {
         
         /** @type {Node} */
         this.tail = tail;
-        
-        /** @type {bool} */
-        this.optional = optional;
+    }
+    
+    clone() {
+        return new Type(
+            this.head.clone(),
+            this.tail.clone()
+        );
     }
     
     /** @override */

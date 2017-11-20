@@ -7,7 +7,7 @@ import Node from './node';
 export default class IfStatement extends Node {
     /**
      * Creates an if-statement
-     * 
+     *
      * @param {Expression} condition - The condition to check
      * @param {CodeBlock} trueBody - The body of the if statement
      * @param {?CodeBlock} falseBody - If non-null, the body of the false path.
@@ -19,11 +19,19 @@ export default class IfStatement extends Node {
         /** @type {Expression} */
         this.condition = condition;
         
-        /** @type {trueBody} */
+        /** @type {CodeBlock} */
         this.trueBody = trueBody;
         
-        /** @type {falseBody} */
+        /** @type {?CodeBlock} */
         this.falseBody = falseBody;
+    }
+    
+    clone() {
+        return new IfStatement(
+            this.condition.clone(),
+            this.trueBody.clone(),
+            this.falseBody?.clone()
+        )
     }
     
     get children() {

@@ -2,7 +2,7 @@ import Node from './node';
 
 /**
  * Matches a subscript expression inside a PropertyExpression
- * 
+ *
  * @example
  * head[tail]
  */
@@ -10,7 +10,7 @@ import Node from './node';
 export default class Subscript extends Node {
     /**
      * Creates a subscript
-     * 
+     *
      * @param {Expression} head the object to subscript
      * @param {Expression} expression the provided expression
      * @param {Object} position a position from nearley
@@ -29,6 +29,15 @@ export default class Subscript extends Node {
         
         /** @type {boolean} */
         this.isClosure = isClosure;
+    }
+    
+    clone() {
+        return new Subscript(
+            this.head.clone(),
+            this.expression.clone(),
+            this.nullable,
+            this.isClosure
+        )
     }
     
     /** @override */

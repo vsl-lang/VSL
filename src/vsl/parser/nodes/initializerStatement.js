@@ -1,9 +1,9 @@
-import Node from './node'
+import DeclarationStatement from './declarationStatement'
 
 /**
  * Matches a class initializer/constructor.
  */
-export default class InitializerStatement extends Node {
+export default class InitializerStatement extends DeclarationStatement {
     /**
      * Constructs the constructor. A constructor that constructs a constructor
      * is also known as constructorception.
@@ -23,10 +23,7 @@ export default class InitializerStatement extends Node {
         statements: CodeBlock,
         position: Object
     ) {
-        super(position);
-        
-        /** @type {string} */
-        this.access = access;
+        super(access, position);
         
         /** @type {boolean} */
         this.optional = optional;
@@ -36,6 +33,15 @@ export default class InitializerStatement extends Node {
         
         /** @type {CodeBlock} */
         this.statements = statements;
+    }
+
+    clone() {
+        return new InitializerStatement(
+            this.access.slice(),
+            this.optional,
+            this.params.map(param => param.clone()),
+            this.statements.clone()
+        );
     }
 
     /** @override */

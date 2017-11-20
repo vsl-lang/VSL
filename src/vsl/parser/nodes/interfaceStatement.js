@@ -2,7 +2,6 @@ import DeclarationStatement from './declarationStatement';
 
 /**
  * Wraps an interfcae
- *
  */
 export default class InterfaceStatement extends DeclarationStatement {
 
@@ -30,7 +29,7 @@ export default class InterfaceStatement extends DeclarationStatement {
         this.generics = generics;
 
         /** @type {Identifier[]} */
-        this.superclasses = superclasses;
+        this.superclasses = superclasses || [];
 
         /** @type {CodeBlock} */
         this.statements = statements;
@@ -39,8 +38,19 @@ export default class InterfaceStatement extends DeclarationStatement {
         this.annotations = annotations || [];
     }
 
+    clone() {
+        return new ClassStatement(
+            this.access.slice(),
+            this.name.clone(),
+            this.generics.map(generic => generic.clone()),
+            this.superclasses.map(superclass => superclass.clone()),
+            this.statements.clone(),
+            this.annotations.map(annotation => annotation.clone())
+        )
+    }
+
     /** @override */
     get children() {
-        return ['name', 'superclasses', 'statements'];
+        return ['name', 'generics', 'superclasses', 'statements', 'annotations'];
     }
 }

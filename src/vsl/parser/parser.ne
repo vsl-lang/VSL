@@ -58,9 +58,9 @@ separator
 statement
    -> ClassStatement       {% id %}
     | InterfaceStatement   {% id %}
-    | EnumerationStatement {% id %}
+    # | EnumerationStatement {% id %}
     | IfStatement          {% id %}
-    | ForStatement         {% id %}
+    # | ForStatement         {% id %}
     | WhileStatement       {% id %}
     | AssignmentStatement  {% id %}
     | FunctionStatement    {% id %}
@@ -83,10 +83,11 @@ IfStatement
         ) {% nth(3) %}
     ):? {% (d, l) => new t.IfStatement(d[2], d[4], d[5], l) %}
 
-ForStatement
-   -> "for" _ InlineExpression _ CodeBlockBody {%
-        (d, l) => new t.ForStatement(d[2], d[4], l)
-    %}
+# ForStatement
+#    -> "for" _ InlineExpression _ CodeBlockBody {%
+#         (d, l) => new t.ForStatement(d[2], d[4], l)
+#     %}
+
 WhileStatement
    -> "while" _ InlineExpression _ CodeBlockBody {%
         (d, l) => new t.WhileStatement(d[2], d[4], l)
@@ -128,11 +129,11 @@ InterfaceStatement
 
 #TODO: can enums even multiple inherit? of course we need to allow inheritance for Byte, Short etc
 
-EnumerationStatement
-   -> Annotations Modifier "enumeration" _ Identifier _ (":" _ ExtensionList _
-            {% nth(2) %}):? "{" EnumerationItems ClassItems "}" {%
-        (d, l) => new t.EnumerationStatement(d[1], d[4], d[6], d[8], d[9], d[0], l)
-    %}
+# EnumerationStatement
+#    -> Annotations Modifier "enumeration" _ Identifier _ (":" _ ExtensionList _
+#             {% nth(2) %}):? "{" EnumerationItems ClassItems "}" {%
+#         (d, l) => new t.EnumerationStatement(d[1], d[4], d[6], d[8], d[9], d[0], l)
+#     %}
 
 Annotations
    -> (Annotation _ {% id %}):* {% id %}
@@ -150,14 +151,6 @@ AnnotationValue
 
 ExtensionList
    -> delimited[type {% id %}, _ "," _] {% id %}
-
-OnlyGetter
-   -> Modifier TypedIdentifier Closure {%
-        (data, location) =>
-            new t.GetterSetter(
-                new t.Getter(data[0], data[1], data[2]), null, location
-            )
-    %}
 
 ClassItems
    -> CodeBlock[ClassItem {% id %}] {% id %}
@@ -188,7 +181,6 @@ InterfaceItem
    -> FunctionHead {% id %}
     | FunctionStatement {% id %}
     | Field {% id %}
-    | OnlyGetter {% id %}
 
 EnumerationItems
    -> delimited[Identifier, _ "," _] (_ ";"):? {% id %}

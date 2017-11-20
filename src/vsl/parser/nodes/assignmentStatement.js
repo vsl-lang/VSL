@@ -12,7 +12,7 @@ export default class AssignmentStatement extends DeclarationStatement {
      * @param {string[]} access A list of access modifiers for the statement
      * @param {AssignmentType} type The assignment type
      * @param {TypedIdentifier} name The variable's identifier & type
-     * @param {Expression} value The variable's inital value
+     * @param {?Expression} value The variable's inital value
      * @param {Object} position a position from nearley
      */
     constructor(access, type, name, value, position) {
@@ -27,7 +27,7 @@ export default class AssignmentStatement extends DeclarationStatement {
         /** @type {TypedIdentifier} */
         this.name = name;
         
-        /** @type {Expression} */
+        /** @type {?Expression} */
         this.value = value;
         
         /**
@@ -40,6 +40,10 @@ export default class AssignmentStatement extends DeclarationStatement {
     /** @override */
     get children() {
         return ['name', 'value'];
+    }
+    
+    clone() {
+        return new AssignmentStatement(this.access.slice(), this.type, this.name.clone(), this.value?.clone());
     }
     
     /** @override */

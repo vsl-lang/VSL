@@ -57,7 +57,9 @@ export default class Node {
      * @param {Generator} generator the target generator
      **/
      generate(generator: Generator) {
-         throw new TypeError("generate(generator:) must be overriden");
+         throw new TypeError(
+             `${this.constructor.name}#generate(generator:) must be overriden`
+         );
      }
     
     /**
@@ -66,6 +68,17 @@ export default class Node {
      */
     get children() {
         throw new Error("Must implement Node#children");
+    }
+    
+    /**
+     * Clones a node. This copies the node's data but it should be reprocessed.
+     * @return {Node} the cloned node.
+     * @abstract
+     */
+    clone() {
+        throw new Error(
+            `${this.constructor.name}#clone()`
+        );
     }
     
     /**
