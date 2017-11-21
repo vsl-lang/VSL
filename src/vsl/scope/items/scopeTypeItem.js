@@ -2,6 +2,22 @@ import ScopeForm from '../scopeForm';
 import ScopeItem from '../scopeItem';
 
 /**
+ * @typedef {Object} ScopeTypeItemOptions
+ * @property {?(ScopeTypeItem[])} data.interfaces - Types which this can safely
+ *     be cast to. We'll assume that you've done all the checks because if
+ *     something is wrong here expect big giant segfaults. If you have a
+ *     superclass, specified it'll just go in the superclass field.
+ *     Interfaces go here for example.
+ * @property {?ScopeTypeItem} data.superclass - The superclass (not interface)
+ *     of the current class, don't specify if there is none. You don't need
+ *     to resolve inheritance or anything. This is null for interfaces.
+ * @property {boolean} data.isInterface - Whether the type is an interface.
+ *     This is used to determine how casting will occur and dynamic dispatch
+ *     so ensure that it is not possible to declare fields.
+ * @property {ScopeItemResolver} data.resolver - Function to resolve if node.
+ */
+
+/**
  * Describes a declaration of a type.
  */
 export default class ScopeTypeItem extends ScopeItem {
@@ -14,19 +30,7 @@ export default class ScopeTypeItem extends ScopeItem {
      *
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
-     * @param {Object} data - Information about the class
-     * @param {?(ScopeTypeItem[])} data.interfaces - Types which this can safely
-     *     be cast to. We'll assume that you've done all the checks because if
-     *     something is wrong here expect big giant segfaults. If you have a
-     *     superclass, specified it'll just go in the superclass field.
-     *     Interfaces go here for example.
-     * @param {?ScopeTypeItem} data.superclass - The superclass (not interface)
-     *     of the current class, don't specify if there is none. You don't need
-     *     to resolve inheritance or anything. This is null for interfaces.
-     * @param {boolean} data.isInterface - Whether the type is an interface.
-     *     This is used to determine how casting will occur and dynamic dispatch
-     *     so ensure that it is not possible to declare fields.
-     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
+     * @param {ScopeTypeItemOptions} data - Information about the class
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);

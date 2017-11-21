@@ -1,10 +1,12 @@
-import ScopeTypeItem from './scopeTypeItem';
+import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
+
+import ScopeGenericTemplateItem from './scopeGenericTemplateItem';
 
 /**
  * Describes a declaration of a type.
  */
-export default class ScopeGenericItem extends ScopeTypeItem {
+export default class ScopeGenericItem extends ScopeItem {
     /**
      * Creates an intenral declaration of a type. When passing the "subscope",
      * don't create a new one or anything, just pass the `CodeBlock`'s `Scope`
@@ -15,20 +17,11 @@ export default class ScopeGenericItem extends ScopeTypeItem {
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
      * @param {Object} data - Information about the class
-     * @param {?(ScopeTypeItem[])} data.interfaces - Types which this can safely
-     *     be cast to. We'll assume that you've done all the checks because if
-     *     something is wrong here expect big giant segfaults. If you have a
-     *     superclass, specified it'll just go in the superclass field.
-     *     Interfaces go here for example.
-     * @param {?(ScopeTypeItem[])} data.genericParents - A series of parents
+     * @param {ScopeTypeItemOptions} data.scopeTypeItem - The root type item
+     *                                                  options for this generic
+     *                                                  declaration.
+     * @param {ScopeTypeItem[]} data.genericParents - A series of parents
      *     which match the generic templates.
-     * @param {?ScopeTypeItem} data.superclass - The superclass (not interface)
-     *     of the current class, don't specify if there is none. You don't need
-     *     to resolve inheritance or anything. This is null for interfaces.
-     * @param {boolean} data.isInterface - Whether the type is an interface.
-     *     This is used to determine how casting will occur and dynamic dispatch
-     *     so ensure that it is not possible to declare fields.
-     * @param {ScopeItemResolver} data.resolver - Function to resolve if node.
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);
@@ -36,9 +29,12 @@ export default class ScopeGenericItem extends ScopeTypeItem {
 
     /** @protected */
     init({
-        genericParents, ...options
+        genericParents,
+        scopeTypeItem,
+        ...options
     } = {}) {
         super.init(options);
+        this.scopeTypeItem = scopeTypeItem;
         this.genericParents = genericParents;
         this.types = new Set();
     }
@@ -46,10 +42,11 @@ export default class ScopeGenericItem extends ScopeTypeItem {
     /**
      * Notifies that this generic was used with a types.
      * @param  {ScopeTypeItem[]} types - The generic types this was used with.
+     *                                 These must be resolved + verified to fit.
+     * @return {ScopeGenericTemplateItem} Resolved subclass of a ScopeTypeItem,
+     *                                    do NOT add this to a scope.
      */
     usedWith(types) {
-        let typeList = types.map(type => type.resolved());
-        
         main: for (let existingType of this.types) {
             if (existingType.length === types.length) {
                 for (let i = 0; i < existingType.length; i++) {
@@ -59,15 +56,36 @@ export default class ScopeGenericItem extends ScopeTypeItem {
                 }
                 
                 // Already added
-                return;
+                return existingType;
             }
         }
         
-        this.types.add(typeList);
+        let genericParamString = types.map(type => type.toString()).join(", ");
+        
+        // Create and add new ScopeGenericTemplateItem
+        let newType = new ScopeGenericTemplateItem(
+            ScopeForm.definite,
+            `${this.rootId}<genericParamString>`,
+            {
+                template: this,
+                parents: types,
+                ...this.scopeTypeItem
+            }
+        )
+        this.types.add(newType);
+        return newType;
     }
 
+    /**
+     * Root name of generic
+     * @type {string}
+     */
+    rootToString() {
+        return super.toString();
+    }
+    
     /** @return {string} */
     toString() {
-        return super.toString() + `<<Generic>>`
+        return this.rootToString() + `<<Generic>>`
     }
 }

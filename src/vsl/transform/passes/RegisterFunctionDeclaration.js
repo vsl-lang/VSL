@@ -61,5 +61,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 node, e.DUPLICATE_DECLARATION
             );
         }
+        
+        node.scopeRef = type;
     }
 }

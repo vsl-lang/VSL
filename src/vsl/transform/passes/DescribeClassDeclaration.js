@@ -27,14 +27,7 @@ export default class DescribeClassDeclaration extends Transformation {
         
         let opts = {
             subscope: node.statements.scope,
-            isInterface: false,
-            resolver: (self) => {
-                if (self instanceof ScopeGenericItem) {
-                    self.genericParents = self.genericParents.map(
-                        generic => ScopeTypeItem.RootClass
-                    );
-                }
-            }
+            isInterface: false
         };
         
         if (node.generics.length === 0) {
@@ -46,16 +39,19 @@ export default class DescribeClassDeclaration extends Transformation {
             );
             
         } else {
-            
             type = new ScopeGenericItem(
                 ScopeForm.indefinite,
                 className,
                 {
+                    scopeTypeItem: opts,
                     genericParents: node.generics,
-                    ...opts
+                    resolver: (self) => {
+                        self.genericParents = node.generics.map(
+                            generic => ScopeTypeItem.RootClass
+                        );
+                    }
                 }
             );
-            
         }
 
         if (scope.set(type) === false) {

@@ -30,24 +30,22 @@ export default class Backend {
      * @param {string | number} name - node name
      * @param {Node | array} parent - parent node
      * @param {Object} context - any context
+     * @return {Object} any object as returned by recieve
      * @protected
      */
     generate(name, parent, context) {
         let node = parent[name];
         
-        let didRun = false;
         for (let watcher of this.watchers()) {
             if (watcher.match(parent[name])) {
                 let tool = new ASTTool(parent, name, null);
                 
-                watcher.receive(
+                return watcher.receive(
                     node,
                     tool,
                     ::this.generate,
                     context
                 );
-                
-                didRun = true;
             }
         }
         

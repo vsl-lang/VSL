@@ -97,8 +97,8 @@ export default class ScopeItem {
      * Resolves the current node using a passed resolver
      */
     resolve() {
-        if (this.form === ScopeForm.indefinite && this._resolver) {
-            this._resolver(this);
+        if (this.form === ScopeForm.indefinite) {
+            this._resolver?.(this);
             this.form = ScopeForm.definite;
         }
     }

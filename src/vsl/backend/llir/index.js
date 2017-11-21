@@ -38,6 +38,7 @@ export default class LLIR extends Backend {
         yield new w.CodeBlock();
         yield new w.AssignmentStatement();
         yield new w.ExternalFunctionStatement();
+        yield new w.ExpressionStatement();
     }
     
     /**

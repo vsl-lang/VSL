@@ -1,4 +1,4 @@
-func puts(string: CString) -> Int32 external(puts);
+public func puts(string: CString) -> Int32 external(puts);
 public func print(string: String) {
     // puts(string.value)
 }

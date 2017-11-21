@@ -79,7 +79,5 @@ export default class CallResolver extends TypeResolver {
                 }
             }
         }
-        
-        console.log(typeArgs);
     }
 }

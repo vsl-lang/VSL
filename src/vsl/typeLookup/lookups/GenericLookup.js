@@ -16,15 +16,20 @@ export default class GenericLookup extends TypeLookup {
      *                           info.
      */
     resolve(scope) {
+        // Generic value should be a ID so we'll get the .value
         let name = this.node.type.value;
         
         // First resolve sub-things.
+        // These are the parameters e.g. in A<T, U> these are T, U
+        // We must resolve these first to ScopeItems.
         let parameters = this.node.parameters.map(
             param => this.getChild(param).resolve(scope)
         );
         
+        // Now we'll (try to) get the template. I.e. locate the generic.
         let result = scope.get(new ScopeGenericItem(ScopeForm.query, name))?.resolved();
         
+        // Ensure the generic exists
         if (result === null) {
             this.emit(
                 `There is no type with name \`${name}\` in this scope. Check ` +
@@ -34,6 +39,7 @@ export default class GenericLookup extends TypeLookup {
             )
         }
         
+        // Check the correct amount of parameters were provided.
         if (this.node.parameters.length !== result.genericParents.length) {
             this.emit(
                 `Incorect amount of parameters for ${result}. This takes ` +
@@ -42,7 +48,14 @@ export default class GenericLookup extends TypeLookup {
             )
         }
         
+        // Check the parameters match the correct types.
         parameters.forEach((param, i) => {
+            // We'll check if the parameter (already resolved) is castable to
+            //  the respective generic parameter. e.g. in:
+            //    class A<T: U> { ... }
+            //    let a: A<B> we'll check if `B is U`
+            // This means at this time result.genericParents[i] should be
+            //  resolved.
             if (!param.castableTo(result.genericParents[i])) {
                 this.emit(
                     `Generic parameter needed to be of ` +
@@ -54,7 +67,6 @@ export default class GenericLookup extends TypeLookup {
             }
         })
         
-        result.usedWith(parameters);
-        return result;
+        return result.usedWith(parameters);
     }
 }
