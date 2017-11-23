@@ -7,6 +7,6 @@ export default class LLIRExpressionStatement extends BackendWatcher {
     }
     
     receive(node, tool, regen, context) {
-        regen('expression', node, context);
+        return regen('expression', node, context);
     }
 }
