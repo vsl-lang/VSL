@@ -25,29 +25,29 @@ export default class TypeDeductAssignment extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let scope = tool.scope;
-        
-        let types = [];
-        
-        // If we have an expected type (e.g. let a: T) then this passes T.
-        if (node.name.type) {
-            types.push(
-                new TypeCandidate(
-                    new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
-                )
-            );
-        }
-        
-        if (node.value) {
-            let resolver = new RootResolver(node.value, vslGetChild, tool.context)
-                .resolve((constraint) => {
-                    if (constraint === ConstraintType.RequestedTypeResolutionConstraint &&
-                        types.length > 0) {
-                        return types;
-                    } else {
-                        return null;
-                    }
-                });
-        }
+        // let scope = tool.scope;
+        //
+        // let types = [];
+        //
+        // // If we have an expected type (e.g. let a: T) then this passes T.
+        // if (node.name.type) {
+        //     types.push(
+        //         new TypeCandidate(
+        //             new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
+        //         )
+        //     );
+        // }
+        //
+        // if (node.value) {
+        //     let resolver = new RootResolver(node.value, vslGetChild, tool.context)
+        //         .resolve((constraint) => {
+        //             if (constraint === ConstraintType.RequestedTypeResolutionConstraint &&
+        //                 types.length > 0) {
+        //                 return types;
+        //             } else {
+        //                 return null;
+        //             }
+        //         });
+        // }
     }
 }

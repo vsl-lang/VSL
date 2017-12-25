@@ -7,9 +7,6 @@ import { RootResolver } from '../../resolver/resolvers';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
 
-import ScopeAliasItem from '../../scope/items/scopeAliasItem';
-import ScopeTypeItem from '../../scope/items/scopeTypeItem';
-
 /**
  * Type deducts top-level expressions. Does not handle expressions within
  * contexts or such. This means this can allow void functions etc.
@@ -25,7 +22,7 @@ export default class TypeDeductExpression extends Transformation {
     modify(node: Node, tool: ASTTool) {
         // Ensure top-level expression
         if (tool.nthParent(2) !== node.parentScope) return;
-        
+
         new RootResolver(node, vslGetChild, tool.context)
             .resolve((type) => {
             switch (type) {

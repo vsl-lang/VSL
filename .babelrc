@@ -2,34 +2,32 @@
     "plugins": [
         "babel-plugin-include",
         "babel-plugin-wildcard",
-        "babel-plugin-add-module-exports",
-        ["babel-plugin-transform-runtime", {
+        ["@babel/plugin-transform-runtime", {
             "polyfill": false
         }],
-        ["babel-plugin-transform-class-properties", { "loose": true }],
-        "babel-plugin-transform-do-expressions",
-        "babel-plugin-transform-function-bind",
-        "babel-plugin-transform-export-extensions",
-        "babel-plugin-transform-object-rest-spread",
-        "babel-plugin-transform-flow-strip-types",
-        "babel-plugin-transform-optional-chaining",
-        ["babel-plugin-root-import", [{
-            "rootPathPrefix": "~",
-            "rootPathSuffix": "src/"
-        }, {
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        "@babel/plugin-proposal-do-expressions",
+        "@babel/plugin-proposal-function-bind",
+        "@babel/plugin-proposal-export-namespace-from",
+        "@babel/plugin-proposal-export-default",
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-flow-strip-types",
+        "@babel/plugin-proposal-optional-chaining",
+        ["babel-plugin-root-import", {
             "rootPathPrefix": "@",
             "rootPathSuffix": "node_modules/llir/lib/"
-        }]],
+        }],
         ["babel-plugin-transform-builtin-extend", {
             "globals": ["Error"]
         }]
     ],
     "presets": [
-        "react",
-        ["env", {
+        "@babel/preset-react",
+        ["@babel/preset-env", {
             "targets": {
                 "node": "6.11"
-            }
+            },
+            "include": ["proposal-object-rest-spread"]
         }]
     ],
     "env": {

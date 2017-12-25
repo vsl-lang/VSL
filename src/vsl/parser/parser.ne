@@ -1,10 +1,11 @@
 # VSL - Primary Parser
 @{%
 "use strict";
-let t = require('./nodes');
-let lexer = new (require('./vsltokenizer'))();
+let t = require('./nodes').default;
+let VSLTokenizer = require('./vsltokenizer').default;
+let lexer = new VSLTokenizer();
 
-const NodeTypes = require('./vsltokentype'),
+const NodeTypes = require('./vsltokentype').default,
   freeze = Object.freeze,
   integer = freeze({ test: x => x[1] === NodeTypes.Integer }),
   decimal = freeze({ test: x => x[1] === NodeTypes.Decimal }),
@@ -45,7 +46,7 @@ main
                     data[0].statements.splice(i, 1);
                 }
             }
-            
+
             data[0].rootScope = true;
             return data[0];
         }
@@ -176,7 +177,7 @@ InitializerStatement
 
 InterfaceItems
    -> CodeBlock[InterfaceItem {% id %}] {% id %}
-   
+
 InterfaceItem
    -> FunctionHead {% id %}
     | FunctionStatement {% id %}
@@ -664,7 +665,7 @@ Identifier
 
 _
    -> "\n":*
-   
+
 # ============================================================================ #
 #                                Documentation                                 #
 # ============================================================================ #

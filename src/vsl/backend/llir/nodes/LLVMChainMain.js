@@ -6,17 +6,17 @@ import Chain from '@/LLIR/ExecutionGraph/Node/Nodes/Chain';
  */
 export default class LLVMChainMain extends Chain {
     static uidname = "vsl::llvmchainmain";
-    
+
     constructor() {
         super();
     }
-    
+
     /** @override */
     init() {
         super.init();
         this.defaultChain = [];
     }
-    
+
     /**
      * Adds a default graph which is compiled before the others.
      * @param {AtomicGraph} atomicGraph - Atomic graph to add to the default
@@ -26,7 +26,7 @@ export default class LLVMChainMain extends Chain {
         this.defaultChain.push(atomicGraph);
         atomicGraph.setSupergraph(this.globalConstraint)
     }
-    
+
     /** @override */
     *atomicGraphs() {
         yield* this.defaultChain;

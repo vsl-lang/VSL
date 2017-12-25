@@ -2,10 +2,10 @@
     "source": "./src",
     "destination": "docs",
     "excludes": [ "^app", "^cli" ],
-    
+
     "plugins": [
         {
-            "name": "esdoc-babel-7-plugin",
+            "name": "esdoc-babel-plugin",
             "option": {
                 "plugins": [
                     "babel-plugin-transform-flow-strip-types",

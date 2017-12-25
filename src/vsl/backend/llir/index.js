@@ -1,4 +1,5 @@
 import ExecutionGraph from '@/LLIR/ExecutionGraph/ExecutionGraph';
+import MemoryStore from '@/LLIR/ExecutionGraph/Store/MemoryStore';
 import Serialize from '@/LLIR/Serializer/Serialize';
 
 import Backend from '../Backend';
@@ -22,14 +23,14 @@ export default class LLIR extends Backend {
      * @param {LLIRConfig} config Configuration for LL output + execution.
      */
     constructor(llirconfig) {
-        super();
-        
-        this.instance = new ExecutionGraph();
+        super('llvm');
+
+        this.instance = new ExecutionGraph(MemoryStore, 'main');
         this._rootChain = new LLVMChainMain();
         this.instance.main.getBody().setAtom(this._rootChain);
         this._config = llirconfig;
     }
-    
+
     /**
      * @override
      */
@@ -40,7 +41,7 @@ export default class LLIR extends Backend {
         yield new w.ExternalFunctionStatement();
         yield new w.ExpressionStatement();
     }
-    
+
     /**
      * Begins generation.
      * @param {CodeBlock} input
@@ -55,20 +56,20 @@ export default class LLIR extends Backend {
             ));
         }
     }
-    
+
     postgen() {
         ////////////////////////////////////////////////////////////////////////
         //                             postgen                                //
         ////////////////////////////////////////////////////////////////////////
-        
-        
+
+
         ////////////////////////////////////////////////////////////////////////
         //                                run                                 //
         ////////////////////////////////////////////////////////////////////////
         let ll = new VSLLL('main', LLEnv.default);
         ll.setGraph(this.instance);
         let code = ll.module.print();
-        
+
         console.log(`\u001B[2m\n${code}\u001B[0m`);
         let lli = child_process.spawn(
             this._config.LLIPath,
@@ -79,7 +80,7 @@ export default class LLIR extends Backend {
                 stdio: ['pipe', process.stdout, process.stderr]
             }
         );
-        
+
         lli.stdin.write(code);
     }
 }

@@ -26,19 +26,19 @@ export default class JSBackend extends Backend {
      * Creates JS backend with given output stream/output location
      */
     constructor(stream) {
-        super();
-        
+        super('js');
+
     }
-    
+
     pregen() {
         this.stream.write(
             `// Compiled with the VSL JSBackend compiler.\n` +
             `// Generated: ${Date()}\n`
         );
-        
+
         this.stream.write(`/*vsl:begin*/\n`);
     }
-    
+
     postgen() {
         this.stream.write(
             `\n/*vsl:end*/\n`
