@@ -15,7 +15,8 @@ import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
 
-import LLIR from '../vsl/backend/llir';
+// import LLIR from '../vsl/backend/llir';
+import JSBackend from '../vsl/backend/js';
 
 import e from '../vsl/errors'
 
@@ -73,15 +74,15 @@ export default class CompilationGroup {
     constructor() {
         /** @private */
         this.sources = [];
-        
+
         // Map<name, CompilationHook>
         /** @private */
         this.hooks = new Map();
-        
+
         // Strong hooks = hooks that are binded to every stream in the group.
         /** @private */
         this.strongHooks = new Map();
-        
+
         // Manages global scope
         /**
          * The root global scope of the entire module, each child statement is
@@ -91,10 +92,10 @@ export default class CompilationGroup {
          * @type {?CodeBlock}
          */
         this.globalScope = null;
-        
+
         /** @private */
         this.context = new TransformationContext()
-        
+
         /**
          * An auto-generated list of metadata for this group. It may not be
          * fully filled so make sure you specify fields that you know the values
@@ -103,7 +104,7 @@ export default class CompilationGroup {
          */
         this.metadata = new GroupMetadata();
     }
-    
+
     /**
      * Returns a compilationStream which you can setup to send data.
      * @return {CompilationStream} A stream which you can send data to/from
@@ -113,7 +114,7 @@ export default class CompilationGroup {
         this.sources.push(stream);
         return stream;
     }
-    
+
     /**
      * Parses a CompilationStream and returns the AST
      * @private
@@ -121,7 +122,7 @@ export default class CompilationGroup {
     async parse(stream) {
         let dataBlock, ast;
         let parser = new VSLParser();
-        
+
         while (null !== (dataBlock = await stream.receive())) {
             try {
                 ast = parser.feed(dataBlock);
@@ -129,13 +130,13 @@ export default class CompilationGroup {
                 // Re-add sourceName if applicable
                 if (error instanceof ParserError)
                     error.stream = stream;
-                
+
                 // Rethrow error
                 throw error;
             }
             if (ast.length > 0) break;
         }
-        
+
         if (ast.length === 0) {
             // TODO: expand error handling here
             throw new ParserError(
@@ -144,12 +145,12 @@ export default class CompilationGroup {
                 stream
             );
         }
-        
+
         ast[0].stream = stream;
-        
+
         return ast[0];
     }
-    
+
     /**
      * Lazily 'hooks' a CompilationHook to the current one. Call this *before*
      * {@link CompilationGroup~compile}.
@@ -161,7 +162,7 @@ export default class CompilationGroup {
     lazyHook(hook) {
         this.hooks.set(hook.name, hook);
     }
-    
+
     /**
      * Te name of a {@link ComilationHook} which should be binded and hooked to
      * every file rather than on-demand. Examples of this are the standard
@@ -173,7 +174,7 @@ export default class CompilationGroup {
     strongHook(hook) {
         this.strongHooks.set(hook.name, hook);
     }
-    
+
     /**
      * Compiles the sources. It's reccomended to use a `CompilationIndex` to
      * manage this because configuration and modules happen there.
@@ -190,13 +191,13 @@ export default class CompilationGroup {
         // === 1: Parse ===
         // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );
-        
+
         // === 2: Environment Setup ===
         // This will be our new AST of the entire module with a global shared
         // scope
         let block = new CodeBlock(asts, null);
         this.globalScope = block;
-        
+
         // Go through each import statement that each file specifies
         // O: KEEP
         this.strongHooks.forEach(hook => {
@@ -205,22 +206,22 @@ export default class CompilationGroup {
                 block.scope.set(scopeItem)
             });
         });
-        
+
         // Handle modules, this adds lazyHooks to the scope
         // Each file manages its own imports so we'll check here
         asts.forEach(file => {
             // Also lets setup CodeBlock as a top-level scope
             file.scope.parentScope = block.scope;
-            
+
             file.lazyHooks.forEach(hookNode => {
                 let hook = this.hooks.get(hookNode.value);
-                    
+
                 if (!hook) throw new TransformError(
                     `Could not find module named ${hookNode.value}`,
                     hookNode,
                     e.UNDEFINED_MODULE
                 );
-                
+
                 hook.scope.forEach(scopeItem => {
                     let res =  file.scope.set(scopeItem);
                     if (res === false) throw new TransformError(
@@ -232,12 +233,12 @@ export default class CompilationGroup {
                 });
             });
         });
-        
+
         // === 4: Pre-processor ===
         // Now that basic STL etc. are registered, we can pre-proc the AST
         // and pre-populate compilation info.
         new VSLPreprocessor(this.context).queue(block);
-        
+
         // === 4B: Scope Sharing ===
         // Hook all the news ASTs together
         // This will addd the public, protected, and no-access-modifier
@@ -251,7 +252,7 @@ export default class CompilationGroup {
             },
             (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
-        
+
         // === 5: Scope Generation ===
         // This will finish generating the type scope. The next transformer
         // performs type deduction.
@@ -267,18 +268,15 @@ export default class CompilationGroup {
             },
             (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
-        
+
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.
         new VSLTransformer(this.context).queue(block);
-        
+
         // Run it through the backend by default we'll use LLIR but
         if (stream) {
-            let backend = new LLIR({
-                LLIPath: '/usr/local/bin/lli',
-                libcPath: '/usr/lib/libc.dylib'
-            });
+            let backend = new JSBackend();
             let output = new BackendStream();
             backend.run(block.statements, output);
             stream.send(output.utf8Value);
