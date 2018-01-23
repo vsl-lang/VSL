@@ -1,5 +1,5 @@
 import LL from '@/Generator/LL/LL';
-import WLLVMChainMain from './nodes/WLLVMChainMain';
+import LLVMChainMain from './nodes/LLVMChainMain';
 
 /**
  * VSLLL is a subclass of the {@link LL} backend, this adds a couple nodes which
@@ -10,7 +10,7 @@ import WLLVMChainMain from './nodes/WLLVMChainMain';
 export default class VSLLL extends LL {
     /** @override */
     *watchers() {
-        yield new WLLVMChainMain();
+        yield new LLVMChainMain();
         yield* super.watchers()
     }
 }
