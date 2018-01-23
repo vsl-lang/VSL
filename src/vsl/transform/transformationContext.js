@@ -15,16 +15,24 @@ export default class TransformationContext {
     /**
      * Creates a brand new TransformationContext. Pass an existing one to a
      * {@link Transformer} to use it.
+     *
+     * @param {string} backendName - the backend which will be used.
      */
-    constructor() {
+    constructor(backendName = null) {
         /**
          * A map of `id, key` of a primitive binding.
          *
          * @type {Map<string, PrimitiveContext>}
          */
         this.primitives = new Map();
+
+        /**
+         * Name of backend which will be used
+         * @type {string}
+         */
+        this.backendName = backendName;
     }
-    
+
     /**
      * Merges another transformation context into the current one (used in
      * modules for example)
@@ -52,14 +60,14 @@ export default class TransformationContext {
                 precType: null
             });
         }
-        
+
         // The primitive object with types/precType
         let primitive = this.primitives.get(name);
-        
+
         // We can throw away the existing precType because if you override a
         // precType you deserve this anyway.
         if (precType === true) primitive.precType = statement;
-        
+
         // Push the new statement to list of all type
         primitive.types.push(statement);
     }

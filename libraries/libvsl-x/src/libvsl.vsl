@@ -1,4 +1,8 @@
+@backend(llvm)
 public func puts(string: CString) -> Int32 external(puts);
-public func print(string: String) {
-    // puts(string.value)
-}
+
+@backend(llvm)
+public func print(string: String) native{print}
+
+@backend(js)
+public func print(string: String) native{console.log}

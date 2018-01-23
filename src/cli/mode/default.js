@@ -35,7 +35,7 @@ let rl = readline.createInterface({
 function prompt(string) {
     return new Promise((resolve, reject) => {
         rl.resume();
-        
+
         // Handles ANSI colors
         let _setPrompt = rl.setPrompt;
         rl.setPrompt = (prompt) => {
@@ -43,7 +43,7 @@ function prompt(string) {
                 _setPrompt.call(rl, prompt, prompt.split(/[\r\n]/).pop().replace(/\u001b.+?m/g, "").length);
             }
         };
-        
+
         rl.question(string, (res) => {
             resolve(res);
             rl.setPrompt = _setPrompt;
@@ -54,7 +54,7 @@ function prompt(string) {
 
 export default class Default extends CLIMode {
     usage = "vsl [options] <module | files> [ -- args ]\nvsl [options] <module | files> -c out.bc\nvsl"
-    
+
     constructor() {
         super([
             ["Options", [
@@ -63,7 +63,7 @@ export default class Default extends CLIMode {
                 ["-p", "--repl"          , "Opens an interactive REPL (uses LLIR)",  { repl: true }],
                 ["-i", "--interactive"   , "Performs interactive compilation",       { interactive: true }],
                 ["-I", "--no-interactive", "Performs interactive compilation",       { interactive: false }],
-                ["--path"                , "Outputs the path to the VSL " +
+                ["--prefix"              , "Outputs the path to the VSL " +
                                            "installation being used. This will " +
                                            "be an absolute path.",                   { run: _ => _.printAndDie(INSTALLATION_PATH) }],
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
@@ -82,55 +82,57 @@ export default class Default extends CLIMode {
                                            "overriden with a module.yml",            { nostl: true }],
                 ["--backend"             , "Specifies a different backend. This " +
                                            "may be a default backend (LLIR, JS) " +
-                                           "or this maybe a custom backend ref.",    { arg: "name" }],
+                                           "or this maybe a custom backend ref. " +
+                                           "Case-sensitivity is based on " +
+                                           "file-system.",                           { arg: "name" }],
                 ["-Wno"                  , "Disables all warnings, also prevents " +
                                            "relevent FIX-ITs from activating",       { warn: false }],
                 ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }]
             ]]
         ]);
-        
+
         this.subcommands = [ "run" ];
         this.fileMap = new Map();
     }
-    
+
     appInfo() {
         return `Subcomamnds: ${this.subcommands.join(", ")}`
     }
-    
+
     run(args, subcommands) {
         this.subcommands = subcommands;
-        
+
         let jitArgs = [];
-        
+
         let files = [];
         let directory = null;
-        
+
         let jit         = false;
         let repl        = tty.isatty(0);
         let color       = tty.isatty(1);
         let interactive = tty.isatty(0) && tty.isatty(1);
-        
+
         let stl = DEFAULT_STL;
-        
+
         for (let i = 0; i < args.length; i++) {
             if (args[i] === "--") {
                 jitArgs = args.slice(i + 1);
                 break;
             }
-            
+
             if (args[i][0] === "-" && args[i].length > 1) {
                 const flagName = this.allArgs[this.aliases[args[i]] || args[i]];
                 if (!flagName) this.error.cli(`unknown flag: ${args[i]}`);
-                
+
                 const flagInfo = flagName[3] || flagName[2];
-                
+
                 if (flagInfo.run) flagInfo.run(this);
-                
+
                 if (flagInfo.jit) jit = flagInfo.jit;
                 if (flagInfo.repl) repl = flagInfo.repl;
                 if (flagInfo.color) color = flagInfo.color;
                 if (flagInfo.interactive) interactive = flagInfo.interactive;
-                
+
                 if (flagInfo.stl) stl = args[++i];
                 if (flagInfo.nostl) stl = false;
             } else {
@@ -138,14 +140,14 @@ export default class Default extends CLIMode {
                 if (!fs.existsSync(args[i])) {
                     this.error.cli(`no such file or directory: \`${args[i]}\``);
                 }
-                
+
                 if (directory) {
                     this.error.cli(
                         `already specified directory (\`${directory}\`), ` +
                         `cannot supply more files`
                     );
                 }
-                
+
                 if (fs.statSync(args[i]).isDirectory()) {
                     directory = args[i];
                 } else {
@@ -153,15 +155,15 @@ export default class Default extends CLIMode {
                 }
             }
         }
-        
+
         this.jit = jit;
         this.color = color;
         this.interactive = interactive;
-        
+
         this.error.shouldColor = this.color;
-        
+
         this.stl = stl;
-        
+
         if (directory) {
             let output = new CompilationStream();
             this.executeModule(directory, output, true);
@@ -173,7 +175,7 @@ export default class Default extends CLIMode {
             console.log("Cannot read from STDIN as of this moment");
         }
     }
-    
+
     async loadSTL(config = this.stl) {
         if (config === false) return [];
         let stlName = typeof config === 'string' ? config : DEFAULT_STL;
@@ -187,12 +189,12 @@ export default class Default extends CLIMode {
             )
         ];
     }
-    
+
     async executeModule(directory, stream, isPrimaryModule = false) {
         let dirpath = path.resolve(directory);
-        
+
         if (this.fileMap.has(dirpath)) return this.fileMap.get(dirpath);
-        
+
         // First get the module
         let moduleLoader = new Module(dirpath);
         try {
@@ -204,36 +206,36 @@ export default class Default extends CLIMode {
                 throw error;
             }
         }
-        
+
         let module = moduleLoader.module;
-        
+
         let group = new CompilationGroup();
         for (let file of module.sources) {
             let fileStream = group.createStream();
             fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));
         }
-        
+
         group.metadata.name = module.name;
-        
+
         let modules = [];
-        
+
         // Hook stdlib if it's enabled
         // We'll rexecute using the cache, what this means is that if
         // there is a cyclic dependency we'll end up with an infinite
         // loop. We stop this so the stdlib doesn't load the stdlib.
         modules.push(...await this.loadSTL(module.stdlib));
-        
+
         let index = new CompilationIndex(
             group,
             modules
         );
-        
+
         try {
             await index.compile(stream);
         } catch(error) {
             let stream = null;
-                
+
             if (error.stream) { stream = error.stream }
             else if (error.node) {
                 let trackingNode = error.node;
@@ -247,7 +249,7 @@ export default class Default extends CLIMode {
                     (trackingNode = trackingNode.parentScope)
                 );
             }
-            
+
             if (stream) {
                 error.stream = stream;
                 this.handle(error, stream.data, { exit: true });
@@ -255,15 +257,15 @@ export default class Default extends CLIMode {
                 throw error;
             }
         }
-        
+
         this.fileMap.set(dirpath, index);
-        
+
         return index;
     }
-    
+
     async fromFiles(files) {
         let compilationGroup = new CompilationGroup();
-        
+
         for (let i = 0; i < files.length; i++) {
             let data;
             try {
@@ -275,18 +277,18 @@ export default class Default extends CLIMode {
                     `Could not read file ${files[i]} (${e.code})`
                 );
             }
-            
+
             compilationGroup.createStream().send(data);
         }
-        
+
         let index = new CompilationIndex(
             compilationGroup,
             await this.loadSTL()
         );
-        
+
         await index.compile()
     }
-    
+
     async launchREPL() {
         const setPrompt = (text) => {
             if (!this.color) return;
@@ -296,21 +298,21 @@ export default class Default extends CLIMode {
                 "31"
             }m${text}\u001B[0m`;
         }
-        
+
         let lastCalls = "";
-        
+
         let vsl = setPrompt(`vsl> `);
         let vslCont = setPrompt(`>>>> `);
-        
+
         let stl = await this.loadSTL();
-        
+
         const repl = async () => {
             let group = new CompilationGroup();
             let input = group.createStream();
-            
+
             let inputString = await prompt(vsl);
             interrupt = null;
-            
+
             input.send(lastCalls + inputString);
             input.handleRequest(
                 done => {
@@ -318,7 +320,7 @@ export default class Default extends CLIMode {
                         rl.close();
                         await repl();
                     }
-                    
+
                     prompt(vslCont).then(value => {
                         inputString += '\n' + value;
                         interrupt = null;
@@ -326,9 +328,9 @@ export default class Default extends CLIMode {
                     })
                 }
             );
-            
+
             let worked = true;
-            
+
             // Create index + other execution info.
             let index = new CompilationIndex(group, stl)
             let output = new CompilationStream();
@@ -340,29 +342,29 @@ export default class Default extends CLIMode {
             } finally {
                 interrupt = null;
             }
-            
+
             if (worked) {
                 console.log(await output.receive());
                 lastCalls += inputString + '\n';
             }
-            
+
             await repl();
         }
-        
+
         await repl();
     }
-    
+
     async handle(error, src, { exit = false } = {}) {
-        
+
         let passedExit = exit;
         if (this.interactive) passedExit = false;
-        
+
         this.error.handle({
             error,
             src,
             passedExit
         })
-        
+
         if (this.interactive && error.ref) {
             // Do fix it
             let controller = new FixItController(
@@ -370,13 +372,13 @@ export default class Default extends CLIMode {
                 async (output) => console.log(`    ${output}`)
             );
             controller.colorizer = this.color ? new FixItCLIColors() : null;
-            
+
             let res = await controller.receive(error, src);
             if (res !== null) {
                 await this.feed(res);
             }
         }
-        
+
         if (exit === true) process.exit(1);
     }
 }
@@ -384,10 +386,10 @@ export default class Default extends CLIMode {
 process.on('unhandledRejection', (reason) => {
     let name = reason.constructor.name;
     let desc = reason.message;
-    
+
     console.error(`${name}: ${desc}`);
     console.error(util.inspect(reason).replace(/^|\n/g, "\n    "));
-    
+
     process.exit(1);
 });
 
