@@ -3,7 +3,7 @@ import TransformError from '../transformError.js';
 import TokenType from '../../parser/vsltokentype';
 import t from '../../parser/nodes';
 
-import { RootResolver } from '../../resolver/resolvers';
+import { RootResolver } from '../../resolver/resolvers/* ';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
 

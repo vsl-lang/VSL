@@ -1,5 +1,5 @@
 import t from '../parser/nodes';
-import resolvers from './resolvers';
+import * as resolvers from './resolvers';
 
 export default function vslGetChild(from: Node): TypeResolver {
     switch(from.constructor) {

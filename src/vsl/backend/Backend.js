@@ -18,28 +18,29 @@ export default class Backend {
      * @return {BackendWatcher} watchers in order to try.
      */
     *watchers() {}
-    
+
     /**
      * Run before generation begins
      * @abstract
      */
     pregen() { return }
-    
+
     /**
      * Generates a node.
      * @param {string | number} name - node name
      * @param {Node | array} parent - parent node
      * @param {Object} context - any context
      * @return {Object} any object as returned by recieve
+     * @throws {TypeError} thrown if no handler for a given node
      * @protected
      */
     generate(name, parent, context) {
         let node = parent[name];
-        
+
         for (let watcher of this.watchers()) {
             if (watcher.match(parent[name])) {
                 let tool = new ASTTool(parent, name, null);
-                
+
                 return watcher.receive(
                     node,
                     tool,
@@ -48,27 +49,26 @@ export default class Backend {
                 );
             }
         }
-        
-        if (didRun === false) {
-            throw new TypeError(
-                `No handler for node ${node.constructor.name}`
-            );
-        }
+
+        // If here, no watcher run.
+        throw new TypeError(
+            `No handler for node ${node.constructor.name}`
+        );
     }
-    
+
     /**
      * Run after generation finishes
      * @abstract
      */
     postgen() { return }
-    
+
     /**
      * Begins generation.
      * @param {CodeBlock} input
      * @abstract
      */
     start(input) {}
-    
+
     /**
      * Runs a list of ASTs through this backend. MAKE SURE you have ran through
      * `transform` and all types and such are available. Provide the output
@@ -85,11 +85,11 @@ export default class Backend {
     run(inputs, stream) {
         this.stream = stream;
         this.pregen();
-        
+
         for (let i = 0; i < inputs.length; i++) {
             this.start(inputs[i]);
         }
-        
+
         this.postgen();
     }
 }
