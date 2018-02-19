@@ -52,22 +52,17 @@ export default class IdResolver extends TypeResolver {
             // We can omit void functions in this filter if it specified that
             // they aren't need
             const allowVoid = negotiate(ConstraintType.VoidableContext);
+            const bindingContext = negotiate(ConstraintType.BindingContext);
 
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,
-            this.node.typeCandidates = scope
-                .getAll(rootId)
-                .filter(
-                    candidate =>
-                        candidate instanceof ScopeFuncItem &&
-                        callArgs === candidate.args.length
-                );
+            this.node.typeCandidates = scope.getAll(rootId);
 
             // If they are 0 candidates that means there is no function which
             // actually has the name
             if (this.node.typeCandidates.length === 0) {
                 this.emit(
-                    `Use of undeclared function ${rootId}`,
+                    `Use of undeclared function \`${rootId}\``,
                     e.UNDECLARED_FUNCTION
                 )
             }
@@ -77,6 +72,12 @@ export default class IdResolver extends TypeResolver {
 
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+
+        // TODO: Add local assignment
+        this.emit(
+            `Variables not supported yet.`,
+            e.UNDECLARED_IDENTIFIER
+        );
 
         // Get the variable this references
         // Pass this.node so we can know that this node referenced the

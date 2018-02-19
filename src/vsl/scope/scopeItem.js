@@ -1,5 +1,7 @@
 import ScopeForm from './scopeForm';
 
+let mangleId = 1;
+
 /**
  * A generic scope item, specifying primarially the value of any identifier.
  * This specifies behavior for type matching and also getting and setting the
@@ -24,7 +26,7 @@ export default class ScopeItem {
      * @type {Boolean}
      */
     static alwaysDefinite = false;
-    
+
     /**
      * Creates a ScopeItem with a specific form and name.
      * @param {ScopeForm} form - The form or type of the scope item.
@@ -38,7 +40,7 @@ export default class ScopeItem {
          * @type {ScopeForm}
          */
         this.form = form;
-        
+
         /**
          * The string name of the scope item
          *
@@ -54,19 +56,25 @@ export default class ScopeItem {
          * @type {Node[]}
          */
         this.references = [];
-        
+
         /**
          * For {@link ScopeForm.query} objects. This will contain query data.
          * @protected
          * @type {Object}
          */
         this.query = null;
-        
+
         if (form === ScopeForm.query) {
             this.query = data;
         } else {
             this.init(data);
         }
+
+        /**
+         * Random ID uniquely id'ing item in scope
+         * @type {[type]}
+         */
+        this.id;
     }
 
     /**
@@ -76,6 +84,8 @@ export default class ScopeItem {
      */
     init({ resolver = null }) {
         this._resolver = resolver;
+
+        this.id = mangleId++;
     }
 
     /**
@@ -92,7 +102,7 @@ export default class ScopeItem {
     equal(ref: ScopeItem): boolean {
         return ref.rootId === this.rootId;
     }
-    
+
     /**
      * Resolves the current node using a passed resolver
      */
@@ -102,7 +112,7 @@ export default class ScopeItem {
             this.form = ScopeForm.definite;
         }
     }
-    
+
     /**
      * Resolves a {@link ScopeItem} to its canolical object.
      * @return {ScopeItem} normalized etc.
@@ -111,5 +121,13 @@ export default class ScopeItem {
     resolved() {
         this.resolve();
         return this;
+    }
+
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get unqiueName() {
+        return `${this.rootId}.$${this.id}`
     }
 }

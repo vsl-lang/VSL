@@ -38,7 +38,7 @@ export default class ScopeGenericItem extends ScopeItem {
         this.genericParents = genericParents;
         this.types = new Set();
     }
-    
+
     /**
      * Notifies that this generic was used with a types.
      * @param  {ScopeTypeItem[]} types - The generic types this was used with.
@@ -54,18 +54,18 @@ export default class ScopeGenericItem extends ScopeItem {
                         continue main;
                     }
                 }
-                
+
                 // Already added
                 return existingType;
             }
         }
-        
+
         let genericParamString = types.map(type => type.toString()).join(", ");
-        
+
         // Create and add new ScopeGenericTemplateItem
         let newType = new ScopeGenericTemplateItem(
             ScopeForm.definite,
-            `${this.rootId}<genericParamString>`,
+            `${this.rootId}<${genericParamString}>`,
             {
                 template: this,
                 parents: types,
@@ -83,7 +83,7 @@ export default class ScopeGenericItem extends ScopeItem {
     rootToString() {
         return super.toString();
     }
-    
+
     /** @return {string} */
     toString() {
         return this.rootToString() + `<<Generic>>`

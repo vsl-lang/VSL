@@ -22,13 +22,13 @@ export default class RegisterFunctionDeclaration extends Transformation {
     modify(node: Node, tool: ASTTool) {
         let scope = node.parentScope.scope;
         let name = node.name.value;
-        
+
         // Handle -> Void.
         if (node.returnType instanceof t.Identifier && node.returnType.value !== "Void") {
             node.returnRef = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
         }
-        
-        
+
+
         let argList = node.args.map(
             ({
                 typedId: {
@@ -42,7 +42,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 all[index]
             )
         );
-        
+
         let type = new ScopeFuncItem(
             ScopeForm.definite,
             name,
@@ -51,7 +51,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 returnType: node.returnRef
             }
         );
-        
+
         // Register the type in the parent scope
         let res = scope.set(type);
         if (res === false) {
@@ -61,7 +61,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 node, e.DUPLICATE_DECLARATION
             );
         }
-        
+
         node.scopeRef = type;
     }
 }

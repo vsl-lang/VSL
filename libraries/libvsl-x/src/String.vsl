@@ -1,9 +1,9 @@
 public typealias CString = Pointer<UInt8>
 
 @primitive(String, _precType)
-@_mockType(llvm, "i8*", *)
+@_mockType("i8*")
 public class String {
-    
+
     // NOTE: Positioning of first couple fields is very important. Usually
     // this will be compiled as if it is in the format of
     //     struct libvsl.String {

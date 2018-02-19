@@ -34,7 +34,7 @@ export default class CallResolver extends TypeResolver {
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         const args = this.node.arguments;
         const argc = this.node.arguments.length;
-        
+
         // Negotiate the requested type for this identifier.
         let head = this.getChild(this.node.head);
         head.resolve((type) => {
@@ -43,41 +43,24 @@ export default class CallResolver extends TypeResolver {
                 // This will return ALL of the function with the rootId
                 // So we'll filter candidates here.
                 case ConstraintType.BoundedFunctionContext: return argc;
-                
+
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
         });
-        
+
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow
         // them down as best as we can and use those as the candidates
         const candidates = this.node.head.typeCandidates;
-        
+
+        let validCandidates = [];
+
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
-        
-        // We know argc <= candidate.args.length
-        let typeArgs = new Array(argc).fill([]);
         for (let i = 0; i < candidates.length; i++) {
-            let j = 0;
-            for (; j < argc; j++) {
-                // Check if the arg names match
-                if (args[j].name !== candidates[i].args[j].name) {
-                    // If they ever don't match we'll pop the types this was
-                    // adding and then stop this
-                    while (--j >= 0) {
-                        typeArgs[j].pop();
-                    }
-                    
-                    // Go onto the next candidate because this one we now know
-                    // does not have a matching name
-                    break;
-                } else {
-                    // Since they do match we can add the type to the typeArgs
-                    typeArgs[j].push(candidates[i].args[j].type);
-                }
-            }
+            if (candidates[i].args.length !== argc) continue;
+
         }
     }
 }

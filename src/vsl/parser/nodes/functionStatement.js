@@ -5,10 +5,10 @@ import DeclarationStatement from './declarationStatement';
  *
  */
 export default class FunctionStatement extends DeclarationStatement {
-    
+
     /** @override */
     get fancyName() { return "function" }
-    
+
     /**
      * Constructs a generic function statement
      *
@@ -30,29 +30,29 @@ export default class FunctionStatement extends DeclarationStatement {
         position: Object
     ) {
         super(access, position);
-        
+
         /** @type {Annotation[]} */
         this.annotations = annotations;
-        
+
         /** @type {Identifier} */
         this.name = name;
-        
+
         /** @type {FunctionArgument[]} */
         this.args = args || [];
-        
+
         /** @type {?Type} */
         this.returnType = returnType;
-        
+
         /** @type {?ScopeTypeItem} */
         this.returnRef = null;
-        
+
         /** @type {?(ScopeTypeItem[])} */
         this.argRefs = [];
-        
+
         /** @type {CodeBlock} */
         this.statements = statements;
     }
-    
+
     clone() {
         return new FunctionStatement(
             this.annotations.map(annotation => annotation.clone()),
@@ -63,17 +63,17 @@ export default class FunctionStatement extends DeclarationStatement {
             this.statements.clone()
         )
     }
-    
+
     /** @override */
     get identifierPath() {
         return this.name;
     }
-    
+
     /** @override */
     get children() {
         return ['annotations', 'name', 'args', 'returnType', 'statements'];
     }
-    
+
     /** @override */
     toString() {
         return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}` +

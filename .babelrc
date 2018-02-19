@@ -1,7 +1,6 @@
 {
     "plugins": [
         "babel-plugin-include",
-        "babel-plugin-wildcard",
         ["@babel/plugin-transform-runtime", {
             "polyfill": false
         }],
@@ -19,7 +18,8 @@
         }],
         ["babel-plugin-transform-builtin-extend", {
             "globals": ["Error"]
-        }]
+        }],
+        "babel-plugin-wildcard"
     ],
     "presets": [
         "@babel/preset-react",

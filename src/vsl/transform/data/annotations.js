@@ -5,7 +5,7 @@ import t from '../../parser/nodes';
  */
 const Annotations = new Map([
     ["backend", [1]],
-    ["_mockType", [[2, 3], t.ClassStatement]],
+    ["_mockType", [1, t.ClassStatement]],
     ["_transparent", [[1, 4], t.FunctionStatement]],
     ["primitive", [[1, 2], t.ClassStatement]],
     ["inline", [null, t.FunctionStatement]]

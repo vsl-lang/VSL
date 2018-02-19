@@ -24,20 +24,21 @@ export default class DescribeClassDeclaration extends Transformation {
         let scope = node.parentScope.scope;
         let className = node.name.value;
         let type;
-        
+
         let opts = {
             subscope: node.statements.scope,
-            isInterface: false
+            isInterface: false,
+            mockType: node.mockType
         };
-        
+
         if (node.generics.length === 0) {
-        
+
             type = new ScopeTypeItem(
                 ScopeForm.indefinite,
                 className,
                 opts
             );
-            
+
         } else {
             type = new ScopeGenericItem(
                 ScopeForm.indefinite,

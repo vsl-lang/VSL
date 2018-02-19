@@ -1,7 +1,7 @@
-@_mockType(llvm, pointer)
+@_mockType(pointer)
 public class Pointer<Type> {
 
 }
 
-@_mockType(llvm, opaquepointer)
+@_mockType(opaquepointer)
 public class OpaquePointer { }

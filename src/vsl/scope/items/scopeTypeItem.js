@@ -15,6 +15,9 @@ import ScopeItem from '../scopeItem';
  *     This is used to determine how casting will occur and dynamic dispatch
  *     so ensure that it is not possible to declare fields.
  * @property {ScopeItemResolver} data.resolver - Function to resolve if node.
+ * @property {string} data.mockType - A property for backends if the type needs
+ *                                  to act like a native type. ANY fields will
+ *                                  likely be ignored.
  */
 
 /**
@@ -41,14 +44,16 @@ export default class ScopeTypeItem extends ScopeItem {
         interfaces = [],
         superclass = ScopeTypeItem.RootClass,
         isInterface = false,
+        mockType = null,
         ...opts
     } = {}) {
         super.init(opts);
         this.interfaces = interfaces;
         this.superclass = superclass;
         this.isInterface = isInterface;
+        this.mockType = mockType;
     }
-    
+
     /**
      * Determines if the current type can be cast to `type` is castable.
      *
@@ -59,10 +64,10 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     castableTo(type) {
         type = type.resolved();
-        
+
         // Check if cast to the same type
         if (type === this) return 1;
-        
+
         // Check if casting to new type
         let canCastSuperclass = this.superclass?.castableTo(type);
         if (canCastSuperclass) return canCastSuperclass + 1;
@@ -72,7 +77,7 @@ export default class ScopeTypeItem extends ScopeItem {
                 return canCastInterface + 1;
             }
         }
-        
+
         return 0;
     }
 

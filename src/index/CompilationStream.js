@@ -10,16 +10,16 @@ export default class CompilationStream {
     constructor() {
         /** @private */
         this.dataBuffer = [];
-        
+
         /** @private */
         this.sender = (f) => f(null);
-        
+
         /**
          * All data emitted by the stream
          * @param {string}
          */
         this.data = "";
-        
+
         /**
          * You can set this for better error reporting and debug info by
          * naming the streams. Optimally with the file path if applicable in
@@ -30,8 +30,11 @@ export default class CompilationStream {
          * @type {string}
          */
         this.sourceName = null;
+
+        /** @private */
+        this.warningListeners = [];
     }
-    
+
     /**
      * Listens for data finishes evaluating when data is obtained. Call this in
      * a loop checking for `null`.
@@ -49,7 +52,7 @@ export default class CompilationStream {
                 this.data += data;
                 resolve(data);
             }
-            
+
             // If there is no buffered stuff let's manually request some more
             // data
             if (this.dataBuffer.length === 0) {
@@ -59,7 +62,25 @@ export default class CompilationStream {
             }
         });
     }
-    
+
+    /**
+     * Registers a warning listener.
+     * @param {Function} listener - Listener to call with {@link BackendWarning}
+     */
+    registerWarningListener(listener) {
+        this.warningListeners.push(listener);
+    }
+
+    /**
+     * Emits a warning
+     * @param {BackendWarning} warning
+     */
+    emitWarning(warning) {
+        for (let i = 0; i < this.warningListeners.length; i++) {
+            this.warningListeners[i](warning);
+        }
+    }
+
     /**
      * Sends a string of data to the receiver
      * @param  {string} data The data to send.
@@ -67,7 +88,7 @@ export default class CompilationStream {
     send(data) {
         this.dataBuffer.push(data);
     }
-    
+
     /**
      * Call this with a callback to specify behavior when the compiler wants
      * more data.

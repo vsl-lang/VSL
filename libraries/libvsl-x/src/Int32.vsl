@@ -1,12 +1,12 @@
 @primitive(Integer, _precType)
-@_mockType(llvm, int, 32)
+@_mockType(i32)
 public class Int32 {
 
     @backend(llvm)
     public func +(lhs: Int, rhs: Int) -> Int native {
         ret i32 ( add i32 %1, %2 )
     }
-    
+
 }
 
 public typealias Int = Int32

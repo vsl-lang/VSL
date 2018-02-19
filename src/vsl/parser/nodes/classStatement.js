@@ -7,7 +7,7 @@ export default class ClassStatement extends DeclarationStatement {
 
     /** @override */
     get fancyName() { return "class" }
-    
+
     /**
      * Constructs a generic class statement
      *
@@ -24,7 +24,7 @@ export default class ClassStatement extends DeclarationStatement {
 
         /** @type {Identifier} */
         this.name = name;
-        
+
         /** @type {TypeDeclaration[]} */
         this.generics = generics;
 
@@ -36,8 +36,14 @@ export default class ClassStatement extends DeclarationStatement {
 
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
+
+        /**
+         * Associated mock type attribute
+         * @param {?string}
+         */
+        this.mockType = null;
     }
-    
+
     clone() {
         return new ClassStatement(
             this.access.slice(),

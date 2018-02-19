@@ -3,6 +3,10 @@ import Traverser from '../transform/traverser';
 import ASTTool from '../transform/asttool';
 
 /**
+ * @typedef {String} BackendWarning
+ */
+
+/**
  * Any backend needs to implement and subclass this abstract class and implement
  * the approriate methods. This is like a transformer but implements output
  * streams and requires methods to have generation definitions (on-demand). This
@@ -12,6 +16,27 @@ import ASTTool from '../transform/asttool';
  * @abstract
  */
 export default class Backend {
+
+    /**
+     * Generic backend with output stream
+     * @param {CompilationStream} stream
+     */
+    constructor(stream) {
+        /**
+         * Stream to write to.
+         * @type {CompilationStream}
+         */
+        this.stream = stream;
+    }
+
+    /**
+     * Writes to output
+     * @param {string} data - Data to write as a UTF8 string
+     */
+    write(data) {
+        this.stream.send(data);
+    }
+
     /**
      * Returns the watchers for this backend to subclass use
      * `yield* super.watchers()` to inherit parent.
@@ -57,6 +82,19 @@ export default class Backend {
     }
 
     /**
+     * Emits a warning regarding a node
+     * @param {BackendWarning} warning - emitted warning.
+     */
+    warn(warning) {
+        this.stream.emitWarning(warning);
+    }
+
+    /**
+     * @type {BackendWarning[]}
+     */
+    get warnings() { return this._warnings; }
+
+    /**
      * Run after generation finishes
      * @abstract
      */
@@ -82,8 +120,7 @@ export default class Backend {
      *                               to. Wait until all stuff is done before
      *                               using the output.
      */
-    run(inputs, stream) {
-        this.stream = stream;
+    run(inputs) {
         this.pregen();
 
         for (let i = 0; i < inputs.length; i++) {

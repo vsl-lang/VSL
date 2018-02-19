@@ -21,6 +21,8 @@ import CompilationStream from '../../index/CompilationStream';
 import Module from '../../modules/Module';
 import ModuleError from '../../modules/ModuleError';
 
+import LLVMBackend from '../../vsl/backend/llvm';
+
 const INSTALLATION_PATH = path.join(__dirname, '../../..');
 const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl-x";
@@ -165,10 +167,12 @@ export default class Default extends CLIMode {
         this.stl = stl;
 
         if (directory) {
-            let output = new CompilationStream();
-            this.executeModule(directory, output, true);
+            let output = this.createStream();
+            this.executeModule(directory, output, true)
+                .then((index) => process.exit(0));
         } else if (files.length > 0) {
-            this.fromFiles(files);
+            this.fromFiles(files)
+                .then((index) => process.exit(0));
         } else if (repl) {
             this.launchREPL();
         } else {
@@ -176,18 +180,23 @@ export default class Default extends CLIMode {
         }
     }
 
+    /**
+     * Loads the STL and returns it as the only item in an array of compilation
+     * modules.
+     *
+     * @param  {string}  [config=this.stl] The name of the STL to use
+     * @return {Promise} Resolves to the copmilation module.
+     */
     async loadSTL(config = this.stl) {
         if (config === false) return [];
         let stlName = typeof config === 'string' ? config : DEFAULT_STL;
         let stdlibpath = path.join(__dirname, '../../../libraries/', stlName);
         let stdlibIndex = await this.executeModule(stdlibpath);
-        return [
-            new CompilationModule(
-                stdlibIndex.root.metadata.name,
-                HookType.Strong,
-                stdlibIndex
-            )
-        ];
+        return new CompilationModule(
+            stdlibIndex.root.metadata.name,
+            HookType.Strong,
+            stdlibIndex
+        );
     }
 
     async executeModule(directory, stream, isPrimaryModule = false) {
@@ -224,7 +233,9 @@ export default class Default extends CLIMode {
         // We'll rexecute using the cache, what this means is that if
         // there is a cyclic dependency we'll end up with an infinite
         // loop. We stop this so the stdlib doesn't load the stdlib.
-        modules.push(...await this.loadSTL(module.stdlib));
+        if (module.stdlib !== false) {
+            modules.push(await this.loadSTL(module.stdlib));
+        }
 
         let index = new CompilationIndex(
             group,
@@ -232,7 +243,13 @@ export default class Default extends CLIMode {
         );
 
         try {
-            await index.compile(stream);
+            // Only the primary module should be compiled to a stream
+            if (isPrimaryModule) {
+                let backend = new LLVMBackend(stream);
+                await index.compile(backend);
+            } else {
+                await index.compile();
+            }
         } catch(error) {
             let stream = null;
 
@@ -283,10 +300,12 @@ export default class Default extends CLIMode {
 
         let index = new CompilationIndex(
             compilationGroup,
-            await this.loadSTL()
+            [await this.loadSTL()]
         );
 
-        await index.compile()
+        let stream = this.createStream();
+        let backend = new LLVMBackend(stream);
+        return await index.compile();
     }
 
     async launchREPL() {
@@ -332,10 +351,13 @@ export default class Default extends CLIMode {
             let worked = true;
 
             // Create index + other execution info.
-            let index = new CompilationIndex(group, stl)
-            let output = new CompilationStream();
+            let index = new CompilationIndex(group, [stl]);
+
+            let output = this.createStream();
+            let backend = new LLVMBackend(output);
+
             try {
-                await index.compile(output);
+                await index.compile(backend);
             } catch(error) {
                 worked = false;
                 await this.handle(error, lastCalls + inputString, { exit: false });
@@ -344,7 +366,11 @@ export default class Default extends CLIMode {
             }
 
             if (worked) {
-                console.log(await output.receive());
+                let data;
+                while ((data = await output.receive()) !== null) {
+                    process.stdout.write(data);
+                }
+                process.stdout.write('\n');
                 lastCalls += inputString + '\n';
             }
 
@@ -352,6 +378,34 @@ export default class Default extends CLIMode {
         }
 
         await repl();
+    }
+
+    /**
+     * Creates a {@link CompilationStream} for output
+     * @return {CompilationStream}
+     */
+    createStream() {
+        let stream = new CompilationStream();
+        stream.registerWarningListener((warning) => {
+            this.warningListener(warning);
+        });
+        return stream;
+    }
+
+    /**
+     * Listens for warings to a {@link CompilationStream}. Bind first.
+     * @param {BackendWarning} warning warning from backend.
+     */
+    warningListener(warning) {
+        if (this.color) {
+            process.stdout.write('\u001B[1;33mWarning: \u001B[0m');
+        } else {
+            process.stdout.write('Warning: ');
+        }
+
+        process.stdout.write(warning.message);
+        process.stdout.write('\n');
+        // TODO: show node
     }
 
     async handle(error, src, { exit = false } = {}) {

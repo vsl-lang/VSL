@@ -16,7 +16,8 @@ import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
 
 // import LLIR from '../vsl/backend/llir';
-import JSBackend from '../vsl/backend/js';
+// import JSBackend from '../vsl/backend/js';
+import LLVMBackend from '../vsl/backend/llvm';
 
 import e from '../vsl/errors'
 
@@ -177,17 +178,18 @@ export default class CompilationGroup {
 
     /**
      * Compiles the sources. It's reccomended to use a `CompilationIndex` to
-     * manage this because configuration and modules happen there.
+     * manage this because configuration and modules happen there. If backend
+     * and stream are not provided, the code will merely be prepared for
+     * compilation.
      *
-     * @param  {CompilationStream} stream A compilation stream which will be
-     *                                    where all compilation data will be
-     *                                    piped.
-     * @return {CompilationResult}        An object describing all the
-     *                                    compilation infos. See
-     *                                    {@link CompilationResult} for more
-     *                                    information.
+     * @param  {?Backend}  backend The backend which will manage
+     *                             compilation. Do not reuse backends.
+     * @return {CompilationResult} An object describing all the
+     *                             compilation infos. See
+     *                             {@link CompilationResult} for more
+     *                             information.
      */
-    async compile(stream) {
+    async compile(backend) {
         // === 1: Parse ===
         // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );
@@ -274,12 +276,11 @@ export default class CompilationGroup {
         // type checking etc.
         new VSLTransformer(this.context).queue(block);
 
-        // Run it through the backend by default we'll use LLIR but
-        if (stream) {
-            let backend = new JSBackend();
-            let output = new BackendStream();
-            backend.run(block.statements, output);
-            stream.send(output.utf8Value);
+        // Run it through the backend
+        if (backend) {
+            backend.run(block.statements);
         }
+
+        return;
     }
 }
