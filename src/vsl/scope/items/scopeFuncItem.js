@@ -1,4 +1,5 @@
 import ScopeItem from '../scopeItem';
+import ScopeForm from '../scopeForm';
 
 /**
  * Describes a function declaration. Usually a top, nested, or class-level
@@ -61,17 +62,50 @@ export default class ScopeFuncItem extends ScopeItem {
 
     /** @override */
     equal(ref: ScopeItem): boolean {
-        let target = ref.resolved();
-        if (!(target instanceof ScopeFuncItem)) return false;
+        // Check super condition
+        // We will do extra disambiguation here
+        if (super.equal(ref) === false) return false;
+        if (!(ref instanceof ScopeFuncItem)) return false;
 
-        let matchArgs = target.query.args;
+        // TODO: If optional args this must be changed
+        // This requires the same arg length as a query.
+        let matchArgs = ref.query.args;
+
+        // Different amount of args means different
         if (matchArgs.length !== this.args.length) return false;
 
+        // Next we must check that all the arg types have different names and
+        // are not castable to this.
         for (let i = 0; i < this.args.length; i++) {
-            if (matchArgs[i].castableTo(this.args[i])) return true;
+            let queryArg = matchArgs[i];
+            let baseArg = this.args[i];
+
+            let queryType = queryArg.getType().resolved();
+            let selfType = baseArg.getType().resolved();
+
+            // Checks if the 2 args are the same (or related)
+            let typesAreAmbiguous = (
+                queryType.castableTo(selfType) ||
+                selfType.castableTo(queryType)
+            );
+
+            let argIsMatching = queryArg.name.value === baseArg.name.value && typesAreAmbiguous;
+
+            // If an arg does not match we know 100% it is not equal
+            if (!argIsMatching) return false;
         }
 
         return true;
+    }
+
+    /**
+     * @override
+     * @return {ScopeFuncItem}
+     */
+    getQuery() {
+        return new ScopeFuncItem(ScopeForm.query, this.rootId, {
+            args: this.args
+        });
     }
 
     /** @override */

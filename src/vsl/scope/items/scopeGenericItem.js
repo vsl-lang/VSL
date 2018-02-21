@@ -36,6 +36,7 @@ export default class ScopeGenericItem extends ScopeItem {
         super.init(options);
         this.scopeTypeItem = scopeTypeItem;
         this.genericParents = genericParents;
+        this.mockType = null;
         this.types = new Set();
     }
 
@@ -69,7 +70,8 @@ export default class ScopeGenericItem extends ScopeItem {
             {
                 template: this,
                 parents: types,
-                ...this.scopeTypeItem
+                ...this.scopeTypeItem,
+                mockType: this.mockType
             }
         )
         this.types.add(newType);

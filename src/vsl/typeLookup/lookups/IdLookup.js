@@ -16,9 +16,9 @@ export default class IdLookup extends TypeLookup {
      */
     resolve(scope) {
         let name = this.node.value;
-        let result = scope.get(new ScopeTypeItem(ScopeForm.query, name))?.resolved();
-        
-        if (result === null) {
+        let result = scope.get(new ScopeTypeItem(ScopeForm.query, name, {}))?.resolved();
+
+        if (!result) {
             this.emit(
                 `There is no type with name \`${name}\` in this scope. Check ` +
                 `for typos or if this type declared in the current scope. If ` +
@@ -32,7 +32,7 @@ export default class IdLookup extends TypeLookup {
                 `\`${name}<...>\``
             );
         }
-        
+
         return result;
     }
 }

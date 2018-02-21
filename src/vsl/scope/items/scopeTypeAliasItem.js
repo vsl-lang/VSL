@@ -20,7 +20,7 @@ export default class ScopeTypeAliasItem extends ScopeItem {
     constructor(form, rootId, data) {
         super(form, rootId, data);
     }
-    
+
     /** @protected */
     init({ item, ...opts }) {
         super.init(opts);
@@ -31,7 +31,7 @@ export default class ScopeTypeAliasItem extends ScopeItem {
     toString() {
         return `${this.rootId} -> ${this._ref}`;
     }
-    
+
     /**
      * Resolves a {@link ScopeItem} to its canolical form.
      * @return {ScopeItem} normalized etc.

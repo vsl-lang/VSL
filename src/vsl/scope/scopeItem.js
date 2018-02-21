@@ -124,6 +124,14 @@ export default class ScopeItem {
     }
 
     /**
+     * Returns a query for the current {@link ScopeItem}
+     * @return {ScopeItem} of type Query.
+     */
+    getQuery() {
+        return new (this.constructor)(ScopeForm.query, this.rootId, {});
+    }
+
+    /**
      * Returns unique name for scope item
      * @type {string}
      */

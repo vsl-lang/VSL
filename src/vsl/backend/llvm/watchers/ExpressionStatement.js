@@ -10,7 +10,7 @@ export default class LLVMExpressionStatement extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        if (node.expression instanceof t.Literal && tool.nthParent(2)?.rootScope) {
+        if (tool.nthParent(2)?.rootScope) {
             backend.warn(new BackendWarning(
                 "Top-level expressions will be ignored",
                 node

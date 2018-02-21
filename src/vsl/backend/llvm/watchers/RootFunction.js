@@ -51,7 +51,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
         let functionType = llvm.FunctionType.get(
             returnType,
             argsRef.map(
-                arg => toLLVMType(arg, backend.context)
+                arg => toLLVMType(arg.type, backend.context)
             ),
             false
         );

@@ -34,22 +34,19 @@ export default class ScopeFuncItemArgument {
          * @protected
          */
         this.type = type;
-        
+
         /** @private */
         this.node = node;
     }
-    
+
     /**
      * Gets the type at the index, performs resolution if needed because cannot
      * always be done on the first pass.
      *
-     * @param  {number} at        The index to which to obtain the type at. make
-     *                            sure this is inbounds otherwise major bork may
-     *                            occur
      * @return {ScopeTypeItem}    The resolved ScopeTypeItem, this will throw if
      *                            a bork occurs (such as no type existing).
      */
-    getType(at: number) {
+    getType() {
         if (typeof this.type === "string") {
             let res = this.node.parentScope.scope.get(new ScopeTypeItem(this.type));
             if (res === null) {
@@ -62,7 +59,7 @@ export default class ScopeFuncItemArgument {
             return this.type;
         }
     }
-    
+
     /**
      * Checks if same as another {@link ScopeFuncItemArgument}
      * @param {ScopeFuncItemArgument} ref - Other item
@@ -71,7 +68,7 @@ export default class ScopeFuncItemArgument {
     equal(ref) {
         let root = this.type.resolved();
         let match = ref.type.resolved();
-        
+
         if (match === root) return true;
     }
 

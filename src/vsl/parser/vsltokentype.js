@@ -9,7 +9,8 @@ const VSLTokenType = Object.freeze({
     Identifier: 6,
     Documentation: 7,
     NativeBlock: 8,
-    ImportStatement: 9
+    ImportStatement: 9,
+    ByteSequence: 10
 });
 
 export default VSLTokenType;

@@ -40,7 +40,7 @@ export default class LiteralResolver extends TypeResolver {
 
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-        
+
         let literalTypeContext = null;
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
@@ -58,13 +58,17 @@ export default class LiteralResolver extends TypeResolver {
                 literalTypeContext = context.get("String");
                 break;
 
+            case VSLTokenType.ByteSequence:
+                literalTypeContext = context.get("ByteSequence");
+                break;
+
             case VSLTokenType.Regex:
                 literalTypeContext = context.get("Regex");
                 break;
 
             default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
         }
-        
+
         // Make sure there is a type context that is valid and all
         if (!literalTypeContext || literalTypeContext.types.length <= 0) {
             this.emit(
@@ -78,9 +82,9 @@ export default class LiteralResolver extends TypeResolver {
                 `your own candidate using \`@primitive(...)\``
             );
         }
-        
+
         let { types: typeList, precType } = literalTypeContext;
-        
+
         // Create TypeCandidate list for the literal.
         // This is not yet intersected with the requested resolutions
         this.node.typeCandidates = typeList
@@ -88,12 +92,12 @@ export default class LiteralResolver extends TypeResolver {
                 candidate =>
                     new TypeCandidate(candidate, precType === candidate)
             );
-        
+
         // Match literal type to context-based candidates
         if (response !== null) {
             // Actual type intersect
             this.mutableIntersect(response, this.node.typeCandidates)
-        
+
             // Okay if this is 0 that means you have conflicting things
             // This is because errors have already been thrown for no actually
             // type candidates.

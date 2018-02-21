@@ -17,6 +17,8 @@ export default function toLLVMType(type, context) {
             case "ui32": return llvm.Type.getInt32Ty(context);
             case "i64":
             case "ui64": return llvm.Type.getInt64Ty(context);
+            case "pointer": return toLLVMType(type.parents[0], context).getPointerTo();
+            case "pointer8": return llvm.Type.getInt8Ty(context).getPointerTo();
             default:
                 throw new BackendError(
                     `Invalid \`@_mockType\` value. Type \`${type}\` is unsupported by the LLVM backend.`,

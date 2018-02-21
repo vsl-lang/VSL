@@ -17,6 +17,7 @@ const NodeTypes = require('./vsltokentype').default,
   documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
   nativeBlock = freeze({ test: x => x[1] === NodeTypes.NativeBlock }),
   importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
+  byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence })
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p })
   unwrap = d => d[0].value,
@@ -520,14 +521,15 @@ function literal(data, location) {
 %}
 
 Literal
-   -> %decimal   {% literal %}
-    | %integer   {% literal %}
-    | %string    {% literal %}
-    | %regex     {% literal %}
-    | Array      {% id %}
-    | Dictionary {% id %}
-    | Tuple      {% id %}
-    | Set        {% id %}
+   -> %decimal      {% literal %}
+    | %integer      {% literal %}
+    | %string       {% literal %}
+    | %byteSequence {% literal %}
+    | %regex        {% literal %}
+    | Array         {% id %}
+    | Dictionary    {% id %}
+    | Tuple         {% id %}
+    | Set           {% id %}
 
 Array
    -> "[" _ "]" {%

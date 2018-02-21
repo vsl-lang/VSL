@@ -10,6 +10,5 @@ export default class LLVMFunctionCall extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        console.log(node);
     }
 }

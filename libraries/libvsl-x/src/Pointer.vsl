@@ -3,5 +3,11 @@ public class Pointer<Type> {
 
 }
 
+@_mockType(pointer8)
+@primitive(ByteSequence, _precType)
+public class ByteSequence {}
+
+typealias CString = ByteSequence
+
 @_mockType(opaquepointer)
 public class OpaquePointer { }

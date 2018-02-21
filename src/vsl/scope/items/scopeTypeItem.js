@@ -71,6 +71,8 @@ export default class ScopeTypeItem extends ScopeItem {
         // Check if casting to new type
         let canCastSuperclass = this.superclass?.castableTo(type);
         if (canCastSuperclass) return canCastSuperclass + 1;
+
+        // Check if any of the interfaces can cast to `type`
         for (let i = 0; i < this.interfaces; i++) {
             let canCastInterface = this.interfaces[i].castableTo(type);
             if (canCastInterface) {
