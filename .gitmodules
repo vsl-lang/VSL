@@ -1,3 +1,6 @@
 [submodule "src/glibc"]
 	path = src/glibc
 	url = git://sourceware.org/git/glibc.git
+[submodule "libraries/Crypto/openssl"]
+	path = libraries/Crypto/openssl
+	url = git@github.com:openssl/openssl.git

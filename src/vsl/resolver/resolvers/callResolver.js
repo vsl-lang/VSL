@@ -59,6 +59,8 @@ export default class CallResolver extends TypeResolver {
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
         for (let i = 0; i < candidates.length; i++) {
+            // TODO: add optional support
+            // right now length is required
             if (candidates[i].args.length !== argc) continue;
 
         }

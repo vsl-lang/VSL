@@ -19,3 +19,4 @@ src/vsl/parser/parser.js
 vsl-*
 package-lock.json
 /LLIR
+.headers

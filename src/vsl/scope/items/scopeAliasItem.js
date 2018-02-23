@@ -16,6 +16,8 @@ export default class ScopeAliasItem extends ScopeItem {
      * @param {Object} data - Information about the class
      * @param {Node} data.source - The source expression which the item was
      *                           declared.
+     * @param {ScopeTypeItem} data.type - The resolved type of the variable.
+     *                                  Variables cannot have ambigious type.
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
@@ -40,10 +42,19 @@ export default class ScopeAliasItem extends ScopeItem {
          * @type {Node}
          */
         this.source;
+
+        /**
+         * Type of the node (reccomended to call .resolved()).
+         * @type {ScopeTypeItem}
+         */
+        this.type;
     }
-    
-    init({ source }) {
+
+    init({ source, type, ...opts }) {
+        super.init(opts);
+
         this.source = source;
+        this.type = type;
     }
 
     /** @return {string} */

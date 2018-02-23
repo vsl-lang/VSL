@@ -1,0 +1,7 @@
+public class MD5: Hash {
+    public func digest() -> ByteSequence {
+        let result = Pointer<UInt8>(alloc: 16)
+        MD5(Pointer<UInt8>::self.original, self.length, result)
+        return ByteSequence::result
+    }
+}

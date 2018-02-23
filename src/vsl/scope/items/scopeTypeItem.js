@@ -37,6 +37,69 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);
+
+        /**
+         * Types which this can safely be cast to. We'll assume that you've done
+         * all the checks because if something is wrong here expect big giant
+         * segfaults. If you have a superclass, specified it'll just go in the
+         * superclass field. Interfaces go here for example.
+         * @type {?(ScopeTypeItem[])}
+         */
+        this.interfaces;
+
+        /**
+         * The single superclass defaulting to the root class. The superclass
+         * (not interface) of the current class, don't specify if there is none.
+         * You don't need to resolve inheritance or anything. This is null for
+         * interfaces.
+         * @type {ScopeTypeItem}
+         */
+        this.superclass;
+
+        /**
+         * Whether the type is an interface. This is used to determine how
+         * casting will occur and dynamic dispatch so ensure that it is not
+         * possible to declare fields.
+         * @type {Boolean}
+         */
+        this.isInterface;
+
+        /**
+         * A property for backends if the type needs to act like a native type.
+         * ANY fields will likely be ignored.
+         * @type {string}
+         */
+        this.mockType;
+
+        /**
+         * The type should manage a subscope (e.g. child values). For a
+         */
+
+        this._dynamicDispatch = null;
+    }
+
+    /**
+     * Sets if dynamic dispatch should be used for the function. Do note that
+     * this cannot be overided after initially set. If the `@dynamic(false)`
+     * annotation is used, dynamic dispatch is disabled and cannot be
+     * re-enabled. Do not explicitly set to `false` unless you want to eradicate
+     * the posibility of dynamic dispatch for the type.
+     * @type {boolean}
+     */
+    set dynamicDispatch(state) {
+        if (dynamicDispatch === null) {
+            this.dynamicDispatch = state;
+        }
+    }
+
+    /**
+     * Obtains the dynamic dispatch state. This is not automatically determined
+     * at all. You must set this. This only manages unset values, in which case
+     * the state defaults to `false`.
+     * @type {boolean}
+     */
+    get dynamicDispatch() {
+        return this._dynamicDispatch || false;
     }
 
     /** @protected */
@@ -45,13 +108,16 @@ export default class ScopeTypeItem extends ScopeItem {
         superclass = ScopeTypeItem.RootClass,
         isInterface = false,
         mockType = null,
+        dynamicDispatch = null,
         ...opts
     } = {}) {
         super.init(opts);
+
         this.interfaces = interfaces;
         this.superclass = superclass;
         this.isInterface = isInterface;
         this.mockType = mockType;
+        this._dynamicDispatch = dynamicDispatch;
     }
 
     /**

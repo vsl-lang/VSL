@@ -14,7 +14,7 @@ import tty from 'tty';
 
 import fs from 'fs-extra';
 
-export default class Default extends CLIMode {
+export default class Debug extends CLIMode {
     usage = "vsl [options] [ -r dir ] [ -c out.ll ] <files> [ -- args ]"
 
     constructor() {
@@ -47,8 +47,7 @@ export default class Default extends CLIMode {
 
         this.repl = readline.createInterface({
             input: process.stdin,
-            output: process.stdout,
-            terminal: false
+            output: process.stdout
         });
 
         this.subcommands = [ "run" ];

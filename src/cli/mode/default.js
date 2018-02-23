@@ -28,10 +28,7 @@ const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl-x";
 
 let interrupt = null;
-let rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+let rl;
 
 // Returns promise
 function prompt(string) {
@@ -58,6 +55,11 @@ export default class Default extends CLIMode {
     usage = "vsl [options] <module | files> [ -- args ]\nvsl [options] <module | files> -c out.bc\nvsl"
 
     constructor() {
+        rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
         super([
             ["Options", [
                 ["-v", "--version"       , "Displays the VSL version",               { run: _ => _.printAndDie(_.version()) }],

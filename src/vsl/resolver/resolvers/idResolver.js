@@ -73,12 +73,6 @@ export default class IdResolver extends TypeResolver {
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
-        // TODO: Add local assignment
-        this.emit(
-            `Variables not supported yet.`,
-            e.UNDECLARED_IDENTIFIER
-        );
-
         // Get the variable this references
         // Pass this.node so we can know that this node referenced the
         // variable we are trying to get.
