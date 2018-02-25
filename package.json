@@ -115,5 +115,12 @@
     "sourceMap": false,
     "instrument": false
   },
-  "pkg": {}
+  "pkg": {
+    "scripts": [
+      "lib/**/*.js"
+    ],
+    "assets": [
+      "libraries/libvsl-x/**/*"
+    ]
+  }
 }
