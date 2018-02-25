@@ -54,9 +54,6 @@ export default class RootResolver extends TypeResolver {
         };
 
         const child = this.getChild(this.node.expression);
-        child.resolve(negotiator);
-
-        this.node.typeCandidates = this.node.expression.typeCandidates;
-        this.node.exprType = this.node.expression.exprType;
+        return child.resolve(negotiator);
     }
 }

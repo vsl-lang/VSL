@@ -17,7 +17,8 @@ const NodeTypes = require('./vsltokentype').default,
   documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
   nativeBlock = freeze({ test: x => x[1] === NodeTypes.NativeBlock }),
   importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
-  byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence })
+  byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence }),
+  boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p })
   unwrap = d => d[0].value,
@@ -148,6 +149,7 @@ AnnotationValue
    -> %identifier {% mid %}
     | %string {% mid %}
     | %integer {% mid %}
+    | %boolean {% mid %}
     | "*" {% unwrap %}
     | "nil" {% unwrap %}
 
@@ -526,6 +528,7 @@ Literal
     | %string       {% literal %}
     | %byteSequence {% literal %}
     | %regex        {% literal %}
+    | %boolean      {% literal %}
     | Array         {% id %}
     | Dictionary    {% id %}
     | Tuple         {% id %}

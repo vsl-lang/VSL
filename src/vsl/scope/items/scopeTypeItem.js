@@ -99,8 +99,8 @@ export default class ScopeTypeItem extends ScopeItem {
      * @type {boolean}
      */
     set dynamicDispatch(state) {
-        if (dynamicDispatch === null) {
-            this.dynamicDispatch = state;
+        if (this._dynamicDispatch === null) {
+            this._dynamicDispatch = state;
         }
     }
 

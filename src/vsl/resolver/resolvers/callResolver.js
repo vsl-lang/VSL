@@ -35,9 +35,9 @@ export default class CallResolver extends TypeResolver {
         const args = this.node.arguments;
         const argc = args.length;
 
-        // Negotiate the requested type for this identifier.
-        let head = this.getChild(this.node.head);
-        head.resolve((type) => {
+        // This will resolve the head of the function. e.g. in `a.b(c)` this
+        // negotiates the resolution of `a.b`
+        const headResolver = (type) => {
             switch (type) {
                 // This basically says we want a function in return
                 // This will return ALL of the function with the rootId
@@ -47,37 +47,74 @@ export default class CallResolver extends TypeResolver {
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
-        });
+        };
 
-        // (Partially) resolve all arguments
-        for (let i = 0; i < argc; i++) {
-            let argument = args[i];
-            this.getChild(argument.value).resolve((type) => {
-                switch (type) {
-                    // Right no they are no parent constraints. We'll resolve
-                    // that later.
-                    default: return negotiate(type);
-                }
-            });
-        }
-
+        // Negotiate the requested type for this identifier.
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow
         // them down as best as we can and use those as the candidates
-        const candidates = this.node.head.typeCandidates;
+        let candidates = this.getChild(this.node.head).resolve(headResolver);
+
+        let orderedArgCandidates = [];
+        // Resolve all arguments
+        for (let i = 0; i < argc; i++) {
+            orderedArgCandidates.push(
+                this.getChild(args[i].value).resolve((type) => {
+                    switch (type) {
+                        // Right no they are no parent constraints. We'll resolve
+                        // that later.
+                        default: return negotiate(type);
+                    }
+                })
+            );
+        }
 
         let validCandidates = [];
 
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
-        for (let i = 0; i < candidates.length; i++) {
-            // TODO: add optional support
-            // right now length is required
-            if (candidates[i].args.length !== argc) continue;
+        main: for (let i = 0; i < candidates.length; i++) {
+            const candidate = candidates[i];
 
+            // TODO: add optional support
+            // Right now length should be the exact same
+            if (candidate.args.length !== argc) continue;
+
+            // Stores object of { matchingType, isA  mbiguous }
+            let argTypeData = [];
+
+            // If same arg length & function name we'll have to go through each
+            // arg and check for compatibility.
+            for (let i = 0; i < argc; i++) {
+                let arg = args[i],
+                    argName = arg.name,
+                    argTypes = orderedArgCandidates[i],
+                    targetArgName = candidate.args[i].name,
+                    targetArgType = candidate.args[i].type;
+
+                // If there is an arg name, but they don't match then continue.
+                if (argName && argName !== targetArgName) continue main;
+
+                // Will store the candidate arg type for the given arg.
+                let workingArgType = null;
+                let isAmbiguous = argTypes.length === 1;
+
+                // Go through each type and check which conflicts
+                // NOTE: ambiguous types should NEVER be related in the
+                // candidate list.
+                for (let j = 0; j < argTypes.length; j++) {
+                    if (argTypes[j].candidate.castableTo(targetArgType)) {
+                        workingArgType = argTypes[j];
+                        break;
+                    }
+                }
+
+                // If we couldn't find a matching type, then this overload
+                // doesn't work.
+                if (workingArgType === null) continue main;
+            }
         }
 
-        this.node.head.typeCandidates = validCandidates;
 
         // Notify head that type candidates have been restricted
     }

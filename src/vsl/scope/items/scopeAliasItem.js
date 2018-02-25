@@ -44,6 +44,12 @@ export default class ScopeAliasItem extends ScopeItem {
         this.source;
 
         /**
+         * If this is static relative to parent scope
+         * @type {boolean}
+         */
+        this.isStatic;
+
+        /**
          * Type of the node (reccomended to call .resolved()).
          * @type {ScopeTypeItem}
          */

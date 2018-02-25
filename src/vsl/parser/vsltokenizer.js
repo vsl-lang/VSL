@@ -67,6 +67,10 @@ function nthmatch(matchNum) {
     return (a, b, n) => n[matchNum];
 }
 
+function parseBoolean(_, match) {
+    return match === "true";
+}
+
 
 let tokenMatchers = Array(VSLScope.MAX);
 tokenMatchers[VSLScope.Normal] = [
@@ -90,6 +94,7 @@ tokenMatchers[VSLScope.Normal] = [
     [/(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*/, strip_, VSLTokenType.Integer],
     [/[0-9][0-9_]*/, strip_, VSLTokenType.Integer],
     [/\/[^\/\*]([^\/\r\n]|\\[^\r\n])+\/[gmixc]*/, passThrough, VSLTokenType.Regex],
+    [/true|false/, parseBoolean, VSLTokenType.Boolean],
     [/\.\.\./, passThrough],
     [/\.\./, passThrough],
     [/\./, passThrough],

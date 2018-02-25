@@ -1,5 +1,6 @@
 import * as llvm from 'llvm-node';
 import BackendError from '../../BackendError';
+import layoutType from './layoutType';
 
 /**
  * Converts a {@link ScopeTypeItem} to an LLVM type.
@@ -20,6 +21,7 @@ export default function toLLVMType(type, context) {
             case "pointer": return toLLVMType(type.parents[0], context).getPointerTo();
             case "pointer8": return llvm.Type.getInt8Ty(context).getPointerTo();
             case "opaquepointer": return llvm.StructType.get(context, []);
+            case "string": return layoutType(type, context);
             default:
                 throw new BackendError(
                     `Invalid \`@_mockType\` value. Type \`${type}\` is unsupported by the LLVM backend.`,

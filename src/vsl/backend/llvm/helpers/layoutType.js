@@ -17,9 +17,10 @@ import * as llvm from 'llvm-node';
  */
 export default function layoutType(type, context) {
     let uniqueProperties = [];
-    llvm.StructType.get(
+    let structType = llvm.StructType.get(
         context,
         uniqueProperties,
         type.uniqueName
-    )
+    );
+    return structType;
 }

@@ -1,6 +1,7 @@
 public typealias CString = Pointer<UInt8>
 
 @primitive(String, _precType)
+@dynamic(false)
 public class String {
 
     // NOTE: Positioning of first couple fields is very important. Usually
@@ -11,6 +12,6 @@ public class String {
     //     }
     // if you change these then you won't get a sane string.
 
-    public const byteCount: Int
-    const value: Pointer<UInt8>
+    public const byteLength: UInt
+    const value: ByteSequence
 }

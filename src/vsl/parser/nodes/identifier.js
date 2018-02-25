@@ -9,7 +9,7 @@ import Id from '../../scope/scopeItem';
  *
  */
 export default class Identifier extends Node {
-    
+
     /**
      * Creates an identifier
      *
@@ -18,25 +18,28 @@ export default class Identifier extends Node {
      */
     constructor(identifier: string, position: Object) {
         super(position);
-        
+
         /** @type {string} */
         this.value = identifier;
-        
+
         /** @type {string} */
         this.original = identifier;
+
+        /** @type {?ScopeItem} */
+        this.reference = null;
     }
-    
+
     clone() {
         return new Identifier(
             this.original
         );
     }
-    
+
     /** @override */
     get children() {
         return [];
     }
-    
+
     /** @override */
     toString() {
         return this.value;

@@ -87,7 +87,7 @@ export default class LiteralResolver extends TypeResolver {
 
         // Create TypeCandidate list for the literal.
         // This is not yet intersected with the requested resolutions
-        this.node.typeCandidates = typeList
+        let typeCandidates = typeList
             .map(
                 candidate =>
                     new TypeCandidate(candidate, precType === candidate)
@@ -96,12 +96,12 @@ export default class LiteralResolver extends TypeResolver {
         // Match literal type to context-based candidates
         if (response !== null) {
             // Actual type intersect
-            this.mutableIntersect(response, this.node.typeCandidates)
+            this.mutableIntersect(response, typeCandidates)
 
             // Okay if this is 0 that means you have conflicting things
             // This is because errors have already been thrown for no actually
             // type candidates.
-            if (this.node.typeCandidates.length === 0) {
+            if (typeCandidates.length === 0) {
                 this.emit(
                     `This literal would need to be a type which it cannot be in\n` +
                     `order for everything to work. Candidates would include: \n\n` +
@@ -112,8 +112,6 @@ export default class LiteralResolver extends TypeResolver {
             }
         }
 
-        if (this.node.typeCandidates.length === 1) {
-            this.node.exprType = this.node.typeCandidates[0];
-        }
+        return typeCandidates;
     }
 }

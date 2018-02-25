@@ -1,5 +1,5 @@
 import Transformation from '../transformation';
-import TransformError from '../transformError.js';
+import TransformError from '../transformError';
 import e from '../../errors';
 import t from '../../parser/nodes';
 
@@ -31,7 +31,7 @@ export default class DescribeClassDeclaration extends Transformation {
             subscope: node.statements.scope,
             isInterface: false,
             mockType: node.mockType,
-            subscope: subscopes
+            subscope: subscope
         };
 
         if (node.generics.length === 0) {
