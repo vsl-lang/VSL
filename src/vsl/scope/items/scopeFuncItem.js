@@ -52,6 +52,12 @@ export default class ScopeFuncItem extends ScopeItem {
          * @type {string}
          */
         this.accessModifier;
+
+        /**
+         * Specifies if the function should be inlined by the backend
+         * @type {boolean}
+         */
+        this.shouldInline;
     }
 
     /** @override */
@@ -62,6 +68,7 @@ export default class ScopeFuncItem extends ScopeItem {
         this.returnType = returnType?.resolved();
 
         this.generated = false;
+        this.shouldInline = false;
 
         // Default access modifier
         this.accessModifier = 'local';

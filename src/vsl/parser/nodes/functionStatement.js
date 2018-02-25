@@ -49,6 +49,9 @@ export default class FunctionStatement extends DeclarationStatement {
         /** @type {?(ScopeTypeItem[])} */
         this.argRefs = [];
 
+        /** @type {?ScopeFuncItem} */
+        this.scopeRef = null;
+
         /** @type {CodeBlock} */
         this.statements = statements;
     }

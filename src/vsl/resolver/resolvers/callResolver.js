@@ -76,5 +76,9 @@ export default class CallResolver extends TypeResolver {
             if (candidates[i].args.length !== argc) continue;
 
         }
+
+        this.node.head.typeCandidates = validCandidates;
+
+        // Notify head that type candidates have been restricted
     }
 }

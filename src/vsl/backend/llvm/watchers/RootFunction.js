@@ -2,6 +2,7 @@ import BackendWatcher from '../../BackendWatcher';
 import t from '../../../parser/nodes';
 
 import BackendWarning from '../../BackendWarning';
+import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 
 import getFunctionName from '../helpers/getFunctionName';
@@ -23,17 +24,20 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
         const returnRef = scopeItem.returnType;
         const argsRef = scopeItem.args;
 
-        let shouldDirectlyCompile = false;
+        // This specifies if the function should be compiled publically.
+        // This means it will be visible externally. When not the case, it will
+        // have a private linkage meaning the function may be optimizedo out.
+        let isPublic = true;
 
-        // Check the access modifier
+        // Check the access modifier. This sets up the direct compilation step.
         switch (scopeItem.accessModifier) {
-            case "local":
             case "private":
-                shouldDirectlyCompile = false;
+                isPublic = false;
                 break;
 
+            case "local":
             case "public":
-                shouldDirectlyCompile = true;
+                isPublic = true;
                 break;
 
             case "protected":
@@ -46,6 +50,8 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
                 ));
         }
 
+        // Lookup the return type. If there is no return ref that means it is
+        // void so we do not construct.
         let returnType;
         if (scopeItem.returnType) {
             returnType = toLLVMType(scopeItem.returnType, backend.context);
@@ -53,6 +59,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             returnType = llvm.Type.getVoidTy(backend.context);
         }
 
+        // Get the function type by mapping each arg ref to a respective type.
         let functionType = llvm.FunctionType.get(
             returnType,
             argsRef.map(
@@ -61,9 +68,15 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             false
         );
 
+        // Handles annotations for the function
+        const shouldInline = scopeItem.shouldInline;
+
+        // Stores the LLVM function Constant* which will be the return value of
+        // this fnuction
         let func;
 
-        // Check if a local or external func
+        // Check if a local or external func. If it has external linkage we will
+        // handle it seperately
         if (node.statements instanceof t.ExternalMarker) {
             func = llvm.Function.create(
                 functionType,
@@ -72,12 +85,51 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
                 backend.module
             );
 
+            // If we are inlining an external function, throw warning beacuse
+            // that doesn't really make sense
+            if (shouldInline) {
+                backend.warn(new BackendWarning(
+                    `Invalid attempt to inline an external function.`,
+                    node
+                ))
+            }
+
+            // We cannot have an external function _not_ be non-external because
+            // that doesn't make any sense.
+            if (!isPublic) {
+                backend.warn(new BackendWarning(
+                    `External function cannot have \`private\` access.`,
+                    node
+                ));
+            }
+
             func.callingConv = llvm.CallingConv.C;
         } else {
             let isEntry = false;
 
             // Check if is a main call, if so do not mangle/
             if (scopeItem.rootId === "main") {
+                // Ensure is a valid entry function.
+                const isValidEntry = (
+                    scopeItem.returnType ?
+                        false :
+                    scopeItem.args.length === 2 ?
+                        scopeItem.args[0].type.mockType === "i32" &&
+                        scopeItem.args[1].type.mockType === "pointer8" :
+                    scopeItem.args.length === 1 ?
+                        false :
+                    scopeItem.args.length === 0
+                );
+
+                if (!isValidEntry) {
+                    throw new BackendError(
+                        `Entry function must be either \`func main() -> Void\`,` +
+                        ` \`func main(String[]) -> Void\`, or` +
+                        ` \`func main(Int, Pointer<ByteSequence>) -> Void\`.`,
+                        node
+                    );
+                }
+
                 isEntry = true;
                 functionType = llvm.FunctionType.get(
                     llvm.Type.getInt32Ty(backend.context),
@@ -86,16 +138,36 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
                         llvm.Type.getInt8Ty(backend.context).getPointerTo().getPointerTo()
                     ],
                     false
-                )
+                );
+
+                if (shouldInline) {
+                    backend.warn(new BackendWarning(
+                        `Cannot inline the entry function.`,
+                        node
+                    ));
+                }
             }
+
+            // Specifies different linkage for private v public
+            let linkage = isPublic ?
+                llvm.LinkageTypes.ExternalLinkage:
+                llvm.LinkageTypes.InternalLinkage;
 
             // Create this function's prototype
             func = llvm.Function.create(
                 functionType,
-                llvm.LinkageTypes.ExternalLinkage,
+                linkage,
                 getFunctionName(scopeItem),
                 backend.module
             );
+
+            // Add the appropriate attribute if a @inline tag exists
+            if (shouldInline && !isEntry) {
+                func.addFnAttr(llvm.Attribute.AttrKind.AlwaysInline);
+
+                // TODO: if exceptions are supported, remove this
+                func.addFnAttr(llvm.Attribute.AttrKind.NoUnwind);
+            }
 
             // Now create the function body
             let entryBlock = llvm.BasicBlock.create(

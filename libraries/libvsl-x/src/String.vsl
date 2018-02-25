@@ -1,7 +1,6 @@
 public typealias CString = Pointer<UInt8>
 
 @primitive(String, _precType)
-@_mockType("i8*")
 public class String {
 
     // NOTE: Positioning of first couple fields is very important. Usually

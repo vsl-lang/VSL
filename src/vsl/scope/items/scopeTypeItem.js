@@ -14,6 +14,7 @@ import ScopeItem from '../scopeItem';
  * @property {boolean} data.isInterface - Whether the type is an interface.
  *     This is used to determine how casting will occur and dynamic dispatch
  *     so ensure that it is not possible to declare fields.
+ * @property {Scope} data.subscope - The scope the class manages.
  * @property {ScopeItemResolver} data.resolver - Function to resolve if node.
  * @property {string} data.mockType - A property for backends if the type needs
  *                                  to act like a native type. ANY fields will
@@ -57,6 +58,12 @@ export default class ScopeTypeItem extends ScopeItem {
         this.superclass;
 
         /**
+         * Specifies the subscope for the function.
+         * @type {Scope}
+         */
+        this.subscope;
+
+        /**
          * Whether the type is an interface. This is used to determine how
          * casting will occur and dynamic dispatch so ensure that it is not
          * possible to declare fields.
@@ -72,10 +79,15 @@ export default class ScopeTypeItem extends ScopeItem {
         this.mockType;
 
         /**
-         * The type should manage a subscope (e.g. child values). For a
+         * If a type explicitly is unqualified for dynamic dispatch.
          */
-
         this._dynamicDispatch = null;
+
+        /**
+         * Specifies the source node of the type.
+         * @type {?Node}
+         */
+         this.source;
     }
 
     /**
@@ -108,6 +120,7 @@ export default class ScopeTypeItem extends ScopeItem {
         superclass = ScopeTypeItem.RootClass,
         isInterface = false,
         mockType = null,
+        subscope,
         dynamicDispatch = null,
         ...opts
     } = {}) {
@@ -116,6 +129,7 @@ export default class ScopeTypeItem extends ScopeItem {
         this.interfaces = interfaces;
         this.superclass = superclass;
         this.isInterface = isInterface;
+        this.subscope = subscope;
         this.mockType = mockType;
         this._dynamicDispatch = dynamicDispatch;
     }

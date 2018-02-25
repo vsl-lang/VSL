@@ -29,7 +29,7 @@ export default function toLLVMType(type, context) {
     } else {
         throw new BackendError(
             `Not sure how to compile this type.`,
-            null
+            type.source
         );
     }
 }

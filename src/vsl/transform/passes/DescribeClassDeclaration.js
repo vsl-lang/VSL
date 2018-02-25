@@ -25,10 +25,13 @@ export default class DescribeClassDeclaration extends Transformation {
         let className = node.name.value;
         let type;
 
+        let subscope = node.statements.scope;
+
         let opts = {
             subscope: node.statements.scope,
             isInterface: false,
-            mockType: node.mockType
+            mockType: node.mockType,
+            subscope: subscopes
         };
 
         if (node.generics.length === 0) {
@@ -62,6 +65,7 @@ export default class DescribeClassDeclaration extends Transformation {
                 node, e.DUPLICATE_DECLARATION
             );
         } else {
+            type.source = node;
             node.scopeRef = type;
         }
     }

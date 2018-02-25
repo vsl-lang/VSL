@@ -11,7 +11,10 @@ export default class VSLScopeTransformer extends Transformer {
             // Checks, pretty important. Type checks are preformed by the
             // deductor.
             pass.RegisterTypeAlias,
-            pass.RegisterFunctionDeclaration
+            pass.RegisterFunctionDeclaration,
+
+            // Function annotation support
+            pass.DescribeInlineAnnotation
         ], context);
     }
 }

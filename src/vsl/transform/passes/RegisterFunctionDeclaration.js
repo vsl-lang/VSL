@@ -23,6 +23,12 @@ export default class RegisterFunctionDeclaration extends Transformation {
         let scope = node.parentScope.scope;
         let name = node.name.value;
 
+        let accessModifiers = node.access;
+
+        let isPublic = accessModifiers.includes('public');
+        let isPrivate = accessModifiers.includes('private');
+        let isLocal = accessModifiers.includes('local');
+
         // Handle -> Void.
         if (node.returnType instanceof t.Identifier && node.returnType.value !== "Void") {
             node.returnRef = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
@@ -51,6 +57,13 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 source: node,
                 returnType: node.returnRef
             }
+        );
+
+        // Add the access modifiers
+        type.accessModifier = (
+            isLocal ? 'local' :
+            isPublic ? 'public' :
+            isPrivate ? 'private' : 'local'
         );
 
         // Register the type in the parent scope
