@@ -7,24 +7,7 @@ import * as llvm from "llvm-node";
 
 
 /**
- * ## JavaScript
- * This is the JavaScript backend for VSL. It outputs (usually user-friendly)
- * ES6 JavaScript code which can be run.
- *
- * ### Entry
- * This provides the following entry points:
- *
- *  - **Start**: Run on program start. Compiles differently based on target.
- *    - `public func main() -> Void` run on start (IIFE)
- *    - `public func main(args: String[]) -> Void` run on start (node.js)
- *  - **Onload**: For browser runs on specific actions
- *    - `public func ready(document: Document, event: Event) -> Void` runs when
- *       the DOM has loaded.
- *    - `public func onload(document: Document, event: Event) -> Void` runs when
- *       the document has loaded.
- *    - `public func onload(window: Window, event: Event) -> Void` runs when the
- *       document window has loaded.
- *
+ * LLVM backend which directly compiles to LLVM bytecode.
  */
 export default class LLVMBackend extends Backend {
     /**
@@ -41,18 +24,34 @@ export default class LLVMBackend extends Backend {
         this.module = new llvm.Module('main', this.context);
     }
 
-    pregen() {
-    }
-
     /**
      * @override
      */
     *watchers() {
         yield* super.watchers();
+
+        // Sort in order of likely occurence
         yield new w.NoOp();
         yield new w.RootFunction();
         yield new w.ExpressionStatement();
+        yield new w.Literal();
         yield new w.FunctionCall();
+    }
+
+    /**
+     * Writes bitcode to file
+     * @param {string} file Output file
+     */
+    writeBitCodeTo(file) {
+        llvm.writeBitcodeToFile(this.module, file);
+    }
+
+    /**
+     * Returns bytecode
+     * @param {string} dump - Dump of byte code as string.
+     */
+    getByteCode() {
+        return this.module.print();
     }
 
     /**
@@ -66,9 +65,5 @@ export default class LLVMBackend extends Backend {
                 this
             ));
         }
-    }
-
-    postgen() {
-        this.write(this.module.print());
     }
 }

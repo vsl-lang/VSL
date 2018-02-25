@@ -33,7 +33,7 @@ export default class CallResolver extends TypeResolver {
      */
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         const args = this.node.arguments;
-        const argc = this.node.arguments.length;
+        const argc = args.length;
 
         // Negotiate the requested type for this identifier.
         let head = this.getChild(this.node.head);
@@ -48,6 +48,18 @@ export default class CallResolver extends TypeResolver {
                 default: return negotiate(type);
             }
         });
+
+        // (Partially) resolve all arguments
+        for (let i = 0; i < argc; i++) {
+            let argument = args[i];
+            this.getChild(argument.value).resolve((type) => {
+                switch (type) {
+                    // Right no they are no parent constraints. We'll resolve
+                    // that later.
+                    default: return negotiate(type);
+                }
+            });
+        }
 
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow

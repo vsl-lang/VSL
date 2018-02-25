@@ -184,10 +184,6 @@ export default class CompilationGroup {
      *
      * @param  {?Backend}  backend The backend which will manage
      *                             compilation. Do not reuse backends.
-     * @return {CompilationResult} An object describing all the
-     *                             compilation infos. See
-     *                             {@link CompilationResult} for more
-     *                             information.
      */
     async compile(backend) {
         // === 1: Parse ===

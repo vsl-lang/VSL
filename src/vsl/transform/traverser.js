@@ -17,7 +17,7 @@ import Node from '../parser/nodes/node';
  * @abstract
  */
 export default class Traverser {
-    
+
     /**
      * Instantiates a traverser object. Note: This must be subclassed to be
      * used. See {@link Transformer} or {@link ASTGarbageCollector} for more
@@ -31,7 +31,7 @@ export default class Traverser {
         /** @private */
         this.shouldProcess = shouldProcess;
     }
-    
+
     /**
      * Queues an AST to be traversed, this in turn calls the abstract function
      * `#receivedNode(parent:name:)` which can be used to determine what to do
@@ -65,7 +65,7 @@ export default class Traverser {
                 // If it's a node array. Then we also want to queue itself and queue
                 // the node itself so its children will be added.
                 this.processNode(ast, i);
-            
+
                 // Array has gotten smaller
                 if (ast.length < lastLength) {
                     lastLength = ast.length;
@@ -74,25 +74,25 @@ export default class Traverser {
                     // Requeue the further children
                     this.queue(ast[i]);
                 }
-                
+
                 // Notify that the node is finished if defined
                 this.finishedNode(ast, i);
             }
         } else if (ast instanceof Node) {
             let children = ast.children, name, child;
-             
+
             if (children) {
                 for (let i = 0; i < children.length; i++) {
                     name = children[i];
-                    
+
                     this.processNode(ast, name);
-                    
+
                     child = ast[ name ];
-                    
+
                     if (child != null) {
                         this.queue(child);
                     }
-                    
+
                     this.finishedNode(ast, name);
                 }
             }
@@ -100,7 +100,7 @@ export default class Traverser {
             throw new TypeError(`Unexpected AST node: ${ast} of type ${ast.constructor.name}`);
         }
     }
-    
+
     /**
      * Override this method if you'd like to process each node that comes
      * through. Don't forget to call `super.processNode`! You don't have to but
@@ -113,14 +113,17 @@ export default class Traverser {
      */
     processNode(parent: any, name: string) {
         let node = parent[name];
-        
+
         if (this.shouldProcess) {
-            if (node) node.parentNode = parent;
+            if (node) {
+                node.parentNode = parent;
+                node.relativeName = name;
+            }
         }
-        
+
         if (node instanceof Node) this.receivedNode(parent, name);
     }
-    
+
     /**
      * Called everytime the traverser encounters a node
      *
@@ -132,8 +135,8 @@ export default class Traverser {
     receivedNode(parent: Node | Node[], name: string) {
         throw new TypeError(`${this.constructor.name}: Did not implement required method #receivedNode(parent:name:)`);
     }
-    
-    
+
+
     /**
      * _Optional_ method which is called once the traverser finishes processing
      * a node's children

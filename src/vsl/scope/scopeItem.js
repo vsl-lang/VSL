@@ -135,7 +135,7 @@ export default class ScopeItem {
      * Returns unique name for scope item
      * @type {string}
      */
-    get unqiueName() {
+    get uniqueName() {
         return `${this.rootId}.$${this.id}`
     }
 }

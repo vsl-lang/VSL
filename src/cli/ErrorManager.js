@@ -1,4 +1,5 @@
 import ParserError from '../vsl/parser/parserError';
+import BackendWarning from '../vsl/backend/BackendWarning';
 import c from './colorSupport';
 
 /**
@@ -15,14 +16,14 @@ export default class ErrorManager {
          * @type {boolean}
          */
         this.shouldColor = shouldColor;
-        
+
         /**
          * prefix to prefix log messages with
          * @type {String}
          */
         this.prefix = "vsl: ";
     }
-    
+
     /**
      * Prints that the CLI itself had an error
      * @param  {string} message Error message
@@ -31,7 +32,7 @@ export default class ErrorManager {
         console.warn(this.prefix + message);
         process.exit(1);
     }
-    
+
     /**
      * Prints a module error.
      *
@@ -43,19 +44,19 @@ export default class ErrorManager {
         let moduleDescribedNameColored = this.shouldColor ?
             `\u001B[1m${moduleDescribedName}\u001B[0m` :
             moduleDescribedName;
-        
+
         let modulePrefixColor = this.shouldColor ?
             `\u001B[35mModule\u001B[0m` :
             `Module`;
-        
+
         let modulePrefix = modulePrefixColor + moduleDescribedNameColored + ": ";
         console.warn(this.setRed(this.prefix) + modulePrefix + error.message);
         console.warn(`  module @ ${obj.rootPath}`);
         process.exit(1);
     }
-    
+
     /**
-     * [handle description]
+     * Handles a VSL source error.
      * @param  {Object}  data
      * @param  {boolean} data.error        error message
      * @param  {string}  data.src          source file from error
@@ -64,22 +65,30 @@ export default class ErrorManager {
     handle({ error, src, exit = false } = {}) {
         let fileName = error.stream && error.stream.sourceName ?
                 `${error.stream.sourceName}` : "";
-        
+
         if (!error.position && error.node) error.position = error.node.position || null;
-        
+
         let position = error.position ? `${error.position.line + 1}:${error.position.column}` : "";
         let location = !(position || fileName) ? "" : ` (${[fileName, position].filter(Boolean).join(":")})`;
-        
+
 
         // Check if the node has positional information
         if (error.node) {
-            let name = error.name || "Compiler Error";
-            
-            this.rawError(
-                name,
-                error.message + location,
-                this._highlight(src, error.node.position)
-            )
+            let message = error.message + location;
+            let highlight = this._highlight(src, error.node.position);
+            if (error instanceof BackendWarning) {
+                this.rawWarning(
+                    "Warning",
+                    message,
+                    highlight
+                )
+            } else {
+                this.rawError(
+                    error.name || "Compiler Error",
+                    message,
+                    highlight
+                )
+            }
         }
         else if (error instanceof ParserError) {
             this.rawError(
@@ -91,19 +100,19 @@ export default class ErrorManager {
         else {
             throw error;
         }
-        
+
         if (exit === true) {
             process.exit(1);
         }
     }
-    
+
     /** @private */
     _repeat(str, len) {
         let res = "";
         while(len --> 0) res += str;
         return res;
     }
-    
+
     /** @private */
     _leftPad(str, len) {
         var pad = len - str.length, i = "";
@@ -111,38 +120,38 @@ export default class ErrorManager {
         while(pad--) i += " ";
         return i + str;
     }
-    
+
     /** @private */
     _highlight(code, pos) {
         let lines = code.split(/\r?\n/);
-        
+
         let startLine = Math.max(0, pos.line - 2);
         let endLine   = Math.min(lines.length - 1, pos.line + 2);
-        
+
         let prefix = this.setYellow(" | ");
         let lineIndicator = "> ";
-        
+
         let maxLineLength = (endLine + "").length + 2;
         let res = [];
-        
+
         for (let i = startLine; i <= endLine; i++) {
             let isLine = i === pos.line ? lineIndicator : "";
             let start = this.setYellow(this._leftPad(`${isLine}${i + 1}`, maxLineLength));
-            
+
             res.push(start + prefix + lines[i]);
             if (i === pos.line) {
                 let carets = this.setYellow(this._repeat("^", pos.length));
-                
+
                 res.push(
                     this._repeat(" ", maxLineLength ) + prefix +
                     this._repeat(" ", pos.column) + carets
                 );
             }
         }
-        
+
         return res.join("\n");
     }
-    
+
     /** @private */
     setYellow(text) {
         if (!this.shouldColor) return text;
@@ -152,7 +161,13 @@ export default class ErrorManager {
             "33"
         }m${text}\u001B[0m`
     }
-    
+
+    /** @private */
+    setEmYellow(text) {
+        if (!this.shouldColor) return text;
+        return `\u001B[1;33m${text}\u001B[0m`
+    }
+
     /** @private */
     setRed(text) {
         if (!this.shouldColor) return text;
@@ -162,7 +177,7 @@ export default class ErrorManager {
             "31"
         }m${text}\u001B[0m`
     }
-    
+
     /**
      * Prints a raw error
      *
@@ -172,6 +187,18 @@ export default class ErrorManager {
      */
     rawError(type, title, data) {
         process.stderr.write(`${this.setRed(type)}: ${title}\n\n`)
+        process.stderr.write(data.replace(/^|\n/g, "$&    ") + "\n\n");
+    }
+
+    /**
+     * Prints a raw error
+     *
+     * @param {string} type  String describing type
+     * @param {string} title Main overview of error
+     * @param {string} data  Following lines
+     */
+    rawWarning(type, title, data) {
+        process.stderr.write(`${this.setEmYellow(type)}: ${title}\n\n`)
         process.stderr.write(data.replace(/^|\n/g, "$&    ") + "\n\n");
     }
 }

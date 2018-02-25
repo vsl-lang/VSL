@@ -48,6 +48,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
             name,
             {
                 args: argList,
+                source: node,
                 returnType: node.returnRef
             }
         );

@@ -3,6 +3,7 @@ import * as modes from './mode';
 
 const subcommands = Object.create(null);
 subcommands["run"]   = modes.Default;
+subcommands["install"] = modes.Install;
 subcommands["bindgen"] = modes.Bindgen;
 subcommands["debugsrc"] = modes.Debugsrc;
 

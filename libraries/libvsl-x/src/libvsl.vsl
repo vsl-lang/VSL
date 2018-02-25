@@ -1,2 +1,10 @@
 @backend(llvm)
 public func puts(string: CString) -> Int32 external(puts)
+
+typealias FILE = OpaquePointer
+
+@backend(llvm)
+public func fputs(data: ByteSequence, file: FILE) external(fputs)
+
+@backend(llvm)
+public func write(fd: Int, data: ByteSequence, size: UInt) external(write)

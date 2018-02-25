@@ -155,7 +155,6 @@ tokenMatchers[VSLScope.Normal] = [
     ['[', passThrough],
     [']', passThrough],
 
-    ['var', passThrough],
     ['let', passThrough],
     ['final', passThrough],
     ['const', passThrough],

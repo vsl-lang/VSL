@@ -48,7 +48,7 @@ export default class RootResolver extends TypeResolver {
         // `b` is an ExpressionStatement, `T` is what this would give
         const negotiator = (type) => {
             switch (type) {
-                case ConstraintType.TransformationContext: return this.context;
+                case ConstraintType.TransformationContext: return this.context || negotiate(type);
                 default: return negotiate(type);
             }
         };

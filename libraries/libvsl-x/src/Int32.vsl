@@ -3,9 +3,7 @@
 public class Int32 {
 
     @backend(llvm)
-    public func +(lhs: Int, rhs: Int) -> Int native {
-        ret i32 ( add i32 %1, %2 )
-    }
+    public func +(lhs: Int, rhs: Int) -> Int native {iadd}
 
 }
 

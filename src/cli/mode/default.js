@@ -23,6 +23,8 @@ import ModuleError from '../../modules/ModuleError';
 
 import LLVMBackend from '../../vsl/backend/llvm';
 
+import { spawn } from 'child_process';
+
 const INSTALLATION_PATH = path.join(__dirname, '../../..');
 const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl-x";
@@ -52,7 +54,7 @@ function prompt(string) {
 }
 
 export default class Default extends CLIMode {
-    usage = "vsl [options] <module | files> [ -- args ]\nvsl [options] <module | files> -c out.bc\nvsl"
+    usage = "vsl [options] <module | files> [ -- args ]\nvsl"
 
     constructor() {
         rl = readline.createInterface({
@@ -100,7 +102,8 @@ export default class Default extends CLIMode {
     }
 
     appInfo() {
-        return `Subcomamnds: ${this.subcommands.join(", ")}`
+        return `Subcommands: ${this.subcommands.join(", ")}\n` +
+            `Performs JIT execution, use \`vsl build\` to get compiled files.`;
     }
 
     run(args, subcommands) {
@@ -170,11 +173,24 @@ export default class Default extends CLIMode {
 
         if (directory) {
             let output = this.createStream();
-            this.executeModule(directory, output, true)
-                .then((index) => process.exit(0));
+            let backend = new LLVMBackend(output);
+            this.executeModule(directory, output, backend)
+                .then((index) => {
+                    process.exit(0);
+                });
         } else if (files.length > 0) {
             this.fromFiles(files)
-                .then((index) => process.exit(0));
+                .then((backend) => {
+                    let lli = spawn('lli', [], {
+                        stdio: ['pipe', 'inherit', 'inherit']
+                    });
+
+                    lli.stdin.write(backend.getByteCode());
+                    lli.stdin.end();
+                    lli.on('exit', () => {
+                        process.exit(0);
+                    });
+                });
         } else if (repl) {
             this.launchREPL();
         } else {
@@ -201,7 +217,7 @@ export default class Default extends CLIMode {
         );
     }
 
-    async executeModule(directory, stream, isPrimaryModule = false) {
+    async executeModule(directory, stream, primaryBackend = null) {
         let dirpath = path.resolve(directory);
 
         if (this.fileMap.has(dirpath)) return this.fileMap.get(dirpath);
@@ -246,9 +262,8 @@ export default class Default extends CLIMode {
 
         try {
             // Only the primary module should be compiled to a stream
-            if (isPrimaryModule) {
-                let backend = new LLVMBackend(stream);
-                await index.compile(backend);
+            if (primaryBackend) {
+                await index.compile(primaryBackend);
             } else {
                 await index.compile();
             }
@@ -307,7 +322,8 @@ export default class Default extends CLIMode {
 
         let stream = this.createStream();
         let backend = new LLVMBackend(stream);
-        return await index.compile();
+        await index.compile(backend);
+        return backend;
     }
 
     async launchREPL() {
@@ -355,7 +371,7 @@ export default class Default extends CLIMode {
             // Create index + other execution info.
             let index = new CompilationIndex(group, [stl]);
 
-            let output = this.createStream();
+            let output = this.createStream(() => lastCalls + inputString);
             let backend = new LLVMBackend(output);
 
             try {
@@ -368,11 +384,7 @@ export default class Default extends CLIMode {
             }
 
             if (worked) {
-                let data;
-                while ((data = await output.receive()) !== null) {
-                    process.stdout.write(data);
-                }
-                process.stdout.write('\n');
+                console.log(backend.getByteCode());
                 lastCalls += inputString + '\n';
             }
 
@@ -384,12 +396,13 @@ export default class Default extends CLIMode {
 
     /**
      * Creates a {@link CompilationStream} for output
+     * @param {Function} srcCallback - Callback to return source.
      * @return {CompilationStream}
      */
-    createStream() {
+    createStream(srcCallback = () => void 0) {
         let stream = new CompilationStream();
         stream.registerWarningListener((warning) => {
-            this.warningListener(warning);
+            this.warningListener(warning, srcCallback());
         });
         return stream;
     }
@@ -397,17 +410,14 @@ export default class Default extends CLIMode {
     /**
      * Listens for warings to a {@link CompilationStream}. Bind first.
      * @param {BackendWarning} warning warning from backend.
+     * @param {string} src - relevant source
      */
-    warningListener(warning) {
-        if (this.color) {
-            process.stdout.write('\u001B[1;33mWarning: \u001B[0m');
-        } else {
-            process.stdout.write('Warning: ');
-        }
-
-        process.stdout.write(warning.message);
-        process.stdout.write('\n');
-        // TODO: show node
+    warningListener(warning, src) {
+        this.error.handle({
+            error: warning,
+            src: src,
+            exit: false
+        });
     }
 
     async handle(error, src, { exit = false } = {}) {

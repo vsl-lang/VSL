@@ -36,6 +36,12 @@ export default class ScopeFuncItem extends ScopeItem {
         this.generated;
 
         /**
+         * The original referencing node.
+         * @type {Node}
+         */
+        this.source;
+
+        /**
          * The relative access modifier of the function. This can be:
          *
          *  - public
@@ -49,9 +55,10 @@ export default class ScopeFuncItem extends ScopeItem {
     }
 
     /** @override */
-    init({ args, returnType = null, ...opts }) {
+    init({ args, source, returnType = null, ...opts }) {
         super.init(opts);
         this.args = args;
+        this.source = source;
         this.returnType = returnType?.resolved();
 
         this.generated = false;
