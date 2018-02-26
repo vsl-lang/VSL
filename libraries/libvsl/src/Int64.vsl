@@ -1,7 +1,0 @@
-/**
- * Itself refers to a 64-bit integer. Generally used to refer to a memory
- * address. Extends `Int` meaning exact same functionality just different size.
- */
-public class Int64: SignedNumber<Int64> {
-
-}

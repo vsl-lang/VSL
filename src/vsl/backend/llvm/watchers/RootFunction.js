@@ -185,6 +185,11 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
                 regen(i, statements, newContext);
             }
 
+            // Add exit block for void functions.
+            if (!scopeItem.returnType) {
+                builder.createRetVoid();
+            }
+
             // Add `ret 0` for entry case
             if (isEntry) {
                 builder.createRet(

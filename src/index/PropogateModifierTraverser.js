@@ -31,14 +31,14 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
      */
     constructor(config, callback) {
         super(true);
-        
+
         /** @private */
         this.config = config;
-        
+
         /** @private */
         this.callback = callback;
     }
-    
+
     /**
      * Do NOT pass a top-level config. Rather pass an array of root ASTs.
      *
@@ -52,25 +52,27 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         if (parentScope && parentScope.rootScope !== true) return;
         else super.queue(ast);
     }
-    
+
     /** @override */
     receivedNode(parent, name) {
         let node = parent[name];
-        
+
         // Only want to run for top-level declarations.
         if (node.parentScope?.rootScope !== true) return;
+
+        // Propogate declarations.
         if (!(node instanceof DeclarationStatement)) return;
-        
+
         let accessModifiers = node.access;
         const is = (modifier) => accessModifiers.indexOf(modifier) > -1;
         const shouldPropogate = (modifier) =>
             this.config[modifier] === Behavior.Propogate;
-        
+
         if (is('public')) if (!shouldPropogate('public')) return;
         else if (is('private'))   if (!shouldPropogate('private'))   return;
         else if (is('protected')) if (!shouldPropogate('protected')) return;
         else if (!shouldPropogate('none')) return;
-        
+
         let ref = node.scopeRef;
         if (ref !== null) {
             this.callback(ref);

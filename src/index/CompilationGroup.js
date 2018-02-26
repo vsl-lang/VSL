@@ -255,6 +255,7 @@ export default class CompilationGroup {
         // This will finish generating the type scope. The next transformer
         // performs type deduction.
         new VSLScopeTransformer(this.context).queue(block);
+
         // === 5B: Scope Sharing ===
         // Hook all the news ASTs together (again)
         new PropogateModifierTraverser(

@@ -1,5 +1,0 @@
-@primitive(Integer)
-@_mockType(i8)
-public class Int8 {
-
-}

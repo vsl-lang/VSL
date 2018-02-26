@@ -27,7 +27,7 @@ import { spawn } from 'child_process';
 
 const INSTALLATION_PATH = path.join(__dirname, '../../..');
 const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
-const DEFAULT_STL = "libvsl-x";
+const DEFAULT_STL = "libvsl";
 
 let interrupt = null;
 let rl;
@@ -185,6 +185,7 @@ export default class Default extends CLIMode {
                         stdio: ['pipe', 'inherit', 'inherit']
                     });
 
+                    console.log(backend.getByteCode())
                     lli.stdin.write(backend.getByteCode());
                     lli.stdin.end();
                     lli.on('exit', () => {
@@ -300,8 +301,9 @@ export default class Default extends CLIMode {
     async fromFiles(files) {
         let compilationGroup = new CompilationGroup();
 
+        // TODO: Don't make data global and use stream to get data.
+        let data;
         for (let i = 0; i < files.length; i++) {
-            let data;
             try {
                 data = await fs.readFile(files[i], { encoding: 'utf-8' });
             } catch(e) {
@@ -320,7 +322,7 @@ export default class Default extends CLIMode {
             [await this.loadSTL()]
         );
 
-        let stream = this.createStream();
+        let stream = this.createStream(() => data);
         let backend = new LLVMBackend(stream);
         await index.compile(backend);
         return backend;

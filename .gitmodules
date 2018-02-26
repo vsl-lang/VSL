@@ -4,3 +4,6 @@
 [submodule "libraries/Crypto/openssl"]
 	path = libraries/Crypto/openssl
 	url = git@github.com:openssl/openssl.git
+[submodule "libraries/libvsl"]
+	path = libraries/libvsl
+	url = git@github.com:vsl-lang/libvsl.git

@@ -9,7 +9,7 @@ import Scope from '../../scope/scope';
  * `statements:` field with null
  */
 export default class CodeBlock extends Node {
-    
+
     /**
      * Creates a scoped series of expressions
      *
@@ -18,10 +18,10 @@ export default class CodeBlock extends Node {
      */
     constructor (statements: any[], position: Object) {
         super(position);
-        
+
         /** @type {Expression[]} */
         this.statements = statements;
-        
+
         /**
          * This is a hashmap describing the child scope and it's variables. It
          * contains both variable information. This is primarially to be used by
@@ -31,39 +31,45 @@ export default class CodeBlock extends Node {
          * @type {Scope}
          */
         this.scope = new Scope();
-        
+
         /**
          * True if this is the top-level main scope of a file. Note: a global or
          * shared scope for this is false.
          * @type {boolean}
          */
         this.rootScope = false;
-        
+
         /**
          * Automatically populated by import visitors. This is the list of
          * lazyHooks this will have
          * @type {ImportStatement[]}
          */
         this.lazyHooks = [];
-        
+
         /**
          * Sometimes references a compilation stream for top-level modules.
          * @type {?CompilationStream}
          */
         this.stream = null;
+
+        /**
+         * True if primary module
+         * @type {boolean}
+         */
+        this.isPrimaryModule = false;
     }
-    
+
     clone() {
         return new CodeBlock(
             this.statements.map(node => clone())
         )
     }
-    
+
     /** @override */
     get children() {
         return ['statements'];
     }
-    
+
     /** @override */
     toString() {
         return `{\n${this.statements.map(i => "    " + i.toString().split("\n").join("\n    ")).join("\n")}\n}`

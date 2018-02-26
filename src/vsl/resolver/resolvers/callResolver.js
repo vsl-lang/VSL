@@ -4,6 +4,8 @@ import TypeResolver from '../typeResolver';
 
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 
+import e from '../../errors';
+
 /**
  * Resolves and chooses the correct function to call of the head. This is  NOT
  * an atomic resolution
@@ -69,19 +71,22 @@ export default class CallResolver extends TypeResolver {
             );
         }
 
-        let validCandidates = [];
+        // List of working candidates
+        let workingCandidates = [];
+
+        // This is a list of candidate => amount of types a prec type is used.
+        let candidatePrecTypeMap = [];
+
+        // This works by:
+        //  - Go through each candidates
 
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
         main: for (let i = 0; i < candidates.length; i++) {
             const candidate = candidates[i];
 
-            // TODO: add optional support
-            // Right now length should be the exact same
-            if (candidate.args.length !== argc) continue;
-
-            // Stores object of { matchingType, isA  mbiguous }
-            let argTypeData = [];
+            // Amount of times we chose a prec type over normal.
+            let precedencePreferalCount = 0;
 
             // If same arg length & function name we'll have to go through each
             // arg and check for compatibility.
@@ -97,7 +102,6 @@ export default class CallResolver extends TypeResolver {
 
                 // Will store the candidate arg type for the given arg.
                 let workingArgType = null;
-                let isAmbiguous = argTypes.length === 1;
 
                 // Go through each type and check which conflicts
                 // NOTE: ambiguous types should NEVER be related in the
@@ -112,10 +116,33 @@ export default class CallResolver extends TypeResolver {
                 // If we couldn't find a matching type, then this overload
                 // doesn't work.
                 if (workingArgType === null) continue main;
+
+                // If it was a prec type we will specify that we are using a
+                // prec type in this case.
+                if (workingArgType.precType === true) {
+                    precedencePreferalCount += 1;
+                }
             }
+
+
+            // If we are here then the two functions match.
+            workingCandidates.push(candidate);
+            candidatePrecTypeMap.push(precedencePreferalCount);
         }
 
-
-        // Notify head that type candidates have been restricted
+        let maxCandidateScore = Math.max(...candidatePrecTypeMap);
+        let maxCandidate = null;
+        for (let i = 0; i < workingCandidates.length; i++) {
+            if (candidatePrecTypeMap[i] === maxCandidateScore) {
+                if (maxCandidate !== null) {
+                    this.emit(
+                        `Ambiguous use of function.`,
+                        e.AMBIGUOUS_REFERENCE
+                    )
+                } else {
+                    maxCandidate = workingCandidates[i];
+                }
+            }
+        }
     }
 }

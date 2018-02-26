@@ -1,7 +1,0 @@
-@primitive(Integer)
-@_mockType(ui32)
-public class UInt32 {
-
-}
-
-public typealias UInt = UInt32

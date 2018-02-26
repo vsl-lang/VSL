@@ -1,5 +1,0 @@
-@primitive(Integer)
-@_mockType(ui64)
-public class UInt64 {
-
-}

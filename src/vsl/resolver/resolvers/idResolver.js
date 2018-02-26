@@ -56,7 +56,13 @@ export default class IdResolver extends TypeResolver {
 
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,
-            let candidates = scope.getAll(rootId);
+            let candidates = (
+                scope.getAll(rootId)
+                    .filter(item =>
+                        item instanceof ScopeFuncItem &&
+                        item.args.length === callArgs
+                    )
+            );
 
             // If they are 0 candidates that means there is no function which
             // actually has the name

@@ -69,7 +69,13 @@ export default class Scope {
         let items = (this.ids.get(id) || []).slice();
 
         this.parentScope?.getAll(id).forEach(
-            item => items.push(item)
+            item => {
+                let isDuplicate = items.some(
+                    existing => existing.equal(item.getQuery())
+                );
+
+                if (!isDuplicate) items.push(item);
+            }
         );
 
         return items;
