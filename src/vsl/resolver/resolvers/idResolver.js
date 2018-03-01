@@ -1,9 +1,11 @@
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
+import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeForm from '../../scope/scopeForm';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
+import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 
 import e from '../../errors';
 
@@ -105,12 +107,12 @@ export default class IdResolver extends TypeResolver {
         }
 
         // And this sets the candidates to the same one the ID had
-        this.node.typeCandidates = [ result ];
+        const typeCandidates = [ new TypeCandidate(result.type) ];
 
         // Filter amongst response
-        this.mutableIntersect(response, this.node.typeCandidates);
+        this.mutableIntersect(response, typeCandidates);
 
-        if (this.node.typeCandidates.length === 0) {
+        if (typeCandidates.length === 0) {
             this.emit(
                 `Use of ${rootId} has no types which it can be deducted to\n` +
                 `in this context. This means the variable is one type but  ` +
@@ -118,5 +120,11 @@ export default class IdResolver extends TypeResolver {
                 e.CANNOT_RESOLVE_IDENTIFIER
             );
         }
+
+        if (typeCandidates.length === 1) {
+            this.node.reference = result;
+        }
+
+        return typeCandidates;
     }
 }

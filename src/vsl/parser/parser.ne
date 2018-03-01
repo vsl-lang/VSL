@@ -25,6 +25,21 @@ const NodeTypes = require('./vsltokentype').default,
   rewrap = d => [d[0]],
   mid = d => d[0][0],
   importMark = Symbol('import');
+
+// State management
+let state = {
+    inFunction: false
+};
+
+const onlyState = (stateName, callback) =>
+    (data, location, reject) =>
+        state[stateName] ? callback(data, location, reject) : reject;
+
+const setState = (stateName, value) =>
+    (data, location, reject) => {
+        state[stateName] = value;
+        return data[0];
+    }
 %}
 
 @lexer lexer
@@ -70,6 +85,7 @@ statement
     | BlockExpression      {% id %}
 #    | CommandChain         {% id %}
     | TypeAlias            {% id %}
+    | ReturnStatement      {% onlyState('inFunction', id) %}
 
 # ============================================================================ #
 #                                Control Flow                                  #
@@ -95,6 +111,11 @@ WhileStatement
    -> "while" _ InlineExpression _ CodeBlockBody {%
         (d, l) => new t.WhileStatement(d[2], d[4], l)
     %}
+
+ReturnStatement
+   -> "return" (_ BlockExpression {% nth(1) %}):? {%
+       (data, location) => new t.ReturnStatement(data[1], location)
+   %}
 
 # ============================================================================ #
 #                            Classes and Interfaces                            #
@@ -262,7 +283,9 @@ ArgumentDocumentation
     ) %}
 
 FunctionBody
-   -> "{" (CodeBlock[statement {% id %}] {% id %}) "}" {% nth(1) %}
+   -> ("{" {% setState('inFunction', true) %})
+      (CodeBlock[statement {% id %}] {% id %})
+      ("}" {% setState('inFunction', false) %}) {% nth(1) %}
     | "external" "(" %identifier ")" {%
         (data, location) => new t.ExternalMarker(data[2][0], location)
     %}

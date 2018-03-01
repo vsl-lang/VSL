@@ -5,6 +5,7 @@ import t from '../../parser/nodes';
 
 import ScopeForm from '../../scope/scopeForm';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
+import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeFuncItemArgument from '../../scope/items/scopeFuncItemArgument';
 
 import TypeLookup from '../../typeLookup/typeLookup';
@@ -29,6 +30,8 @@ export default class RegisterFunctionDeclaration extends Transformation {
         let isPrivate = accessModifiers.includes('private');
         let isLocal = accessModifiers.includes('local');
 
+        let subscope = node.statements.scope;
+
         // Handle -> Void.
         if (node.returnType instanceof t.Identifier && node.returnType.value !== "Void") {
             node.returnRef = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
@@ -38,15 +41,38 @@ export default class RegisterFunctionDeclaration extends Transformation {
         let argList = node.args.map(
             ({
                 typedId: {
-                    identifier: argName,
+                    identifier: argNameNode,
                     type: argTypeNode
                 }
-            }, index, all) => new ScopeFuncItemArgument(
-                argName,
-                new TypeLookup(argTypeNode, vslGetTypeChild).resolve(scope),
-                false,
-                all[index]
-            )
+            }, index, all) => {
+                const argName = argNameNode.value;
+                const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(scope),
+                    sourceNode = all[index];
+                const isOptional = false;
+
+                // If this is a statement function, we'll add the arg to
+                // subscope.
+                if (subscope) {
+                    let aliasItem = new ScopeAliasItem(
+                        ScopeForm.definite,
+                        argName,
+                        {
+                            source: sourceNode,
+                            type: argType
+                        }
+                    );
+
+                    subscope.set(aliasItem);
+                    sourceNode.aliasRef = aliasItem;
+                }
+
+                return new ScopeFuncItemArgument(
+                    argName,
+                    argType,
+                    isOptional,
+                    sourceNode
+                );
+            }
         );
 
         let type = new ScopeFuncItem(

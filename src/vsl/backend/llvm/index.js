@@ -31,11 +31,13 @@ export default class LLVMBackend extends Backend {
         yield* super.watchers();
 
         // Sort in order of likely occurence
-        yield new w.NoOp();
-        yield new w.RootFunction();
-        yield new w.ExpressionStatement();
-        yield new w.Literal();
+        yield new w.Identifier();
         yield new w.FunctionCall();
+        yield new w.Literal();
+        yield new w.ExpressionStatement();
+        yield new w.ReturnStatement();
+        yield new w.RootFunction();
+        yield new w.NoOp();
     }
 
     /**

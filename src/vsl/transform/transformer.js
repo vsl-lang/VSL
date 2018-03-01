@@ -7,6 +7,9 @@ import t from '../parser/nodes';
 
 import hrtime from 'browser-process-hrtime';
 
+const MS_PER_NS = 1e-6;
+const MS_PER_S = 1e3;
+
 /**
  * Takes an AST and transforms it according to a series of transformations
  *
@@ -70,7 +73,7 @@ import hrtime from 'browser-process-hrtime';
  * identifier to declare a variable as.
  */
 export default class Transformer extends ScopeTraverser {
-    
+
     /**
      * Creates a new Transformer with the given passes and context. Reference
      * {@link TransformationContext} for more information on the context itself.
@@ -83,17 +86,17 @@ export default class Transformer extends ScopeTraverser {
      */
     constructor(passes: Transformation[], context: TransformationContext = new TransformationContext()) {
         super(true);
-        
+
         /**
          * Contains a list of all the transformations the transformer will use.
          *
          * @type {Transformation[]}
          */
         this.passes = passes;
-        
+
         /** @private */
         this.time = null;
-        
+
         /**
          * DO NOT directly modify. Use `queue` or such to modify. Exposed
          * primarially for performance and GC reasons.
@@ -110,7 +113,7 @@ export default class Transformer extends ScopeTraverser {
          */
         this.context = context;
     }
-    
+
     /**
      * Queues an AST to be parsed, calls `transform(ast:)` and automatically
      * handles transformation distribution. Therefore, this is the reccomended
@@ -130,23 +133,23 @@ export default class Transformer extends ScopeTraverser {
     queue(ast: any) {
         super.queue(ast);
     }
-     
+
     /** @override */
     receivedNode(parent: Node | Node[], name: string) {
         // Add to queue
         this.appendNodeQueue(parent, name);
     }
-     
+
     /**
      * Adds item to the end node queue (reccomended).
      */
     appendNodeQueue(parent: Node | Node[], name: string | number) {
         parent[name].queueQualifier = this.nodeQueue.length;
-        
+
         this.nodeQueue.push([ parent[name], parent, name ]);
         this.didUpdateQueue()
     }
-    
+
     /**
      * Handles the queue items
      * @private
@@ -159,7 +162,7 @@ export default class Transformer extends ScopeTraverser {
             this.transform(node, parent, item);
         }
     }
-    
+
     /**
      * Queues a given node for transformation.
      *
@@ -178,7 +181,7 @@ export default class Transformer extends ScopeTraverser {
     queueThen(node: Node, parent: parent, name: any, transformation: Transformation) {
         this.transform_once(node, parent, name, transformation);
     }
-    
+
     /**
      * Transform the AST accordi
 ng to the setup transformer. This is recursively
@@ -195,9 +198,7 @@ ng to the setup transformer. This is recursively
      * var final = new VSLTransformer(VSLTransformer.default).transform(AST);
      */
     transform(ast: any, parent: parent, name: any, passes: Transformation[] = this.passes) {
-        
-        let t = hrtime();
-        
+
         for (let i = 0; i < passes.length; i++) {
             let result = this.transform_once(
                 ast,
@@ -205,23 +206,23 @@ ng to the setup transformer. This is recursively
                 name,
                 passes[i]
             );
-            
+
             if (result === false) {
                 let newInstance = parent[name];
-                
+
                 if (newInstance) {
                     // Requeue with remaining transformations. Excluding current
                     let queuedTransforms = passes.slice(i + 1);
                     if (queuedTransforms.length > 0)
                         this.transform(parent[name], parent, name, queuedTransforms);
                 }
-                
+
                 break;
             }
         }
-        
+
     }
-    
+
     /**
      * Transforms with single transformer.
      *
@@ -235,18 +236,33 @@ ng to the setup transformer. This is recursively
         // Setup the transformation
         let transformation = new pass();
         let type = transformation.type;
-        
+
         // Ensure ast is of the correct type
         // otherwise stop processing the node
         if (!(type === null || ast instanceof type))
             return false;
-        
+
+        let startTime = hrtime();
+
         // Call transformation
         transformation.modify(ast, astTool);
-        
+
+        let elapsed = hrtime(startTime);
+
+        if (this.context) {
+            let transformationName = transformation.name,
+                benchmarks,
+                msElapsed = elapsed[0] * MS_PER_S + elapsed[1] * MS_PER_NS;
+            if (benchmarks = this.context.benchmarks.get(transformationName)) {
+                benchmarks.push(msElapsed);
+            } else {
+                this.context.benchmarks.set(transformationName, [msElapsed]);
+            }
+        }
+
         // Get new node
         let result = parent[name];
-        
+
         return ast === result;
     }
 }

@@ -66,7 +66,7 @@ export default class Transformation {
         /** @type {string} */
         this.name = name;
     }
-    
+
     /**
      * Modifies a given AST fragment with the `tool`.
      *

@@ -21,8 +21,16 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
         const backend = context.backend;
         const scopeItem = node.scopeRef;
 
+        const nodeArgs = node.args;
+
         const returnRef = scopeItem.returnType;
         const argsRef = scopeItem.args;
+
+        const llvmFuncName = getFunctionName(scopeItem);
+
+        // Check if this has already been generated
+        const callee = backend.module.getFunction(llvmFuncName);
+        if (callee) return callee;
 
         // This specifies if the function should be compiled publically.
         // This means it will be visible externally. When not the case, it will
@@ -81,7 +89,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             func = llvm.Function.create(
                 functionType,
                 llvm.LinkageTypes.ExternalLinkage,
-                getFunctionName(scopeItem),
+                llvmFuncName,
                 backend.module
             );
 
@@ -157,9 +165,16 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             func = llvm.Function.create(
                 functionType,
                 linkage,
-                getFunctionName(scopeItem),
+                llvmFuncName,
                 backend.module
             );
+
+            const llvmFuncArgs = func.getArguments();
+
+            // Add the refs to each arg.
+            for (let i = 0; i < nodeArgs.length; i++) {
+                nodeArgs[i].aliasRef.backendRef = llvmFuncArgs[i];
+            }
 
             // Add the appropriate attribute if a @inline tag exists
             if (shouldInline && !isEntry) {
@@ -186,7 +201,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             }
 
             // Add exit block for void functions.
-            if (!scopeItem.returnType) {
+            if (!scopeItem.returnType && !isEntry) {
                 builder.createRetVoid();
             }
 

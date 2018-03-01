@@ -168,6 +168,8 @@ tokenMatchers[VSLScope.Normal] = [
     ['static', passThrough],
     ['lazy', passThrough],
 
+    ['return', passThrough],
+
     ['public', passThrough],
     ['private', passThrough],
     ['readonly', passThrough],

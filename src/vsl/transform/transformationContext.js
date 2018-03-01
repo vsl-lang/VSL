@@ -31,6 +31,12 @@ export default class TransformationContext {
          * @type {string}
          */
         this.backendName = backendName;
+
+        /**
+         * Stores a timing list of each operation.
+         * @type {Map}
+         */
+        this.benchmarks = new Map();
     }
 
     /**

@@ -144,5 +144,16 @@ export default class CallResolver extends TypeResolver {
                 }
             }
         }
+
+        if (maxCandidate === null) {
+            this.emit(
+                `Call to function does not match any valid candidates.`,
+                e.UNKNOWN_REF
+            );
+        } else {
+            // If we have succesfully found the one correct candidate...
+            this.node.headRef = maxCandidate;
+            return [maxCandidate];
+        }
     }
 }

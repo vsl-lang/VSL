@@ -75,6 +75,12 @@ export default class ScopeItem {
          * @type {[type]}
          */
         this.id;
+
+        /**
+         * Associate a value (for backends) with the scope item.
+         * @type {Object}
+         */
+        this.backendRef = null;
     }
 
     /**

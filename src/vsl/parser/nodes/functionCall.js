@@ -23,20 +23,25 @@ export default class FunctionCall extends Node {
 
         /** @type {ArgumentCall[]} */
         this.arguments = args;
+
+        /**
+         * @type {ScopeFuncItem}
+         */
+        this.headRef = null;
     }
-    
+
     clone() {
         return new FunctionCall(
             this.head.clone(),
             this.arguments.map(arg => arg.clone())
         )
     }
-    
+
     /** @override */
     get children () {
         return ['head', 'arguments'];
     }
-    
+
     /** @override */
     toString() {
         return `${this.head}(${this.arguments.join(', ')})`;

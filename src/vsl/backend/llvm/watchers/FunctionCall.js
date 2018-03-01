@@ -14,21 +14,21 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
         // Get list of possible overloads
         // at this point there should only beo ne
-        const calleeList = node.head.typeCandidates;
-        if (calleeList.length !== 1) {
+        const functionRef = node.headRef;
+
+        if (functionRef === null) {
             throw new BackendError(
                 `Function call is ambiguous. Multiple possible references.`,
                 node.head
             );
         }
 
-        const calleeRef = calleeList[0],
-            calleeName = getFunctionName(calleeRef);
+        const calleeName = getFunctionName(functionRef);
         let callee = backend.module.getFunction(calleeName);
 
         // Check if callee is generated yet. If not we'll generate it.
         if (!callee) {
-            let calleeNode = calleeRef.source,
+            let calleeNode = functionRef.source,
                 parent = calleeNode.parentNode,
                 name = calleeNode.relativeName;
 

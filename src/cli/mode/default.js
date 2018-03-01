@@ -25,6 +25,8 @@ import LLVMBackend from '../../vsl/backend/llvm';
 
 import { spawn } from 'child_process';
 
+import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
+
 const INSTALLATION_PATH = path.join(__dirname, '../../..');
 const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 const DEFAULT_STL = "libvsl";
@@ -94,6 +96,10 @@ export default class Default extends CLIMode {
                 ["-Wno"                  , "Disables all warnings, also prevents " +
                                            "relevent FIX-ITs from activating",       { warn: false }],
                 ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }]
+            ]],
+            ["Debugging Options", [
+                ["--perf-breakdown"      , "Offers performance breakdown on what " +
+                                           "parts of transformation time is spent.", { perfBreakdown: true }]
             ]]
         ]);
 
@@ -119,6 +125,8 @@ export default class Default extends CLIMode {
         let color       = tty.isatty(1);
         let interactive = tty.isatty(0) && tty.isatty(1);
 
+        let perfBreakdown = false;
+
         let stl = DEFAULT_STL;
 
         for (let i = 0; i < args.length; i++) {
@@ -139,7 +147,7 @@ export default class Default extends CLIMode {
                 if (flagInfo.repl) repl = flagInfo.repl;
                 if (flagInfo.color) color = flagInfo.color;
                 if (flagInfo.interactive) interactive = flagInfo.interactive;
-
+                if (flagInfo.perfBreakdown) perfBreakdown = true;
                 if (flagInfo.stl) stl = args[++i];
                 if (flagInfo.nostl) stl = false;
             } else {
@@ -171,11 +179,15 @@ export default class Default extends CLIMode {
 
         this.stl = stl;
 
+        this.perfBreakdown = perfBreakdown;
+
         if (directory) {
             let output = this.createStream();
             let backend = new LLVMBackend(output);
             this.executeModule(directory, output, backend)
                 .then((index) => {
+                    this.postCompilation(index.root);
+                    console.log(backend.getByteCode());
                     process.exit(0);
                 });
         } else if (files.length > 0) {
@@ -185,7 +197,7 @@ export default class Default extends CLIMode {
                         stdio: ['pipe', 'inherit', 'inherit']
                     });
 
-                    console.log(backend.getByteCode())
+                    console.log(backend.getByteCode());
                     lli.stdin.write(backend.getByteCode());
                     lli.stdin.end();
                     lli.on('exit', () => {
@@ -325,6 +337,7 @@ export default class Default extends CLIMode {
         let stream = this.createStream(() => data);
         let backend = new LLVMBackend(stream);
         await index.compile(backend);
+        this.postCompilation(compilationGroup);
         return backend;
     }
 
@@ -382,6 +395,7 @@ export default class Default extends CLIMode {
                 worked = false;
                 await this.handle(error, lastCalls + inputString, { exit: false });
             } finally {
+                this.postCompilation(group);
                 interrupt = null;
             }
 
@@ -394,6 +408,12 @@ export default class Default extends CLIMode {
         }
 
         await repl();
+    }
+
+    postCompilation(compilationGroup) {
+        if (this.perfBreakdown) {
+            console.log(prettyPrintPerformance(compilationGroup.context.benchmarks));
+        }
     }
 
     /**

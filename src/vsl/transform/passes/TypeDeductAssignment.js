@@ -39,8 +39,7 @@ export default class TypeDeductAssignment extends Transformation {
         if (node.value) {
             let resolver = new RootResolver(node.value, vslGetChild, tool.context)
                 .resolve((constraint) => {
-                    if (constraint === ConstraintType.RequestedTypeResolutionConstraint &&
-                        types.length > 0) {
+                    if (constraint === ConstraintType.RequestedTypeResolutionConstraint) {
                         return requestedType;
                     } else {
                         return null;
