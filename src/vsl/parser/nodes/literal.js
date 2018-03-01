@@ -13,7 +13,7 @@ import Node from './node';
  *  - Boolean?
  */
 export default class Literal extends Node {
-    
+
     /**
      * Creates a wrapper for literals
      *
@@ -23,29 +23,29 @@ export default class Literal extends Node {
      */
     constructor (literal: string, type: number, position: Object) {
         super(position);
-        
+
         /** @type {string} */
         this.literal = literal;
-        
+
         /** @type {VSLTokenType} */
         this.type = type;
 
-        /** @type {ScopeItem[]} */
-        this.typeCandidates = [];
+        /** @type {?ScopeTypeItem} */
+        this.typeRef = null;
     }
-    
+
     clone() {
         return new Literal(
             this.literal,
             this.type
         );
     }
-    
+
     /** @override */
     get children() {
         return [];
     }
-    
+
     /** @override */
     toString() {
         return this.literal;

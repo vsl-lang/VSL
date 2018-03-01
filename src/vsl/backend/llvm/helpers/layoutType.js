@@ -20,7 +20,7 @@ export default function layoutType(type, context) {
     let structType = llvm.StructType.get(
         context,
         uniqueProperties,
-        type.uniqueName
+        false
     );
     return structType;
 }

@@ -193,10 +193,10 @@ Field
 
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
-        CodeBlock[statement {% id %}] {%
+        "{" CodeBlock[statement {% id %}] "}" {%
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
-                data[4] || [], data[6], location)
+                data[4] || [], data[7], location)
     %}
 
 InterfaceItems
@@ -501,7 +501,7 @@ FunctionizedOperator
    -> "(" (
        "==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<" | "<<" | ">>" |
         "+" | "-" | "*" | "/" | "**" | "&" | "|" | "^" | "~>" | ":>" | ".." |
-        "..." | "::"
+        "..."
     ) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0].value, l) %}
 
 propertyTail

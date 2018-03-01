@@ -29,6 +29,8 @@ export default function toLLVMType(type, context) {
                 );
         }
     } else {
+        return layoutType(type, context);
+
         throw new BackendError(
             `Not sure how to compile this type.`,
             type.source

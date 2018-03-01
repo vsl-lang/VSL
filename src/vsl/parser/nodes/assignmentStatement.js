@@ -5,7 +5,7 @@ import DeclarationStatement from './declarationStatement';
  * scope level.
  */
 export default class AssignmentStatement extends DeclarationStatement {
-    
+
     /**
      * Creates a AssignmentStatement
      *
@@ -17,35 +17,35 @@ export default class AssignmentStatement extends DeclarationStatement {
      */
     constructor(access, type, name, value, position) {
         super(access, position);
-        
+
         /**
          * Specifies whether the assignment is a constant or variable
          * @type {AssignmentType}
          */
         this.type = type;
-        
+
         /** @type {TypedIdentifier} */
         this.name = name;
-        
+
         /** @type {?Expression} */
         this.value = value;
-        
+
         /**
          * The ref in a scope this declares the alias too
          * @type {?ScopeAliasItem}
          */
         this.ref = null;
     }
-    
+
     /** @override */
     get children() {
         return ['name', 'value'];
     }
-    
+
     clone() {
         return new AssignmentStatement(this.access.slice(), this.type, this.name.clone(), this.value?.clone());
     }
-    
+
     /** @override */
     toString() {
         let t;

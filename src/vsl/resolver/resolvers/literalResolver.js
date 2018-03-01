@@ -112,6 +112,10 @@ export default class LiteralResolver extends TypeResolver {
             }
         }
 
+        if (typeCandidates.length === 1) {
+            this.node.typeRef = typeCandidates[0];
+        }
+
         return typeCandidates;
     }
 }
