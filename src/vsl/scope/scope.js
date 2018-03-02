@@ -1,3 +1,4 @@
+import ScopeAliasItem from './items/scopeAliasItem';
 import ScopeForm from './scopeForm';
 
 // This counts the amount of unique IDs. This is suffixes to always ensure a
@@ -48,6 +49,12 @@ export default class Scope {
          * @type {Map<string, ScopeItem[]>}
          */
         this.ids = new Map();
+
+        /**
+         * Stores immediate aliases for layout purposes
+         * @type {ScopeAliasItem[]}
+         */
+        this.aliases = [];
 
         /**
          * The scope that is the immediate parent of this.
@@ -157,6 +164,11 @@ export default class Scope {
 
         } else {
             this.ids.set(item.rootId, [item])
+        }
+
+        // Special behavior for fields. Add to list
+        if (item instanceof ScopeAliasItem) {
+            this.aliases.push(item);
         }
 
         return true;

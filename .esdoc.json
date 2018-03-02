@@ -8,7 +8,6 @@
             "name": "esdoc-babel-7-plugin",
             "option": {
                 "plugins": [
-                  "babel-plugin-include",
                   ["@babel/plugin-transform-runtime", {
                       "polyfill": false
                   }],

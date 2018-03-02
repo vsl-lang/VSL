@@ -22,7 +22,6 @@ export default function toLLVMType(type, backend) {
             case "pointer": return toLLVMType(type.parents[0], backend).getPointerTo();
             case "pointer8": return llvm.Type.getInt8Ty(context).getPointerTo();
             case "opaquepointer": return llvm.StructType.get(context, []);
-            case "string": return layoutType(type, backend);
             default:
                 throw new BackendError(
                     `Invalid \`@mock\` value. Type \`${type}\` is unsupported by the LLVM backend.`,
@@ -30,7 +29,7 @@ export default function toLLVMType(type, backend) {
                 );
         }
     } else {
-        return layoutType(type, backend);
+        return layoutType(type, backend).getPointerTo();
 
         throw new BackendError(
             `Not sure how to compile this type.`,

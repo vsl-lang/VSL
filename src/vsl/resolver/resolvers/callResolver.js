@@ -47,6 +47,9 @@ export default class CallResolver extends TypeResolver {
                 // So we'll filter candidates here.
                 case ConstraintType.BoundedFunctionContext: return argc;
 
+                // The child cannot be voidable
+                case ConstraintType.VoidableContext: return false;
+
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
@@ -64,9 +67,12 @@ export default class CallResolver extends TypeResolver {
             orderedArgCandidates.push(
                 this.getChild(args[i].value).resolve((type) => {
                     switch (type) {
+                        // The child cannot be voidable
+                        case ConstraintType.VoidableContext: return false;
+
                         // Right no they are no parent constraints. We'll resolve
                         // that later.
-                        default: return negotiate(type);
+                        default: return null
                     }
                 })
             );

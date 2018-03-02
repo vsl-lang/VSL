@@ -1,4 +1,5 @@
 import * as llvm from 'llvm-node';
+import toLLVMType from './toLLVMType';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -30,8 +31,13 @@ export default function layoutType(type, backend) {
         typeName
     );
 
+    // Convert all fields to LLVM types.
+    let layout = type.subscope.aliases.map(
+        field => toLLVMType(field.type, backend)
+    );
+
     structType.setBody(
-        [],
+        layout,
         false
     )
 

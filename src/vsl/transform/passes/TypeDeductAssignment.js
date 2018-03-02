@@ -10,6 +10,7 @@ import TypeCandidate from '../../resolver/typeCandidate';
 
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeForm from '../../scope/scopeForm';
 
 import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
@@ -27,24 +28,55 @@ export default class TypeDeductAssignment extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         let scope = tool.scope;
-        let requestedType = null;
+        let requestedType = null,
+            requestedTypeCandidate = null;
 
-        // If we have an expected type (e.g. let a: T) then this passes T.
-        if (node.name.type) {
-            requestedType = new TypeCandidate(
-                new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope)
+
+        if (!node.name.type && !node.value) {
+            throw new TransformError(
+                `If assignment does not have value it must have type explicitly ` +
+                `specified.`,
+                node
             );
         }
 
+        // If we have an expected type (e.g. let a: T) then this passes T.
+        if (node.name.type) {
+            requestedType = new TypeLookup(node.name.type, vslGetTypeChild).resolve(scope);
+            requestedTypeCandidate = new TypeCandidate(requestedType);
+        }
+
+        let resolvedType;
         if (node.value) {
-            let resolver = new RootResolver(node.value, vslGetChild, tool.context)
+            resolvedType = new RootResolver(node.value, vslGetChild, tool.context)
                 .resolve((constraint) => {
                     if (constraint === ConstraintType.RequestedTypeResolutionConstraint) {
-                        return requestedType;
+                        return requestedTypeCandidate;
                     } else {
                         return null;
                     }
                 });
+        } else {
+            resolvedType = requestedType;
+        }
+
+        // Add assignment to scope.
+        let aliasItem = new ScopeAliasItem(
+            ScopeForm.definite,
+            node.name.identifier.value,
+            {
+                type: resolvedType,
+                source: node
+            }
+        );
+
+        let result = scope.set(aliasItem);
+        if (result === false) {
+            throw new TransformError(
+                `Attempted to create variable/field with name that already ` +
+                `exists in this scope.`,
+                node
+            );
         }
     }
 }

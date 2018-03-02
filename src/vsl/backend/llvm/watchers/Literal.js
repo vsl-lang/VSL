@@ -4,7 +4,6 @@ import t from '../../../parser/nodes';
 import VSLTokenType from '../../../parser/vsltokentype';
 
 import toLLVMType from '../helpers/toLLVMType';
-import stringType from '../helpers/stringType'
 
 import * as llvm from 'llvm-node';
 
@@ -39,8 +38,7 @@ export default class LLVMLiteral extends BackendWatcher {
                 );
 
             case VSLTokenType.String:
-                let stringTy = stringType(backend.module, backend.context);
-                let targetTy = toLLVMType(type, backend);
+                let targetTy = toLLVMType(type, backend).elementType;
 
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
@@ -49,7 +47,7 @@ export default class LLVMLiteral extends BackendWatcher {
                     llvm.LinkageTypes.PrivateLinkage,
                     llvm.ConstantExpr.getBitCast(
                         llvm.ConstantStruct.get(
-                            stringTy,
+                            targetTy,
                             [
                                 llvm.ConstantInt.get(
                                     backend.context,

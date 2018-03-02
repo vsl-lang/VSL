@@ -11,7 +11,7 @@
  * @property {ScopeFuncItem} BindingContext - A query for the appropriate
  *                                          scopeItem, merely including the
  *                                          params.
- * @property {number} VoidablContext - Boolean. Specifies a function can have
+ * @property {number} VoidableContext - Boolean. Specifies a function can have
  *                                   return type of `Void`.
  */
 const ConstraintType = {
