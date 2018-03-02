@@ -37,6 +37,7 @@ export default class LLVMBackend extends Backend {
         yield new w.BitCastExpression();
         yield new w.ExpressionStatement();
         yield new w.IfStatement();
+        yield new w.CodeBlock();
         yield new w.ReturnStatement();
         yield new w.RootFunction();
         yield new w.NoOp();

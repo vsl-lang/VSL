@@ -6,22 +6,16 @@ import t from '../../../parser/nodes';
  * Indiscriminately generates the code block in an assumed existing builder
  * context.
  */
-export default class LLVMExpressionStatement extends BackendWatcher {
+export default class LLVMCodeBlock extends BackendWatcher {
     match(type) {
-        return type instanceof t.ExpressionStatement;
+        return type instanceof t.CodeBlock;
     }
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        if (!context.builder) {
-            backend.warn(new BackendWarning(
-                `Expression must be in function. Ignoring...`,
-                node
-            ));
-            return;
+        for (let i = 0; i < node.statements.length; i++) {
+            regen(i, node.statements, context);
         }
-
-        return regen('expression', node, context);
     }
 }

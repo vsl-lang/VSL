@@ -196,10 +196,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             newContext.builder = builder;
             newContext.parentFunc = func;
 
-            let statements = node.statements.statements;
-            for (let i = 0; i < statements.length; i++) {
-                regen(i, statements, newContext);
-            }
+            regen('statements', node, newContext);
 
             // Add exit block for void functions.
             if (!scopeItem.returnType && !isEntry) {

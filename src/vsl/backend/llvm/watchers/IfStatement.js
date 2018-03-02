@@ -28,11 +28,11 @@ export default class LLVMIfStatement extends BackendWatcher {
         );
 
         // Generate the conditional block
-        this.generateConditionalBlock(node.trueBody, trueBlock, endBlock, regen, context);
+        this.generateConditionalBlock(node, 'trueBody', trueBlock, endBlock, regen, context);
 
         // Generate the else block if needed
         if (falseBlock !== endBlock) {
-            this.generateConditionalBlock(node.falseBody, falseBlock, endBlock, regen, context);
+            this.generateConditionalBlock(node, 'falseBody', falseBlock, endBlock, regen, context);
         }
 
         context.builder.setInsertionPoint(endBlock);
@@ -40,13 +40,12 @@ export default class LLVMIfStatement extends BackendWatcher {
     }
 
 
-    generateConditionalBlock(node, block, endBlock, regen, context) {
+    generateConditionalBlock(parent, name, block, endBlock, regen, context) {
         context.builder.setInsertionPoint(block);
+        regen(name, parent, context);
 
-        for (let i = 0; i < node.statements.length; i++) {
-            regen(i, node.statements, context);
-        }
-
+        // If there is a terminator, we won't add the break
+        if (block.getTerminator()) { return }
         context.builder.createBr(endBlock);
     }
 }
