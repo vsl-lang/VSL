@@ -24,7 +24,6 @@ export { default as CompilationHook, HookType } from './index/CompilationHook';
 export { default as CompilationModule } from './index/CompilationModule';
 
 export { default as Backend } from './vsl/backend/Backend';
-export { default as BackendStream } from './vsl/backend/BackendStream';
 export { default as BackendWatcher } from './vsl/backend/BackendWatcher';
 
-export { default as LLIR } from './vsl/backend/llir';
+export { default as LLVM } from './vsl/backend/llvm';

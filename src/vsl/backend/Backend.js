@@ -1,10 +1,5 @@
-import BackendStream from './BackendStream';
 import Traverser from '../transform/traverser';
 import ASTTool from '../transform/asttool';
-
-/**
- * @typedef {String} BackendWarning
- */
 
 /**
  * Any backend needs to implement and subclass this abstract class and implement
@@ -116,9 +111,6 @@ export default class Backend {
      * expect wack generation.
      *
      * @param  {CodeBlock[]} input Code-block to start as 'entry' point.
-     * @param {BackendStream} stream Stream which compilation will be outputted
-     *                               to. Wait until all stuff is done before
-     *                               using the output.
      */
     run(inputs) {
         this.pregen();

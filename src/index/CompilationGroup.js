@@ -3,8 +3,6 @@ import PropogateModifierTraverser, { Behavior as p } from './PropogateModifierTr
 import CompilationStream from './CompilationStream';
 import GroupMetadata from './GroupMetadata';
 
-import BackendStream from '../vsl/backend/BackendStream';
-
 import ParserError from '../vsl/parser/parserError';
 import VSLParser from '../vsl/parser/vslparser';
 
