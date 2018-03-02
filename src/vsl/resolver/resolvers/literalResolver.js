@@ -62,6 +62,10 @@ export default class LiteralResolver extends TypeResolver {
                 literalTypeContext = context.get("ByteSequence");
                 break;
 
+            case VSLTokenType.Boolean:
+                literalTypeContext = context.get("Boolean");
+                break;
+
             case VSLTokenType.Regex:
                 literalTypeContext = context.get("Regex");
                 break;

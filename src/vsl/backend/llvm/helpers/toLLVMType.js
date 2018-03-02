@@ -12,6 +12,7 @@ export default function toLLVMType(type, context) {
     let mockType = type.mockType;
     if (mockType) {
         switch(mockType) {
+            case "i1": return llvm.Type.getInt1Ty(context);
             case "i8":
             case "ui8": return llvm.Type.getInt8Ty(context);
             case "i32":

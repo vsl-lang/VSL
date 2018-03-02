@@ -61,6 +61,11 @@ export default class LLVMLiteral extends BackendWatcher {
                     toLLVMType(type, backend.context)
                 );
 
+            case VSLTokenType.Boolean:
+                return node.literal ?
+                    llvm.ConstantInt.getTrue(backend.context) :
+                    llvm.ConstantInt.getFalse(backend.context)
+
             case VSLTokenType.ByteSequence:
                 return context.builder.createGlobalStringPtr(node.literal);
 

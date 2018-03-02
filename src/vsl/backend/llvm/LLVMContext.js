@@ -9,8 +9,11 @@ export default class LLVMContext {
         /** @type {LLVMContextBackend} */
         this.backend = backend;
 
-        /** @type {llvm.IRBuilder} */
+        /** @type {?llvm.IRBuilder} */
         this.builder = null;
+
+        /** @type {?llvm.Function} */
+        this.parentFunc = null;
     }
 
     /**

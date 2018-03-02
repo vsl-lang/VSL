@@ -194,6 +194,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             let builder = new llvm.IRBuilder(entryBlock);
             let newContext = context.clone();
             newContext.builder = builder;
+            newContext.parentFunc = func;
 
             let statements = node.statements.statements;
             for (let i = 0; i < statements.length; i++) {
