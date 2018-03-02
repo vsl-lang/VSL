@@ -1,6 +1,5 @@
 {
     "plugins": [
-        "babel-plugin-include",
         ["@babel/plugin-transform-runtime", {
             "polyfill": false
         }],
@@ -8,6 +7,7 @@
         "@babel/plugin-proposal-do-expressions",
         "@babel/plugin-proposal-function-bind",
         "@babel/plugin-proposal-export-namespace-from",
+        "@babel/plugin-proposal-export-default-from",
         "@babel/plugin-proposal-export-default",
         "@babel/plugin-proposal-object-rest-spread",
         "@babel/plugin-transform-flow-strip-types",

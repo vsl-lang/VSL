@@ -14,13 +14,26 @@ import * as llvm from 'llvm-node';
  *
  * V-tables are seperately managed. If a type supports dynamic dispatch than
  * potentially a suffix `typeId` will be stored.
+ *
+ * @param {ScopeTypeItem} type
+ * @param {LLVMBackend} backend
  */
-export default function layoutType(type, context) {
-    let uniqueProperties = [];
-    let structType = llvm.StructType.get(
+export default function layoutType(type, backend) {
+    const { context, module } = backend;
+    const typeName = type.uniqueName;
+
+    let existingType = module.getTypeByName(typeName);
+    if (existingType) return existingType;
+
+    let structType = llvm.StructType.create(
         context,
-        uniqueProperties,
-        false
+        typeName
     );
+
+    structType.setBody(
+        [],
+        false
+    )
+
     return structType;
 }

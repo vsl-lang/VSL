@@ -62,7 +62,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
         // void so we do not construct.
         let returnType;
         if (scopeItem.returnType) {
-            returnType = toLLVMType(scopeItem.returnType, backend.context);
+            returnType = toLLVMType(scopeItem.returnType, backend);
         } else {
             returnType = llvm.Type.getVoidTy(backend.context);
         }
@@ -71,7 +71,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
         let functionType = llvm.FunctionType.get(
             returnType,
             argsRef.map(
-                arg => toLLVMType(arg.type, backend.context)
+                arg => toLLVMType(arg.type, backend)
             ),
             false
         );

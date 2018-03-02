@@ -40,33 +40,35 @@ export default class LLVMLiteral extends BackendWatcher {
 
             case VSLTokenType.String:
                 let stringTy = stringType(backend.module, backend.context);
+                let targetTy = toLLVMType(type, backend);
+
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
-                    stringTy,
+                    targetTy,
                     true,
                     llvm.LinkageTypes.PrivateLinkage,
-                    llvm.ConstantStruct.get(
-                        stringTy,
-                        [
-                            llvm.ConstantInt.get(
-                                backend.context,
-                                node.literal.length,
-                                32,
-                                false
-                            ),
-                            context.builder.createGlobalStringPtr(
-                                node.literal
-                            )
-                        ]
+                    llvm.ConstantExpr.getBitCast(
+                        llvm.ConstantStruct.get(
+                            stringTy,
+                            [
+                                llvm.ConstantInt.get(
+                                    backend.context,
+                                    node.literal.length,
+                                    32,
+                                    false
+                                ),
+                                context.builder.createGlobalStringPtr(
+                                    node.literal
+                                )
+                            ]
+                        ),
+                        targetTy
                     )
                 );
 
                 globalVar.setUnnamedAddr(llvm.UnnamedAddr.Global);
 
-                return context.builder.createBitCast(
-                    globalVar,
-                    toLLVMType(type, backend.context)
-                );
+                return globalVar;
 
             case VSLTokenType.Boolean:
                 return node.literal ?

@@ -1,9 +1,8 @@
 language: node_js
 node_js:
-    - "4.8"
-    - "5.12"
     - "6.10"
-    - "7.10"
+    - "8.9"
+    - latest
 
 addons:
   codeclimate:
