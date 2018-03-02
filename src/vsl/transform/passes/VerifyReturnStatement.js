@@ -49,8 +49,7 @@ export default class VerifyReturnStatement extends Transformation {
     validateReturn(node, returnType, tool) {
         switch (node.constructor) {
             case t.CodeBlock:
-                let i = node.statements.length;
-                while (i --> 0) {
+                for (let i = 0; i < node.statements.length; i++) {
                     let definiteReturn =
                         this.validateReturn(node.statements[i], returnType, tool);
 
@@ -105,6 +104,10 @@ export default class VerifyReturnStatement extends Transformation {
                         this.validateReturn(node.falseBody, returnType, tool)
                     );
                 } else {
+                    // We still want to validate (if) it returns, that it is
+                    // correct.
+                    this.validateReturn(node.trueBody, returnType, tool)
+
                     // If only returns in one case, then this does not definetly
                     // return.
                     return false;

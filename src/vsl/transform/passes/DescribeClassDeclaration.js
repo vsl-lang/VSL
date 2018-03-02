@@ -31,7 +31,8 @@ export default class DescribeClassDeclaration extends Transformation {
             subscope: node.statements.scope,
             isInterface: false,
             mockType: node.mockType,
-            subscope: subscope
+            subscope: subscope,
+            source: node
         };
 
         if (node.generics.length === 0) {

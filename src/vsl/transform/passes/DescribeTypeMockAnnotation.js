@@ -3,7 +3,7 @@ import TokenType from '../../parser/vsltokentype';
 import t from '../../parser/nodes';
 
 /**
- * This will handle the `_mockType` declaration on a `class`.
+ * This will handle the `mock` declaration on a `class`.
  */
 export default class DescribeTypeMockAnnotation extends Transformation {
     constructor() {
@@ -12,7 +12,7 @@ export default class DescribeTypeMockAnnotation extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         // Check that it's the correct annotation
-        if (node.name !== "_mockType") return;
+        if (node.name !== "mock") return;
         let classDecl = tool.nthParent(2);
         classDecl.scopeRef.mockType = node.args[0];
     }

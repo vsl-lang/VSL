@@ -25,7 +25,7 @@ export default function toLLVMType(type, context) {
             case "string": return layoutType(type, context);
             default:
                 throw new BackendError(
-                    `Invalid \`@_mockType\` value. Type \`${type}\` is unsupported by the LLVM backend.`,
+                    `Invalid \`@mock\` value. Type \`${type}\` is unsupported by the LLVM backend.`,
                     null
                 );
         }

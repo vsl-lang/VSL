@@ -281,28 +281,7 @@ export default class Default extends CLIMode {
                 await index.compile();
             }
         } catch(error) {
-            let stream = null;
-
-            if (error.stream) { stream = error.stream }
-            else if (error.node) {
-                let trackingNode = error.node;
-                do {
-                    if (trackingNode.stream) {
-                        stream = trackingNode.stream;
-                        break;
-                    }
-                } while(
-                    trackingNode.rootScope !== true &&
-                    (trackingNode = trackingNode.parentScope)
-                );
-            }
-
-            if (stream) {
-                error.stream = stream;
-                this.handle(error, stream.data, { exit: true });
-            } else {
-                throw error;
-            }
+            this.dynamicHandle(error);
         }
 
         this.fileMap.set(dirpath, index);
@@ -336,9 +315,38 @@ export default class Default extends CLIMode {
 
         let stream = this.createStream(() => data);
         let backend = new LLVMBackend(stream);
-        await index.compile(backend);
+        try {
+            await index.compile(backend);
+        } catch(error) {
+            this.dynamicHandle(error);
+        }
         this.postCompilation(compilationGroup);
         return backend;
+    }
+
+    dynamicHandle(error) {
+        let stream = null;
+
+        if (error.stream) { stream = error.stream }
+        else if (error.node) {
+            let trackingNode = error.node;
+            do {
+                if (trackingNode.stream) {
+                    stream = trackingNode.stream;
+                    break;
+                }
+            } while(
+                trackingNode.rootScope !== true &&
+                (trackingNode = trackingNode.parentScope)
+            );
+        }
+
+        if (stream) {
+            error.stream = stream;
+            this.handle(error, stream.data, { exit: true });
+        } else {
+            throw error;
+        }
     }
 
     async launchREPL() {

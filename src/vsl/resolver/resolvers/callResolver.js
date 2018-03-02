@@ -1,5 +1,6 @@
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
+import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
@@ -153,7 +154,7 @@ export default class CallResolver extends TypeResolver {
         } else {
             // If we have succesfully found the one correct candidate...
             this.node.headRef = maxCandidate;
-            return [maxCandidate];
+            return [new TypeCandidate(maxCandidate.returnType)];
         }
     }
 }

@@ -17,6 +17,13 @@ export default class LLVMLiteral extends BackendWatcher {
         const backend = context.backend;
         const type = node.typeRef;
 
+        if (type === null) {
+            throw new BackendError(
+                `Ambiguous types for this literal.`,
+                node
+            );
+        }
+
         switch (node.type) {
             case VSLTokenType.Integer:
                 let value = parseInt(node.literal, 10);
@@ -78,19 +85,19 @@ export default class LLVMLiteral extends BackendWatcher {
 
     getIntDesc(type) {
         switch (type.mockType) {
-            case "i8": return { size: 1, signed: true }
-            case "ui8": return { size: 1, signed: false }
+            case "i8": return { size: 8, signed: true }
+            case "ui8": return { size: 8, signed: false }
 
-            case "i32": return { size: 4, signed: true }
-            case "ui32": return { size: 4, signed: false }
+            case "i32": return { size: 32, signed: true }
+            case "ui32": return { size: 32, signed: false }
 
-            case "i64": return { size: 8, signed: true }
-            case "ui64": return { size: 8, signed: false }
+            case "i64": return { size: 64, signed: true }
+            case "ui64": return { size: 64, signed: false }
 
             default: throw new BackendError(
                 `The type ${type} has an invalid type mock for the ` +
                 `provided primitive.`,
-                node
+                type.source
             )
         }
     }

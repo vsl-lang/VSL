@@ -117,7 +117,7 @@ export default class LiteralResolver extends TypeResolver {
         }
 
         if (typeCandidates.length === 1) {
-            this.node.typeRef = typeCandidates[0];
+            this.node.typeRef = typeCandidates[0].candidate;
         }
 
         return typeCandidates;

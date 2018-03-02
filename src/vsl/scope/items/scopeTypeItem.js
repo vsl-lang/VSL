@@ -121,6 +121,7 @@ export default class ScopeTypeItem extends ScopeItem {
         isInterface = false,
         mockType = null,
         subscope,
+        source = null,
         dynamicDispatch = null,
         ...opts
     } = {}) {
@@ -132,6 +133,7 @@ export default class ScopeTypeItem extends ScopeItem {
         this.subscope = subscope;
         this.mockType = mockType;
         this._dynamicDispatch = dynamicDispatch;
+        this.source = source;
     }
 
     /**
