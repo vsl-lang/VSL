@@ -103,7 +103,7 @@ export default class ScopeFuncItem extends ScopeItem {
                 selfType.castableTo(queryType)
             );
 
-            let argIsMatching = queryArg.name.value === baseArg.name.value && typesAreAmbiguous;
+            let argIsMatching = queryArg.name === baseArg.name && typesAreAmbiguous;
 
             // If an arg does not match we know 100% it is not equal
             if (!argIsMatching) return false;

@@ -91,12 +91,12 @@ export default class CallResolver extends TypeResolver {
 
             // If same arg length & function name we'll have to go through each
             // arg and check for compatibility.
-            for (let i = 0; i < argc; i++) {
-                let arg = args[i],
-                    argName = arg.name,
-                    argTypes = orderedArgCandidates[i],
-                    targetArgName = candidate.args[i].name,
-                    targetArgType = candidate.args[i].type;
+            for (let j = 0; j < argc; j++) {
+                let arg = args[j],
+                    argName = arg.name?.value,
+                    argTypes = orderedArgCandidates[j],
+                    targetArgName = candidate.args[j].name,
+                    targetArgType = candidate.args[j].type;
 
                 // If there is an arg name, but they don't match then continue.
                 if (argName && argName !== targetArgName) continue main;
@@ -107,9 +107,9 @@ export default class CallResolver extends TypeResolver {
                 // Go through each type and check which conflicts
                 // NOTE: ambiguous types should NEVER be related in the
                 // candidate list.
-                for (let j = 0; j < argTypes.length; j++) {
-                    if (argTypes[j].candidate.castableTo(targetArgType)) {
-                        workingArgType = argTypes[j];
+                for (let k = 0; k < argTypes.length; k++) {
+                    if (argTypes[k].candidate.castableTo(targetArgType)) {
+                        workingArgType = argTypes[k];
                         break;
                     }
                 }
