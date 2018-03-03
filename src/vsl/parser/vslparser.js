@@ -11,7 +11,7 @@ import ParserError from './parserError';
  * happen.
  */
 export default class VSLParser {
-    
+
     /**
      * Default constructor for a VSLParser, initalizes to an empty parser and
      * tokenizer state
@@ -19,14 +19,14 @@ export default class VSLParser {
     constructor() {
         /** @private */
         this.tokenizer = new VSLTokenizer();
-        
+
         /**
          * You probably should not directly use, but hey why not make this
          * public.
          */
         this.parser = new nearley.Parser(parser.ParserRules, parser.ParserStart, { lexer: this.tokenizer });
     }
-    
+
     /**
      * Queues a string to be parsed. This will return something if the string
      * was properly parsed. This uses the generates `parser` file and
@@ -60,7 +60,7 @@ export default class VSLParser {
         } catch(e) {
             if (typeof e.offset !== 'number')
                 throw e;
-            
+
             let pos = this.parser.lexer.positions[e.offset];
             let desc = pos.value ? ` \`${pos.value}\`` : "";
             throw new ParserError(
@@ -75,7 +75,7 @@ export default class VSLParser {
                 results.results.map(result => result.toAst()).join("\n")
             );
         }
-            
+
         return results.results;
     }
 }

@@ -28,7 +28,8 @@ const NodeTypes = require('./vsltokentype').default,
 
 // State management
 let state = {
-    inFunction: false
+    inFunction: false,
+    inTypeContext: false
 };
 
 const onlyState = (stateName, callback) =>
@@ -193,7 +194,9 @@ Field
 
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
-        "{" CodeBlock[statement {% id %}] "}" {%
+        ( "{" {% setState('inTypeContext', true) %} )
+        CodeBlock[statement {% id %}]
+        ( "}" {% setState('inTypeContext', false) %} ) {%
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
                 data[4] || [], data[7], location)
@@ -491,6 +494,10 @@ Property
 
 propertyHead
    -> Identifier             {% id %}
+    | (
+        "self" {% (d, l) => new t.Self(l) %} |
+        "super" {% (d, l) => new t.Super(l) %}
+      )     {% onlyState('inTypeContext', id) %}
     | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
     | FunctionizedOperator   {% id %}
     | Literal                {% id %}

@@ -1,0 +1,434 @@
+import CompilerCLI, { DEFAULT_STL } from '../helpers/CompilerCLI';
+import TempFileManager from '../helpers/TempFileManager';
+import path from 'path';
+import fs from 'fs-extra';
+import tty from 'tty';
+
+
+import { spawn } from 'child_process';
+
+import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
+import WASMIndex from '../../../wasm/index.json';
+import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
+
+const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
+
+export default class Build extends CompilerCLI {
+    usage = "vsl build [options] <module | files> -o <out file>\nvsl build info <target>"
+
+    constructor() {
+        super([
+            ["Options", [
+                ["-h", "--help"          , "Displays this help message",             { run: _ => _.help() }],
+                ["--targets"             , "Lists supported compilation targets " +
+                                           "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
+                ["--color"               , "Colorizes all output where applicable",  { color: true }],
+                ["--no-color"            , "Disables output colorization",           { color: false }],
+            ]],
+            ["Build Options", [
+                ["-o"                    , "Required. Specifies output file. Use" +
+                                           "`-` for STDOUT.",                        { arg: "file", output: true }],
+                ["-l"                    , "Specifies a C library to link with",     { arg: "library", library: true }],
+                ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
+                ["--Xlinker"             , "Specifies an extra linker argument",     { arg: "xlinker", xlinker: true }],
+                ["-S", "--no-build"      , "Prevents assembly and linkage, " +
+                                           "outputs `.ll`",                          { link: false }],
+                ["-t", "--target"        , "Compilation target. To see all " +
+                                           "targets, use \`vsl build --targets\`",   { arg: "target", target: true }]
+            ]],
+            ["Compiler Options", [
+                ["--stl"                 , "Specifies a different standard type " +
+                                           "library. The default " +
+                                           "is " + DEFAULT_STL + ". Otherwise " +
+                                           "this chooses the STL from a " +
+                                           "module.yml. This must be a module " +
+                                           "installed in the library path.",         { stl: true, arg: "name" }],
+                ["--no-stl"              , "Disables the STL. This can be " +
+                                           "overriden with a module.yml",            { nostl: true }],
+                ["-Wno"                  , "Disables all warnings, also prevents " +
+                                           "relevent FIX-ITs from activating",       { warn: false }],
+                ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }]
+            ]],
+            ["Debugging Options", [
+                ["--perf-breakdown"      , "Offers performance breakdown on what " +
+                                           "parts of transformation time is spent.", { perfBreakdown: true }]
+            ]]
+        ]);
+
+        this.subcommands = [ "run" ];
+    }
+
+    appInfo() {
+        return `Toolchain for compiling VSL files.`;
+    }
+
+    listTargets() {
+        let targetText = 'Directly supported VSL targets:\n';
+
+        targetText = '\nFor more, compile to LLVM IR using `-S` and use ' +
+            '`llc` or use --triple with `native`';
+        this.printAndDie(targetText);
+    }
+
+    run(args) {
+        if (args[0] === 'info') {
+            if (!args[1]) this.error.cli(`provide target to get info on`);
+            this.getInfo(args[1]);
+        }
+
+        let color = tty.isatty(1);
+        let perfBreakdown = false;
+        let stl = DEFAULT_STL;
+        let link = true;
+        let target = 'native';
+
+        let linker = 'ld';
+        let linkerArgs = [];
+
+        let directory = null;
+        let files = [];
+        let outputStream = null;
+
+        if (args.length === 0) {
+            this.help();
+        }
+        for (let i = 0; i < args.length; i++) {
+            if (args[i][0] === "-" && args[i].length > 1) {
+                const flagName = this.allArgs[this.aliases[args[i]] || args[i]];
+                if (!flagName) this.error.cli(`unknown flag: ${args[i]}`);
+
+                const flagInfo = flagName[3] || flagName[2];
+
+                if (flagInfo.run) flagInfo.run(this);
+
+                if ('color' in flagInfo) color = flagInfo.color;
+                if (flagInfo.perfBreakdown) perfBreakdown = true;
+                if (flagInfo.stl) stl = args[++i];
+                if (flagInfo.nostl) stl = false;
+                if ('link' in flagInfo) link = flagInfo.link;
+                if ('target' in flagInfo) target = args[++i];
+                if ('linker' in flagInfo) linker = flagInfo.linker;
+                if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
+                if (flagInfo.output) {
+                    let path = args[++i];
+                    if (outputStream) {
+                        this.error.cli(`Already provided an output.`);
+                    } else  if (path === '-') {
+                        outputStream = process.stdout;
+                    } else {
+                        outputStream = fs.createWriteStream(path);
+                    }
+                }
+            } else {
+                // Check if directory file, or neither
+                if (!fs.existsSync(args[i])) {
+                    this.error.cli(`no such file or directory: \`${args[i]}\``);
+                }
+
+                if (directory) {
+                    this.error.cli(
+                        `already specified directory (\`${directory}\`), ` +
+                        `cannot supply more files`
+                    );
+                }
+
+                if (fs.statSync(args[i]).isDirectory()) {
+                    directory = args[i];
+                } else {
+                    files.push(args[i]);
+                }
+            }
+        }
+
+        this.color = color;
+        this.error.shouldColor = this.color;
+        this.stl = stl;
+        this.link = link;
+        this.perfBreakdown = perfBreakdown;
+
+        this.linker = linker;
+        this.linkerArgs = linkerArgs;
+
+        this.outputStream = outputStream;
+
+
+        if (this.outputStream === null) {
+            this.error.cli(`Provide output location.`);
+        }
+
+        let targetData = Targets.get(target);
+        if (!targetData) this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
+        else this.target = targetData;
+
+        let backend = new LLVMBackend(this.createStream());
+        if (directory) {
+            this.executeModule(directory, backend)
+                .then((index) => {
+                    this.compileLLVM(backend);
+                });
+        } else if (files.length > 0) {
+            this.fromFiles(files, backend)
+                .then((index) => {
+                    this.compileLLVM(backend);
+                });
+        } else {
+            this.help();
+        }
+    }
+
+    /**
+     * Prints info on target
+     * @param {string} target
+     */
+    getInfo(target) {
+        let targetData = Targets.get(target);
+        if (!targetData) this.error.cli(`unknown target ${target}`);
+        this.printAndDie(
+            `Information for VSL Target ${target}:\n\n` + targetData.info
+        )
+    }
+
+    /**
+     * Finishes LLVM compilation
+     * @param {Backend} backend backend
+     */
+    async compileLLVM(backend) {
+        if (this.link === false) {
+            // Just write bytecode
+
+            this.outputStream.write(backend.getByteCode());
+            return;
+        } else {
+            // Otherwise compile to
+            const fileManager = new TempFileManager();
+            const byteCode = backend.getByteCode();
+
+            let asmFile = fileManager.tempWithExtension('o');
+
+            await this.llc(byteCode, asmFile, {
+                arch: this.target.arch,
+                triple: this.target.triple,
+                type: this.target.type
+            });
+
+            this._colorCompilationStep(`<stdin>.LL`, asmFile);
+
+            switch (this.target.command) {
+                case "ld":
+                    let outFile = fileManager.tempWithExtension('out');
+                    await this.ld(asmFile, outFile, {
+                        outputType: ['-e', '_main']
+                    });
+                    this._colorCompilationStep(asmFile, outFile);
+
+                    let readStream = fs.createReadStream(outFile);
+                    readStream.pipe(this.outputStream);
+                    this._colorCompilationStep(outFile, '<output>');
+
+                    break;
+                case "wasm":
+                    let wastFile = fileManager.tempWithExtension('wast');
+                    await this.s2wasm(asmFile, fs.createWriteStream(wastFile));
+                    this._colorCompilationStep(asmFile, wastFile)
+
+                    let wasmFile = fileManager.tempWithExtension('wasm');
+                    await this.wasmMerge([
+                        wastFile
+                    ].concat(
+                        WASMIndex.map(file => path.join(WASMIndexRoot, file))
+                    ), wasmFile);
+                    this._colorCompilationStep(wastFile, wasmFile);
+
+                    let wasmStream = fs.createReadStream(wasmFile);
+                    wasmStream.pipe(this.outputStream);
+                    this._colorCompilationStep(wasmFile, '<output>');
+
+                    break;
+                default:
+                    this.error.cli(`target compiles with unknown step ${this.command}.`);
+            }
+        }
+    }
+
+    /**
+     * Assembles WASM. Converts .WASTs to one .WASM
+     * @param {string[]} file the input file
+     * @param {string} outfile the output file
+     * @return {Promise}
+     */
+    async wasmMerge(files, outfile) {
+        return new Promise((resolve, reject) => {
+            let wasmMerge = spawn('wasm-merge', files.concat([
+                '-o', outfile
+            ]), {
+                stdio: ['ignore', 'inherit', 'inherit']
+            });
+
+            wasmMerge.on('error', (error) => {
+                switch (error.code) {
+                    case "ENOENT":
+                        this.error.cli(`failed: could not locate wasm-merge binary. Ensure Binaryen (https://git.io/binaryen) is installed.`);
+                    default:
+                        this.error.cli(`failed: ${error.message} (${error.code})`);
+                }
+            });
+
+            wasmMerge.on('exit', (errorCode) => {
+                if (errorCode === 0) {
+                    resolve();
+                } else {
+                    this.error.cli(`failed: wasm-merge: exited with ${errorCode}`);
+                }
+            })
+        });
+    }
+
+    /**
+     * Compiles LLVM `.s` files with WASM target to WAST files.
+     * @param {string} file source file input
+     * @param {WritableStream} outstream output stream of wast file
+     * @return {Promise} resolves when finished
+     */
+    async s2wasm(file, outstream) {
+        return new Promise((resolve, reject) => {
+            // Spawn LLC compiler. Pass target option
+            let s2wasm = spawn('s2wasm', [ file ], {
+                stdio: ['ignore', 'pipe', 'pipe']
+            });
+
+            s2wasm.on('error', (error) => {
+                switch (error.code) {
+                    case "ENOENT":
+                        this.error.cli(`failed: could not locate s2wasm binary. Ensure Binaryen (https://git.io/binaryen) is installed.`);
+                    default:
+                        this.error.cli(`failed: ${error.message} (${error.code})`);
+                }
+            });
+
+            s2wasm.stdout.pipe(outstream);
+
+            s2wasm.on('exit', (errorCode) => {
+                if (errorCode === 0) {
+                    resolve();
+                } else {
+                    this.error.cli(`failed: s2wasm: exited with ${errorCode}`);
+                }
+            })
+        });
+    }
+
+    /**
+     * Attempts to link source `.o` together with libraries etc.
+     * @param {string} sourceFile the input object file
+     * @param {string} outputFile the output binary
+     * @param {Object} linkerOptions additional linker options
+     * @param {string[]} outputType default is `-e _main` outputting executable.
+     * @return {Promise} Resolves when finished
+     */
+    async ld(sourceFile, outputFile, { outputType = [] } = {}) {
+        return new Promise((resolve, reject) => {
+            let ld = spawn(this.linker, [
+                sourceFile,
+                '-lc',
+                '-o', outputFile
+            ].concat(outputType, this.linkerArgs), {
+                stdio: ['ignore', 'inherit', 'inherit']
+            });
+
+            ld.on('error', (error) => {
+                switch (error.code) {
+                    case "ENOENT":
+                        this.error.cli(`failed: could not locate linker \`(${this.linker})\`.`);
+                    default:
+                        this.error.cli(`failed: ${error.message} (${error.code})`);
+                }
+            });
+
+            ld.on('exit', (errorCode) => {
+                if (errorCode === 0) {
+                    resolve();
+                } else {
+                    this.error.cli(`failed: ld: exited with ${errorCode}`);
+                }
+            })
+        });
+    }
+
+    /**
+     * Compiles using LLC
+     * @param {string} byteCode byte code from llvm
+     * @param {string} outputFile output .s file.
+     * @param {Object} compilationOptions other compilation options
+     * @param {string} compilationOptions.triple Target triple
+     * @param {string} compilationOptions.arch Target arch
+     * @param {string} compilationOptions.optLevel 0-3
+     * @return {Promise} If succesful. output file is `.s` with correct infno.
+     */
+    llc(byteCode, outputFile, {
+        triple = "",
+        arch = "",
+        type = "obj",
+        optLevel = "2"
+    } = {}) {
+        return new Promise((resolve, reject) => {
+            // Spawn LLC compiler. Pass target option
+            let llc = spawn('llc', [
+                `-mtriple=${triple}`,
+                `-O=${optLevel}`,
+                `-filetype=${type}`,
+                `-o=${outputFile}`
+            ], {
+                stdio: ['pipe', 'inherit', 'inherit']
+            });
+
+            llc.on('error', (error) => {
+                switch (error.code) {
+                    case "ENOENT":
+                        this.error.cli(`failed: could not locate llc binary.`);
+                    default:
+                        this.error.cli(`failed: ${error.message} (${error.code})`);
+                }
+            });
+
+            let didWriteBC = llc.stdin.write(byteCode);
+            if (didWriteBC) {
+                llc.stdin.end();
+            } else {
+                llc.stdin.on('drain', () => {
+                    llc.stdin.end();
+                })
+            }
+
+            llc.on('exit', (errorCode) => {
+                if (errorCode === 0) {
+                    resolve();
+                } else {
+                    this.error.cli(`failed: llc: exited with ${errorCode}`);
+                }
+            })
+        });
+    }
+
+    _lastCompColor = 0
+    _colorCompilationStep(from, to) {
+        let str, lastColor = this._lastCompColor;
+
+        let colors = ['1', '1;33', '1;32', '1;34', '1;35']
+        let oldColor = colors[this._lastCompColor % colors.length];
+        let nextColor = colors[++this._lastCompColor % colors.length];
+
+        if (this.color) {
+            str = `\u001B[${oldColor}m${from}\u001B[0m -> \u001B[${nextColor}m${to}\u001B[0m`;
+        } else {
+            str = `${from} -> ${to}`;
+        }
+        console.log(str);
+    }
+
+    postCompilation(compilationGroup) {
+        if (this.perfBreakdown) {
+            console.log(prettyPrintPerformance(compilationGroup.context.benchmarks));
+        }
+    }
+
+}

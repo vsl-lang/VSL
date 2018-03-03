@@ -73,3 +73,25 @@ export default class LLVMBackend extends Backend {
         }
     }
 }
+
+export const Targets = new Map([
+    ["native", {
+        "arch": "",
+        "triple": "",
+        "type": "obj",
+        "command": "ld",
+        "info": "Compiles to native object files and automatically links. " +
+            " This is the default target and by default assumes system default " +
+            " target triple."
+    }],
+    ["wasm", {
+        "arch": "wasm32",
+        "triple": "wasm32-unknown-unknown-elf",
+        "type": "asm",
+        "command": "wasm",
+        "info": "This compiles to WebAssembly (wasm) \`.wasm\` files. You must " +
+            "have LLVM installed built with \`-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly\` " +
+            "otherwise you will recieve compilation errors. Additionally you must have " +
+            "Binaryen (https://git.io/binaryen) installed globally. "
+    }]
+])
