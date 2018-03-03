@@ -100,7 +100,7 @@ export default class LiteralResolver extends TypeResolver {
         // Match literal type to context-based candidates
         if (response !== null) {
             // Actual type intersect
-            this.mutableIntersect(response, typeCandidates)
+            this.mutableIntersect([response], typeCandidates)
 
             // Okay if this is 0 that means you have conflicting things
             // This is because errors have already been thrown for no actually
