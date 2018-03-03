@@ -70,9 +70,11 @@ export default class CallResolver extends TypeResolver {
                         // The child cannot be voidable
                         case ConstraintType.VoidableContext: return false;
 
+                        case ConstraintType.RequestedTypeResolutionConstraint: return null;
+
                         // Right no they are no parent constraints. We'll resolve
                         // that later.
-                        default: return null
+                        default: return negotiate(type);
                     }
                 })
             );

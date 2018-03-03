@@ -14,7 +14,7 @@ import Node from './node';
  * Make sure you specify tail still if it doesn't exist
  */
 export default class PropertyExpression extends Node {
-    
+
     /**
      * Matches a member-expression e.g. `(E).b`
      *
@@ -26,20 +26,26 @@ export default class PropertyExpression extends Node {
      */
     constructor(head: any, tail: any, optional: boolean, isClosure: boolean, position: Object) {
         super(position);
-        
+
         /** @type {Expression} */
         this.head = head;
-        
+
         /** @type {Identifier|Subscript|FunctionCall} */
         this.tail = tail;
-        
+
         /** @type {boolean} */
         this.optional = optional;
-        
+
         /** @type {boolean} */
         this.isClosure = isClosure;
+
+        /** @type {?ScopeAliasItem} */
+        this.baseRef = null;
+
+        /** @type {?ScopeAliasItem} */
+        this.propertyRef = null;
     }
-    
+
     clone() {
         return new PropertyExpression(
             this.head.clone(),
@@ -48,12 +54,12 @@ export default class PropertyExpression extends Node {
             this.isClosure
         )
     }
-    
+
     /** @override */
     get children() {
         return ['head', 'tail'];
     }
-    
+
     /** @override */
     toString() {
         return `(${this.head}).${this.tail}${this.optional ? '?' : ''}`;

@@ -622,21 +622,12 @@ LazyModifier
 
 
 @{%
-function recursiveType(types, optional, location) {
-  for (let i = 1; i < types.length; i++)
+function recursiveType(types, location) {
+  for (let i = 1; i < types.length; i++) {
     types[i] = new t.Type(types[i - 1], types[i], false, location);
-  types[types.length - 1].optional = optional;
+  }
   return types[types.length - 1];
 }
-
-// function recursiveTypeDeclaration(types, optional, parent, fallback, location) {
-//  for (let i = 1; i < types.length; i++)
-//    types[i] = new t.TypeDeclaration(types[i - 1], types[i], false, null, location);
-//  types[types.length - 1].optional = optional;
-//  types[types.length - 1].parent = parent;
-//  types[types.length - 1].fallback = fallback;
-//  return types[types.length - 1];
-// }
 %}
 
 
@@ -644,15 +635,20 @@ TypedIdentifier
    -> Identifier (_ ":" _ type {% nth(3) %}):? {%
         (data, location) => new t.TypedIdentifier(data[0], data[1], location)
     %}
+
 type
-   -> delimited[className {% id  %}, _ "." _] "?":? {%
-        (data, location) => recursiveType(data[0], !!data[1], location)
+   -> delimited[className {% id  %}, _ "." _] {%
+        (data, location) => recursiveType(data[0], location)
     %}
 className
    -> Identifier {% id %}
     | Identifier "[" "]" {%
         (data, location) =>
             new t.Generic(new t.Identifier("Array", false, location), [data[0]], location)
+        %}
+    | Identifier "?" {%
+        (data, location) =>
+            new t.Generic(new t.Identifier("Optional", false, location), [data[0]], location)
         %}
     | Identifier "<" delimited[type {% id %}, _ "," _] ">" {%
         (data, location) => new t.Generic(data[0], data[2], location)

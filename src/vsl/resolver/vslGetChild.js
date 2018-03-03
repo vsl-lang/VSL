@@ -7,6 +7,7 @@ export default function vslGetChild(from: Node): TypeResolver {
         case t.Identifier: return new resolvers.IdResolver(from, vslGetChild);
         case t.Literal: return new resolvers.LiteralResolver(from, vslGetChild);
         case t.FunctionCall: return new resolvers.CallResolver(from, vslGetChild);
+        case t.PropertyExpression: return new resolvers.PropertyResolver(from, vslGetChild);
         default: throw new TypeError(`No deduction child handler for ${from.constructor.name}`);
     }
 }

@@ -26,11 +26,19 @@ export default class TypeDeductAssignment extends Transformation {
         super(t.AssignmentStatement, "TypeDeduct::AssignmentStatement");
     }
 
+    /**
+     * Determines if should specifically run for this node.
+     * @param {Node} node Node should test for
+     * @return {boolean} if the node should be run
+     */
+    isValidNode(node) { return !(node instanceof t.FieldStatement); }
+
     modify(node: Node, tool: ASTTool) {
+        if (!this.isValidNode(node)) return;
+
         let scope = tool.scope;
         let requestedType = null,
             requestedTypeCandidate = null;
-
 
         if (!node.name.type && !node.value) {
             throw new TransformError(
@@ -50,10 +58,11 @@ export default class TypeDeductAssignment extends Transformation {
         if (node.value) {
             resolvedType = new RootResolver(node.value, vslGetChild, tool.context)
                 .resolve((constraint) => {
-                    if (constraint === ConstraintType.RequestedTypeResolutionConstraint) {
-                        return requestedTypeCandidate;
-                    } else {
-                        return null;
+                    switch (constraint) {
+                        case ConstraintType.RequestedTypeResolutionConstraint:
+                            return requestedTypeCandidate;
+                        default:
+                            return null;
                     }
                 });
         } else {

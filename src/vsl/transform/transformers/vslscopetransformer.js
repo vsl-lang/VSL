@@ -14,7 +14,9 @@ export default class VSLScopeTransformer extends Transformer {
             pass.RegisterFunctionDeclaration,
 
             // Function annotation support
-            pass.DescribeInlineAnnotation
+            pass.DescribeInlineAnnotation,
+
+            pass.TypeDeductField
         ], context);
     }
 }

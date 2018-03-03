@@ -1,10 +1,9 @@
 {
   "name": "vsl",
-  "version": "0.0.2-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "VSL: Versatile Scripting Language",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run build",
     "prepare": "npm run build",
     "build": "npm run nearley && cross-env NODE_ENV=production babel src/ -d lib/",
     "dev": "npm run nearley && npm run babel",
@@ -27,7 +26,10 @@
   "bin": {
     "vsl": "lib/cli/vsl.js"
   },
-  "author": "somebody1234",
+  "contributors": [
+    "Vihan <contact@vihan.org> (https://vihan.org)",
+    "E-Hern Lee"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vsl-lang/VSL/issues"
@@ -53,7 +55,6 @@
     "@babel/core": "^7.0.0-beta.40",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
     "@babel/plugin-proposal-do-expressions": "^7.0.0-beta.40",
-    "@babel/plugin-proposal-export-default": "^7.0.0-beta.32",
     "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.40",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0-beta.40",
     "@babel/plugin-proposal-function-bind": "^7.0.0-beta.40",

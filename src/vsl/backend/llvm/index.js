@@ -32,6 +32,7 @@ export default class LLVMBackend extends Backend {
 
         // Sort in order of likely occurence
         yield new w.Identifier();
+        yield new w.PropertyExpression();
         yield new w.FunctionCall();
         yield new w.Literal();
         yield new w.BitCastExpression();

@@ -39,7 +39,7 @@ export default class IdResolver extends TypeResolver {
      */
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
-        const scope = this.node.parentScope.scope;
+        const scope = negotiate(ConstraintType.TypeScope);
         const rootId = this.node.value;
 
         // If passed callArgs we know it's a fucntion
@@ -54,7 +54,6 @@ export default class IdResolver extends TypeResolver {
             // We can omit void functions in this filter if it specified that
             // they aren't need
             const allowVoid = negotiate(ConstraintType.VoidableContext);
-            const bindingContext = negotiate(ConstraintType.BindingContext);
 
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,

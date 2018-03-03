@@ -1,4 +1,0 @@
-@target(String)
-public interface DOMString {
-    
-}
