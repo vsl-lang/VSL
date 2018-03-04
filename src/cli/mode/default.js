@@ -187,7 +187,17 @@ export default class Default extends CLIMode {
             this.executeModule(directory, output, backend)
                 .then((index) => {
                     this.postCompilation(index.root);
-                    console.log(backend.getByteCode());
+
+                    let lli = spawn('lli', [], {
+                        stdio: ['pipe', 'inherit', 'inherit']
+                    });
+
+                    lli.stdin.write(backend.getByteCode());
+                    lli.stdin.end();
+                    lli.on('exit', () => {
+                        process.exit(0);
+                    });
+
                     process.exit(0);
                 });
         } else if (files.length > 0) {
@@ -197,7 +207,6 @@ export default class Default extends CLIMode {
                         stdio: ['pipe', 'inherit', 'inherit']
                     });
 
-                    console.log(backend.getByteCode());
                     lli.stdin.write(backend.getByteCode());
                     lli.stdin.end();
                     lli.on('exit', () => {
@@ -408,11 +417,21 @@ export default class Default extends CLIMode {
             }
 
             if (worked) {
-                console.log(backend.getByteCode());
-                lastCalls += inputString + '\n';
-            }
 
-            await repl();
+                let lli = spawn('lli', [], {
+                    stdio: ['pipe', 'inherit', 'inherit']
+                });
+
+                lli.stdin.write(backend.getByteCode());
+                lli.stdin.end();
+                lli.on('exit', async () => {
+                    await repl();
+                });
+
+                lastCalls += inputString + '\n';
+            } else {
+                await repl();
+            }
         }
 
         await repl();
