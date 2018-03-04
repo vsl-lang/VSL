@@ -29,6 +29,7 @@ export const DEFAULT_STL = "libvsl";
 
 export default class CompilerCLI extends CLIMode {
     fileMap = new Map();
+    linkerArgs = [];
 
     /**
      * Loads the STL and returns it as the only item in an array of compilation
@@ -41,11 +42,11 @@ export default class CompilerCLI extends CLIMode {
         if (config === false) return [];
         let stlName = typeof config === 'string' ? config : DEFAULT_STL;
         let stdlibpath = path.join(__dirname, '../../../libraries/', stlName);
-        let stdlibIndex = await this.executeModule(stdlibpath);
+        let { index } = await this.executeModule(stdlibpath);
         return new CompilationModule(
-            stdlibIndex.root.metadata.name,
+            index.root.metadata.name,
             HookType.Strong,
-            stdlibIndex
+            index
         );
     }
 
@@ -53,7 +54,7 @@ export default class CompilerCLI extends CLIMode {
      * Executes a module
      * @param {string} directory Path to directory
      * @param {Backend} [primaryBackend=null] If provided, will compile with.
-     * @return {Promise} resolves to {@link CompilationIndex}
+     * @return {Promise} resolves to `{ module, index }`
      */
     async executeModule(directory, primaryBackend = null) {
         let dirpath = path.resolve(directory);
@@ -115,7 +116,7 @@ export default class CompilerCLI extends CLIMode {
             this.postCompilation(index.root);
         }
 
-        return index;
+        return { index: index, module: module };
     }
 
     /**

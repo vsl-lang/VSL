@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import tty from 'tty';
 
+import hrtime from 'browser-process-hrtime';
 
 import { spawn } from 'child_process';
 
@@ -28,6 +29,9 @@ export default class Build extends CompilerCLI {
             ["Build Options", [
                 ["-o"                    , "Required. Specifies output file. Use" +
                                            "`-` for STDOUT.",                        { arg: "file", output: true }],
+                ["-O"                    , "Optimization level, default is 2." +
+                                           "Values are [0, 3], 3 being most " +
+                                           "optimized.",                             { arg: "opt", opt: true }],
                 ["-l"                    , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
                 ["--Xlinker"             , "Specifies an extra linker argument",     { arg: "xlinker", xlinker: true }],
@@ -63,9 +67,13 @@ export default class Build extends CompilerCLI {
     }
 
     listTargets() {
-        let targetText = 'Directly supported VSL targets:\n';
+        let targetText = 'Directly supported VSL targets:\n\n';
 
-        targetText = '\nFor more, compile to LLVM IR using `-S` and use ' +
+        for (let [target] of Targets) {
+            targetText += `  - ${target}\n`;
+        }
+
+        targetText += '\nFor more, compile to LLVM IR using `-S` and use ' +
             '`llc` or use --triple with `native`';
         this.printAndDie(targetText);
     }
@@ -84,10 +92,12 @@ export default class Build extends CompilerCLI {
 
         let linker = 'ld';
         let linkerArgs = [];
+        let libraries = [];
 
         let directory = null;
         let files = [];
         let outputStream = null;
+        let opt = 2; // Optimization level
 
         if (args.length === 0) {
             this.help();
@@ -108,7 +118,9 @@ export default class Build extends CompilerCLI {
                 if ('link' in flagInfo) link = flagInfo.link;
                 if ('target' in flagInfo) target = args[++i];
                 if ('linker' in flagInfo) linker = flagInfo.linker;
+                if ('library' in flagInfo) libraries.push(`-l${args[++i]}`);
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
+                if ('opt' in flagInfo) opt = args[++i];
                 if (flagInfo.output) {
                     let path = args[++i];
                     if (outputStream) {
@@ -147,23 +159,28 @@ export default class Build extends CompilerCLI {
         this.perfBreakdown = perfBreakdown;
 
         this.linker = linker;
+        this.libraries = libraries;
         this.linkerArgs = linkerArgs;
 
         this.outputStream = outputStream;
+
+        if (![0, 1, 2, 3].includes(+opt)) {
+            this.error.cli(`invalid optimization level ${opt}`);
+        }
+        this.optimizationLevel = opt;
 
 
         if (this.outputStream === null) {
             this.error.cli(`Provide output location.`);
         }
 
-        let targetData = Targets.get(target);
-        if (!targetData) this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
-        else this.target = targetData;
+        this.setTarget(target);
 
         let backend = new LLVMBackend(this.createStream());
         if (directory) {
             this.executeModule(directory, backend)
-                .then((index) => {
+                .then(({ module }) => {
+                    if (module.target) this.setTarget(module.target);
                     this.compileLLVM(backend);
                 });
         } else if (files.length > 0) {
@@ -174,6 +191,16 @@ export default class Build extends CompilerCLI {
         } else {
             this.help();
         }
+    }
+
+    /**
+     * Sets the target
+     * @param {string} target
+     */
+    setTarget(target) {
+        let targetData = Targets.get(target);
+        if (!targetData) this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
+        else this.target = targetData;
     }
 
     /**
@@ -193,11 +220,10 @@ export default class Build extends CompilerCLI {
      * @param {Backend} backend backend
      */
     async compileLLVM(backend) {
+        let start = hrtime();
         if (this.link === false) {
             // Just write bytecode
-
             this.outputStream.write(backend.getByteCode());
-            return;
         } else {
             // Otherwise compile to
             const fileManager = new TempFileManager();
@@ -208,16 +234,17 @@ export default class Build extends CompilerCLI {
             await this.llc(byteCode, asmFile, {
                 arch: this.target.arch,
                 triple: this.target.triple,
-                type: this.target.type
+                type: this.target.type,
+                optLevel: this.optimizationLevel
             });
 
-            this._colorCompilationStep(`<stdin>.LL`, asmFile);
+            this._colorCompilationStep(`<input.ll>`, asmFile);
 
             switch (this.target.command) {
                 case "ld":
                     let outFile = fileManager.tempWithExtension('out');
                     await this.ld(asmFile, outFile, {
-                        outputType: ['-e', '_main']
+                        outputType: ['-lcrt1']
                     });
                     this._colorCompilationStep(asmFile, outFile);
 
@@ -247,6 +274,14 @@ export default class Build extends CompilerCLI {
                 default:
                     this.error.cli(`target compiles with unknown step ${this.command}.`);
             }
+        }
+
+        let elapsed = hrtime(start);
+        let timeInMs = (elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(2);
+        if (this.color) {
+            console.log(`\n\u001B[1;32mSuccesfully compiled in ${timeInMs}ms\u001B[0m`);
+        } else {
+            console.log(`\nSuccesfully compiled in ${timeInMs}ms`);
         }
     }
 
@@ -331,7 +366,7 @@ export default class Build extends CompilerCLI {
                 sourceFile,
                 '-lc',
                 '-o', outputFile
-            ].concat(outputType, this.linkerArgs), {
+            ].concat(outputType, this.linkerArgs, this.libraries), {
                 stdio: ['ignore', 'inherit', 'inherit']
             });
 

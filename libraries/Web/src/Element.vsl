@@ -1,0 +1,4 @@
+@mock(opaquepointer)
+public class Element {
+    public func getAttribute(name: String) external(getAttributeSelf)
+}

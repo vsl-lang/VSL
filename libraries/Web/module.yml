@@ -1,0 +1,10 @@
+name: Web
+description: VSL bindings for web-based targets, specifically WASM.
+
+version: 0.0.1
+
+# This will compile to a WASM module which you can link with an `import Web`
+target: wasm
+
+sources:
+    - src/**/*.vsl

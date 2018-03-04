@@ -1,9 +1,3 @@
 [submodule "libraries/libvsl"]
 	path = libraries/libvsl
 	url = https://github.com/vsl-lang/libvsl.git
-[submodule "libraries/Crypto/openssl"]
-	path = libraries/Crypto/openssl
-	url = https://github.com/openssl/openssl.git
-[submodule "libraries/libc/glibc"]
-	path = libraries/libc/glibc
-	url = git://sourceware.org/git/glibc.git

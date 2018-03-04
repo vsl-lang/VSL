@@ -30,38 +30,38 @@ export default class Module {
                 { path }
             );
         }
-        
+
         /** @private */
         this.rootPath = path;
-        
+
         /**
          * Path of the YML file
          * @type {string}
          */
         this.ymlPath = null;
-        
+
         /**
          * The onwarning handler, you'll have to figure out how to handlle this
          * stuff
          * @type {Function}
          */
         this.onwarning = null;
-        
+
         /**
          * Stores the actual values of the module
          * @type {VSLModule}
          */
         this.module = new VSLModule();
     }
-    
+
     /** @private */
     handleWarning(...args) {
         if (this.onwarning) this.onwarning(...args);
     }
-    
+
     /** @private */
     async setupModule(yaml) {
-        
+
         ////////////////////////////////////////////////////////////////////////
         // .NAME
         ////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ export default class Module {
             `All modules must have a name, no name provided`,
             ModuleError.type.moduleNoName
         );
-        
+
         if (!/^[A-Za-z_-][A-Za-z_0-9-]*$/.test(yaml.name)) {
             throw new ModuleError(
                 `Modules can only have names with letters, dashes, and ` +
@@ -78,14 +78,14 @@ export default class Module {
                 { name: yaml.name }
             )
         }
-        
+
         this.module.name = yaml.name;
-        
+
         ////////////////////////////////////////////////////////////////////////
         // .DESCRIPTION
         ////////////////////////////////////////////////////////////////////////
         this.module.description = yaml.description || "";
-        
+
         ////////////////////////////////////////////////////////////////////////
         // .VERSION
         ////////////////////////////////////////////////////////////////////////
@@ -95,21 +95,23 @@ export default class Module {
             ModuleError.type.invalidVersion,
             { version: yaml.version }
         );
-        
+
         ////////////////////////////////////////////////////////////////////////
         // .TARGET
         ////////////////////////////////////////////////////////////////////////
         let target = yaml.target;
-        let targetTypes = Object.keys(VSLModule.TargetType);
-        if (typeof target === 'undefined') target = 'executable';
-        if (targetTypes.indexOf(target) === -1) throw new ModuleError(
-            `Target must of be one of: \`${targetTypes.join(", ")}\`.`,
-            ModuleError.type.invalidTargetType,
-            { type: target }
-        );
-        
-        this.module.target = VSLModule.TargetType[target];
-        
+        if (typeof target === 'undefined') target = 'native';
+
+        this.module.target = target;
+
+        ////////////////////////////////////////////////////////////////////////
+        // .linkerArgs
+        ////////////////////////////////////////////////////////////////////////
+        let linkerArgs = yaml.linkerArgs;
+        if (typeof linkerArgs === 'undefined') linkerArgs = [];
+
+        this.module.linkerArgs = linkerArgs;
+
         ////////////////////////////////////////////////////////////////////////
         // .STDLIB
         ////////////////////////////////////////////////////////////////////////
@@ -124,7 +126,7 @@ export default class Module {
             )
         }
         this.module.stdlib = stdlib;
-        
+
         ////////////////////////////////////////////////////////////////////////
         // .SOURCES
         ////////////////////////////////////////////////////////////////////////
@@ -133,7 +135,7 @@ export default class Module {
             `Sources list should be array`,
             ModuleError.type.invalidSourceType
         );
-        
+
         let expandedSources = [];
         for (let i = 0; i < sources.length; i++) {
             let source = sources[i];
@@ -141,22 +143,22 @@ export default class Module {
                 `Source #${i} should be string but wasn't.`,
                 ModuleError.type.invalidSourceItemType
             );
-            
+
             try {
                 let globs = await Module.moduleInterface.glob(
                     sources[i],
                     this.rootPath
                 );
-                
+
                 expandedSources.push(...globs);
             } catch(e) {
                 throw e;
             }
         }
-        
+
         this.module.sources = expandedSources;
     }
-    
+
     /**
      * Loads and process module information. Will throw errors if anything
      * happens.
@@ -167,7 +169,7 @@ export default class Module {
         // Path to module.yml
         let requestPath = path.join(this.rootPath, 'module.yml');
         this.ymlPath = requestPath;
-        
+
         let ymlString;
         try {
             ymlString = await Module.moduleInterface.readFile(requestPath);
@@ -179,7 +181,7 @@ export default class Module {
                 { error }
             )
         }
-        
+
         // Setup moduld
         await this.setupModule(
             yaml.safeLoad(ymlString, {
@@ -189,6 +191,6 @@ export default class Module {
             })
         )
     }
-    
+
     static moduleInterface = new ModuleInterface();
 }

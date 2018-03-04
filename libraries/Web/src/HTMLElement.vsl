@@ -1,0 +1,4 @@
+@mock(opaquepointer)
+public class HTMLElement: Element {
+
+}
