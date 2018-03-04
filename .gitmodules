@@ -1,3 +1,6 @@
 [submodule "libraries/libvsl"]
 	path = libraries/libvsl
 	url = https://github.com/vsl-lang/libvsl.git
+[submodule "wasm"]
+	path = wasm
+	url = https://github.com/vsl-lang/vsl-wasm.git
