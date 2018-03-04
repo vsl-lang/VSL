@@ -4,3 +4,6 @@
 [submodule "wasm"]
 	path = wasm
 	url = https://github.com/vsl-lang/vsl-wasm.git
+[submodule "ios"]
+	path = ios
+	url = https://github.com/vsl-lang/vsl-ios
