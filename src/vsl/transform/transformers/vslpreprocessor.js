@@ -13,7 +13,12 @@ export default class VSLPreprocessor extends Transformer {
             // deductor.
             pass.VerifyFunctionAccessScope,
             pass.VerifyAnnotationSignature,
-            // pass.VerifyLoneLiterals,
+
+            // Verify initializers are correct format/order
+            pass.VerifyInitializerFormat,
+
+            // Verify initalizers are correct
+            pass.VerifyInitDelegationFormat,
 
             // Registers a @primitive mark specifying that a class defines
             // behavior for one.

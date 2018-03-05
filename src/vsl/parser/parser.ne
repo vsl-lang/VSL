@@ -3,6 +3,7 @@
 "use strict";
 let t = require('./nodes').default;
 let VSLTokenizer = require('./vsltokenizer').default;
+let ParserError = require('./parserError').default;
 let lexer = new VSLTokenizer();
 
 const NodeTypes = require('./vsltokentype').default,
@@ -20,16 +21,31 @@ const NodeTypes = require('./vsltokentype').default,
   byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence }),
   boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
+  any = freeze({ test: () => true }),
   mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p })
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
   mid = d => d[0][0],
   importMark = Symbol('import');
 
+// custom errors for error prods.
+const unlessErr = (message, char) =>
+    (data, location, reject) => {
+        if (data[0].value === char) return reject;
+        else throw new ParserError(message, location)
+    };
+
+const unlessNodeErr = (message, node, pos = 0) =>
+    (data, location, reject) => {
+        if (node.test(data[pos])) return reject;
+        else throw new ParserError(message, location)
+    };
+
 // State management
 let state = {
     inFunction: false,
-    inTypeContext: false
+    inTypeContext: false,
+    inInit: false
 };
 
 const onlyState = (stateName, callback) =>
@@ -38,7 +54,13 @@ const onlyState = (stateName, callback) =>
 
 const setState = (stateName, value) =>
     (data, location, reject) => {
-        state[stateName] = value;
+        if (stateName instanceof Array) {
+            for (let i = 0; i < stateName.length; i++) {
+                state[stateName[i]] = value;
+            }
+        } else {
+            state[stateName] = value;
+        }
         return data[0];
     }
 %}
@@ -86,6 +108,7 @@ statement
     | BlockExpression      {% id %}
 #    | CommandChain         {% id %}
     | TypeAlias            {% id %}
+    | InitCallStatement    {% onlyState('inInit', id) %}
     | ReturnStatement      {% onlyState('inFunction', id) %}
 
 # ============================================================================ #
@@ -152,6 +175,21 @@ InterfaceStatement
         )
     %}
 
+InitCallStatement
+   -> SelfOrSuper _ "." _ "init" _ (
+         "(" _ delimited[InitCallArgument {% id %}, _ "," _] _ ")" {% nth(2) %}
+       | "(" _ ")" {% () => [] %}
+       | %any {% unlessErr("expected initalizer argument list", "(") %}
+    ) {% (d, l) => new t.InitDelegationCall(d[0], d[6], l) %}
+
+InitCallArgument
+   -> Identifier _ ":" _ InlineExpression {% (d, l) => new t.ArgumentCall(d[4], d[0], l) %}
+    | InlineExpression {% (d, l) => new t.ArgumentCall(d[0], null, l) %}
+
+SelfOrSuper
+   -> "self" {% (d, l) => new t.Self(l) %}
+    | "super" {% (d, l) => new t.Super(l) %}
+
 #TODO: can enums even multiple inherit? of course we need to allow inheritance for Byte, Short etc
 
 # EnumerationStatement
@@ -194,9 +232,9 @@ Field
 
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
-        ( "{" {% setState('inTypeContext', true) %} )
+        ( "{" {% setState(['inInit', 'inTypeContext'], true) %} )
         CodeBlock[statement {% id %}]
-        ( "}" {% setState('inTypeContext', false) %} ) {%
+        ( "}" {% setState(['inInit', 'inTypeContext'], false) %} ) {%
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
                 data[4] || [], data[7], location)
@@ -228,8 +266,8 @@ AssignmentStatement
    -> AssignmentType _ TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
         (data, location) =>
             new t.AssignmentStatement([], assignmentTypes[data[0].value], data[2],
-                data[3], location)
-    %}
+                data[3], location) %}
+    | AssignmentType _ %any {% unlessNodeErr('expected identifier after assignment', identifier, 2) %}
 
 AssignmentType
    -> "const" {% id %}
@@ -340,12 +378,6 @@ Ternary
    -> Assign _ "?" _ Ternary _ ":" _ Assign {%
         (data, location) => new t.Ternary(data[0], data[2], data[4], location)
     %}
-    | Assign {% id %}
-Assign
-   -> Assign _ ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
-        "*=" | "%=" | "**=" | "&=" | "|=" | "^=") _ Assign {%
-            (data, location) => new t.AssignmentExpression(data[1][0], data[0], data[3])
-        %}
     | Is {% id %}
 Is
    -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
@@ -494,10 +526,7 @@ Property
 
 propertyHead
    -> Identifier             {% id %}
-    | (
-        "self" {% (d, l) => new t.Self(l) %} |
-        "super" {% (d, l) => new t.Super(l) %}
-      )     {% onlyState('inTypeContext', id) %}
+    | SelfOrSuper            {% onlyState('inTypeContext', id) %}
     | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
     | FunctionizedOperator   {% id %}
     | Literal                {% id %}
@@ -696,6 +725,12 @@ Identifier
 
 _
    -> "\n":*
+
+# TODO: Assignment:
+# _ ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
+     # "*=" | "%=" | "**=" | "&=" | "|=" | "^=") _ Assign {%
+     #     (data, location) => new t.AssignmentExpression(data[1][0], data[0], data[3])
+     # %}
 
 # ============================================================================ #
 #                                Documentation                                 #

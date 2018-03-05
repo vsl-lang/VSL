@@ -117,7 +117,7 @@ export default class ScopeFuncItem extends ScopeItem {
      * @return {ScopeFuncItem}
      */
     getQuery() {
-        return new ScopeFuncItem(ScopeForm.query, this.rootId, {
+        return new (this.constructor)(ScopeForm.query, this.rootId, {
             args: this.args
         });
     }
