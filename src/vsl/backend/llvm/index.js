@@ -5,7 +5,6 @@ import LLVMContext from './LLVMContext';
 
 import * as llvm from "llvm-node";
 
-
 /**
  * LLVM backend which directly compiles to LLVM bytecode.
  */
@@ -33,6 +32,7 @@ export default class LLVMBackend extends Backend {
         // Sort in order of likely occurence
         yield new w.Identifier();
         yield new w.PropertyExpression();
+        yield new w.InitializerCall(); // This must come before function call.
         yield new w.FunctionCall();
         yield new w.Literal();
         yield new w.BitCastExpression();
@@ -40,6 +40,7 @@ export default class LLVMBackend extends Backend {
         yield new w.IfStatement();
         yield new w.CodeBlock();
         yield new w.ReturnStatement();
+        yield new w.InitializerStatement();
         yield new w.RootFunction();
         yield new w.NoOp();
     }

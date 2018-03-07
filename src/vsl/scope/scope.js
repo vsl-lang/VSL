@@ -103,7 +103,9 @@ export default class Scope {
         if (candidates.length === 0) return null;
 
         for (let i = 0; i < candidates.length; i++) {
-            if (candidates[i].equal(item)) return candidates[i];
+            if (candidates[i].equal(item)) {
+                return candidates[i];
+            }
         }
 
         return null;

@@ -39,7 +39,7 @@ export default function layoutType(type, backend) {
     structType.setBody(
         layout,
         false
-    )
+    );
 
     return structType;
 }

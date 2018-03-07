@@ -109,7 +109,9 @@ export default class IdResolver extends TypeResolver {
         const typeCandidates = [ new TypeCandidate(result.type) ];
 
         // Filter amongst response
-        this.mutableIntersect(response, typeCandidates);
+        if (response) {
+            this.mutableIntersect([response], typeCandidates);
+        }
 
         if (typeCandidates.length === 0) {
             this.emit(
