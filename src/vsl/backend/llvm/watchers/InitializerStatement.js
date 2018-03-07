@@ -17,10 +17,9 @@ export default class LLVMInitializerStatement extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
         const scopeItem = node.scopeRef;
-
         const args = scopeItem.args;
-
-        const parentClass = scopeItem.initializingType;
+        const parentClass = scopeItem.initializingType; // Class being initalized
+        const selfType = toLLVMType(parentClass, backend); // Class being initalized in LLVM
 
         // What the init should be called
         const llvmFuncName = getFunctionName(scopeItem);
@@ -28,9 +27,6 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         // Check if this has already been generated
         const callee = backend.module.getFunction(llvmFuncName);
         if (callee) return callee;
-
-        // Type of the class itself
-        const selfType = toLLVMType(parentClass, backend);
 
         // Get the function type by mapping each arg ref to a respective type.
         // Additionally the first argument is the class the initalizer
@@ -48,10 +44,8 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
         // Stores the LLVM function Constant* which will be the return value of
         // this fnuction
-        let func;
-
         // Create this function's prototype
-        func = llvm.Function.create(
+        const func = llvm.Function.create(
             functionType,
             llvm.LinkageTypes.InternalLinkage,
             llvmFuncName,
@@ -62,7 +56,8 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
         // Add the refs to each arg.
         for (let i = 0; i < node.params.length; i++) {
-            node.params[i].aliasRef.backendRef = llvmFuncArgs[i];
+            // Offset by one because first arg is class itself
+            node.params[i].aliasRef.backendRef = llvmFuncArgs[i + 1];
         }
 
         // It's a initializer, it cannot call itself.

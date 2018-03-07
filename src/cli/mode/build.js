@@ -11,6 +11,7 @@ import { spawn } from 'child_process';
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import WASMIndex from '../../../wasm/index.json';
 import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
+import findCRT from '../helpers/findCRT';
 
 const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
 
@@ -32,9 +33,9 @@ export default class Build extends CompilerCLI {
                 ["-O"                    , "Optimization level, default is 2." +
                                            "Values are [0, 3], 3 being most " +
                                            "optimized.",                             { arg: "opt", opt: true }],
-                ["-l"                    , "Specifies a C library to link with",     { arg: "library", library: true }],
+                ["--library", "-l",       , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
-                ["--Xlinker"             , "Specifies an extra linker argument",     { arg: "xlinker", xlinker: true }],
+                ["--Xlinker", "-Xl"      , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
                                            "outputs `.ll`",                          { link: false }],
                 ["-t", "--target"        , "Compilation target. To see all " +
@@ -242,9 +243,18 @@ export default class Build extends CompilerCLI {
 
             switch (this.target.command) {
                 case "ld":
+
+                    // Try to find CRT
+                    let crt = await findCRT();
+                    if (crt === null) {
+                        this.error.cli(
+                            `failed: could not locate crt. See https://git.io/vslerr#crt-not-found for more information.`
+                        );
+                    }
+
                     let outFile = fileManager.tempWithExtension('out');
                     await this.ld(asmFile, outFile, {
-                        outputType: ['-lcrt1']
+                        outputType: [crt]
                     });
                     this._colorCompilationStep(asmFile, outFile);
 
@@ -252,6 +262,11 @@ export default class Build extends CompilerCLI {
                     readStream.pipe(this.outputStream);
                     this._colorCompilationStep(outFile, '<output>');
 
+                    break;
+                case "obj":
+                    let asmStream = fs.createReadStream(asmFile);
+                    asmStream.pipe(this.outputStream);
+                    this._colorCompilationStep(asmFile, '<output>');
                     break;
                 case "wasm":
                     let wastFile = fileManager.tempWithExtension('wast');

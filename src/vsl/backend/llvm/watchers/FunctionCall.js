@@ -45,9 +45,10 @@ export default class LLVMFunctionCall extends BackendWatcher {
             compiledArgs.push(value);
         }
 
-        return context.builder.createCall(
+        let result = context.builder.createCall(
             callee,
             compiledArgs
         );
+        return result;
     }
 }

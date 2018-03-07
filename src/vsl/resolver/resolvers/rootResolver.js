@@ -50,11 +50,61 @@ export default class RootResolver extends TypeResolver {
             switch (type) {
                 case ConstraintType.TypeScope: return this.node.parentScope.scope;
                 case ConstraintType.TransformationContext: return this.context || negotiate(type);
+                case ConstraintType.SimplifyToPrecType: return false;
                 default: return negotiate(type);
             }
         };
 
         const child = this.getChild(this.node.expression);
-        return child.resolve(negotiator);
+        let result = child.resolve(negotiator);
+
+        if (negotiate(ConstraintType.SimplifyToPrecType) === true) {
+            // We are here if this resolver is supposed to find the 'precTypes'.
+            // E.g. in `let a = 3`. `3` can be all different types of integers
+            // This will pick `Int32` as a default
+
+            // If we have 1 result we are good
+            if (result.length === 1) return result;
+            if (result.length === 0) {
+                this.emit(
+                    `Expression is invalid, resolves to no valid type.`,
+                    this.node
+                );
+            }
+
+            let precCandidate = null;
+            for (let i = 0; i < result.length; i++) {
+                if (result[i].precType) {
+                    if (precCandidate !== null) {
+                        this.emit(
+                            `Expression is ambiguous. Additionally multiple ` +
+                            `precedence candidates found.`,
+                            this.node
+                        );
+                    } else {
+                        precCandidate = result[i];
+                    }
+                }
+            }
+
+            if (precCandidate === null) {
+                this.emit(
+                    `Expression is ambiguous.`,
+                    this.node
+                );
+            }
+
+            child.resolve((type) => {
+                switch (type) {
+                    case ConstraintType.RequestedTypeResolutionConstraint:
+                        return precCandidate;
+                    default: return negotiator(type);
+                }
+            });
+
+            result = [precCandidate];
+        }
+
+        return result;
     }
 }
