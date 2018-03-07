@@ -101,19 +101,19 @@ export default class LiteralResolver extends TypeResolver {
         if (response !== null) {
             // Actual type intersect
             this.mutableIntersect([response], typeCandidates)
+        }
 
-            // Okay if this is 0 that means you have conflicting things
-            // This is because errors have already been thrown for no actually
-            // type candidates.
-            if (typeCandidates.length === 0) {
-                this.emit(
-                    `This literal would need to be a type which it cannot be in\n` +
-                    `order for everything to work. Candidates would include: \n\n` +
-                    typeList.map(i => "    • " + i.toString()).join("\n") +
-                    `\n\nHowever none of these are actually a type this literal could\n` +
-                    `represent.`
-                );
-            }
+        // Okay if this is 0 that means you have conflicting things
+        // This is because errors have already been thrown for no actually
+        // type candidates.
+        if (typeCandidates.length === 0) {
+            this.emit(
+                `This literal would need to be a type which it cannot be in\n` +
+                `order for everything to work. Candidates would include: \n\n` +
+                typeList.map(i => "    • " + i.toString()).join("\n") +
+                `\n\nHowever none of these are actually a type this literal could\n` +
+                `represent.`
+            );
         }
 
         if (typeCandidates.length === 1) {

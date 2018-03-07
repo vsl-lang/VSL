@@ -160,23 +160,19 @@ export default class CallResolver extends TypeResolver {
                 e.UNKNOWN_REF
             );
         } else {
+            // Re-resolve subtypes to ensure unambiguous refs.
+            for (let i = 0; i < argc; i++) {
+                this.getChild(args[i].value).resolve((type) => {
+                    switch (type) {
+                        // The child cannot be voidable
+                        case ConstraintType.VoidableContext: return false;
 
-            // If there was some narrowing, we'll re-resolve subtypes for this
-            // overload
-            if (workingCandidates.length > 1) {
-                for (let i = 0; i < argc; i++) {
-                    this.getChild(args[i].value).resolve((type) => {
-                        switch (type) {
-                            // The child cannot be voidable
-                            case ConstraintType.VoidableContext: return false;
+                        case ConstraintType.RequestedTypeResolutionConstraint:
+                            return new TypeCandidate(maxCandidate.args[i].type);
 
-                            case ConstraintType.RequestedTypeResolutionConstraint:
-                                return new TypeCandidate(maxCandidate.args[i].type);
-
-                            default: return negotiate(type);
-                        }
-                    });
-                }
+                        default: return negotiate(type);
+                    }
+                });
             }
 
             // If we have succesfully found the one correct candidate...

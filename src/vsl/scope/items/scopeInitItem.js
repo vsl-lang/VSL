@@ -1,9 +1,8 @@
-import ScopeFuncItem from './ScopeFuncItem';
+import ScopeFuncItem from './scopeFuncItem';
 import ScopeForm from '../scopeForm';
 
 /**
- * Describes a function declaration. Usually a top, nested, or class-level
- * declaration.
+ * Describes an initializer.
  */
 export default class ScopeInitItem extends ScopeFuncItem {
 
@@ -12,26 +11,22 @@ export default class ScopeInitItem extends ScopeFuncItem {
      * handle overloading etc. For lambdas you probably want to use a normal
      *
      * @param {ScopeForm} form - The form or type of the scope item.
-     * @param {string} rootId - Do not override. Must be 'init'
+     * @param {string} rootId - Do not override. Should be 'init'
      * @param {Object} data - Information about the class
      */
     constructor(form, rootId, data) {
-        super(form, 'init', data);
+        super(form, rootId, data);
+
+        /** @type {ScopeTypeItem} */
+        this.initializingType;
     }
 
     /** @override */
-    init(opts) {
+    init({ initializingType, ...opts }) {
         // We can set the name to `init` because that's a keyword anyway. You
         // can't have a function named init.
         super.init({ ...opts });
-    }
-
-    /** @override */
-    equal(ref: ScopeItem): boolean {
-        // Check super condition
-        // We will do extra disambiguation here
-        if (!(ref instanceof ScopeInitItem)) return false;
-        return super.equal(ref);
+        this.initializingType = initializingType;
     }
 
     /** @override */

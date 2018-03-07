@@ -1,6 +1,8 @@
 import ScopeForm from '../scopeForm';
 import ScopeItem from '../scopeItem';
 
+import ScopeInitItem from './scopeInitItem';
+
 /**
  * @typedef {Object} ScopeTypeItemOptions
  * @property {?(ScopeTypeItem[])} data.interfaces - Types which this can safely
@@ -163,6 +165,14 @@ export default class ScopeTypeItem extends ScopeItem {
         }
 
         return 0;
+    }
+
+    /** @override */
+    equal(ref: ScopeItem): boolean {
+        // Only the names need to be equal except for inits
+        if (this.rootId !== ref.rootId) return false;
+        if (ref instanceof ScopeInitItem) return false;
+        return true;
     }
 
     /**

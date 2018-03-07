@@ -46,24 +46,27 @@ export default class PropertyResolver extends TypeResolver {
         const tailResolver = this.getChild(this.node.tail);
 
         // The candidates of the head
-        const candidates = this.getChild(head).resolve(negotiate);
-
-        // Get requested resolution constraint.
-        const requestedResolutionConstraint = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        const candidates = this.getChild(head).resolve((type) => {
+            switch (type) {
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return null;
+                case ConstraintType.BoundedFunctionContext:
+                    return null;
+                default: return negotiate(type);
+            }
+        });
 
         // Stores a respective list of candidates in form
         // { headType: TypeCandidate, fieldType: TypeCandidate }
         let candidateList = [];
 
         // Try IdResolver for each candidate.
-        for (let i = 0; i < candidates.length; i++) {
+        for (let i = 0; i < candidates.length; i++) {;
             // Here we will attempt to find if the property exists
             let matchingFields = tailResolver.resolve((type) => {
                 switch (type) {
                     case ConstraintType.TypeScope:
                         return candidates[i].candidate.subscope;
-                    case ConstraintType.BoundedFunctionContext:
-                        return null;
                     default: return negotiate(type);
                 }
             });
