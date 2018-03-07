@@ -42,11 +42,11 @@ export default class CompilationIndex {
          * @type {CompilationGroup}
          */
         this.root = root;
-        
+
         /** @private */
         this.modules = modules;
     }
-    
+
     /**
      * Compiles to a stream. Encapsulates {@link CompilationGroup~compile}, for
      * linkage, bitcode compilation this offers function for those.
@@ -59,7 +59,7 @@ export default class CompilationIndex {
     async compile(stream) {
         for (let module of this.modules) {
             let items = [];
-            
+
             // Propogate the new items from the scope of the module
             new PropogateModifierTraverser(
                 {
@@ -70,7 +70,7 @@ export default class CompilationIndex {
                 },
                 (scopeItem) => items.push(scopeItem)
             ).queue(module.index.root.globalScope);
-            
+
             // Create compilation hook for the module
             let hook = new CompilationHook(
                 module.name,
@@ -78,7 +78,7 @@ export default class CompilationIndex {
                 items,
                 module.index.root.context
             );
-            
+
             // Check hook type and hook the generated hook
             if (module.hookType === HookType.Strong) {
                 this.root.strongHook(hook);
@@ -86,8 +86,9 @@ export default class CompilationIndex {
                 this.root.lazyHook(hook);
             }
         }
-        
+
         // Now we can compile the group
-        return await this.root.compile(stream);
+        let result = await this.root.compile(stream);
+        return result;
     }
 }

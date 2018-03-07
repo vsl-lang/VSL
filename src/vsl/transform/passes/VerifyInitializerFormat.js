@@ -20,7 +20,7 @@ export default class VerifyInitializerFormat extends Transformation {
 
         // Just go through each statement. init delegates cannot be in ifs.
         const statements = node.statements.statements;
-        for (let i = 0; statements.length; i++) {
+        for (let i = 0; i < statements.length; i++) {
             if (statements[i] instanceof t.InitDelegationCall) {
                 if (delegationInitalizer !== null) {
                     throw new TransformError(

@@ -37,6 +37,7 @@ export default class LLVMBackend extends Backend {
         yield new w.Literal();
         yield new w.BitCastExpression();
         yield new w.ExpressionStatement();
+        yield new w.AssignmentStatement();
         yield new w.IfStatement();
         yield new w.CodeBlock();
         yield new w.ReturnStatement();
@@ -84,6 +85,15 @@ export const Targets = new Map([
         "info": "Compiles to native object files and automatically links. " +
             " This is the default target and by default assumes system default " +
             " target triple."
+    }],
+    ["obj", {
+        "arch": "",
+        "triple": "",
+        "type": "obj",
+        "command": "obj",
+        "info": "Compiles into a raw object file. This by default assumes a " +
+            "system default target. The CRT is *not* linked, you must manually " +
+            "do this. Learn more at (https://git.io/vslerr#crt-not-found)"
     }],
     ["wasm", {
         "arch": "wasm32",

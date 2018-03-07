@@ -87,7 +87,7 @@ export default class VerifyReturnStatement extends Transformation {
                         .resolve((constraint) => {
                             switch (constraint) {
                                 case ConstraintType.RequestedTypeResolutionConstraint:
-                                    return [returnTypeCandidate];
+                                    return returnTypeCandidate;
                                 default: return null;
                             }
                         });

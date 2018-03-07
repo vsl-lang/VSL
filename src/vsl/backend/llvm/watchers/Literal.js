@@ -39,28 +39,24 @@ export default class LLVMLiteral extends BackendWatcher {
 
             case VSLTokenType.String:
                 let targetTy = toLLVMType(type, backend).elementType;
-
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
                     targetTy,
                     true,
                     llvm.LinkageTypes.PrivateLinkage,
-                    llvm.ConstantExpr.getBitCast(
-                        llvm.ConstantStruct.get(
-                            targetTy,
-                            [
-                                llvm.ConstantInt.get(
-                                    backend.context,
-                                    node.literal.length,
-                                    32,
-                                    false
-                                ),
-                                context.builder.createGlobalStringPtr(
-                                    node.literal
-                                )
-                            ]
-                        ),
-                        targetTy
+                    llvm.ConstantStruct.get(
+                        targetTy,
+                        [
+                            llvm.ConstantInt.get(
+                                backend.context,
+                                node.literal.length,
+                                32,
+                                false
+                            ),
+                            context.builder.createGlobalStringPtr(
+                                node.literal
+                            )
+                        ]
                     )
                 );
 

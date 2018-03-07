@@ -18,7 +18,8 @@ const ConstraintType = {
     TransformationContext: 1 << 2,
     BoundedFunctionContext: 1 << 3,
     VoidableContext: 1 << 4,
-    TypeScope: 1 << 6
+    TypeScope: 1 << 6,
+    SimplifyToPrecType: 1 << 7
 };
 
 export default ConstraintType;

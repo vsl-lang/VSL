@@ -56,15 +56,21 @@ export default class TypeDeductAssignment extends Transformation {
 
         let resolvedType;
         if (node.value) {
-            resolvedType = new RootResolver(node.value, vslGetChild, tool.context)
+            let typeCandidates = new RootResolver(node.value, vslGetChild, tool.context)
                 .resolve((constraint) => {
                     switch (constraint) {
                         case ConstraintType.RequestedTypeResolutionConstraint:
                             return requestedTypeCandidate;
+                        case ConstraintType.SimplifyToPrecType:
+                            return true;
                         default:
                             return null;
                     }
                 });
+
+            // We can safely take the first type because of SimplifyToPrecType
+            // which ensures that we don't have ambiguity.
+            resolvedType = typeCandidates[0].candidate;
         } else {
             resolvedType = requestedType;
         }
@@ -79,6 +85,7 @@ export default class TypeDeductAssignment extends Transformation {
             }
         );
 
+        node.ref = aliasItem;
         let result = scope.set(aliasItem);
         if (result === false) {
             throw new TransformError(
@@ -89,24 +96,3 @@ export default class TypeDeductAssignment extends Transformation {
         }
     }
 }
-
-/**
- * if (expression === null && variableType === null) {
-     // TODO: TAG
-     throw new TransformError(
-         `Variable \`${variableName}\` is declared without a type or ` +
-         `a value. Provide at least one as the type cannot be ` +
-         `deducted without an expression.`,
-         node
-     );
- }
-
- if (result === false) {
-     throw new TransformError(
-         `Redeclaration of variable \`${variableName}\` in scope. Did ` +
-         `you mean to use the assignment operator (\`=\`)?`,
-         node.name.identifier,
-         e.DUPLICATE_DECLARATION
-     );
- }
- */

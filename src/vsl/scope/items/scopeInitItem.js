@@ -33,4 +33,12 @@ export default class ScopeInitItem extends ScopeFuncItem {
     toString() {
         return `init(${this.args.join(", ")})`;
     }
+
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get uniqueName() {
+        return `${this.rootId}.init$${this.id}`
+    }
 }

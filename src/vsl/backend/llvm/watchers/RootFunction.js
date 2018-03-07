@@ -67,12 +67,14 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             returnType = llvm.Type.getVoidTy(backend.context);
         }
 
+        const argTypes = argsRef.map(
+            arg => toLLVMType(arg.type, backend)
+        );
+
         // Get the function type by mapping each arg ref to a respective type.
         let functionType = llvm.FunctionType.get(
             returnType,
-            argsRef.map(
-                arg => toLLVMType(arg.type, backend)
-            ),
+            argTypes,
             false
         );
 
