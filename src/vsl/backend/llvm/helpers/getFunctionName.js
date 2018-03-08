@@ -6,7 +6,7 @@ import t from '../../../parser/nodes';
  * @return {string}
  */
 export default function getFunctionName(func) {
-    let statements = func.source.statements;
+    let statements = func.source?.statements;
 
     if (statements instanceof t.ExternalMarker) {
         return statements.rootId;

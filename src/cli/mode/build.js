@@ -33,9 +33,10 @@ export default class Build extends CompilerCLI {
                 ["-O"                    , "Optimization level, default is 2." +
                                            "Values are [0, 3], 3 being most " +
                                            "optimized.",                             { arg: "opt", opt: true }],
-                ["--library", "-l",       , "Specifies a C library to link with",     { arg: "library", library: true }],
+                ["--library", "-l",      , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
-                ["--Xlinker", "-Xl"      , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
+                ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
+                ["-Xllc",                , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
                                            "outputs `.ll`",                          { link: false }],
                 ["-t", "--target"        , "Compilation target. To see all " +
@@ -93,6 +94,7 @@ export default class Build extends CompilerCLI {
 
         let linker = 'ld';
         let linkerArgs = [];
+        let llcArgs = [];
         let libraries = [];
 
         let directory = null;
@@ -121,6 +123,7 @@ export default class Build extends CompilerCLI {
                 if ('linker' in flagInfo) linker = flagInfo.linker;
                 if ('library' in flagInfo) libraries.push(`-l${args[++i]}`);
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
+                if ('xllc' in flagInfo) linkerArgs.push(args[++i]);
                 if ('opt' in flagInfo) opt = args[++i];
                 if (flagInfo.output) {
                     let path = args[++i];
@@ -162,6 +165,7 @@ export default class Build extends CompilerCLI {
         this.linker = linker;
         this.libraries = libraries;
         this.linkerArgs = linkerArgs;
+        this.llcArgs = llcArgs;
 
         this.outputStream = outputStream;
 
@@ -427,7 +431,7 @@ export default class Build extends CompilerCLI {
                 `-O=${optLevel}`,
                 `-filetype=${type}`,
                 `-o=${outputFile}`
-            ], {
+            ].concat(this.llcArgs), {
                 stdio: ['pipe', 'inherit', 'inherit']
             });
 

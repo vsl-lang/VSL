@@ -43,3 +43,13 @@ export default function layoutType(type, backend) {
 
     return structType;
 }
+
+/**
+ * Returns the offset of a field in a type
+ * @param {ScopeTypeItem} type  type
+ * @param {ScopeAliasItem} field field name
+ * @return {number} positive integer 0+ if found. -1 if not
+ */
+export function getTypeOffset(type, field) {
+    return type.subscope.aliases.indexOf(field);
+}

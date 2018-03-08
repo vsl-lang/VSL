@@ -29,8 +29,11 @@ export default class LLVMContext {
      * @return {LLVMContext}
      */
     clone() {
-        return new LLVMContext(
+        let context = new LLVMContext(
             this.backend
         );
+        context.builder = this.builder;
+        context.parentFunc = this.parentFunc;
+        return context;
     }
 }
