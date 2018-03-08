@@ -2,6 +2,7 @@ import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
 
 import ScopeGenericTemplateItem from './scopeGenericTemplateItem';
+import ScopeInitItem from './scopeInitItem';
 
 /**
  * Describes a declaration of a type.
@@ -84,6 +85,12 @@ export default class ScopeGenericItem extends ScopeItem {
      */
     rootToString() {
         return super.toString();
+    }
+
+    /** @override */
+    equal(ref: ScopeItem): boolean {
+        if (ref instanceof ScopeInitItem) return false;
+        return super.equal(ref);
     }
 
     /** @return {string} */

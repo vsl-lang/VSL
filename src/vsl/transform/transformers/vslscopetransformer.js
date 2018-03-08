@@ -12,6 +12,7 @@ export default class VSLScopeTransformer extends Transformer {
             // deductor.
             pass.RegisterTypeAlias,
             pass.RegisterFunctionDeclaration,
+            pass.RegisterClassDeclaration,
             pass.RegisterInitDeclaration,
 
             // Function annotation support

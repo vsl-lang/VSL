@@ -19,14 +19,18 @@ export default class ScopeInitItem extends ScopeFuncItem {
 
         /** @type {ScopeTypeItem} */
         this.initializingType;
+
+        /** @type {boolean} */
+        this.isDefaultInit;
     }
 
     /** @override */
-    init({ initializingType, ...opts }) {
+    init({ initializingType, isDefaultInit, ...opts }) {
         // We can set the name to `init` because that's a keyword anyway. You
         // can't have a function named init.
         super.init({ ...opts });
         this.initializingType = initializingType;
+        this.isDefaultInit = isDefaultInit;
     }
 
     /** @override */
