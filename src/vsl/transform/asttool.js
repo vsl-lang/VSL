@@ -28,19 +28,19 @@ export default class ASTTool {
     constructor(parent: Node | Node[], name: any, transformer: Transformer) {
         /** @private */
         this.parent = parent;
-        
+
         /** @private */
         this.name = name;
-        
+
         /** @private */
         this.fragment = parent[name];
-        
+
         /** @private */
         this.transformer = transformer;
 
         /** @private */
         this.replacement = null;
-        
+
         /** @private */
         this.sourceQualifier = this.fragment.queueQualifier;
 
@@ -51,7 +51,7 @@ export default class ASTTool {
          */
         this.context = (this.transformer && this.transformer.context) || null;
     }
-    
+
     /**
      * Returns the scope the node is in
      * @type {?Scope}
@@ -59,7 +59,35 @@ export default class ASTTool {
     get scope() {
         return this.fragment?.parentScope?.scope;
     }
-    
+
+    /**
+     * Returns the static scope if exists
+     * @type {?Scope}
+     */
+    get staticScope() {
+        return this.fragment?.parentScope.parentNode?.scopeRef?.staticScope;
+    }
+
+    /**
+     * Get scope that assignment should happen in
+     * @type {?Scope}
+     */
+    get assignmentScope() {
+        if (this.isStatic) {
+            return this.staticScope;
+        } else {
+            return this.scope;
+        }
+    }
+
+    /**
+     * Determines if a declaration of some sorts is static.
+     * @type {Boolean}
+     */
+    get isStatic() {
+        return this.fragment.access.includes('static');
+    }
+
     /**
      * Access the nth parent. This traverses up the AST tree and if the parent
      * could not be found, or another error occurs, this returns nil. Passing 0
@@ -73,7 +101,7 @@ export default class ASTTool {
         while (n > 0 && (parent = parent.parentNode)) n--;
         return parent;
     }
-    
+
 //     /**
 //      * Recursively looks and traverses the AST to locate the value associated
 //      * for a given `id`.
@@ -85,7 +113,7 @@ export default class ASTTool {
 //         while (scope && !(res = scope.scope.get(string))) scope = scope.parentScope;
 //         return res || null;
 //     }
-    
+
     /**
      * Transforms a node and then calls the callback when the transformation is
      * finished executing. See {@link Transformer}'s `queueThen` for more
@@ -102,7 +130,7 @@ export default class ASTTool {
     queueThen(node: node, transformation: ?Transformation) {
         this.queueThenDeep(node, this.parent, this.name, transformation);
     }
-    
+
     /**
      * Transforms a node and then calls the callback when the transformation is
      * finished executing. See {@link Transformer}'s `queueThen` for more
@@ -126,7 +154,7 @@ export default class ASTTool {
         }
     }
 
-    
+
     /**
      * Replaces the fragment with a new node.
      *
@@ -144,7 +172,7 @@ export default class ASTTool {
         withNode.parentNode = this.parent;
         this.parent[this.name] = withNode;
     }
-    
+
     /**
      * Removes a node from the parent.
      *
@@ -164,7 +192,7 @@ export default class ASTTool {
             this.parent[this.name] = null;
         }
     }
-    
+
     /**
      * Removed a fragment from tree. This does not remove the reference form the
      * parent tree.
@@ -184,11 +212,11 @@ export default class ASTTool {
     gc(relativeQueueQualifier: number = this.sourceQualifier) {
         if (relativeQueueQualifier === null) return;
         if (this.transformer === null) return;
-        
+
         // TODO: implement
         // this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
     }
-    
+
     /**
      * Notifies the scope that an identifier has been changed. This will
      * automatically determine the changed node and will check with the fragment

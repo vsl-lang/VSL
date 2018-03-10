@@ -92,7 +92,7 @@ export default class Bindgen extends CLIMode {
             {
                 stdio: [
                     'pipe',
-                    this.debug ? 'inherit' : 'ignore',
+                    'pipe',
                     'pipe'
                 ]
             }
@@ -150,6 +150,14 @@ export default class Bindgen extends CLIMode {
         prefixes.forEach(prefix => sendOpt(0x4F, prefix));
 
         proc.stdin.end();
+
+        proc.stdout.on('data', chunk => {
+            if (chunk.indexOf('vsl-bindgen: ') === 0) {
+                if (this.debug) process.stdout.write(chunk);
+            } else {
+                process.stdout.write(chunk);
+            }
+        });
 
         proc.stderr.on('data', rawData => {
             let data = rawData.toString('utf-8');

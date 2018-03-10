@@ -2,6 +2,8 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+
 import * as llvm from 'llvm-node';
 
 export default class LLVMIdentifier extends BackendWatcher {
@@ -18,7 +20,17 @@ export default class LLVMIdentifier extends BackendWatcher {
                 node
             );
         } else {
-            return node.reference.backendRef;
+            // If ScopeTypeItem then we have metaclass
+            if (node.reference instanceof ScopeTypeItem) {
+                // This means we have a static class. We will return the
+                // @static.Goat { field1, field2, field3 } obj which is globally
+                // init'd.
+                const source = node.reference.source;
+                const newCtx = context.bare();
+                return regen(source.relativeName, source.parentNode, newCtx);
+            } else {
+                return node.reference.backendRef;
+            }
         }
     }
 }

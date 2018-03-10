@@ -6,6 +6,8 @@ import TypeResolver from '../typeResolver';
 import ScopeForm from '../../scope/scopeForm';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
+import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 
 import e from '../../errors';
 
@@ -105,8 +107,19 @@ export default class IdResolver extends TypeResolver {
             );
         }
 
+        let resultType;
+
+        // Get result type
+        if (result instanceof ScopeTypeItem) {
+            resultType = new ScopeMetaClassItem({
+                referencingClass: result
+            });
+        } else {
+            resultType = result.type;
+        }
+
         // And this sets the candidates to the same one the ID had
-        const typeCandidates = [ new TypeCandidate(result.type) ];
+        const typeCandidates = [ new TypeCandidate(resultType) ];
 
         // Filter amongst response
         if (response) {

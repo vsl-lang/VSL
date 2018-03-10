@@ -36,11 +36,13 @@ export default class Build extends CompilerCLI {
                 ["--library", "-l",      , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
-                ["-Xllc",                , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
+                ["-Xllc"                 , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
                                            "outputs `.ll`",                          { link: false }],
                 ["-t", "--target"        , "Compilation target. To see all " +
-                                           "targets, use \`vsl build --targets\`",   { arg: "target", target: true }]
+                                           "targets, use \`vsl build --targets\`",   { arg: "target", target: true }],
+                ["-T", "--triple"        , "The target triple to use for " +
+                                           "compilation. ",                          { arg: "triple", triple: true }]
             ]],
             ["Compiler Options", [
                 ["--stl"                 , "Specifies a different standard type " +
@@ -91,6 +93,7 @@ export default class Build extends CompilerCLI {
         let stl = DEFAULT_STL;
         let link = true;
         let target = 'native';
+        let triple = undefined;
 
         let linker = 'ld';
         let linkerArgs = [];
@@ -115,16 +118,17 @@ export default class Build extends CompilerCLI {
                 if (flagInfo.run) flagInfo.run(this);
 
                 if ('color' in flagInfo) color = flagInfo.color;
-                if (flagInfo.perfBreakdown) perfBreakdown = true;
-                if (flagInfo.stl) stl = args[++i];
-                if (flagInfo.nostl) stl = false;
                 if ('link' in flagInfo) link = flagInfo.link;
-                if ('target' in flagInfo) target = args[++i];
                 if ('linker' in flagInfo) linker = flagInfo.linker;
+                if ('nostl' in flagInfo) stl = false;
+                if ('perfBreakdown' in flagInfo) perfBreakdown = true;
                 if ('library' in flagInfo) libraries.push(`-l${args[++i]}`);
+                if ('xllc' in flagInfo) llcArgs.push(args[++i]);
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
-                if ('xllc' in flagInfo) linkerArgs.push(args[++i]);
+                if ('stl' in flagInfo) stl = args[++i];
                 if ('opt' in flagInfo) opt = args[++i];
+                if ('target' in flagInfo) target = args[++i];
+                if ('triple' in flagInfo) triple = args[++i];
                 if (flagInfo.output) {
                     let path = args[++i];
                     if (outputStream) {
@@ -161,6 +165,7 @@ export default class Build extends CompilerCLI {
         this.stl = stl;
         this.link = link;
         this.perfBreakdown = perfBreakdown;
+        this.triple = triple;
 
         this.linker = linker;
         this.libraries = libraries;
@@ -181,7 +186,7 @@ export default class Build extends CompilerCLI {
 
         this.setTarget(target);
 
-        let backend = new LLVMBackend(this.createStream());
+        let backend = new LLVMBackend(this.createStream(), this.triple);
         if (directory) {
             this.executeModule(directory, backend)
                 .then(({ module }) => {
@@ -196,6 +201,23 @@ export default class Build extends CompilerCLI {
         } else {
             this.help();
         }
+    }
+
+    /**
+     * Returns the target triple
+     * @type {string}
+     */
+    get triple() {
+        return this._triple || this.target.triple;
+    }
+
+    _triple = null;
+    /**
+     * If we explicitly overide the triple
+     * @type {string}
+     */
+    set triple(triple) {
+        this._triple = triple;
     }
 
     /**
@@ -216,7 +238,8 @@ export default class Build extends CompilerCLI {
         let targetData = Targets.get(target);
         if (!targetData) this.error.cli(`unknown target ${target}`);
         this.printAndDie(
-            `Information for VSL Target ${target}:\n\n` + targetData.info
+            `\u001B[1m${target}:\u001B[0m ` + targetData.info +
+                '\n Default Triple: ' + targetData.triple
         )
     }
 
@@ -237,7 +260,6 @@ export default class Build extends CompilerCLI {
             let asmFile = fileManager.tempWithExtension('o');
 
             await this.llc(byteCode, asmFile, {
-                arch: this.target.arch,
                 triple: this.target.triple,
                 type: this.target.type,
                 optLevel: this.optimizationLevel
@@ -414,13 +436,11 @@ export default class Build extends CompilerCLI {
      * @param {string} outputFile output .s file.
      * @param {Object} compilationOptions other compilation options
      * @param {string} compilationOptions.triple Target triple
-     * @param {string} compilationOptions.arch Target arch
      * @param {string} compilationOptions.optLevel 0-3
      * @return {Promise} If succesful. output file is `.s` with correct infno.
      */
     llc(byteCode, outputFile, {
         triple = "",
-        arch = "",
         type = "obj",
         optLevel = "2"
     } = {}) {

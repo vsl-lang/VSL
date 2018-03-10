@@ -56,9 +56,10 @@ export default class ScopeAliasItem extends ScopeItem {
         this.type;
     }
 
-    init({ source, type, ...opts }) {
+    init({ source, type, isStatic, ...opts }) {
         super.init(opts);
 
+        this.isStatic = isStatic;
         this.source = source;
         this.type = type;
     }

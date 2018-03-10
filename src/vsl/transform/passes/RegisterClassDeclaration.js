@@ -32,8 +32,26 @@ export default class RegisterClassDeclaration extends Transformation {
             }
         }
 
+
         // Add default init if doesn't exist
         if (isInitializer === false) {
+            // Check all aliases have defined value/expression if creating
+            //  implicit initializer.
+            for (let i = 0; i < node.statements.statements.length; i++) {
+                const alias = node.statements.statements[i];
+                if (alias instanceof t.FieldStatement) {
+                    // Check if has value
+                    if (alias.value === null) {
+                        throw new TransformError(
+                            `Class has no initializers so an implicit ` +
+                            `initializer was being created. For an implicit ` +
+                            `initializer, all fields must have a default value.`,
+                            alias
+                        );
+                    }
+                }
+            }
+
             let type = new ScopeInitItem(
                 ScopeForm.definite,
                 node.scopeRef.rootId,

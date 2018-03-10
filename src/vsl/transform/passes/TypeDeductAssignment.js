@@ -36,7 +36,8 @@ export default class TypeDeductAssignment extends Transformation {
     modify(node: Node, tool: ASTTool) {
         if (!this.isValidNode(node)) return;
 
-        let scope = tool.scope;
+        const scope = tool.scope;
+        const assignmentScope = tool.assignmentScope;
         let requestedType = null,
             requestedTypeCandidate = null;
 
@@ -44,6 +45,13 @@ export default class TypeDeductAssignment extends Transformation {
             throw new TransformError(
                 `If assignment does not have value it must have type explicitly ` +
                 `specified.`,
+                node
+            );
+        }
+
+        if (tool.isStatic && !node.value) {
+            throw new TransformError(
+                `Static field must have declared value.`,
                 node
             );
         }
@@ -81,12 +89,13 @@ export default class TypeDeductAssignment extends Transformation {
             node.name.identifier.value,
             {
                 type: resolvedType,
-                source: node
+                source: node,
+                isStatic: tool.isStatic
             }
         );
 
         node.ref = aliasItem;
-        let result = scope.set(aliasItem);
+        let result = assignmentScope.set(aliasItem);
         if (result === false) {
             throw new TransformError(
                 `Attempted to create variable/field with name that already ` +

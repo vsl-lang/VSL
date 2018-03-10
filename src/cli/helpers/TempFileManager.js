@@ -60,4 +60,3 @@ export default class TempFileManager {
 }
 
 process.on('exit', TempFileManager.clean);
-process.on('uncaughtException', TempFileManager.clean);

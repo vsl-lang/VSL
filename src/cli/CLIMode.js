@@ -16,6 +16,7 @@ export default class CLIMode {
                 .forEach(flag => this.aliases[flag[0]] = flag[1])
         );
 
+
         flags.forEach(
             type => type[1]
                 .forEach(flag => this.allArgs[flag.length === 4 ? flag[1] : flag[0]] = flag)

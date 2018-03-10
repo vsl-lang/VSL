@@ -1,2 +1,1 @@
-#!/usr/bin/env sh
-node ./lib/cli/vsl.js "$@"
+lib/cli/vsl.js
