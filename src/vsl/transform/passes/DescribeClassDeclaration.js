@@ -3,6 +3,7 @@ import TransformError from '../transformError';
 import e from '../../errors';
 import t from '../../parser/nodes';
 
+import Scope from '../../scope/scope';
 import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
@@ -32,7 +33,8 @@ export default class DescribeClassDeclaration extends Transformation {
             isInterface: false,
             mockType: node.mockType,
             subscope: subscope,
-            source: node
+            source: node,
+            staticScope: new Scope()
         };
 
         if (node.generics.length === 0) {

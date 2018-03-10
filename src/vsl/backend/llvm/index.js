@@ -5,6 +5,12 @@ import LLVMContext from './LLVMContext';
 
 import * as llvm from "llvm-node";
 
+llvm.initializeAllTargets();
+llvm.initializeAllTargetMCs();
+llvm.initializeAllTargetInfos();
+llvm.initializeAllAsmParsers();
+llvm.initializeAllAsmPrinters();
+
 /**
  * LLVM backend which directly compiles to LLVM bytecode.
  */
@@ -12,8 +18,9 @@ export default class LLVMBackend extends Backend {
     /**
      * Creates llvm backend with given output stream/output location
      * @param {CompilationStream} stream
+     * @param {string} [triple=""] LLVM Target Triple
      */
-    constructor(stream) {
+    constructor(stream, triple = llvm.config.LLVM_DEFAULT_TARGET_TRIPLE) {
         super(stream, 'llvm');
 
         /** @type {llvm.Context} */
@@ -21,6 +28,17 @@ export default class LLVMBackend extends Backend {
 
         /** @type {llvm.Module} */
         this.module = new llvm.Module('main', this.context);
+        this.module.triple = triple;
+        this.module.dataLayout = llvm.TargetRegistry
+            .lookupTarget(triple)
+            .createTargetMachine(triple, "generic")
+            .createDataLayout();
+
+        /**
+         * Init tasks
+         * @type {Function[]}
+         */
+        this.initTasks = [];
     }
 
     /**
@@ -43,7 +61,76 @@ export default class LLVMBackend extends Backend {
         yield new w.ReturnStatement();
         yield new w.InitializerStatement();
         yield new w.RootFunction();
+        yield new w.ClassStatement();
         yield new w.NoOp();
+    }
+
+    /**
+     * Add init code
+     */
+    postgen() {
+        const ctorFuncType = llvm.FunctionType.get(
+            llvm.Type.getVoidTy(this.context),
+            [],
+            false
+        );
+
+        const ctorTypeInstance = llvm.StructType.create(this.context);
+        ctorTypeInstance.setBody([
+            llvm.Type.getInt32Ty(this.context),
+            ctorFuncType.getPointerTo(),
+            llvm.Type.getInt8PtrTy(this.context)
+        ])
+
+        const ctorType = llvm.ArrayType.get(ctorTypeInstance, 1);
+
+        const initFunc = llvm.Function.create(
+            ctorFuncType,
+            llvm.LinkageTypes.InternalLinkage,
+            'vsl.init',
+            this.module
+        );
+
+        const initBlock = llvm.BasicBlock.create(
+            this.context,
+            'entry',
+            initFunc
+        );
+
+        const initBuilder = new llvm.IRBuilder(initBlock);
+
+        // Add global var
+        new llvm.GlobalVariable(
+            this.module,
+            ctorType,
+            false,
+            llvm.LinkageTypes.AppendingLinkage,
+            llvm.ConstantArray.get(
+                ctorType,
+                [
+                    llvm.ConstantStruct.get(
+                        ctorTypeInstance,
+                        [
+                            llvm.ConstantInt.get(this.context, 65535, 32),
+                            initFunc,
+                            llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(this.context))
+                        ]
+                    )
+                ]
+            ),
+            'llvm.global_ctors'
+        );
+
+        // Create init
+        const context = new LLVMContext(this);
+        context.builder = initBuilder;
+        context.parentFunc = initFunc;
+
+        for (let i = 0; i < this.initTasks.length; i++) {
+            this.initTasks[i](context);
+        }
+
+        initBuilder.createRetVoid();
     }
 
     /**
@@ -78,17 +165,15 @@ export default class LLVMBackend extends Backend {
 
 export const Targets = new Map([
     ["native", {
-        "arch": "",
-        "triple": "",
+        "triple": llvm.config.LLVM_DEFAULT_TARGET_TRIPLE,
         "type": "obj",
         "command": "ld",
-        "info": "Compiles to native object files and automatically links. " +
-            " This is the default target and by default assumes system default " +
-            " target triple."
+        "info": `Compiles to native object files and automatically links. ` +
+            ` This is the default target and by default assumes system default` +
+            ` target triple.`
     }],
     ["obj", {
-        "arch": "",
-        "triple": "",
+        "triple": llvm.config.LLVM_DEFAULT_TARGET_TRIPLE,
         "type": "obj",
         "command": "obj",
         "info": "Compiles into a raw object file. This by default assumes a " +
@@ -96,7 +181,6 @@ export const Targets = new Map([
             "do this. Learn more at (https://git.io/vslerr#crt-not-found)"
     }],
     ["wasm", {
-        "arch": "wasm32",
         "triple": "wasm32-unknown-unknown-elf",
         "type": "asm",
         "command": "wasm",

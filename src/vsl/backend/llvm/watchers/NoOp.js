@@ -7,7 +7,6 @@ import t from '../../../parser/nodes';
 export default class LLVMNoOp extends BackendWatcher {
     match(type) {
         return (
-            type instanceof t.ClassStatement ||
             type instanceof t.TypeAlias
         );
     }

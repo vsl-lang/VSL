@@ -8,33 +8,44 @@
  * and it will be fetched and a promised module will be returned.
  */
 (function(global) {
-    const libvsl = {
-        env: {
-            'puts': (startIndex) => {
-                let chunk = new Uint8Array(instance.exports.memory.buffer);
-                let string = "";
-                while (chunk[startIndex] !== 0) {
-                    string += String.fromCharCode(chunk[startIndex]);
-                    startIndex++;
-                }
-                console.log(string);
-            }
+    class libvsl {
+        constructor(instance) {
+            this.instance = instance;
         }
-    };
+
+        exports() {
+            return {
+                env: {
+                    'memoryBase': 0,
+                    'tableBase': 0,
+                    'puts': (startIndex) => {
+                        let chunk = new Uint8Array(this.instance.exports.memory.buffer);
+                        let string = "";
+                        while (chunk[startIndex] !== 0) {
+                            string += String.fromCharCode(chunk[startIndex]);
+                            startIndex++;
+                        }
+                        console.log(string);
+                    }
+                }
+            };
+        }
+    }
 
     const VSL = function VSL(wasmFile) {
-        let instance;
+        let stl = new libvsl();
         return fetch(wasmFile)
             .then((response) => response.arrayBuffer())
             .then((buffer) => WebAssembly.compile(buffer))
             .then(module => {
-                return WebAssembly.instantiate(module, libvsl);
+                return WebAssembly.instantiate(module, stl.exports());
             })
-            .then(i => {
-                instance = i;
+            .then(instance => {
+                stl.instance = instance;
                 // Start with no arguments
-                i.exports.main(0, []);
-                return i;
+                instance.exports.main(0, []);
+                global.__VSLLastInstance = instance;
+                return instance;
             })
     };
 

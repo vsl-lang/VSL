@@ -60,6 +60,12 @@ export default class ScopeTypeItem extends ScopeItem {
         this.superclass;
 
         /**
+         * Specifies static scope for a type
+         * @type {Scope}
+         */
+        this.staticScope;
+
+        /**
          * Specifies the subscope for the function.
          * @type {Scope}
          */
@@ -122,6 +128,7 @@ export default class ScopeTypeItem extends ScopeItem {
         superclass = ScopeTypeItem.RootClass,
         isInterface = false,
         mockType = null,
+        staticScope,
         subscope,
         source = null,
         dynamicDispatch = null,
@@ -132,6 +139,7 @@ export default class ScopeTypeItem extends ScopeItem {
         this.interfaces = interfaces;
         this.superclass = superclass;
         this.isInterface = isInterface;
+        this.staticScope = staticScope;
         this.subscope = subscope;
         this.mockType = mockType;
         this._dynamicDispatch = dynamicDispatch;
