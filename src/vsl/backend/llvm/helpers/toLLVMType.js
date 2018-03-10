@@ -20,8 +20,8 @@ export default function toLLVMType(type, backend) {
             case "i64":
             case "ui64": return llvm.Type.getInt64Ty(context);
             case "pointer": return toLLVMType(type.parents[0], backend).getPointerTo();
+            case "opaquepointer":
             case "pointer8": return llvm.Type.getInt8Ty(context).getPointerTo();
-            case "opaquepointer": return llvm.StructType.get(context, []);
             default:
                 throw new BackendError(
                     `Invalid \`@mock\` value. Type \`${type}\` is unsupported by the LLVM backend.`,
