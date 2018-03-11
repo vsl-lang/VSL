@@ -129,7 +129,7 @@ export default class IdResolver extends TypeResolver {
         if (typeCandidates.length === 0) {
             this.emit(
                 `Use of ${rootId} has no types which it can be deducted to\n` +
-                `in this context. This means the variable is one type but  ` +
+                `in this context. This means the variable is one type but for ` +
                 `everything to work it would need to be a different type.`,
                 e.CANNOT_RESOLVE_IDENTIFIER
             );

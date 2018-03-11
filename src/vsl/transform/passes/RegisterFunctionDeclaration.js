@@ -50,20 +50,21 @@ export default class RegisterFunctionDeclaration extends Transformation {
                     sourceNode = all[index];
                 const isOptional = false;
 
+                let aliasItem = new ScopeAliasItem(
+                    ScopeForm.definite,
+                    argName,
+                    {
+                        source: sourceNode,
+                        type: argType
+                    }
+                );
+
+                sourceNode.aliasRef = aliasItem;
+
                 // If this is a statement function, we'll add the arg to
                 // subscope.
                 if (subscope) {
-                    let aliasItem = new ScopeAliasItem(
-                        ScopeForm.definite,
-                        argName,
-                        {
-                            source: sourceNode,
-                            type: argType
-                        }
-                    );
-
                     subscope.set(aliasItem);
-                    sourceNode.aliasRef = aliasItem;
                 }
 
                 return new ScopeFuncItemArgument(
@@ -93,7 +94,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
         );
 
         // Register the type in the parent scope
-        let res = scope.set(type);
+        let res = tool.assignmentScope.set(type);
         if (res === false) {
             throw new TransformError(
                 "Redeclaration of function. This means you have a function " +

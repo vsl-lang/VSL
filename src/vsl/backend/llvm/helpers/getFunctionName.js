@@ -1,4 +1,5 @@
 import t from '../../../parser/nodes';
+import LLVMContext from '../LLVMContext';
 
 /**
  * Gets the name for a {@link ScopeFuncItem}
@@ -14,4 +15,9 @@ export default function getFunctionName(func) {
         if (func.rootId === "main") return "main";
         return func.uniqueName;
     }
+}
+
+export function getFunctionInstance(func, regen, context) {
+    const node = func.source;
+    return regen(node.relativeName, node.parentNode, context.bare())
 }

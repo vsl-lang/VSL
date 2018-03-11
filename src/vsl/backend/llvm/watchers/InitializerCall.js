@@ -3,7 +3,7 @@ import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import ScopeInitItem from '../../../scope/items/scopeInitItem';
-import getFunctionName from '../helpers/getFunctionName';
+import getFunctionName, { getFunctionInstance } from '../helpers/getFunctionName';
 import toLLVMType from '../helpers/toLLVMType';
 import { getTypeOffset } from '../helpers/layoutType';
 
@@ -98,13 +98,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
                 // Return node itself
                 defaultBuilder.createRet(self);
             } else {
-                let calleeNode = initRef.source,
-                    parent = calleeNode.parentNode,
-                    name = calleeNode.relativeName;
-
-                // Anon. IR builder
-                let calleeContext = context.bare();
-                callee = regen(name, parent, calleeContext);
+                callee = getFunctionInstance(initRef, regen, context);
             }
 
         }

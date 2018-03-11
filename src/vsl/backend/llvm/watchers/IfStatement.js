@@ -14,7 +14,10 @@ export default class LLVMIfStatement extends BackendWatcher {
         const curBlock = context.builder.getInsertBlock();
 
         const trueBlock = llvm.BasicBlock.create(backend.context, 'true', context.parentFunc);
-        const endBlock = llvm.BasicBlock.create(backend.context, 'finally', context.parentFunc);
+
+        const endBlock = node.alwaysReturns ?
+            null :
+            llvm.BasicBlock.create(backend.context, 'finally', context.parentFunc);
 
         // False block is same as end block if no else { ... }
         const falseBlock = node.falseBody ?
@@ -35,7 +38,7 @@ export default class LLVMIfStatement extends BackendWatcher {
             this.generateConditionalBlock(node, 'falseBody', falseBlock, endBlock, regen, context);
         }
 
-        context.builder.setInsertionPoint(endBlock);
+        if (endBlock) context.builder.setInsertionPoint(endBlock);
         return condBr;
     }
 
@@ -46,6 +49,6 @@ export default class LLVMIfStatement extends BackendWatcher {
 
         // If there is a terminator, we won't add the break
         if (block.getTerminator()) { return }
-        context.builder.createBr(endBlock);
+        if (endBlock) context.builder.createBr(endBlock);
     }
 }

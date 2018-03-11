@@ -37,6 +37,12 @@ export default class TransformationContext {
          * @type {Map}
          */
         this.benchmarks = new Map();
+
+        /**
+         * Stores the primary boolean instance
+         * @type {?ScopeTypeItem}
+         */
+        this.booleanType = null;
     }
 
     /**
@@ -48,6 +54,7 @@ export default class TransformationContext {
     merge(target) {
         // O: KEEP
         target.primitives.forEach((context, name) => this.primitives.set(name, context));
+        this.booleanType = target.booleanType;
     }
 
     /**
