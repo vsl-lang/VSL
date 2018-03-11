@@ -6,6 +6,7 @@ import t from '../../parser/nodes';
 import { RootResolver } from '../../resolver/resolvers/*';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
+import TypeCandidate from '../../resolver/typeCandidate';
 
 /**
  * Type deducts if-statements. Requires resolution to a bool type.
@@ -16,11 +17,20 @@ export default class TypeDeductIfStatement extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
+        if (tool.context.booleanType === null) {
+            throw new TransformError(
+                `No boolean provider found. This is likely due to the stdlib ` +
+                `not being loaded. Declare a class with the @booleanProvider ` +
+                `attribute to register it as the boolean provider.`,
+                node
+            );
+        }
+
         new RootResolver(node.condition, vslGetChild, tool.context)
             .resolve((type) => {
             switch (type) {
                 case ConstraintType.RequestedTypeResolutionConstraint:
-                    return tool.context.booleanType || null;
+                    return new TypeCandidate(tool.context.booleanType);
                 default: return null;
             }
         });

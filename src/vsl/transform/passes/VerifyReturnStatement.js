@@ -99,7 +99,7 @@ export default class VerifyReturnStatement extends Transformation {
                 // If two bodies exist, we must ensure both always return.
                 if (node.trueBody && node.falseBody) {
                     // For ifs, just check if both sides will return
-                    return (
+                    return node.alwaysReturns = (
                         this.validateReturn(node.trueBody, returnType, tool) &&
                         this.validateReturn(node.falseBody, returnType, tool)
                     );
@@ -110,7 +110,7 @@ export default class VerifyReturnStatement extends Transformation {
 
                     // If only returns in one case, then this does not definetly
                     // return.
-                    return false;
+                    return node.alwaysReturns = false;
                 }
 
             // All other nodes will be assumed to not return

@@ -18,7 +18,8 @@
         ["babel-plugin-transform-builtin-extend", {
             "globals": ["Error"]
         }],
-        "babel-plugin-wildcard"
+        "babel-plugin-wildcard",
+        "@babel/plugin-proposal-unicode-property-regex"
     ],
     "presets": [
         "@babel/preset-react",

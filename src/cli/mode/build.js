@@ -166,6 +166,7 @@ export default class Build extends CompilerCLI {
         this.link = link;
         this.perfBreakdown = perfBreakdown;
         this.triple = triple;
+        this.tty = tty.isatty(1);
 
         this.linker = linker;
         this.libraries = libraries;
@@ -319,10 +320,12 @@ export default class Build extends CompilerCLI {
 
         let elapsed = hrtime(start);
         let timeInMs = (elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(2);
-        if (this.color) {
-            console.log(`\n\u001B[1;32mSuccesfully compiled in ${timeInMs}ms\u001B[0m`);
-        } else {
-            console.log(`\nSuccesfully compiled in ${timeInMs}ms`);
+        if (this.tty) {
+            if (this.color) {
+                console.log(`\n\u001B[1;32mSuccesfully compiled in ${timeInMs}ms\u001B[0m`);
+            } else {
+                console.log(`\nSuccesfully compiled in ${timeInMs}ms`);
+            }
         }
     }
 

@@ -8,7 +8,6 @@ const VSLTokenType = Object.freeze({
     SpecialIdentifier: 5,
     Identifier: 6,
     Documentation: 7,
-    NativeBlock: 8,
     ImportStatement: 9,
     ByteSequence: 10,
     Boolean: 11

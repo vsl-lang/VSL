@@ -1,8 +1,8 @@
 /**
  * Specifies the type of a constraint
  * @typedef {Object} ConstraintType
- * @property {number} RequestedTypeResolutionConstraint - List of types that
- *                                                      are possible resolutions
+ * @property {number} RequestedTypeResolutionConstraint - A single type candidate of
+ *                                                      possible resolutions
  * @property {number} TransformationContext - {@link TransformationContext}
  *                                          object.
  * @property {number} BoundedFunctionContext - Specifies that an identifier is

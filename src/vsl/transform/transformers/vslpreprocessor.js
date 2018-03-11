@@ -9,16 +9,22 @@ import * as pass from '../passes/';
 export default class VSLPreprocessor extends Transformer {
     constructor(context: TransformationContext) {
         super([
+            // Transform binary short-circut to their dedicated nodes
+            pass.TransformShortCircut,
+
             // Checks, pretty important. Type checks are preformed by the
             // deductor.
             pass.VerifyFunctionAccessScope,
             pass.VerifyAnnotationSignature,
 
-            // Verify initializers are correct format/order
+            // Verify initializer body is correct order
             pass.VerifyInitializerFormat,
 
-            // Verify initalizers are correct
+            // Verify initalizers are semantically meaningful
             pass.VerifyInitDelegationFormat,
+
+            // Verify operator overloads are correctly defined
+            pass.VerifyOperatorOverload,
 
             // Registers a @primitive mark specifying that a class defines
             // behavior for one.
@@ -29,6 +35,9 @@ export default class VSLPreprocessor extends Transformer {
 
             // Registers @dynamic() to avoid primitive dynamic dispatch.
             pass.DescribeDynamicAnnotation,
+
+            // Registers @booleanProvider
+            pass.DescribeBooleanProvider,
 
             // Add to first scope pass
             // adds just the name and ref to class

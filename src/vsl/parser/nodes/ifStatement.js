@@ -15,17 +15,20 @@ export default class IfStatement extends Node {
      */
     constructor(condition, trueBody, falseBody, position) {
         super(position);
-        
+
         /** @type {Expression} */
         this.condition = condition;
-        
+
         /** @type {CodeBlock} */
         this.trueBody = trueBody;
-        
+
         /** @type {?CodeBlock} */
         this.falseBody = falseBody;
+
+        /** @type {?boolean} */
+        this.alwaysReturns = null;
     }
-    
+
     clone() {
         return new IfStatement(
             this.condition.clone(),
@@ -33,7 +36,7 @@ export default class IfStatement extends Node {
             this.falseBody?.clone()
         )
     }
-    
+
     get children() {
         return [ 'condition', 'trueBody', 'falseBody' ]
     }

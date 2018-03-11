@@ -8,7 +8,7 @@ import Node from './node';
  * This matches any generic binary expression.
  */
 export default class BinaryExpression extends Node {
-    
+
     /**
      * Creates a wrapper ExpressionStatement
      *
@@ -20,29 +20,29 @@ export default class BinaryExpression extends Node {
      */
     constructor (lhs: Expression, rhs: Expression, operator: string, isClosure: boolean, position: Object) {
         super(position);
-        
+
         /** @type {Expression} */
         this.lhs = lhs;
-        
+
         /** @type {Expression} */
         this.rhs = rhs;
-        
+
         /** @type {string} */
         this.op = operator;
-        
+
         /** @type {boolean} */
         this.isClosure = isClosure;
     }
-    
+
     /** @override */
     get children() {
         return ['lhs', 'rhs'];
     }
-    
+
     clone() {
         return new BinaryExpression(this.lhs.clone(), this.rhs.clone(), this.op, this.isClosure);
     }
-    
+
     /** @override */
     toString() {
         return `(${this.lhs} ${this.op} ${this.rhs})`

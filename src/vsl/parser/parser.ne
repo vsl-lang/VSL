@@ -16,7 +16,6 @@ const NodeTypes = require('./vsltokentype').default,
   special_loop = freeze({ test: x => x[1] === NodeTypes.SpecialArgument }),
   special_identifier = freeze({ test: x => x[1] === NodeTypes.SpecialIdentifier }),
   documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
-  nativeBlock = freeze({ test: x => x[1] === NodeTypes.NativeBlock }),
   importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
   byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence }),
   boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
@@ -298,7 +297,7 @@ OverridableOperator
    -> ("+" | "-" | "*" | "/" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
         "<=" | ">=" | "==" | "!=") {%
         (data, location) =>
-            new t.Identifier(data[0][0].value, location)
+            new t.OperatorName(data[0][0].value, location)
     %}
 
 ArgumentList
@@ -333,8 +332,8 @@ FunctionBody
     | NativeBlock {% id %}
 
 NativeBlock
-    -> %nativeBlock {%
-        (data, location) => new t.NativeBlock(data[0].value, location)
+    -> "native" _ "(" _ Identifier _ ")" {%
+        (data, location) => new t.NativeBlock(data[4].value, location)
     %}
 
 # ============================================================================ #

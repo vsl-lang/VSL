@@ -50,10 +50,13 @@ export default class LLVMBackend extends Backend {
         // Sort in order of likely occurence
         yield new w.Identifier();
         yield new w.PropertyExpression();
-        yield new w.InitializerCall(); // This must come before function call.
+        yield new w.InitializerCall(); // before: FunctionCall
         yield new w.FunctionCall();
         yield new w.Literal();
         yield new w.BitCastExpression();
+        yield new w.BinaryExpression();
+        yield new w.OrExpression();
+        yield new w.AndExpression();
         yield new w.ExpressionStatement();
         yield new w.AssignmentStatement();
         yield new w.IfStatement();
@@ -62,6 +65,7 @@ export default class LLVMBackend extends Backend {
         yield new w.InitializerStatement();
         yield new w.RootFunction();
         yield new w.ClassStatement();
+        yield new w.NativeBlock();
         yield new w.NoOp();
     }
 
