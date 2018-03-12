@@ -262,7 +262,10 @@ const assignmentTypes = freeze({
 %}
 
 AssignmentStatement
-   -> AssignmentType _ TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
+   -> AssignmentType _ TypedIdentifier (
+          _ "=" _ InlineExpression {% nth(3) %}
+        | ExternalMarker {% id %}
+    ):? {%
         (data, location) =>
             new t.AssignmentStatement([], assignmentTypes[data[0].value], data[2],
                 data[3], location) %}
@@ -326,15 +329,18 @@ FunctionBody
    -> ("{" {% setState('inFunction', true) %})
       (CodeBlock[statement {% id %}] {% id %})
       ("}" {% setState('inFunction', false) %}) {% nth(1) %}
-    | "external" "(" %identifier ")" {%
-        (data, location) => new t.ExternalMarker(data[2][0], location)
-    %}
+    | ExternalMarker {% id %}
     | NativeBlock {% id %}
 
 NativeBlock
-    -> "native" _ "(" _ Identifier _ ")" {%
+   -> "native" _ "(" _ Identifier _ ")" {%
         (data, location) => new t.NativeBlock(data[4].value, location)
     %}
+
+ExternalMarker
+   -> "external" "(" %identifier ")" {%
+       (data, location) => new t.ExternalMarker(data[2][0], location)
+   %}
 
 # ============================================================================ #
 #                                 Expressions                                  #

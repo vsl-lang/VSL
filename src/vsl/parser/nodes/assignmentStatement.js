@@ -35,6 +35,12 @@ export default class AssignmentStatement extends DeclarationStatement {
          * @type {?ScopeAliasItem}
          */
         this.ref = null;
+
+        /**
+         * If is a global/static assignment
+         * @type {?boolean}
+         */
+        this.isGlobal = null;
     }
 
     /** @override */

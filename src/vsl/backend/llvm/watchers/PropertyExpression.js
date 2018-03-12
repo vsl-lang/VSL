@@ -16,21 +16,25 @@ export default class LLVMPropertyExpression extends BackendWatcher {
         const propRef = node.propertyRef;
 
         let value = regen('head', node, context);
+        if (propRef.backendRef) {
+            // Then get using backendRef
+            return propRef.backendRef.generate(context);
+        } else {
+            // Calculate index of prop in layout.
+            let indexOfProp = node.baseRef.subscope.aliases.indexOf(node.propertyRef);
 
-        // Calculate index of prop in layout.
-        let indexOfProp = node.baseRef.subscope.aliases.indexOf(node.propertyRef);
+            return context.builder.createLoad(
+                context.builder.createInBoundsGEP(
+                    value,
+                    [
+                        // Dereference the pointer value itself
+                        llvm.ConstantInt.get(backend.context, 0),
 
-        return context.builder.createLoad(
-            context.builder.createInBoundsGEP(
-                value,
-                [
-                    // Dereference the pointer value itself
-                    llvm.ConstantInt.get(backend.context, 0),
-
-                    // Dereference the field
-                    llvm.ConstantInt.get(backend.context, indexOfProp)
-                ]
-            )
-        );
+                        // Dereference the field
+                        llvm.ConstantInt.get(backend.context, indexOfProp)
+                    ]
+                )
+            );
+        }
     }
 }
