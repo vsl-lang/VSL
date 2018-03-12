@@ -41,7 +41,7 @@ export default class TypeDeductAssignment extends Transformation {
         let requestedType = null,
             requestedTypeCandidate = null;
 
-        if (!node.name.type && !node.value) {
+        if (!node.name.type && !(node.value instanceof t.ExpressionStatement)) {
             throw new TransformError(
                 `If assignment does not have value it must have type explicitly ` +
                 `specified.`,
@@ -63,7 +63,7 @@ export default class TypeDeductAssignment extends Transformation {
         }
 
         let resolvedType;
-        if (node.value) {
+        if (node.value instanceof t.ExpressionStatement) {
             let typeCandidates = new RootResolver(node.value, vslGetChild, tool.context)
                 .resolve((constraint) => {
                     switch (constraint) {

@@ -29,7 +29,7 @@ export default class LLVMIdentifier extends BackendWatcher {
                 const newCtx = context.bare();
                 return regen(source.relativeName, source.parentNode, newCtx);
             } else {
-                return node.reference.backendRef;
+                return node.reference.backendRef.generate(context);
             }
         }
     }

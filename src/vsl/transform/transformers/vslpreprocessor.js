@@ -12,6 +12,9 @@ export default class VSLPreprocessor extends Transformer {
             // Transform binary short-circut to their dedicated nodes
             pass.TransformShortCircut,
 
+            // Marks global assignment
+            pass.TransformGlobalAssignment,
+
             // Checks, pretty important. Type checks are preformed by the
             // deductor.
             pass.VerifyFunctionAccessScope,
@@ -25,6 +28,9 @@ export default class VSLPreprocessor extends Transformer {
 
             // Verify operator overloads are correctly defined
             pass.VerifyOperatorOverload,
+
+            // Verifys external assignment statements are well-formed
+            pass.VerifyExternalAssignment,
 
             // Registers a @primitive mark specifying that a class defines
             // behavior for one.

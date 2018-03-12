@@ -36,9 +36,22 @@ export default class LLVMBackend extends Backend {
 
         /**
          * Init tasks
-         * @type {Function[]}
+         * @type {Map<string, Function[]>}
          */
-        this.initTasks = [];
+        this.initTasks = new Map();
+    }
+
+    /**
+     * Adds an init task with priority.
+     * @param {number} priority - 0 is highest.
+     * @param {Function} func - What to call to gen task. Takes a context.
+     */
+    addInitTask(priority, func) {
+        if (this.initTasks.has(priority)) {
+            this.initTasks.get(priority).push(func);
+        } else {
+            this.initTasks.set(priority, [func])
+        }
     }
 
     /**
@@ -88,20 +101,45 @@ export default class LLVMBackend extends Backend {
 
         const ctorType = llvm.ArrayType.get(ctorTypeInstance, 1);
 
-        const initFunc = llvm.Function.create(
-            ctorFuncType,
-            llvm.LinkageTypes.InternalLinkage,
-            'vsl.init',
-            this.module
-        );
+        let inits = [];
+        for (let [priority, funcs] of this.initTasks) {
+            const initFunc = llvm.Function.create(
+                ctorFuncType,
+                llvm.LinkageTypes.InternalLinkage,
+                `vsl.init.${priority}`,
+                this.module
+            );
 
-        const initBlock = llvm.BasicBlock.create(
-            this.context,
-            'entry',
-            initFunc
-        );
+            inits.push(
+                llvm.ConstantStruct.get(
+                    ctorTypeInstance,
+                    [
+                        llvm.ConstantInt.get(this.context, 65535 - priority, 32),
+                        initFunc,
+                        llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(this.context))
+                    ]
+                )
+            );
 
-        const initBuilder = new llvm.IRBuilder(initBlock);
+            const initBlock = llvm.BasicBlock.create(
+                this.context,
+                'entry',
+                initFunc
+            );
+
+            const initBuilder = new llvm.IRBuilder(initBlock);
+
+            // Create init
+            const context = new LLVMContext(this);
+            context.builder = initBuilder;
+            context.parentFunc = initFunc;
+
+            for (let i = 0; i < funcs.length; i++) {
+                funcs[i](context);
+            }
+
+            initBuilder.createRetVoid();
+        }
 
         // Add global var
         new llvm.GlobalVariable(
@@ -109,32 +147,9 @@ export default class LLVMBackend extends Backend {
             ctorType,
             false,
             llvm.LinkageTypes.AppendingLinkage,
-            llvm.ConstantArray.get(
-                ctorType,
-                [
-                    llvm.ConstantStruct.get(
-                        ctorTypeInstance,
-                        [
-                            llvm.ConstantInt.get(this.context, 65535, 32),
-                            initFunc,
-                            llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(this.context))
-                        ]
-                    )
-                ]
-            ),
+            llvm.ConstantArray.get(ctorType, inits),
             'llvm.global_ctors'
         );
-
-        // Create init
-        const context = new LLVMContext(this);
-        context.builder = initBuilder;
-        context.parentFunc = initFunc;
-
-        for (let i = 0; i < this.initTasks.length; i++) {
-            this.initTasks[i](context);
-        }
-
-        initBuilder.createRetVoid();
     }
 
     /**

@@ -22,7 +22,7 @@ export default function toLLVMType(type, backend) {
             case "pointer": return toLLVMType(type.parents[0], backend).getPointerTo();
             case "double": return llvm.Type.getDoubleTy(context);
             case "float": return llvm.Type.getFloatTy(context);
-            case "opaquepointer":
+            case "opaquepointer": return llvm.StructType.get(context, []).getPointerTo();
             case "pointer8": return llvm.Type.getInt8Ty(context).getPointerTo();
             default:
                 throw new BackendError(

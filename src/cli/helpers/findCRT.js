@@ -1,9 +1,12 @@
 import fs from 'fs-extra';
 
 const crtPaths = [
-    '/usr/lib/crt0.o',
+    '/usr/lib64/crt1.o',
+    '/usr/lib64/crti.o',
+    '/usr/lib64/crt0.o',
     '/usr/lib/crt1.o',
-    '/usr/lib/crti.o'
+    '/usr/lib/crti.o',
+    '/usr/lib/crt0.o',
 ];
 
 /**
