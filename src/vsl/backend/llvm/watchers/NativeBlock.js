@@ -75,6 +75,41 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
+            case "ineq": return context.builder.createRet(
+                context.builder.createICmpNE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "ige": return context.builder.createRet(
+                context.builder.createICmpSGE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "uige": return context.builder.createRet(
+                context.builder.createICmpUGE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "ile": return context.builder.createRet(
+                context.builder.createICmpSLE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "uile": return context.builder.createRet(
+                context.builder.createICmpULE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
             case "igt": return context.builder.createRet(
                 context.builder.createICmpSGT(
                     func.args[0].aliasRef.backendRef.generate(),

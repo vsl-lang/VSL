@@ -1,6 +1,19 @@
 import ScopeItem from '../scopeItem';
 
 /**
+ * @typedef {Object} AliasType
+ * @property {number} default - The default variable type with value
+ * @property {number} lazy - If the alias is dynamically evaluated.
+ * @property {number} dynamic - If the alias is dynamic. This means the item is
+ *                            of {@link ScopeDynamicItem} class.
+ */
+export const AliasType = {
+    default: 0,
+    lazy: 1,
+    dynamic: 2
+}
+
+/**
  * References an alias or such to any value. This is used for example in thigns
  * like assignments.
  */
@@ -16,6 +29,8 @@ export default class ScopeAliasItem extends ScopeItem {
      * @param {Object} data - Information about the class
      * @param {Node} data.source - The source expression which the item was
      *                           declared.
+     * @param {AliasType} data.aliasType - If normal assignment, or dynamic or
+     *                                   lazy.
      * @param {ScopeTypeItem} data.type - The resolved type of the variable.
      *                                  Variables cannot have ambigious type.
      */
@@ -54,12 +69,19 @@ export default class ScopeAliasItem extends ScopeItem {
          * @type {ScopeTypeItem}
          */
         this.type;
+
+        /**
+         * Type of the alias item
+         * @type {ScopeAliasItem}
+         */
+        this.aliasType;
     }
 
-    init({ source, type, isStatic, ...opts }) {
+    init({ source, aliasType = AliasType.default, type, isStatic, ...opts }) {
         super.init(opts);
 
         this.isStatic = isStatic;
+        this.aliasType = aliasType;
         this.source = source;
         this.type = type;
     }

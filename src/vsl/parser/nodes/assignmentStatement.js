@@ -13,9 +13,10 @@ export default class AssignmentStatement extends DeclarationStatement {
      * @param {AssignmentType} type The assignment type
      * @param {TypedIdentifier} name The variable's identifier & type
      * @param {?Expression} value The variable's inital value
+     * @param {boolean} isLazy If the assignment is lazy
      * @param {Object} position a position from nearley
      */
-    constructor(access, type, name, value, position) {
+    constructor(access, type, name, value, isLazy, position) {
         super(access, position);
 
         /**
@@ -29,6 +30,9 @@ export default class AssignmentStatement extends DeclarationStatement {
 
         /** @type {?Expression} */
         this.value = value;
+
+        /** @type {boolean} */
+        this.isLazy = isLazy;
 
         /**
          * The ref in a scope this declares the alias too

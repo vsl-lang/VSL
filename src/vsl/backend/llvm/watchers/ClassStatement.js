@@ -38,7 +38,7 @@ export default class LLVMClassStatement extends BackendWatcher {
                     staticVarName
                 );
 
-                staticItems[i].backendRef = new ValueRef(globalVar, true);
+                staticItems[i].backendRef = new ValueRef(globalVar, { isPtr: true });
 
                 backend.addInitTask(InitPriority.STATIC_VAR, (context) => {
                     context.builder.createStore(
@@ -48,7 +48,7 @@ export default class LLVMClassStatement extends BackendWatcher {
                 });
             } else {
                 let externalValue = regen(staticItems[i].source.relativeName, staticItems[i].source.parentNode, context);
-                staticItems[i].backendRef = new ValueRef(externalValue, true);
+                staticItems[i].backendRef = new ValueRef(externalValue, { isPtr: true });
             }
         }
     }

@@ -11,7 +11,8 @@ import { spawn } from 'child_process';
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import WASMIndex from '../../../wasm/index.json';
 import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
-import findCRT from '../helpers/findCRT';
+import findDefaultLinker from '../helpers/findDefaultLinker';
+import Linker from '../helpers/Linker';
 
 const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
 
@@ -22,6 +23,7 @@ export default class Build extends CompilerCLI {
         super([
             ["Options", [
                 ["-h", "--help"          , "Displays this help message",             { run: _ => _.help() }],
+                ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }],
                 ["--targets"             , "Lists supported compilation targets " +
                                            "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
@@ -95,10 +97,12 @@ export default class Build extends CompilerCLI {
         let target = 'native';
         let triple = undefined;
 
-        let linker = 'ld';
+        let linker = null;
         let linkerArgs = [];
         let llcArgs = [];
         let libraries = [];
+
+        let verbose = false;
 
         let directory = null;
         let files = [];
@@ -117,9 +121,10 @@ export default class Build extends CompilerCLI {
 
                 if (flagInfo.run) flagInfo.run(this);
 
+                if ('verbose' in flagInfo) verbose = flagInfo.verbose;
                 if ('color' in flagInfo) color = flagInfo.color;
                 if ('link' in flagInfo) link = flagInfo.link;
-                if ('linker' in flagInfo) linker = flagInfo.linker;
+                if ('linker' in flagInfo) linker = args[++i];
                 if ('nostl' in flagInfo) stl = false;
                 if ('perfBreakdown' in flagInfo) perfBreakdown = true;
                 if ('library' in flagInfo) libraries.push(`-l${args[++i]}`);
@@ -168,6 +173,8 @@ export default class Build extends CompilerCLI {
         this.triple = triple;
         this.tty = tty.isatty(1);
 
+        this.verbose = verbose;
+
         this.linker = linker;
         this.libraries = libraries;
         this.linkerArgs = linkerArgs;
@@ -202,6 +209,14 @@ export default class Build extends CompilerCLI {
         } else {
             this.help();
         }
+    }
+
+    /**
+     * Prints to verbose log
+     * @param {string} message
+     */
+    printLog(message) {
+        if (this.verbose) console.log(`vsl: ${message}`);
     }
 
     /**
@@ -270,19 +285,8 @@ export default class Build extends CompilerCLI {
 
             switch (this.target.command) {
                 case "ld":
-
-                    // Try to find CRT
-                    let crt = await findCRT();
-                    if (crt === null) {
-                        this.error.cli(
-                            `failed: could not locate crt. See https://git.io/vslerr#crt-not-found for more information.`
-                        );
-                    }
-
                     let outFile = fileManager.tempWithExtension('out');
-                    await this.ld(asmFile, outFile, {
-                        outputType: [crt]
-                    });
+                    await this.ld(asmFile, outFile);
                     this._colorCompilationStep(asmFile, outFile);
 
                     let readStream = fs.createReadStream(outFile);
@@ -337,9 +341,13 @@ export default class Build extends CompilerCLI {
      */
     async wasmMerge(files, outfile) {
         return new Promise((resolve, reject) => {
-            let wasmMerge = spawn('wasm-merge', files.concat([
+            const args = files.concat([
                 '-o', outfile
-            ]), {
+            ]);
+
+            this.printLog(`$ wasm-merge ${args.join(" ")}`);
+
+            let wasmMerge = spawn('wasm-merge', args, {
                 stdio: ['ignore', 'inherit', 'inherit']
             });
 
@@ -370,10 +378,15 @@ export default class Build extends CompilerCLI {
      */
     async s2wasm(file, outstream) {
         return new Promise((resolve, reject) => {
+            const args = [ file ];
+
+            this.printLog(`$ s2wasm ${args.join(" ")}`);
+
             // Spawn LLC compiler. Pass target option
-            let s2wasm = spawn('s2wasm', [ file ], {
+            let s2wasm = spawn('s2wasm', args, {
                 stdio: ['ignore', 'pipe', 'pipe']
             });
+
 
             s2wasm.on('error', (error) => {
                 switch (error.code) {
@@ -404,13 +417,18 @@ export default class Build extends CompilerCLI {
      * @param {string[]} outputType default is `-e _main` outputting executable.
      * @return {Promise} Resolves when finished
      */
-    async ld(sourceFile, outputFile, { outputType = [] } = {}) {
-        return new Promise((resolve, reject) => {
-            let ld = spawn(this.linker, [
+    async ld(sourceFile, outputFile,) {
+        return new Promise(async (resolve, reject) => {
+            const linker = this.linker ? new Linker(this.linker) : await findDefaultLinker(this.error);
+            const ldArgs = [
                 sourceFile,
                 '-lc',
                 '-o', outputFile
-            ].concat(outputType, this.linkerArgs, this.libraries), {
+            ].concat(linker.defaultArgs, this.linkerArgs, this.libraries);
+
+            this.printLog(`$ ${linker.name} ${ldArgs.join(" ")}`);
+
+            let ld = spawn(linker.name, ldArgs, {
                 stdio: ['ignore', 'inherit', 'inherit']
             });
 
@@ -427,7 +445,7 @@ export default class Build extends CompilerCLI {
                 if (errorCode === 0) {
                     resolve();
                 } else {
-                    this.error.cli(`failed: ld: exited with ${errorCode}`);
+                    this.error.cli(`failed: ${linker.name}: exited with ${errorCode}`);
                 }
             })
         });
@@ -448,13 +466,17 @@ export default class Build extends CompilerCLI {
         optLevel = "2"
     } = {}) {
         return new Promise((resolve, reject) => {
-            // Spawn LLC compiler. Pass target option
-            let llc = spawn('llc', [
+            const llcArgs = [
                 `-mtriple=${triple}`,
                 `-O=${optLevel}`,
                 `-filetype=${type}`,
                 `-o=${outputFile}`
-            ].concat(this.llcArgs), {
+            ].concat(this.llcArgs);
+
+            this.printLog(`$ llc ${llcArgs.join(" ")}`);
+
+            // Spawn LLC compiler. Pass target option
+            let llc = spawn('llc', llcArgs, {
                 stdio: ['pipe', 'inherit', 'inherit']
             });
 

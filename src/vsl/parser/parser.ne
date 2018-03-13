@@ -34,6 +34,8 @@ const unlessErr = (message, char) =>
         else throw new ParserError(message, location)
     };
 
+const err = (message, node) => { throw new ParserError(message, node); }
+
 const unlessNodeErr = (message, node, pos = 0) =>
     (data, location, reject) => {
         if (node.test(data[pos])) return reject;
@@ -223,10 +225,10 @@ ClassItem
     | InitializerStatement {% id %}
 
 Field
-   -> Modifier AssignmentStatement {%
+   -> AssignmentStatement {%
         (data, location) =>
-            new t.FieldStatement(data[0], data[1].type, data[1].name,
-                data[1].value, location)
+            new t.FieldStatement(data[0].access, data[0].type, data[0].name,
+                data[0].value, location)
     %}
 
 InitializerStatement
@@ -262,13 +264,21 @@ const assignmentTypes = freeze({
 %}
 
 AssignmentStatement
-   -> AssignmentType _ TypedIdentifier (
+   -> Modifier "lazy":? AssignmentType _ TypedIdentifier (
           _ "=" _ InlineExpression {% nth(3) %}
         | ExternalMarker {% id %}
     ):? {%
-        (data, location) =>
-            new t.AssignmentStatement([], assignmentTypes[data[0].value], data[2],
-                data[3], location) %}
+        (data, location, reject) => {
+            // Don't allow in functions
+            if (state.inFunction === true || state.inInit === true) {
+                err(
+                    `Cannot use access modifiers with assignment in this context`,
+                    location
+                );
+            }
+            return new t.AssignmentStatement(data[0], assignmentTypes[data[2].value], data[4],
+                data[5], !!data[1], location)
+        } %}
     | AssignmentType _ %any {% unlessNodeErr('expected identifier after assignment', identifier, 2) %}
 
 AssignmentType
@@ -645,7 +655,7 @@ Set
 # ============================================================================ #
 
 Modifier
-   -> DefinitionModifier:? AccessModifier:? StateModifier:? LazyModifier:? {%
+   -> DefinitionModifier:? AccessModifier:? StateModifier:? {%
         data => data.filter(Boolean).map(i => i.value)
     %}
 
@@ -658,9 +668,6 @@ AccessModifier
     | "protected" {% id %}
     | "private"   {% id %}
     | "readonly"  {% id %}
-LazyModifier
-   -> "lazy" {% id %}
-
 
 @{%
 function recursiveType(types, location) {
