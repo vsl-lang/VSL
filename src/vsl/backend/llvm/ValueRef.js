@@ -4,14 +4,18 @@
 export default class ValueRef {
     /**
      * @param {llvm.Value} value The LLVM value object
-     * @param {Boolean} isRef If the value is a pointer to the actual value.
+     * @param {Object} data - describes value
+     * @param {Boolean} data.isPtr If the value is a pointer to the actual value.
      */
-    constructor(value, isRef) {
+    constructor(value, { isPtr, isDyn }) {
         /** @type {llvm.Value} */
         this.value = value;
 
         /** @type {Boolean} */
-        this.isRef = isRef;
+        this.isPtr = isPtr;
+
+        /** @type {Boolean} */
+        this.isDyn = isDyn;
     }
 
     /**
@@ -19,10 +23,15 @@ export default class ValueRef {
      * @param {LLVMContext} context
      */
     generate(context) {
-        if (this.isRef) {
-            return context.builder.createLoad(this.value);
+        let value = this.value;
+        if (this.isDyn) {
+            value = context.builder.createCall(value, []);
+        }
+
+        if (this.isPtr) {
+            return context.builder.createLoad(value);
         } else {
-            return this.value;
+            return value;
         }
     }
 }

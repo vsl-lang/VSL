@@ -176,7 +176,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
 
             // Add the refs to each arg.
             for (let i = 0; i < nodeArgs.length; i++) {
-                nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i], false);
+                nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i], { isPtr: false });
             }
 
             // Add the appropriate attribute if a @inline tag exists

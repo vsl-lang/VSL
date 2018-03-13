@@ -14,9 +14,10 @@ export default class FieldStatement extends AssignmentStatement  {
      * @param {AssignmentType} type The assignment type
      * @param {TypedIdentifier} name The variable's identifier & type
      * @param {Expression} value The variable's inital value
+     * @param {boolean} isLazy If the statement is lazy
      * @param {Object} position a position from nearley
      */
-    constructor(access, type, name, value, position) {
-        super(access, type, name, value, position);
+    constructor(access, type, name, value, isLazy, position) {
+        super(access, type, name, value, isLazy, position);
     }
 }

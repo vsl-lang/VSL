@@ -30,7 +30,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
 
             // Return if already constructed
             const globalVariable = backend.module.getGlobalVariable(nodeName, true);
-            if (globalVariable) return globalVariable;
+            if (globalVariable) return;
 
             const globalType = toLLVMType(node.ref.type, backend);
             let varRef = new llvm.GlobalVariable(
@@ -42,7 +42,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                 nodeName
             );
 
-            return node.ref.backendRef = new ValueRef(varRef, true);
+            return node.ref.backendRef = new ValueRef(varRef, { isPtr: true });
         } else if (node.value instanceof t.ExpressionStatement) {
             if (node.isGlobal) {
                 const name = node.ref.uniqueName;
@@ -62,9 +62,9 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                     context.builder.createStore(res, varRef);
                 })
 
-                return node.ref.backendRef = new ValueRef(varRef, true);
+                return node.ref.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {
-                return node.ref.backendRef = new ValueRef(regen('value', node, context), false);
+                return node.ref.backendRef = new ValueRef(regen('value', node, context), { isPtr: false });
             }
         } else {
             throw new BackendError(

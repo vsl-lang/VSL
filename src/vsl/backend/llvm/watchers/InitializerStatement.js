@@ -4,6 +4,7 @@ import t from '../../../parser/nodes';
 import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
+import ValueRef from '../ValueRef';
 
 import getFunctionName from '../helpers/getFunctionName';
 
@@ -57,7 +58,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         // Add the refs to each arg.
         for (let i = 0; i < node.params.length; i++) {
             // Offset by one because first arg is class itself
-            node.params[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i + 1], false);
+            node.params[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i + 1], { isPtr: false });
         }
 
         // It's a initializer, it cannot call itself.

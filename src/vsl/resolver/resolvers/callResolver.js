@@ -55,6 +55,12 @@ export default class CallResolver extends TypeResolver {
             }
         };
 
+        // Get requested type that the function should return
+        const expectedReturnType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)
+
+        // Check if voidable here
+        const voidableContext = negotiate(ConstraintType.VoidableContext);
+
         // Negotiate the requested type for this identifier.
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow
@@ -96,6 +102,17 @@ export default class CallResolver extends TypeResolver {
 
             // Amount of times we chose a prec type over normal.
             let precedencePreferalCount = 0;
+
+            // Additionally check VoidableContext. If this context is not
+            // voidable and there is a void return then this is not valid.
+            if (!voidableContext && !candidate.returnType) {
+                continue;
+            }
+
+            // Lets first do checks and see if return type works
+            if (expectedReturnType && !candidate.returnType?.castableTo(expectedReturnType)) {
+                continue;
+            }
 
             // If same arg length & function name we'll have to go through each
             // arg and check for compatibility.
