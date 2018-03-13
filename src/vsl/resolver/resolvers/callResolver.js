@@ -110,7 +110,7 @@ export default class CallResolver extends TypeResolver {
             }
 
             // Lets first do checks and see if return type works
-            if (expectedReturnType && !candidate.returnType?.castableTo(expectedReturnType)) {
+            if (expectedReturnType && !candidate.returnType?.castableTo(expectedReturnType.candidate)) {
                 continue;
             }
 

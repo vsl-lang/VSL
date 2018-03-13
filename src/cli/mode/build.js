@@ -141,7 +141,7 @@ export default class Build extends CompilerCLI {
                     } else  if (path === '-') {
                         outputStream = process.stdout;
                     } else {
-                        outputStream = fs.createWriteStream(path);
+                        outputStream = fs.createWriteStream(path, { mode: 0o755 });
                     }
                 }
             } else {
