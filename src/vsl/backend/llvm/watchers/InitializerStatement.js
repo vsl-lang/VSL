@@ -57,7 +57,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         // Add the refs to each arg.
         for (let i = 0; i < node.params.length; i++) {
             // Offset by one because first arg is class itself
-            node.params[i].aliasRef.backendRef = llvmFuncArgs[i + 1];
+            node.params[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i + 1], false);
         }
 
         // It's a initializer, it cannot call itself.
