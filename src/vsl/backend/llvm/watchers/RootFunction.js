@@ -4,6 +4,7 @@ import t from '../../../parser/nodes';
 import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
+import ValueRef from '../ValueRef';
 
 import getFunctionName from '../helpers/getFunctionName';
 
@@ -175,7 +176,7 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
 
             // Add the refs to each arg.
             for (let i = 0; i < nodeArgs.length; i++) {
-                nodeArgs[i].aliasRef.backendRef = llvmFuncArgs[i];
+                nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i], false);
             }
 
             // Add the appropriate attribute if a @inline tag exists

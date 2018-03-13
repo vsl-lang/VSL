@@ -23,11 +23,13 @@ export default class LLVMBinaryExpression extends BackendWatcher {
             );
         }
 
+        const lhs = regen('lhs', node, context);
+        const rhs = regen('rhs', node, context);
         return context.builder.createCall(
             getFunctionInstance(node.ref, regen, context),
             [
-                regen('lhs', node, context),
-                regen('rhs', node, context)
+                lhs,
+                rhs
             ]
         );
     }
