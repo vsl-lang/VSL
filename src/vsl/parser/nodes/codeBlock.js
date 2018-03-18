@@ -57,6 +57,9 @@ export default class CodeBlock extends Node {
          * @type {boolean}
          */
         this.isPrimaryModule = false;
+
+        /** @param {?Object} */
+        this.backendRef = null;
     }
 
     clone() {

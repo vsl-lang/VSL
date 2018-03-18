@@ -64,7 +64,12 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
 
                 return node.ref.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {
-                return node.ref.backendRef = new ValueRef(regen('value', node, context), { isPtr: false });
+                const value = regen('value', node, context);
+                const alloca = context.builder.createAlloca(value.type);
+                context.builder.createStore(value, alloca);
+
+                // Check if the value type is a by-value
+                return node.ref.backendRef = new ValueRef(alloca, { isPtr: true });
             }
         } else {
             throw new BackendError(
