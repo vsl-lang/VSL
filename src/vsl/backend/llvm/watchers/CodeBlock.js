@@ -1,5 +1,9 @@
+import CodeBlockManager from '../helpers/CodeBlockManager';
 import BackendWatcher from '../../BackendWatcher';
 import BackendWarning from '../../BackendWarning';
+
+import ValueRef from '../ValueRef';
+
 import t from '../../../parser/nodes';
 
 /**
@@ -14,8 +18,13 @@ export default class LLVMCodeBlock extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
+        const manager = new CodeBlockManager(node.scope, context);
+        node.backendRef = manager;
+
         for (let i = 0; i < node.statements.length; i++) {
             regen(i, node.statements, context);
         }
+
+        manager.memory.downrefScope();
     }
 }

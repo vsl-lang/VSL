@@ -14,6 +14,8 @@ export default class LLVMIdentifier extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
+        const asLValue = context.getLValueContextOnce();
+
         if (node.reference === null) {
             throw new BackendError(
                 `Item ${node.value} has ambigious reference in this context.`,
@@ -29,7 +31,11 @@ export default class LLVMIdentifier extends BackendWatcher {
                 const newCtx = context.bare();
                 return regen(source.relativeName, source.parentNode, newCtx);
             } else {
-                return node.reference.backendRef.generate(context);
+                if (asLValue) {
+                    return node.reference.backendRef;
+                } else {
+                    return node.reference.backendRef.generate(context);
+                }
             }
         }
     }

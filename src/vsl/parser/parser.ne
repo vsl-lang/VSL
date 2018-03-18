@@ -270,7 +270,11 @@ AssignmentStatement
     ):? {%
         (data, location, reject) => {
             // Don't allow in functions
-            if (state.inFunction === true || state.inInit === true) {
+            const contextWhereNoModifiersAllowed = state.inFunction === true || state.inInit === true;
+            const isScopeModifier = data[0].length > 0;
+            const isLazyModifier = !!data[1];
+            const isModifier = isScopeModifier || isLazyModifier;
+            if (contextWhereNoModifiersAllowed && isModifier) {
                 err(
                     `Cannot use access modifiers with assignment in this context`,
                     location
@@ -393,7 +397,9 @@ Ternary
    -> Assign _ "?" _ Ternary _ ":" _ Assign {%
         (data, location) => new t.Ternary(data[0], data[2], data[4], location)
     %}
-    | Is {% id %}
+    | Assign {% id %}
+Assign
+   -> BinaryOpRight[Assign, ("="), Is] {% id %}
 Is
    -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison

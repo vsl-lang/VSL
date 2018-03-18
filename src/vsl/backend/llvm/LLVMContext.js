@@ -14,6 +14,15 @@ export default class LLVMContext {
 
         /** @type {?llvm.Function} */
         this.parentFunc = null;
+
+        /** @type {boolean} */
+        this.lvalueContext = false;
+    }
+
+    getLValueContextOnce() {
+        const status = this.lvalueContext;
+        this.lvalueContext = false;
+        return status;
     }
 
     /**

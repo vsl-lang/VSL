@@ -48,6 +48,7 @@
     "js-yaml": "^3.8.4",
     "llvm-node": "git+https://github.com/vsl-lang/llvm-node.git",
     "mkdirp": "^0.5.1",
+    "nearley": "^2.13.0",
     "semver": "^5.5.0",
     "vsl-nearley": "^2.9.5"
   },

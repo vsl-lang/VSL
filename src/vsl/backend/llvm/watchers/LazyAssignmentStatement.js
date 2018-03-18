@@ -100,6 +100,10 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         builder.setInsertionPoint(block);
         builder.createCondBr(notInit, doInitialize, doReturn);
 
-        aliasItem.backendRef = new ValueRef(func, { isDyn: true });
+        aliasItem.backendRef = new ValueRef(func, {
+            isDyn: true,
+            aggregateSetter: 1,
+            backingValue: tempValRef
+        });
     }
 }

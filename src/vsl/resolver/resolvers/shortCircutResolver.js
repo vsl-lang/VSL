@@ -9,7 +9,7 @@ import e from '../../errors';
  * Resolves binary operator calls. This is NOT an atomic operation. This uses
  * will find the defined static function.
  */
-export default class ShhortCircutResolver extends TypeResolver {
+export default class ShortCircutResolver extends TypeResolver {
 
     /**
      * @param {Node} node - The node to resolve.
