@@ -21,7 +21,7 @@ const NodeTypes = require('./vsltokentype').default,
   boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   any = freeze({ test: () => true }),
-  mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p })
+  mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p }),
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
   mid = d => d[0][0],
