@@ -35,6 +35,7 @@ export default class Build extends CompilerCLI {
                 ["-O"                    , "Optimization level, default is 2." +
                                            "Values are [0, 3], 3 being most " +
                                            "optimized.",                             { arg: "opt", opt: true }],
+                ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
                 ["--library", "-l",      , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
@@ -273,15 +274,22 @@ export default class Build extends CompilerCLI {
             const fileManager = new TempFileManager();
             const byteCode = backend.getByteCode();
 
-            let asmFile = fileManager.tempWithExtension('o');
+            let asmFile = fileManager.tempWithExtension(this.target.type === 'asm' ? 's' : 'o');
 
-            await this.llc(byteCode, asmFile, {
+            // First optimize using -O
+            const opt = await this.opt(byteCode, {
                 triple: this.target.triple,
-                type: this.target.type,
                 optLevel: this.optimizationLevel
+            })
+
+            this._colorCompilationStep(`<<input.ll>>`, `$opt`);
+
+            await this.llc(opt, asmFile, {
+                triple: this.target.triple,
+                type: this.target.type
             });
 
-            this._colorCompilationStep(`<input.ll>`, asmFile);
+            this._colorCompilationStep(`$opt`, asmFile);
 
             switch (this.target.command) {
                 case "ld":
@@ -291,13 +299,13 @@ export default class Build extends CompilerCLI {
 
                     let readStream = fs.createReadStream(outFile);
                     readStream.pipe(this.outputStream);
-                    this._colorCompilationStep(outFile, '<output>');
+                    this._colorCompilationStep(outFile, '<<output>>');
 
                     break;
                 case "obj":
                     let asmStream = fs.createReadStream(asmFile);
                     asmStream.pipe(this.outputStream);
-                    this._colorCompilationStep(asmFile, '<output>');
+                    this._colorCompilationStep(asmFile, '<<output>>');
                     break;
                 case "wasm":
                     let wastFile = fileManager.tempWithExtension('wast');
@@ -314,7 +322,7 @@ export default class Build extends CompilerCLI {
 
                     let wasmStream = fs.createReadStream(wasmFile);
                     wasmStream.pipe(this.outputStream);
-                    this._colorCompilationStep(wasmFile, '<output>');
+                    this._colorCompilationStep(wasmFile, '<<output>>');
 
                     break;
                 default:
@@ -452,8 +460,48 @@ export default class Build extends CompilerCLI {
     }
 
     /**
+     * Optimizes input LLVM and returns stream.
+     * @param {string} byteCode - LLVM IR input
+     * @param {Object} opts
+     * @param {string} opts.triple - Triple
+     * @param {number} opts.optLevel - optimization type
+     */
+    opt(byteCode, {
+        triple = "",
+        optLevel = "2"
+    }) {
+        const optArgs = [
+            `-mtriple=${triple}`,
+            `-O${this.optimizationLevel}`
+        ];
+
+        this.printLog(`$ opt ${optArgs.join(" ")}`);
+
+        const opt = spawn('opt', optArgs, {
+            stdio: ['pipe', 'pipe', 'inherit']
+        });
+
+        const didWriteBC = opt.stdin.write(byteCode);
+        if (didWriteBC) {
+            opt.stdin.end();
+        } else {
+            opt.stdin.on('drain', () => {
+                opt.stdin.end();
+            })
+        }
+
+        opt.on('exit', (errorCode) => {
+            if (errorCode !== 0) {
+                this.error.cli(`failed: opt: exited with ${errorCode}`);
+            }
+        });
+
+        return opt.stdout;
+    }
+
+    /**
      * Compiles using LLC
-     * @param {string} byteCode byte code from llvm
+     * @param {string} byteCode byte code from llvm or stream.
      * @param {string} outputFile output .s file.
      * @param {Object} compilationOptions other compilation options
      * @param {string} compilationOptions.triple Target triple
@@ -462,15 +510,14 @@ export default class Build extends CompilerCLI {
      */
     llc(byteCode, outputFile, {
         triple = "",
-        type = "obj",
-        optLevel = "2"
+        type = "obj"
     } = {}) {
         return new Promise((resolve, reject) => {
             const llcArgs = [
                 `-mtriple=${triple}`,
-                `-O=${optLevel}`,
                 `-filetype=${type}`,
-                `-o=${outputFile}`
+                `-o=${outputFile}`,
+                `-x=ir`
             ].concat(this.llcArgs);
 
             this.printLog(`$ llc ${llcArgs.join(" ")}`);
@@ -489,13 +536,17 @@ export default class Build extends CompilerCLI {
                 }
             });
 
-            let didWriteBC = llc.stdin.write(byteCode);
-            if (didWriteBC) {
-                llc.stdin.end();
-            } else {
-                llc.stdin.on('drain', () => {
+            if (typeof byteCode === 'string') {
+                let didWriteBC = llc.stdin.write(byteCode);
+                if (didWriteBC) {
                     llc.stdin.end();
-                })
+                } else {
+                    llc.stdin.on('drain', () => {
+                        llc.stdin.end();
+                    })
+                }
+            } else {
+                byteCode.pipe(llc.stdin);
             }
 
             llc.on('exit', (errorCode) => {

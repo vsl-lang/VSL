@@ -394,8 +394,8 @@ InlineExpression
         (data, location) => new t.ExpressionStatement(data[0], false, false, location)
     %}
 Ternary
-   -> Assign _ "?" _ Ternary _ ":" _ Assign {%
-        (data, location) => new t.Ternary(data[0], data[2], data[4], location)
+   -> Assign _ "?" _ Ternary _ ":" _ Ternary {%
+        (data, location) => new t.Ternary(data[0], data[4], data[8], location)
     %}
     | Assign {% id %}
 Assign
@@ -424,7 +424,7 @@ Chain
 Range
    -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
 Cast
-   -> BinaryOpRight[Cast, ("::"), Prefix] {% id %}
+   -> BinaryOp[type, ("::"), Prefix] {% id %}
 Prefix
    -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {%
         (data, location) =>

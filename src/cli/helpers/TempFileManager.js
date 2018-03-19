@@ -6,6 +6,8 @@ import crypto from 'crypto';
  */
 export default class TempFileManager {
     static fileManagers = [];
+    static willCleanup = true;
+
     /**
      * Creates temporary file manager.
      */
@@ -53,8 +55,10 @@ export default class TempFileManager {
     }
 
     static clean() {
-        for (let i = 0; i < TempFileManager.fileManagers.length; i++) {
-            TempFileManager.fileManagers[i].clean();
+        if (TempFileManager.willCleanup) {
+            for (let i = 0; i < TempFileManager.fileManagers.length; i++) {
+                TempFileManager.fileManagers[i].clean();
+            }
         }
     }
 }
