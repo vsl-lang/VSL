@@ -71,16 +71,28 @@ export default class ScopeItem {
         }
 
         /**
-         * Random ID uniquely id'ing item in scope
-         * @type {[type]}
+         * The scope that owns the item.
+         * @type {?Scope}
          */
-        this.id;
+        this.owner = null;
+
+        /**
+         * The ID for mangling
+         * @type {number}
+         */
+        this.id = mangleId++;
 
         /**
          * Associate a value (for backends) with the scope item.
          * @type {Object}
          */
         this.backendRef = null;
+
+        /**
+         * Indicates if the item is private (only access from parent scope)
+         * @type {boolean}
+         */
+        this.isScopeRestricted;
     }
 
     /**
@@ -88,10 +100,9 @@ export default class ScopeItem {
      * @param {ScopeItemResolver} resolver - Function to resolve if node.
      * @abstract
      */
-    init({ resolver = null }) {
+    init({ resolver = null, isScopeRestricted = false }) {
         this._resolver = resolver;
-
-        this.id = mangleId++;
+        this.isScopeRestricted = isScopeRestricted;
     }
 
     /**
@@ -142,6 +153,6 @@ export default class ScopeItem {
      * @type {string}
      */
     get uniqueName() {
-        return `${this.rootId}.$${this.id}`
+        return `${this.rootId}${Buffer.from(this.owner.scopeId)}.${this.id}`
     }
 }

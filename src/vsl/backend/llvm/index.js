@@ -62,6 +62,7 @@ export default class LLVMBackend extends Backend {
 
         // Sort in order of likely occurence
         yield new w.Identifier();
+        yield new w.Self();
         yield new w.PropertyExpression();
         yield new w.InitializerCall(); // before: FunctionCall
         yield new w.FunctionCall();
@@ -79,7 +80,7 @@ export default class LLVMBackend extends Backend {
         yield new w.CodeBlock();
         yield new w.ReturnStatement();
         yield new w.InitializerStatement();
-        yield new w.RootFunction();
+        yield new w.Function();
         yield new w.ClassStatement();
         yield new w.NativeBlock();
         yield new w.NoOp();

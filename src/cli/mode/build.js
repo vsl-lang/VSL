@@ -267,8 +267,14 @@ export default class Build extends CompilerCLI {
     async compileLLVM(backend) {
         let start = hrtime();
         if (this.link === false) {
-            // Just write bytecode
-            this.outputStream.write(backend.getByteCode());
+            // Optimize and output byte code
+            const opt = await this.opt(backend.getByteCode(), {
+                triple: this.target.triple,
+                optLevel: this.optimizationLevel,
+                emitByteCode: true
+            });
+
+            opt.pipe(process.stdout);
         } else {
             // Otherwise compile to
             const fileManager = new TempFileManager();
@@ -465,15 +471,19 @@ export default class Build extends CompilerCLI {
      * @param {Object} opts
      * @param {string} opts.triple - Triple
      * @param {number} opts.optLevel - optimization type
+     * @param {boolean} opts.emitByteCode - If IR should be emitted
      */
     opt(byteCode, {
         triple = "",
-        optLevel = "2"
+        optLevel = "2",
+        emitByteCode = false
     }) {
         const optArgs = [
             `-mtriple=${triple}`,
             `-O${this.optimizationLevel}`
         ];
+
+        if (emitByteCode) optArgs.push('-S');
 
         this.printLog(`$ opt ${optArgs.join(" ")}`);
 

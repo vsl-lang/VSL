@@ -43,6 +43,6 @@ export default class ScopeInitItem extends ScopeFuncItem {
      * @type {string}
      */
     get uniqueName() {
-        return `${this.rootId}.init$${this.id}`
+        return `init.${super.uniqueName}`
     }
 }

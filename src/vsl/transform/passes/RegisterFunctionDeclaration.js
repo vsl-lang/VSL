@@ -82,7 +82,8 @@ export default class RegisterFunctionDeclaration extends Transformation {
             {
                 args: argList,
                 source: node,
-                returnType: node.returnRef
+                returnType: node.returnRef,
+                isScopeRestricted: tool.isPrivate
             }
         );
 
@@ -95,6 +96,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
 
         // Register the type in the parent scope
         let res = tool.assignmentScope.set(type);
+
         if (res === false) {
             throw new TransformError(
                 "Redeclaration of function. This means you have a function " +
@@ -103,6 +105,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
             );
         }
 
+        if (subscope) subscope.owner = type;
         node.scopeRef = type;
     }
 }
