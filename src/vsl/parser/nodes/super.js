@@ -12,6 +12,9 @@ export default class Super extends Node {
     */
     constructor(position: Object) {
         super(position);
+
+        /** @type {?ScopeTypeItem} */
+        this.reference = null;
     }
 
     clone() {

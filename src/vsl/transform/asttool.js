@@ -89,6 +89,14 @@ export default class ASTTool {
     }
 
     /**
+     * Determines is a declaration is explicitly declared private
+     * @type {Boolean}
+     */
+    get isPrivate() {
+        return this.fragment.access.includes('private');
+    }
+
+    /**
      * Access the nth parent. This traverses up the AST tree and if the parent
      * could not be found, or another error occurs, this returns nil. Passing 0
      * will return the node itself.

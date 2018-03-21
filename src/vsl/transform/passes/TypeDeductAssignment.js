@@ -90,7 +90,8 @@ export default class TypeDeductAssignment extends Transformation {
             {
                 type: resolvedType,
                 source: node,
-                isStatic: tool.isStatic
+                isStatic: tool.isStatic,
+                isScopeRestricted: tool.isPrivate
             }
         );
 

@@ -62,6 +62,51 @@ export default class Scope {
          * @type {?Scope}
          */
         this.parentScope = parentScope;
+
+        if (this.parentScope) {
+            this.parentScope.subscopeCount++;
+        }
+
+        /**
+         * If this scope is owned, this represents the owner
+         * @type {?ScopeTypeItem}
+         */
+        this.owner = null;
+
+        /**
+         * Represents the depth of this scope
+         * @type {number}
+         */
+        this.depth = (this.parentScope?.depth || 0) + 1;
+
+        /**
+         * Stores index in parent scope
+         * @type {number}
+         */
+        this.scopeOffset = this.parentScope?.subscopeCount || 0;
+
+        /**
+         * Counts the amount of child scopes. Updated by child scopes.
+         * @type {number}
+         */
+        this.subscopeCount = 0;
+
+        /**
+         * If this scope is static
+         * @type {boolean}
+         */
+        this.isStaticContext = false;
+    }
+
+    /**
+     * Uniquely ids scope.
+     */
+    get scopeId() {
+        if (this.parentScope === null)  {
+            return `$`
+        } else {
+            return `${this.parentScope.scopeId}.${this.scopeOffset}`;
+        }
     }
 
     /**
@@ -123,7 +168,45 @@ export default class Scope {
     getAsDelegate(item, node) {
         let reference = this.get(item);
         reference?.references.push(node);
+
+        // If it is private we'll have to check we are accessing it correctly.
+        if (!node.parentScope.scope.canAccess(reference)) {
+            return null;
+        }
         return reference;
+    }
+
+    /**
+     * Determines if a value is accessible from this scope
+     * @param {ScopeItem} reference the item
+     * @return {boolean} if it can.
+     */
+    canAccess(reference) {
+        if (reference.isScopeRestricted) {
+            // If we are accessing it from a **not allowed** scope.
+            if (!this.inScopeChain(reference.owner)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if a scope is in the current scope chain
+     * @param {Scope} scope
+     * @return {boolean}
+     */
+    inScopeChain(scope) {
+        let scopeChain = this;
+        while (scopeChain) {
+            if (scopeChain === scope) {
+                return true;
+            } else {
+                scopeChain = scopeChain.parentScope;
+            }
+        }
+        return false;
     }
 
     /**
@@ -157,6 +240,8 @@ export default class Scope {
     set(item: ScopeItem): boolean {
         let candidates = this.ids.get(item.rootId);
         if (candidates) {
+            item.owner = this;
+            item.id = candidates.length;
             candidates.push(item);
 
             if (this.get(item.getQuery()) !== item) {
@@ -165,6 +250,8 @@ export default class Scope {
             }
 
         } else {
+            item.owner = this;
+            item.id = 0;
             this.ids.set(item.rootId, [item])
         }
 

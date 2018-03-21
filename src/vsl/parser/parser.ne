@@ -45,7 +45,6 @@ const unlessNodeErr = (message, node, pos = 0) =>
 // State management
 let state = {
     inFunction: false,
-    inTypeContext: false,
     inInit: false
 };
 
@@ -233,9 +232,9 @@ Field
 
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
-        ( "{" {% setState(['inInit', 'inTypeContext'], true) %} )
+        ( "{" {% setState('inInit', true) %} )
         CodeBlock[statement {% id %}]
-        ( "}" {% setState(['inInit', 'inTypeContext'], false) %} ) {%
+        ( "}" {% setState('inInit', false) %} ) {%
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
                 data[4] || [], data[7], location)
@@ -547,7 +546,7 @@ Property
 
 propertyHead
    -> Identifier             {% id %}
-    | SelfOrSuper            {% onlyState('inTypeContext', id) %}
+    | SelfOrSuper            {% id %}
     | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
     | FunctionizedOperator   {% id %}
     | Literal                {% id %}

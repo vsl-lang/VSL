@@ -6,6 +6,10 @@ import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 import ValueRef from '../ValueRef';
 
+import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+
+import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
+import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionName from '../helpers/getFunctionName';
 
 import * as llvm from "llvm-node";
@@ -13,7 +17,7 @@ import * as llvm from "llvm-node";
 // Size of return in int(main)
 const MAIN_RETURN_SIZE = 32;
 
-export default class LLVMRootFunctionStatement extends BackendWatcher {
+export default class LLVMFunctionStatement extends BackendWatcher {
     match(type) {
         return type instanceof t.FunctionStatement;
     }
@@ -72,6 +76,15 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
             arg => toLLVMType(arg.type, backend)
         );
 
+        // If this _is_ a method (i.e. instance function), we'll want to make
+        //  sure we add `self` as the first argument. Also should not be static
+        if (isInstanceCtx(scopeItem)) {
+            const selfType = toLLVMType(scopeItem.owner.owner, backend);
+            argTypes.unshift(
+                selfType
+            );
+        }
+
         // Get the function type by mapping each arg ref to a respective type.
         let functionType = llvm.FunctionType.get(
             returnType,
@@ -105,32 +118,14 @@ export default class LLVMRootFunctionStatement extends BackendWatcher {
                 ))
             }
 
-            // We cannot have an external function _not_ be non-external because
-            // that doesn't make any sense.
-            if (!isPublic) {
-                backend.warn(new BackendWarning(
-                    `External function cannot have \`private\` access.`,
-                    node
-                ));
-            }
-
             func.callingConv = llvm.CallingConv.C;
         } else {
             let isEntry = false;
 
             // Check if is a main call, if so do not mangle/
-            if (scopeItem.rootId === "main") {
+            if (isValidEntryName(scopeItem.rootId)) {
                 // Ensure is a valid entry function.
-                const isValidEntry = (
-                    scopeItem.returnType ?
-                        false :
-                    scopeItem.args.length === 2 ?
-                        scopeItem.args[0].type.mockType === "i32" &&
-                        scopeItem.args[1].type.mockType === "pointer8" :
-                    scopeItem.args.length === 1 ?
-                        false :
-                    scopeItem.args.length === 0
-                );
+                const isValidEntry = isValidEntryTy(scopeItem);
 
                 if (!isValidEntry) {
                     throw new BackendError(

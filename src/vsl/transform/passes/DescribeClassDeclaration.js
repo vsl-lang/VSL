@@ -27,6 +27,7 @@ export default class DescribeClassDeclaration extends Transformation {
         let type;
 
         let subscope = node.statements.scope;
+        const staticSubscope = new Scope();
 
         let opts = {
             subscope: node.statements.scope,
@@ -34,7 +35,8 @@ export default class DescribeClassDeclaration extends Transformation {
             mockType: node.mockType,
             subscope: subscope,
             source: node,
-            staticScope: new Scope()
+            staticScope: staticSubscope,
+            isScopeRestricted: tool.isPrivate
         };
 
         if (node.generics.length === 0) {
@@ -68,6 +70,9 @@ export default class DescribeClassDeclaration extends Transformation {
                 node, e.DUPLICATE_DECLARATION
             );
         } else {
+            subscope.owner = type;
+            staticSubscope.owner = type;
+            staticSubscope.isStaticContext = true;
             type.source = node;
             node.scopeRef = type;
         }

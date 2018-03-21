@@ -2,6 +2,7 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionName from '../helpers/getFunctionName';
 
 export default class LLVMFunctionCall extends BackendWatcher {
@@ -43,6 +44,20 @@ export default class LLVMFunctionCall extends BackendWatcher {
         for (let i = 0; i < node.arguments.length; i++) {
             let value = regen('value', node.arguments[i], context);
             compiledArgs.push(value);
+        }
+
+        // If this is an instance we'll pass in self. We'll get this from the
+        // LHS CallRef
+        if (isInstanceCtx(functionRef)) {
+            // Get the value
+            if (!(node.head instanceof t.PropertyExpression)) {
+                throw new BackendError(
+                    `Expected property with instance method.`
+                );
+            }
+
+            const headValue = regen('head', node.head, context);
+            compiledArgs.unshift(headValue);
         }
 
         let result = context.builder.createCall(

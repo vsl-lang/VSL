@@ -192,6 +192,13 @@ export default class CallResolver extends TypeResolver {
                 });
             }
 
+            // We must make sure we can access it
+            if (!this.node.parentScope.scope.canAccess(maxCandidate)) {
+                this.emit(
+                    `Cannot use private function from this context.`
+                );
+            }
+
             // If we have succesfully found the one correct candidate...
             this.node.headRef = maxCandidate;
             return [new TypeCandidate(maxCandidate.returnType)];

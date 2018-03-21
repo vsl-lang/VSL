@@ -12,6 +12,9 @@ export default class Self extends Node {
     */
     constructor(position: Object) {
         super(position);
+
+        /** @type {?ScopeTypeItem} */
+        this.reference = null;
     }
 
     clone() {
