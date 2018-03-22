@@ -1,0 +1,11 @@
+lazy const global: String = f()
+
+func f() -> String {
+    print("A")
+    return "B"
+}
+
+func main() {
+    print(global)
+    print(global)
+}

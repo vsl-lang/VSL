@@ -1,0 +1,14 @@
+class A {
+    let a = "a"
+    let b: String
+
+    init(b: String) {
+        self.b = b
+    }
+}
+
+func main() {
+    let x = A(b: "b")
+    print(x.a)
+    print(x.b)
+}

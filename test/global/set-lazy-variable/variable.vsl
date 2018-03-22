@@ -1,0 +1,8 @@
+lazy let global: String = "A"
+
+func main() {
+    print(global)
+
+    global = "B"
+    print(global)
+}

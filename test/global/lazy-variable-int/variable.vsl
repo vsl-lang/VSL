@@ -1,0 +1,14 @@
+lazy let global: String = f()
+
+func f() -> String {
+    print("A")
+    return "B"
+}
+
+func main() {
+    print(global)
+    print(global)
+
+    global = "C"
+    print(global)
+}

@@ -1,0 +1,7 @@
+class A {
+    static const value: String = "Hello, World!"
+}
+
+func main() {
+    print(A.value)
+}

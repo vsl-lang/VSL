@@ -1,0 +1,8 @@
+class A {
+    let a = "A"
+}
+
+func main() {
+    let x = A()
+    print(x.a)
+}

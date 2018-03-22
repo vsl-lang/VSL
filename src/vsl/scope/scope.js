@@ -167,7 +167,9 @@ export default class Scope {
      */
     getAsDelegate(item, node) {
         let reference = this.get(item);
-        reference?.references.push(node);
+        if (reference === null) return null;
+
+        reference.references.push(node);
 
         // If it is private we'll have to check we are accessing it correctly.
         if (!node.parentScope.scope.canAccess(reference)) {

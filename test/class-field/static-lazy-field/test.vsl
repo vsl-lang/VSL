@@ -1,0 +1,13 @@
+func f() -> String {
+    print("A")
+    return "B"
+}
+
+class A {
+    static lazy const value: String = f()
+}
+
+func main() {
+    print(A.value)
+    print(A.value)
+}

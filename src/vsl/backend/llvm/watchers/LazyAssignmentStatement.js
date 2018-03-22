@@ -25,30 +25,26 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         }
 
         const varName = aliasItem.uniqueName;
-        const varRefName = `${varName}.value`
+        const backingValueName = `${varName}.value`
 
         // Check if already exists
-        const globalVar = backend.module.getGlobalVariable(varName, true);
+        const globalVar = backend.module.getGlobalVariable(backingValueName, true);
         if (globalVar) return;
 
         const varType = toLLVMType(aliasItem.type, backend);
-        const varTypeStore = llvm.StructType.get(
-            backend.context,
-            [
-                llvm.Type.getInt1Ty(backend.context),
-                varType
-            ],
-            true
-        );
+        const backingType = llvm.StructType.get(backend.context, [
+            llvm.Type.getInt1Ty(backend.context),
+            varType
+        ], true);
 
         // Create var to store temp value
-        const tempValRef = new llvm.GlobalVariable(
+        const backingValue = new llvm.GlobalVariable(
             backend.module,
-            varTypeStore,
+            backingType,
             false,
             llvm.LinkageTypes.PrivateLinkage,
-            llvm.ConstantAggregateZero.get(varTypeStore),
-            varRefName
+            llvm.ConstantAggregateZero.get(backingType),
+            backingValueName
         );
 
         const funcType = llvm.FunctionType.get(varType, [], false);
@@ -62,19 +58,16 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         const block = llvm.BasicBlock.create(backend.context, 'entry', func);
         const builder = new llvm.IRBuilder(block);
 
-        const notInit = builder.createICmpEQ(
-            builder.createLoad(builder.createInBoundsGEP(
-                tempValRef,
-                [
-                    llvm.ConstantInt.get(backend.context, 0),
-                    llvm.ConstantInt.get(backend.context, 0)
-                ]
-            )),
-            llvm.ConstantInt.getFalse(backend.context)
+        const initializationStatus = builder.createInBoundsGEP(
+            backingValue,
+            [
+                llvm.ConstantInt.get(backend.context, 0),
+                llvm.ConstantInt.get(backend.context, 0)
+            ]
         );
 
-        const initStoreTarget = builder.createInBoundsGEP(
-            tempValRef,
+        const internalValue = builder.createInBoundsGEP(
+            backingValue,
             [
                 llvm.ConstantInt.get(backend.context, 0),
                 llvm.ConstantInt.get(backend.context, 1)
@@ -83,7 +76,7 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
 
         const doReturn = llvm.BasicBlock.create(backend.context, 'value', func);
         builder.setInsertionPoint(doReturn);
-        builder.createRet(builder.createLoad(initStoreTarget));
+        builder.createRet(builder.createLoad(internalValue));
 
         const doInitialize = llvm.BasicBlock.create(backend.context, 'noinit', func);
         builder.setInsertionPoint(doInitialize);
@@ -93,17 +86,26 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         newCtx.parentFunc = func;
 
         let initVal = regen('value', node, newCtx);
-        let initStore = builder.createStore(initVal, initStoreTarget);
+
+        builder.createStore(initVal, internalValue);
+        builder.createStore(llvm.ConstantInt.getTrue(backend.context), initializationStatus)
 
         builder.createRet(initVal);
 
         builder.setInsertionPoint(block);
-        builder.createCondBr(notInit, doInitialize, doReturn);
+        const condBr = builder.createCondBr(
+            builder.createICmpEQ(
+                builder.createLoad(initializationStatus),
+                llvm.ConstantInt.getTrue(backend.context)
+            ),
+            doReturn,
+            doInitialize
+        );
 
         aliasItem.backendRef = new ValueRef(func, {
             isDyn: true,
             aggregateSetter: 1,
-            backingValue: tempValRef
+            backingValue: backingValue
         });
     }
 }
