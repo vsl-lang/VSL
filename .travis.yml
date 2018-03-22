@@ -2,7 +2,7 @@ language: node_js
 node_js:
     - "6.10"
     - "8.9"
-    - latest
+    - node
 
 addons:
   codeclimate:

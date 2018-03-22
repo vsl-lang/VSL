@@ -106,6 +106,39 @@ export default class ErrorManager {
         }
     }
 
+    /**
+     * Dynamically handles err
+     * @param {Error} error
+     */
+    dynamicHandle(error) {
+        let stream = null;
+
+        if (error.stream) { stream = error.stream }
+        else if (error.node) {
+            let trackingNode = error.node;
+            do {
+                if (trackingNode.stream) {
+                    stream = trackingNode.stream;
+                    break;
+                }
+            } while(
+                trackingNode.rootScope !== true &&
+                (trackingNode = trackingNode.parentScope)
+            );
+        }
+
+        if (stream) {
+            error.stream = stream;
+            this.handle({
+                error,
+                src: stream.data,
+                exit: false
+            });
+        } else {
+            throw error;
+        }
+    }
+
     /** @private */
     _repeat(str, len) {
         let res = "";

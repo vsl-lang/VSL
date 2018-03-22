@@ -16,7 +16,7 @@
     "clean": "rm -r lib",
     "lint": "eslint src",
     "docs": "esdoc",
-    "test": "npm run nearley && mocha",
+    "test": "babel test/runner.js -o test/runner.o.js && node test/runner.o.js",
     "coverage": "cross-env NODE_ENV=test nyc npm test"
   },
   "repository": {
