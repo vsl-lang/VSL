@@ -1,5 +1,5 @@
-node_modules/*
-!node_modules/nearley
+node_modules
+runner.o.js
 npm-debug.log*
 libraries/libcore
 libraries/libnatural
