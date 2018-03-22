@@ -1,0 +1,11 @@
+class A {
+    let a = "A"
+}
+
+func main() {
+    let x = A()
+    print(x.a)
+
+    x.a = "B"
+    print(x.a)
+}

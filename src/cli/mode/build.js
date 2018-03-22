@@ -268,6 +268,7 @@ export default class Build extends CompilerCLI {
         let start = hrtime();
         if (this.link === false) {
             // Optimize and output byte code
+            // console.log(backend.getByteCode());
             const opt = await this.opt(backend.getByteCode(), {
                 triple: this.target.triple,
                 optLevel: this.optimizationLevel,

@@ -38,16 +38,16 @@ export default class ValueRef {
         if (this.isPtr) {
             return context.builder.createStore(value, this.value);
         } else if (this.isDyn) {
-            return context.builder.createStore(
-                context.builder.createInBoundsGEP(
-                    value,
+            const ptr = context.builder.createInBoundsGEP(
+                    this.backingValue,
                     [
                         llvm.ConstantInt.get(context.backend.context, 0),
                         llvm.ConstantInt.get(context.backend.context, this.aggregateSetter)
                     ]
-                ),
-                this.backingValue
             );
+
+            const store = context.builder.createStore(value, ptr);
+            return store;
         } else {
             throw new TypeError('Cannot use ValueRef#setValueTo with literal value');
         }
