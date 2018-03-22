@@ -4,18 +4,7 @@ node_js:
     - "8.9"
     - node
 
-addons:
-  codeclimate:
-    repo_token:
-      - secure: CODECLIMATE_REPO_TOKEN
-
 install:
     - npm install
-    - npm install -g codecov
 script:
     - npm test
-    - npm run coverage
-after_success:
-    - codecov
-    - npm install -g codeclimate-test-reporter
-    - codeclimate-test-reporter < coverage/lcov.info
