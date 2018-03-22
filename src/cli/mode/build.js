@@ -271,10 +271,9 @@ export default class Build extends CompilerCLI {
             const opt = await this.opt(backend.getByteCode(), {
                 triple: this.target.triple,
                 optLevel: this.optimizationLevel,
-                emitByteCode: true
+                emitByteCode: true,
+                redirect: process.stdout
             });
-
-            opt.pipe(process.stdout);
         } else {
             // Otherwise compile to
             const fileManager = new TempFileManager();
@@ -476,37 +475,45 @@ export default class Build extends CompilerCLI {
     opt(byteCode, {
         triple = "",
         optLevel = "2",
-        emitByteCode = false
+        emitByteCode = false,
+        redirect = null
     }) {
-        const optArgs = [
-            `-mtriple=${triple}`,
-            `-O${this.optimizationLevel}`
-        ];
+        return new Promise((resolve, reject) => {
+            const optArgs = [
+                `-mtriple=${triple}`,
+                `-O${this.optimizationLevel}`
+            ];
 
-        if (emitByteCode) optArgs.push('-S');
+            if (emitByteCode) optArgs.push('-S');
 
-        this.printLog(`$ opt ${optArgs.join(" ")}`);
+            this.printLog(`$ opt ${optArgs.join(" ")}`);
 
-        const opt = spawn('opt', optArgs, {
-            stdio: ['pipe', 'pipe', 'inherit']
-        });
+            const opt = spawn('opt', optArgs, {
+                stdio: ['pipe', 'pipe', 'inherit']
+            });
 
-        const didWriteBC = opt.stdin.write(byteCode);
-        if (didWriteBC) {
-            opt.stdin.end();
-        } else {
-            opt.stdin.on('drain', () => {
+            if (redirect) opt.stdout.pipe(redirect);
+            const didWriteBC = opt.stdin.write(byteCode);
+
+            if (didWriteBC) {
                 opt.stdin.end();
-            })
-        }
-
-        opt.on('exit', (errorCode) => {
-            if (errorCode !== 0) {
-                this.error.cli(`failed: opt: exited with ${errorCode}`);
+            } else {
+                opt.stdin.on('drain', () => {
+                    opt.stdin.end();
+                })
             }
-        });
 
-        return opt.stdout;
+            opt.on('exit', (errorCode) => {
+                if (errorCode !== 0) {
+                    reject();
+                    this.error.cli(`failed: opt: exited with ${errorCode}`);
+                } else {
+                    if (redirect) resolve();
+                }
+            });
+
+            if (!redirect) resolve(opt.stdout);
+        });
     }
 
     /**
