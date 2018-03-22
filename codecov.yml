@@ -1,8 +1,0 @@
-coverage:
-  status:
-    patch: false
-    #   default:
-    #     if_not_found: success
-    project:
-      default:
-        if_not_found: success  # probably should be removed but w/e
