@@ -7,7 +7,7 @@ libraries/libgoat
 lib
 .c9
 build
-test*
+/test*
 !test/
 docs
 coverage

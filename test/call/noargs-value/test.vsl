@@ -1,0 +1,7 @@
+func f() -> Int {
+    return 1
+}
+
+func main() {
+    let a = f()
+}

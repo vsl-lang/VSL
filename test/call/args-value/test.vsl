@@ -1,0 +1,7 @@
+func f(a: Int) -> Int {
+    return a
+}
+
+func main() {
+    f(1)
+}
