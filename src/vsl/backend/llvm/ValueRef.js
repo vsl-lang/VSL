@@ -10,9 +10,11 @@ export default class ValueRef {
      * @param {Boolean} data.isPtr If the value is a pointer to the actual value.
      * @param {Boolean} data.isDyn If the value is dynamic.
      * @param {number} data.aggregateSetter If the backingValue is an aggregate.
+     * @param {Function} data.didSet Runs after set. Takes LLVMContext arg. This
+     *                                is for compiler-gen'd didSets for dyn sets.
      * @param {?llvm.Value} backingValue The value storing the data for setters.
      */
-    constructor(value, { isPtr, isDyn, aggregateSetter = null, backingValue = null }) {
+    constructor(value, { isPtr, isDyn, didSet = null, aggregateSetter = null, backingValue = null }) {
         /** @type {llvm.Value} */
         this.value = value;
 
@@ -21,6 +23,9 @@ export default class ValueRef {
 
         /** @type {Boolean} */
         this.isDyn = isDyn;
+
+        /** @type {Function} */
+        this.didSet = didSet;
 
         /** @type {number} */
         this.aggregateSetter = aggregateSetter;
@@ -39,14 +44,16 @@ export default class ValueRef {
             return context.builder.createStore(value, this.value);
         } else if (this.isDyn) {
             const ptr = context.builder.createInBoundsGEP(
-                    this.backingValue,
-                    [
-                        llvm.ConstantInt.get(context.backend.context, 0),
-                        llvm.ConstantInt.get(context.backend.context, this.aggregateSetter)
-                    ]
+                this.backingValue,
+                [
+                    llvm.ConstantInt.get(context.backend.context, 0),
+                    llvm.ConstantInt.get(context.backend.context, this.aggregateSetter)
+                ]
             );
 
+
             const store = context.builder.createStore(value, ptr);
+            this.didSet?.(this.backingValue, context);
             return store;
         } else {
             throw new TypeError('Cannot use ValueRef#setValueTo with literal value');

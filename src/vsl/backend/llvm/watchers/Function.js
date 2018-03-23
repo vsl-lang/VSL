@@ -76,9 +76,13 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             arg => toLLVMType(arg.type, backend)
         );
 
+        // Where the physical args start
+        let argAccessOffset = 0;
+
         // If this _is_ a method (i.e. instance function), we'll want to make
         //  sure we add `self` as the first argument. Also should not be static
         if (isInstanceCtx(scopeItem)) {
+            argAccessOffset += 1;
             const selfType = toLLVMType(scopeItem.owner.owner, backend);
             argTypes.unshift(
                 selfType
@@ -171,7 +175,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
 
             // Add the refs to each arg.
             for (let i = 0; i < nodeArgs.length; i++) {
-                nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[i], { isPtr: false });
+                nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[argAccessOffset + i], { isPtr: false });
             }
 
             // Add the appropriate attribute if a @inline tag exists

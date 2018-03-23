@@ -127,7 +127,7 @@ export default class ScopeFuncItem extends ScopeItem {
      * @type {string}
      */
     get uniqueName() {
-        return `F${super.uniqueName}`;
+        return `F${super.uniqueName}${this.args.map(arg => arg.uniqueName)}`;
     }
 
     /** @override */

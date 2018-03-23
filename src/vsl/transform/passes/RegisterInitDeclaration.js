@@ -86,16 +86,16 @@ export default class RegisterInitDeclaration extends Transformation {
         );
 
         // Also register as a class init
-        // const res = scope.set(type);
-        // if (res === false) {
-        //     throw new TransformError(
-        //         "Redeclaration of initializer. This either means you have " +
-        //         "another initializer with the exact same signature declared " +
-        //         "or there is a function with the same name as the class and " +
-        //         "the same format as the class",
-        //         node, e.DUPLICATE_DECLARATION
-        //     );
-        // }
+        const res = scope.set(type);
+        if (res === false) {
+            throw new TransformError(
+                "Redeclaration of initializer. This either means you have " +
+                "another initializer with the exact same signature declared " +
+                "or there is a function with the same name as the class and " +
+                "the same format as the class",
+                node, e.DUPLICATE_DECLARATION
+            );
+        }
 
         node.scopeRef = type;
     }

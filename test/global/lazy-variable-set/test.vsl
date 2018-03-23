@@ -1,0 +1,11 @@
+lazy let global = sideEffect()
+
+func sideEffect() -> String {
+    print("Side Effect")
+    return "A"
+}
+
+func main() {
+    global = "B"
+    print(global)
+}

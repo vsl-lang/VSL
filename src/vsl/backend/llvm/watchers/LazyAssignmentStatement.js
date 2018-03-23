@@ -105,7 +105,20 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         aliasItem.backendRef = new ValueRef(func, {
             isDyn: true,
             aggregateSetter: 1,
-            backingValue: backingValue
+            backingValue: backingValue,
+            didSet: (value, context) => {
+                // Make sure lazy status is true
+                context.builder.createStore(
+                    llvm.ConstantInt.getTrue(context.backend.context),
+                    context.builder.createInBoundsGEP(
+                        value,
+                        [
+                            llvm.ConstantInt.get(context.backend.context, 0),
+                            llvm.ConstantInt.get(context.backend.context, 0)
+                        ]
+                    )
+                );
+            }
         });
     }
 }
