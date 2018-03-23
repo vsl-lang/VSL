@@ -4,9 +4,10 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeForm from '../../scope/scopeForm';
+import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
-import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeGenericsItem from '../../scope/items/ScopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 
 import e from '../../errors';
@@ -44,6 +45,30 @@ export default class IdResolver extends TypeResolver {
         const scope = negotiate(ConstraintType.TypeScope);
         const rootId = this.node.value;
 
+        // Get the variable this references
+        // Pass this.node so we can know that this node referenced the
+        // variable we are trying to get.
+        let result = scope.getAsDelegate(
+            new ScopeAliasItem(ScopeForm.query, rootId),
+            this.node
+        );
+
+        let resultType;
+
+        // Get result type
+        if (result instanceof ScopeTypeItem) {
+            resultType = new ScopeMetaClassItem({
+                referencingClass: result
+            });
+        } else if (result instanceof ScopeGenericsItem) {
+            this.emit(
+                `Cannot use generic ${result.rootId} class without specifying ` +
+                `parameter types using \`${result.rootId}<...>\``
+            );
+        } else if (result) {
+            resultType = result.type;
+        }
+
         // If passed callArgs we know it's a fucntion
         // that is the number of args so we can use this as a basic filter to
         // narrow down candidates
@@ -59,13 +84,19 @@ export default class IdResolver extends TypeResolver {
 
             // Basic filter which removed candidates which aren't either funcs
             // or have less arguments than called with,
-            let candidates = (
-                scope.getAll(rootId)
-                    .filter(item =>
-                        item instanceof ScopeFuncItem &&
-                        item.args.length === callArgs
-                    )
-            );
+
+            let items;
+            if (result instanceof ScopeTypeItem) {
+                // For types we'll get initializers
+                items = result.subscope.getAll('init');
+            } else {
+                items = scope.getAll(rootId)
+            }
+
+            // Filter the valid function types
+            let candidates = items.filter(item => {
+                return item instanceof ScopeFuncItem && item.args.length === callArgs;
+            });
 
             // If they are 0 candidates that means there is no function which
             // actually has the name
@@ -90,14 +121,6 @@ export default class IdResolver extends TypeResolver {
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
-        // Get the variable this references
-        // Pass this.node so we can know that this node referenced the
-        // variable we are trying to get.
-        let result = scope.getAsDelegate(
-            new ScopeAliasItem(ScopeForm.query, rootId),
-            this.node
-        );
-
         if (!result) {
             this.emit(
                 `Use of undeclared identifier ${rootId}. If you wanted to ` +
@@ -105,17 +128,6 @@ export default class IdResolver extends TypeResolver {
                 `somewhere.`,
                 e.UNDECLARED_IDENTIFIER
             );
-        }
-
-        let resultType;
-
-        // Get result type
-        if (result instanceof ScopeTypeItem) {
-            resultType = new ScopeMetaClassItem({
-                referencingClass: result
-            });
-        } else {
-            resultType = result.type;
         }
 
         // And this sets the candidates to the same one the ID had

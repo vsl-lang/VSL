@@ -153,6 +153,6 @@ export default class ScopeItem {
      * @type {string}
      */
     get uniqueName() {
-        return `${this.rootId}${Buffer.from(this.owner.scopeId)}.${this.id}`
+        return `${this.owner.scopeId}N${this.rootId}`
     }
 }

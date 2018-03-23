@@ -102,10 +102,12 @@ export default class Scope {
      * Uniquely ids scope.
      */
     get scopeId() {
+        const localName = this.owner?.uniqueName || "g";
+        const localId = `${this.isStaticContext ? "S" : ""}${localName}`;
         if (this.parentScope === null)  {
-            return `$`
+            return localId;
         } else {
-            return `${this.parentScope.scopeId}.${this.scopeOffset}`;
+            return `${this.parentScope.scopeId}${localId}`;
         }
     }
 

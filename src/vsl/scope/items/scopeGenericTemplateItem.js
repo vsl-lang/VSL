@@ -37,6 +37,6 @@ export default class ScopeGenericTemplateItem extends ScopeTypeItem {
 
     /** @return {string} */
     toString() {
-        return this.template.rootToString() + `<${this.genericParents.map(p => p.toString()).join(", ")}>`
+        return this.template.rootToString() + `<${this.parents.map(p => p.toString()).join(", ")}>`
     }
 }
