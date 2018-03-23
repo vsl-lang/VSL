@@ -72,6 +72,14 @@ export default class ScopeFuncItemArgument {
         if (match === root) return true;
     }
 
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get uniqueName() {
+        return `A${this.name}${this.type.uniqueName}`
+    }
+
     /** @override */
     toString() {
         return `${this.name || "*"}: ${this.type}${this.optional ? "?" : ""}`;
