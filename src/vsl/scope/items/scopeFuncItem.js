@@ -122,6 +122,14 @@ export default class ScopeFuncItem extends ScopeItem {
         });
     }
 
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get uniqueName() {
+        return `F${super.uniqueName}`;
+    }
+
     /** @override */
     toString() {
         return `func ${this.rootId}(${this.args.join(", ")})`;

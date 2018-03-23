@@ -35,9 +35,6 @@ export default class RegisterInitDeclaration extends Transformation {
         // Get scope inside class
         const scope = tool.scope;
 
-        // Get outer scope
-        const outerScope = owningClass.parentScope.scope;
-
         // Go through params and form ScopeFuncItemArguments
         const initArgs = node.params.map(
             ({
@@ -79,7 +76,7 @@ export default class RegisterInitDeclaration extends Transformation {
         // Add the initalizer to the class
         let type = new ScopeInitItem(
             ScopeForm.definite,
-            className,
+            'init',
             {
                 args: initArgs,
                 source: node,
@@ -89,19 +86,16 @@ export default class RegisterInitDeclaration extends Transformation {
         );
 
         // Also register as a class init
-        let resOutside = outerScope.set(type);
-
-        // Register the type in the parent scope
-        let resInsideClass = scope.set(type);
-        if (resOutside === false || resOutside === false) {
-            throw new TransformError(
-                "Redeclaration of initializer. This either means you have " +
-                "another initializer with the exact same signature declared " +
-                "or there is a function with the same name as the class and " +
-                "the same format as the class",
-                node, e.DUPLICATE_DECLARATION
-            );
-        }
+        // const res = scope.set(type);
+        // if (res === false) {
+        //     throw new TransformError(
+        //         "Redeclaration of initializer. This either means you have " +
+        //         "another initializer with the exact same signature declared " +
+        //         "or there is a function with the same name as the class and " +
+        //         "the same format as the class",
+        //         node, e.DUPLICATE_DECLARATION
+        //     );
+        // }
 
         node.scopeRef = type;
     }

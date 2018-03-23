@@ -11,7 +11,7 @@ export default class ScopeInitItem extends ScopeFuncItem {
      * handle overloading etc. For lambdas you probably want to use a normal
      *
      * @param {ScopeForm} form - The form or type of the scope item.
-     * @param {string} rootId - Do not override. Should be 'init'
+     * @param {string} rootId - Do not override. Should be 'init' in ALL cases.
      * @param {Object} data - Information about the class
      */
     constructor(form, rootId, data) {
@@ -43,6 +43,6 @@ export default class ScopeInitItem extends ScopeFuncItem {
      * @type {string}
      */
     get uniqueName() {
-        return `init.${super.uniqueName}`
+        return `i${super.uniqueName}`
     }
 }

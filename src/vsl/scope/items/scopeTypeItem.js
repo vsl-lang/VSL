@@ -192,6 +192,14 @@ export default class ScopeTypeItem extends ScopeItem {
         });
     }
 
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get uniqueName() {
+        return `T${this.isInterface ? "I" : "C"}${this.rootId}`;
+    }
+
     /** @return {string} */
     toString() {
         return `${this.isInterface ? "interface" : "class"} ${this.rootId}`

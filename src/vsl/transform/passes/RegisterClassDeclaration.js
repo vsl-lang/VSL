@@ -54,7 +54,7 @@ export default class RegisterClassDeclaration extends Transformation {
 
             let type = new ScopeInitItem(
                 ScopeForm.definite,
-                node.scopeRef.rootId,
+                'init',
                 {
                     args: [],
                     source: null,
@@ -64,17 +64,10 @@ export default class RegisterClassDeclaration extends Transformation {
                 }
             );
 
-            // Get scope inside class
-            const scope = node.statements.scope;
-
-            // Get outer scope
-            const outerScope = tool.scope;
-
-            // Also register as a class init
-            let resOutside = outerScope.set(type);
+            const subscope = node.scopeRef.subscope;
 
             // Register the type in the parent scope
-            let resInsideClass = scope.set(type);
+            let resInsideClass = subscope.set(type);
         }
     }
 }
