@@ -1,0 +1,23 @@
+class A {
+    let a = "a"
+    let b: String
+
+    init(b: String) {
+        self.b = b
+    }
+
+    init(a: String, b: String) {
+        self.a = a
+        self.b = b
+    }
+}
+
+func main() {
+    let x = A(a: "A", b: "B")
+    print(x.a)
+    print(x.b)
+
+    let y = A(b: "b")
+    print(y.a)
+    print(y.b)
+}

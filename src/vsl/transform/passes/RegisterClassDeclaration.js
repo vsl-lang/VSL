@@ -32,8 +32,6 @@ export default class RegisterClassDeclaration extends Transformation {
             }
         }
 
-
-        // Add default init if doesn't exist
         if (isInitializer === false) {
             // Check all aliases have defined value/expression if creating
             //  implicit initializer.
@@ -51,23 +49,25 @@ export default class RegisterClassDeclaration extends Transformation {
                     }
                 }
             }
+        }
 
-            let type = new ScopeInitItem(
-                ScopeForm.definite,
-                'init',
-                {
-                    args: [],
-                    source: null,
-                    isDefaultInit: true,
-                    returnType: node.scopeRef,
-                    initializingType: node.scopeRef
-                }
-            );
+        let type = new ScopeInitItem(
+            ScopeForm.definite,
+            'init',
+            {
+                args: [],
+                source: null,
+                isDefaultInit: true,
+                returnType: node.scopeRef,
+                initializingType: node.scopeRef
+            }
+        );
 
-            const subscope = node.scopeRef.subscope;
+        if (isInitializer === false) {
+            const subscope = node.statements.scope;
 
             // Register the type in the parent scope
-            let resInsideClass = subscope.set(type);
+            subscope.set(type);
         }
     }
 }

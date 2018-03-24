@@ -88,8 +88,15 @@ export default class ScopeTypeItem extends ScopeItem {
 
         /**
          * If a type explicitly is unqualified for dynamic dispatch.
+         * @param {boolean}
          */
-        this._dynamicDispatch = null;
+        this._dynamicDispatch;
+
+        /**
+         * The default initializer if needed
+         * @type {?ScopeInitItem}
+         */
+        this.defaultInitializer;
 
         /**
          * Specifies the source node of the type.
@@ -132,6 +139,7 @@ export default class ScopeTypeItem extends ScopeItem {
         subscope,
         source = null,
         dynamicDispatch = null,
+        defaultInitializer = null,
         ...opts
     } = {}) {
         super.init(opts);
@@ -144,6 +152,8 @@ export default class ScopeTypeItem extends ScopeItem {
         this.mockType = mockType;
         this._dynamicDispatch = dynamicDispatch;
         this.source = source;
+
+        this.defaultInitializer = defaultInitializer;
     }
 
     /**

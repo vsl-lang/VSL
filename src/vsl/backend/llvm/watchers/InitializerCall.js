@@ -6,6 +6,7 @@ import ScopeInitItem from '../../../scope/items/scopeInitItem';
 import getFunctionName, { getFunctionInstance } from '../helpers/getFunctionName';
 import toLLVMType from '../helpers/toLLVMType';
 import { getTypeOffset } from '../helpers/layoutType';
+import getDefaultInit from '../helpers/getDefaultInit';
 
 import { alloc } from '../helpers/MemoryManager'
 import * as llvm from 'llvm-node';
@@ -35,72 +36,13 @@ export default class LLVMInitializerCall extends BackendWatcher {
         // Get the name of this function so we can ref it
         const calleeName = getFunctionName(initRef);
 
-        // Then, with the callee
-        let callee = backend.module.getFunction(calleeName);
-
-        // Check if callee is generated yet. If not we'll generate it.
-        if (!callee) {
-            if (initRef.isDefaultInit) {
-                // NoRecurse InlineHint
-                callee = llvm.Function.create(
-                    llvm.FunctionType.get(
-                        classType,
-                        [classType],
-                        false
-                    ),
-                    llvm.LinkageTypes.ExternalLinkage,
-                    calleeName,
-                    backend.module
-                );
-
-                callee.addFnAttr(llvm.Attribute.AttrKind.InlineHint);
-                callee.addFnAttr(llvm.Attribute.AttrKind.NoRecurse);
-
-                let defaultInitBlock = llvm.BasicBlock.create(
-                    backend.context,
-                    'entry',
-                    callee
-                );
-
-                // Builder for default init
-                let defaultBuilder = new llvm.IRBuilder(defaultInitBlock);
-
-                const self = callee.getArguments()[0];
-
-                const defaultCtx = context.bare();
-                defaultCtx.builder = defaultBuilder;
-                defaultCtx.parentFunc = initRef;
-
-                // Run default init for all fields with default value
-                for (let i = 0; i < classRef.subscope.aliases.length; i++) {
-                    const defaultField = classRef.subscope.aliases[i];
-                    const fieldNode = defaultField.source;
-                    if (fieldNode?.value) {
-                        let fieldValue = regen('value', fieldNode, defaultCtx);
-                        let indexOfField = getTypeOffset(classRef, defaultField);
-
-                        let storeInst = defaultBuilder.createStore(
-                            fieldValue,
-                            defaultBuilder.createInBoundsGEP(
-                                self,
-                                [
-                                    // Deref the field itself
-                                    llvm.ConstantInt.get(backend.context, 0),
-
-                                    // The field we want
-                                    llvm.ConstantInt.get(backend.context, indexOfField)
-                                ]
-                            )
-                        );
-                    }
-                }
-
-                // Return node itself
-                defaultBuilder.createRet(self);
-            } else {
-                callee = getFunctionInstance(initRef, regen, context);
-            }
-
+        // Then, with the callee. We'll either get initializer or we'll get the
+        //  default init
+        let callee;
+        if (initRef.isDefaultInit) {
+            callee = getDefaultInit(classRef, context, regen);
+        } else {
+            callee = getFunctionInstance(initRef, regen, context);
         }
 
         // Allocate space for struct
