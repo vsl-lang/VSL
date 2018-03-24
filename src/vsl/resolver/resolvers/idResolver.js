@@ -7,7 +7,7 @@ import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
-import ScopeGenericsItem from '../../scope/items/ScopeGenericItem';
+import ScopeGenericItem from '../../scope/items/ScopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 
 import e from '../../errors';
@@ -60,7 +60,7 @@ export default class IdResolver extends TypeResolver {
             resultType = new ScopeMetaClassItem({
                 referencingClass: result
             });
-        } else if (result instanceof ScopeGenericsItem) {
+        } else if (result instanceof ScopeGenericItem) {
             this.emit(
                 `Cannot use generic ${result.rootId} class without specifying ` +
                 `parameter types using \`${result.rootId}<...>\``
