@@ -88,46 +88,50 @@ async function runTestDir(dir) {
         new VSL.CompilationStream()
     );
 
-    index.compile(backend)
-        .then(() => {
-            const expectedStdout = fs.openSync(path.join(dir, 'stdout.txt'), 'r');
-//            const expectedStderr = fs.openSync(path.join(dir, 'stdout.txt'), 'r');
 
-            const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
-            instance.stdin.write(backend.getByteCode());
-            instance.stdin.end();
+    try {
+        await index.compile(backend)
+        const expectedStdout = fs.openSync(path.join(dir, 'stdout.txt'), 'r');
 
-            let stdoutOffset = 0;
-            instance.stdout.on('data', (data) => {
-                const ref = Buffer.allocUnsafe(data.length);
-                fs.readSync(expectedStdout, ref, stdoutOffset, data.length);
-                stdoutOffset += data.length;
+        const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
+        instance.stdin.write(backend.getByteCode());
+        instance.stdin.end();
 
-                if (!ref.equals(data)) {
-                    console.log(
-                        `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
-                        `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
-                        ref.toString('utf8').replace(/^|\n/g, '$&        ') + "\n" +
-                        `    Instead got:\n` +
-                        data.toString('utf8').replace(/^|\n/g, '$&        ') + "\n"
-                    );
-                    instance.kill('SIGTERM');
-                }
-            });
+        let stdoutOffset = 0;
+        instance.stdout.on('data', (data) => {
+            const ref = Buffer.allocUnsafe(data.length);
+            fs.readSync(expectedStdout, ref, stdoutOffset, data.length);
+            stdoutOffset += data.length;
 
-            instance.on('exit', () => {
-                console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m passed.\u001B[0m`);
-            });
-        })
-        .catch((error) => {
-            try {
-                errorManager.dynamicHandle(error);
-            } catch(unhandledErr) {
-                errorManager.rawError(
-                    `✗ Test ${testName} failed`,
-                    unhandledErr.message,
-                    unhandledErr.stack
+            if (!ref.equals(data)) {
+                console.log(
+                    `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
+                    `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
+                    ref.toString('utf8').replace(/^|\n/g, '$&        ') + "\n" +
+                    `    Instead got:\n` +
+                    data.toString('utf8').replace(/^|\n/g, '$&        ') + "\n"
                 );
+                instance.kill('SIGTERM');
             }
         });
+
+        instance.on('exit', (errorCode, signal) => {
+            if (instance.killed) return;
+            if (errorCode === 0) {
+                console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m passed.\u001B[0m`);
+            } else {
+                console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m errored with ${errorCode || signal}.\u001B[0m`);
+            }
+        });
+    } catch (error) {
+        try {
+            errorManager.dynamicHandle(error);
+        } catch(unhandledErr) {
+            errorManager.rawError(
+                `✗ Test ${testName} failed`,
+                unhandledErr.message,
+                unhandledErr.stack
+            );
+        }
+    }
 }

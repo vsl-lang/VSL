@@ -1,0 +1,17 @@
+func f() -> String {
+    print("first")
+    return "unk"
+}
+
+class A {
+    let a = f()
+
+    init() {
+        print("main")
+    }
+}
+
+func main() {
+    let x = A()
+    print(x.a)
+}
