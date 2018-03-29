@@ -10,6 +10,7 @@ export default function vslGetChild(from: Node): TypeResolver {
         case t.PropertyExpression: return new resolvers.PropertyResolver(from, vslGetChild);
         case t.Self: return new resolvers.SelfResolver(from, vslGetChild);
         case t.BinaryExpression: return new resolvers.BinaryOperatorResolver(from, vslGetChild);
+        case t.Generic: return new resolvers.GenericResolver(from, vslGetChild);
         case t.AssignmentExpression: return new resolvers.AssignmentResolver(from, vslGetChild);
         case t.OrExpression:
         case t.AndExpression: return new resolvers.ShortCircutResolver(from, vslGetChild);

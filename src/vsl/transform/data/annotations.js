@@ -10,7 +10,8 @@ const Annotations = new Map([
     ["primitive", [[1, 2], t.ClassStatement]],
     ["booleanProvider", [null, t.ClassStatement]],
     ["inline", [null, t.FunctionStatement]],
-    ["delegate", [1, t.FunctionStatement ]]
+    ["delegate", [1, t.FunctionStatement]],
+    ["linkage", [1, t.FunctionStatement]]
 ]);
 
 export default Annotations;

@@ -43,7 +43,12 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
             backingType,
             false,
             llvm.LinkageTypes.PrivateLinkage,
-            llvm.ConstantAggregateZero.get(backingType),
+            llvm.ConstantStruct.get(
+                backingType, [
+                    llvm.ConstantInt.getFalse(backend.context),
+                    llvm.UndefValue.get(varType)
+                ]
+            ),
             backingValueName
         );
 
