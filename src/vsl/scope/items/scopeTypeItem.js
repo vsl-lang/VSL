@@ -210,8 +210,16 @@ export default class ScopeTypeItem extends ScopeItem {
         return `T${this.isInterface ? "I" : "C"}${this.rootId}`;
     }
 
+    /**
+     * Get descriptive name
+     * @return {string}
+     */
+    get description() {
+        return `${this.isInterface ? "interface" : "class"} ${this.rootId}`
+    }
+
     /** @return {string} */
     toString() {
-        return `${this.isInterface ? "interface" : "class"} ${this.rootId}`
+        return `${this.rootId}`
     }
 }

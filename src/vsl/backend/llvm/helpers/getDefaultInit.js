@@ -10,7 +10,7 @@ import { getTypeOffset } from './layoutType';
  * @param {Function} regen Regeneration function
  */
 export default function getDefaultInit(ty, context, regen) {
-    const id = `iDF${ty.uniqueName}`;
+    const id = `F${ty.uniqueName}.init`;
     const backend = context.backend;
 
     const llvmTy = toLLVMType(ty, backend);
@@ -25,7 +25,7 @@ export default function getDefaultInit(ty, context, regen) {
             [llvmTy],
             false
         ),
-        llvm.LinkageTypes.ExternalLinkage,
+        llvm.LinkageTypes.PrivateLinkage,
         id,
         backend.module
     );

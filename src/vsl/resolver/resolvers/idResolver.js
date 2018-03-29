@@ -7,7 +7,7 @@ import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
-import ScopeGenericItem from '../../scope/items/ScopeGenericItem';
+import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 
 import e from '../../errors';
@@ -48,12 +48,33 @@ export default class IdResolver extends TypeResolver {
         // Get the variable this references
         // Pass this.node so we can know that this node referenced the
         // variable we are trying to get.
-        let result = scope.getAsDelegate(
-            new ScopeAliasItem(ScopeForm.query, rootId),
-            this.node
-        );
+        let results = scope.getAll(rootId);
+
+        if (results.length === 0) {
+            this.emit(
+                `Use of undeclared identifier ${rootId}. If you wanted to ` +
+                `reference a function, make sure you specify a function type ` +
+                `somewhere.`,
+                e.UNDECLARED_IDENTIFIER
+            );
+        }
+
+        // If passed callArgs we know it's a fucntion
+        // that is the number of args so we can use this as a basic filter to
+        // narrow down candidates
+        const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
+        if (callArgs) {
+            // Return candidates for parent function to handle.
+            return results.map(possibleCandidate => new TypeCandidate(possibleCandidate));
+        }
 
         let resultType;
+
+        if (results.length > 1) {
+            this.emit(`Ambiguous reference to variable ${rootId}`);
+        }
+
+        const result = results[0];
 
         // Get result type
         if (result instanceof ScopeTypeItem) {
@@ -67,68 +88,15 @@ export default class IdResolver extends TypeResolver {
             );
         } else if (result) {
             resultType = result.type;
-        }
-
-        // If passed callArgs we know it's a fucntion
-        // that is the number of args so we can use this as a basic filter to
-        // narrow down candidates
-        const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
-        if (callArgs !== null) {
-            // All we need to do here is just to get all function with the
-            // rootId and set those as the candidates. In any case we'll call
-            // ambiguity if unresolved
-
-            // We can omit void functions in this filter if it specified that
-            // they aren't need
-            const allowVoid = negotiate(ConstraintType.VoidableContext);
-
-            // Basic filter which removed candidates which aren't either funcs
-            // or have less arguments than called with,
-
-            let items;
-            if (result instanceof ScopeTypeItem) {
-                // For types we'll get initializers
-                items = result.subscope.getAll('init');
-            } else {
-                items = scope.getAll(rootId)
-            }
-
-            // Filter the valid function types
-            let candidates = items.filter(item => {
-                return item instanceof ScopeFuncItem && item.args.length === callArgs;
-            });
-
-            // If they are 0 candidates that means there is no function which
-            // actually has the name
-            if (candidates.length === 0) {
-                this.emit(
-                    `Use of undeclared function \`${rootId}\``,
-                    e.UNDECLARED_FUNCTION
-                )
-            }
-
-            // If there is one candidate we'll set this reference. Otherwise
-            // we'll have to redo it. If this is `null` in backend an error
-            // should be thrown.
-            if (candidates.length === 1) {
-                this.reference = candidates[0];
-            }
-
-            // Return candidates for parent function to handle.
-            return candidates;
+        } else {
+            const ty = result?.constructor?.name || result;
+            this.emit(
+                `Unexpected error of type ${ty}`
+            );
         }
 
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
-
-        if (!result) {
-            this.emit(
-                `Use of undeclared identifier ${rootId}. If you wanted to ` +
-                `reference a function, make sure you specify a function type ` +
-                `somewhere.`,
-                e.UNDECLARED_IDENTIFIER
-            );
-        }
 
         // And this sets the candidates to the same one the ID had
         const typeCandidates = [ new TypeCandidate(resultType) ];

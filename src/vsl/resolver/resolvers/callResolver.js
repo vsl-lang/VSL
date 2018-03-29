@@ -4,6 +4,7 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
+import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 import e from '../../errors';
 
@@ -45,7 +46,7 @@ export default class CallResolver extends TypeResolver {
                 // This basically says we want a function in return
                 // This will return ALL of the function with the rootId
                 // So we'll filter candidates here.
-                case ConstraintType.BoundedFunctionContext: return argc;
+                case ConstraintType.BoundedFunctionContext: return true;
 
                 // The child cannot be voidable
                 case ConstraintType.VoidableContext: return false;
@@ -65,7 +66,58 @@ export default class CallResolver extends TypeResolver {
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow
         // them down as best as we can and use those as the candidates
-        let candidates = this.getChild(this.node.head).resolve(headResolver);
+        let headValues = this.getChild(this.node.head)
+            .resolve(headResolver) // Resolve expression
+            .map(item => item.candidate.resolved()); // Resolve types
+
+
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        //                          GET CANDIDATES                            //
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+
+        const scope = this.node.parentScope.scope;
+
+        // Basic filter which removed candidates which aren't either funcs
+        // or have less arguments than called with,
+        let items = [];
+
+        for (let i = 0; i < headValues.length; i++) {
+            if (headValues[i] instanceof ScopeTypeItem) {
+                items.push(...headValues[i].subscope.getAll('init'));
+            } else {
+                items.push(headValues[i]);
+            }
+        }
+
+        // Filter the valid function types
+        let candidates = items.filter(item => {
+            return item instanceof ScopeFuncItem && item.args.length === argc;
+        });
+
+        // If they are 0 candidates that means there is no function which
+        // actually has the name
+        if (candidates.length === 0) {
+            this.emit(
+                `Use of undeclared function \`${this.node.head.toString()}\``,
+                e.UNDECLARED_FUNCTION
+            )
+        }
+
+        // If there is one candidate we'll set this reference. Otherwise
+        // we'll have to redo it. If this is `null` in backend an error
+        // should be thrown.
+        if (candidates.length === 1) {
+            this.reference = candidates[0];
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        //                          RESOLVE ARGS                              //
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
 
         let orderedArgCandidates = [];
         // Resolve all arguments
@@ -173,7 +225,19 @@ export default class CallResolver extends TypeResolver {
 
         if (maxCandidate === null) {
             this.emit(
-                `Call to function does not match any valid candidates.`,
+                `Call to function does not match any valid candidates. Valid ` +
+                `candidates are:\n` +
+                candidates.map(
+                    candidate => `    • ${candidate}`
+                ).join("\n") +
+                `\nInstead, deducted to \`func (${
+                    orderedArgCandidates.map(
+                        (type, i) => {
+                            let argName = args[i].name?.value || "*";
+                            return `${argName}: ${type.join(" | ")}`
+                        }
+                    ).join(", ")
+                }) -> ${expectedReturnType || "*"}\``,
                 e.UNKNOWN_REF
             );
         } else {

@@ -6,6 +6,7 @@ import t from '../../parser/nodes';
 import Scope from '../../scope/scope';
 import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeTypeAliasItem from '../../scope/items/scopeTypeAliasItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 
 import TypeLookup from '../../typeLookup/typeLookup';
@@ -48,19 +49,32 @@ export default class DescribeClassDeclaration extends Transformation {
             );
 
         } else {
+
             type = new ScopeGenericItem(
                 ScopeForm.indefinite,
                 className,
                 {
                     scopeTypeItem: opts,
-                    genericParents: node.generics,
+                    genericParents: node.generics.map(_ => ScopeTypeItem.RootClass),
                     resolver: (self) => {
-                        self.genericParents = node.generics.map(
-                            generic => ScopeTypeItem.RootClass
-                        );
+                        // TODO: When custom generic superclasses are supported
+                        // set this to resolve self.genericParents
                     }
                 }
             );
+
+            // Add the TypeAliases for the scope.
+            for (let i = 0; i < node.generics.length; i++) {
+                subscope.set(
+                    new ScopeTypeAliasItem(
+                        ScopeForm.indefinite,
+                        node.generics[i].name.value,
+                        {
+                            item: ScopeTypeItem.RootClass
+                        }
+                    )
+                );
+            }
         }
 
         if (scope.set(type) === false) {

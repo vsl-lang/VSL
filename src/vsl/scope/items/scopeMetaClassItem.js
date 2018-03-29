@@ -1,5 +1,6 @@
 import ScopeTypeItem from './scopeTypeItem';
 import ScopeForm from '../scopeForm';
+import Scope from '../Scope';
 
 /**
  * Represents a metaclass by mocking/redirecting the subscope.s
@@ -23,6 +24,7 @@ export default class ScopeMetaClassItem extends ScopeTypeItem {
     } = {}) {
         super.init({
             subscope: referencingClass.staticScope,
+            staticScope: new Scope(),
             ...options
         });
 

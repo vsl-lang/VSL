@@ -413,7 +413,7 @@ Shift
 Sum
    -> BinaryOp[Sum, ("+" | "-"), Product] {% id %}
 Product
-   -> BinaryOp[Product, ("*" | "/"), Power] {% id %}
+   -> BinaryOp[Product, ("*" | "/" | "%"), Power] {% id %}
 Power
    -> BinaryOpRight[Power, ("**"), Bitwise] {% id %}
 Bitwise

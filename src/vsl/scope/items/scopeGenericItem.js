@@ -2,6 +2,7 @@ import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
 
 import ScopeGenericTemplateItem from './scopeGenericTemplateItem';
+import ScopeTypeAliasItem from './scopeTypeAliasItem';
 import ScopeInitItem from './scopeInitItem';
 
 /**
@@ -74,7 +75,8 @@ export default class ScopeGenericItem extends ScopeItem {
                 ...this.scopeTypeItem,
                 mockType: this.mockType
             }
-        )
+        );
+
         this.types.add(newType);
         return newType;
     }

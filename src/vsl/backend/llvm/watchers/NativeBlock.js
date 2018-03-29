@@ -68,6 +68,20 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
+            case "irem": return context.builder.createRet(
+                context.builder.createSRem(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "uirem": return context.builder.createRet(
+                context.builder.createURem(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
             case "ieq": return context.builder.createRet(
                 context.builder.createICmpEQ(
                     func.args[0].aliasRef.backendRef.generate(),
