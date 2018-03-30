@@ -13,7 +13,7 @@ export default class GroupMetadata {
      *
      * @param {?string} [name=null] - No module name.
      */
-    constructor(name) {
+    constructor(name = null) {
         this.name = name;
     }
 }

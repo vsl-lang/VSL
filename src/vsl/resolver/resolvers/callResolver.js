@@ -68,7 +68,7 @@ export default class CallResolver extends TypeResolver {
         // them down as best as we can and use those as the candidates
         let headValues = this.getChild(this.node.head)
             .resolve(headResolver) // Resolve expression
-            .map(item => item.candidate.resolved()); // Resolve types
+            .map(item => item.resolved()); // Resolve types
 
 
         ////////////////////////////////////////////////////////////////////////

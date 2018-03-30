@@ -65,7 +65,7 @@ export default class IdResolver extends TypeResolver {
         const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
         if (callArgs) {
             // Return candidates for parent function to handle.
-            return results.map(possibleCandidate => new TypeCandidate(possibleCandidate));
+            return results;
         }
 
         let resultType;

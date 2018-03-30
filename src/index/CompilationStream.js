@@ -33,6 +33,9 @@ export default class CompilationStream {
 
         /** @private */
         this.warningListeners = [];
+
+        /** @type {?CompilationGroup} */
+        this.owningGroup = null;
     }
 
     /**

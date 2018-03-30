@@ -7,7 +7,7 @@ const VSLTokenType = Object.freeze({
     SpecialArgument: 4,
     SpecialIdentifier: 5,
     Identifier: 6,
-    Documentation: 7,
+    Comment: 7,
     ImportStatement: 9,
     ByteSequence: 10,
     Boolean: 11

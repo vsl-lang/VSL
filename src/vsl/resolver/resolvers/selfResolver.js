@@ -63,7 +63,7 @@ export default class IdResolver extends TypeResolver {
             );
         }
 
-        const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate;
         if (requestedType && !parentClass.castableTo(requestedType)) {
             this.emit(
                 `\`self\` must refer to type ${requestedType} in this context ` +

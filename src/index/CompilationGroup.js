@@ -110,6 +110,7 @@ export default class CompilationGroup {
      */
     createStream() {
         let stream = new CompilationStream();
+        stream.owningGroup = this;
         this.sources.push(stream);
         return stream;
     }
