@@ -17,28 +17,28 @@ export default class GenericLookup extends TypeLookup {
      */
     resolve(scope) {
         // Generic value should be a ID so we'll get the .value
-        let name = this.node.type.value;
-        
+        let name = this.node.head.value;
+
         // First resolve sub-things.
         // These are the parameters e.g. in A<T, U> these are T, U
         // We must resolve these first to ScopeItems.
         let parameters = this.node.parameters.map(
             param => this.getChild(param).resolve(scope)
         );
-        
+
         // Now we'll (try to) get the template. I.e. locate the generic.
         let result = scope.get(new ScopeGenericItem(ScopeForm.query, name))?.resolved();
-        
+
         // Ensure the generic exists
         if (result === null) {
             this.emit(
-                `There is no type with name \`${name}\` in this scope. Check ` +
+                `There is no generic type with name \`${name}\` in this scope. Check ` +
                 `for typos or if this type declared in the current scope. If ` +
                 `this is a module, check you are using the right version and ` +
                 `it is imported properly.`
             )
         }
-        
+
         // Check the correct amount of parameters were provided.
         if (this.node.parameters.length !== result.genericParents.length) {
             this.emit(
@@ -47,7 +47,7 @@ export default class GenericLookup extends TypeLookup {
                 `provided ${this.node.parameters.length}.`
             )
         }
-        
+
         // Check the parameters match the correct types.
         parameters.forEach((param, i) => {
             // We'll check if the parameter (already resolved) is castable to
@@ -66,7 +66,7 @@ export default class GenericLookup extends TypeLookup {
                 );
             }
         })
-        
+
         return result.usedWith(parameters);
     }
 }

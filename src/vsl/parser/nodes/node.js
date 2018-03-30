@@ -2,7 +2,7 @@
  * Node class for AST.
  */
 export default class Node {
-    
+
     /**
      * Friendly name of node used in errors and such. Make sure to not capitalize
      * @type {string}
@@ -10,13 +10,13 @@ export default class Node {
     get fancyName() {
         return "node";
     }
-    
+
     /**
      * Creates a new Node object.
      */
     constructor(position: Object) {
         this.position = position;
-        
+
         /**
          * If exists, references the closest scope. Use an ASTTool to perform
          * variable lookups
@@ -24,7 +24,7 @@ export default class Node {
          * @type {?CodeBlock}
          */
         this.parentScope = null;
-        
+
         /**
          * If exists, a traverser will set this to the parent node or wrapping
          * container.
@@ -32,7 +32,13 @@ export default class Node {
          * @type {?(Node | Node[])}
          */
         this.parentNode = null;
-        
+
+        /**
+         * The comments preceding this node
+         * @type {Comment[]}
+         */
+        this.precedingComments = [];
+
         /**
          * An integer representing the position within a queue to qualify the
          * node for a GC pass when requested by a parent.
@@ -46,7 +52,7 @@ export default class Node {
          */
         this.queueQualifier = null;
     }
-    
+
     /**
      * Generates an string representing the AST from a generator.
      *
@@ -61,7 +67,7 @@ export default class Node {
              `${this.constructor.name}#generate(generator:) must be overriden`
          );
      }
-    
+
     /**
      * Returns all the children of a node. The order must be consistent
      * @type {?Node[]}
@@ -69,7 +75,7 @@ export default class Node {
     get children() {
         throw new Error("Must implement Node#children");
     }
-    
+
     /**
      * Clones a node. This copies the node's data but it should be reprocessed.
      * @return {Node} the cloned node.
@@ -80,7 +86,7 @@ export default class Node {
             `${this.constructor.name}#clone()`
         );
     }
-    
+
     /**
      * Returns the string representation of the Node.
      * @return {string} Tree representation of this node.
@@ -88,28 +94,28 @@ export default class Node {
     toAst() {
         let children = this.children;
         let string = `\u001B[1m${this.constructor.name}\u001B[0m\n`;
-        
+
         function indent(string, isLast) {
             return string.replace(/(?!\n$)\n/g, isLast ? '\n   ' : '\n │ ')
         }
-        
+
         function addSpacing(string) {
             return string.replace(/(?!\n$)\n/g, '\n   ')
         }
-        
+
         if (!children) return string;
         for (let i = 0; i < children.length; i++) {
             let child = this[children[i]];
             let isLast = i === children.length - 1;
             let connector = isLast ? ' └ ' : ' ├ '; // + `(${i} ${children.length - 1})`;
-            
+
             if (child instanceof Array) {
                 string += connector + children[i] + '[]\n';
                 for (let j = 0; j < child.length; j++) {
                     let lastSub = j === child.length - 1;
                     let subConnector = lastSub ? ' └ ' : ' ├ ';
                     let subchild = child[j];
-                    
+
                     string += '   ' + subConnector + addSpacing(indent(subchild.toAst(), lastSub));
                 }
             } else {
@@ -117,10 +123,10 @@ export default class Node {
                 string += connector + `\u001B[2m${children[i]}:\u001B[0m ` + childBody;
             }
         }
-        
+
         return string;
     }
-    
+
     // /**
     //  * Returns the string representation of the Node.
     //  * @param {string} padding String to add to the left of the tree
@@ -154,5 +160,5 @@ export default class Node {
     //     }
     //     return result;
     // }
-    
+
 }

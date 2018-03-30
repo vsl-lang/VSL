@@ -1,6 +1,7 @@
 # VSL - Primary Parser
 @{%
 "use strict";
+let util = require('util');
 let t = require('./nodes').default;
 let VSLTokenizer = require('./vsltokenizer').default;
 let ParserError = require('./parserError').default;
@@ -15,16 +16,18 @@ const NodeTypes = require('./vsltokentype').default,
   identifier = freeze({ test: x => x[1] === NodeTypes.Identifier }),
   special_loop = freeze({ test: x => x[1] === NodeTypes.SpecialArgument }),
   special_identifier = freeze({ test: x => x[1] === NodeTypes.SpecialIdentifier }),
-  documentation = freeze({ test: x => x[1] === NodeTypes.Documentation }),
   importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
   byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence }),
   boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
+  comment = freeze({ test: x => x[1] === NodeTypes.Comment }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   any = freeze({ test: () => true }),
   mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p }),
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
   mid = d => d[0][0],
+  retNull = () => null,
+  flatten = d => [].concat(...d),
   importMark = Symbol('import');
 
 // custom errors for error prods.
@@ -72,9 +75,33 @@ const setState = (stateName, value) =>
 @builtin "postprocessors.ne"
 
 CodeBlock[s]
-   -> separator:* (delimited[$s {% id %}, separator:+] separator:*
-            {% id %}):? {%
-        (data, location) => new t.CodeBlock(data[1] || [], location)
+   -> separator:* ($s (separator:+ $s {% flatten %}):* separator:* {% flatten %}):? {%
+                (data, location) => {
+                    let statements = [];
+                    let items = data[0].concat(...(data[1] || []));
+                    let lastComments = [];
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i] instanceof t.Node) {
+                            if (items[i] instanceof t.Comment) {
+                                lastComments.push(items[i]);
+                            } else {
+                                items[i].precedingComments = lastComments;
+                                statements.push(items[i]);
+                                lastComments = [];
+                            }
+                        } else if (items[i] !== null) {
+                            let name;
+                            if (items[i] && items[i].constructor) {
+                                name = items[i].constructor.name;
+                            } else {
+                                name = items[i];
+                            }
+
+                            throw new TypeError(`unexpected parsing type ${name}`);
+                        }
+                    }
+                    return new t.CodeBlock(statements, location)
+                }
     %}
 
 main
@@ -93,8 +120,9 @@ main
     %}
 
 separator
-   -> ";"
-    | "\n"
+   -> ";" {% retNull %}
+    | "\n" {% retNull %}
+    | Comment {% id %}
 
 statement
    -> ClassStatement       {% id %}
@@ -145,7 +173,7 @@ ReturnStatement
 #                            Classes and Interfaces                            #
 # ============================================================================ #
 
-# TODO: add _ after Modifier if it doesn't cause ambiguities
+# TODO: add _ after Modifier if it doesnt cause ambiguities
 
 ClassStatement
    -> Annotations Modifier "class" _ Identifier (_ genericDeclaration {% nth(1) %}):? _ (":" _ ExtensionList _
@@ -317,7 +345,7 @@ OverridableOperator
     %}
 
 ArgumentList
-   -> "(" _ (delimited[Argument ("(" _ ArgumentDocumentation _ ")"):? {% id %}, _ "," _] _ {% id %}):? ")" {%
+   -> "(" _ (delimited[Argument {% id %}, _ "," _] _ {% id %}):? ")" {%
         (data) =>
             data[2] || []
         %}
@@ -326,17 +354,6 @@ Argument
    -> TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
         (data, location) => new t.FunctionArgument(data[0], data[1], location)
     %}
-
-ArgumentDocumentation
-   -> %not_paren:+ {% (d, l) => new t.Documentation(d[0].map(i => i.value || i[0]).join(""), l) %}
-    | %not_paren:* "(" ArgumentDocumentation ")" %not_paren:* {% (d, l) => new t.Documentation(
-        d[0].map(i => i.value || i[0]).join("") +
-        "(" +
-        d[2].documentation +
-        ")" +
-        d[4].map(i => i.value || i[0]).join(""),
-        l
-    ) %}
 
 FunctionBody
    -> ("{" {% setState('inFunction', true) %})
@@ -569,13 +586,17 @@ propertyTail
 nullableProperty
    -> "?" "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], true, true, l) %}
     | "?" Array            {% (d, l) => new t.Subscript(null, d[0].array, true, l) %}
-    # function with at least one named arg
-    | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")"
-        {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
-    # function with no named args (including empty arglist)
-    | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item, null, l)), l) %}
-    # function with 1 unnamed arg
-    | "(" _ InlineExpression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], null, d[2].expression.position)], l) %}
+    | "<" delimited[type {% id %}, _ ","] ">" {% (d, l) => new t.Generic(null, d[1], l) %}
+    | "(" _ (delimited[ArgumentCall {% id %}, _ "," _] _ {% id %}):? ")" {%
+            (d, l) => new t.FunctionCall(null, d[2] || [], l)
+        %}
+#    # function with at least one named arg
+#    | "(" _ (UnnamedArgumentCall _ "," _ {% id %}):* NamedArgumentCall (_ "," _ ArgumentCall {% nth(3) %}):* _ ")"
+#        {% (d, l) => new t.FunctionCall(null, d[2].concat([d[3]]).concat(d[4]), l) %}
+#    # function with no named args (including empty arglist)
+#    | Tuple {% (d, l) => new t.FunctionCall(null, d[0].tuple.map(item => new t.ArgumentCall(item, null, l)), l) %}
+#    # function with 1 unnamed arg
+#    | "(" _ InlineExpression _ ")" {% (d, l) => new t.FunctionCall(null, [new t.ArgumentCall(d[2], null, d[2].expression.position)], l) %}
 
 ArgumentCall -> NamedArgumentCall   {% id %}
               | UnnamedArgumentCall {% id %}
@@ -610,7 +631,7 @@ Literal
     | %boolean      {% literal %}
     | Array         {% id %}
     | Dictionary    {% id %}
-    | Tuple         {% id %}
+#    | Tuple         {% id %}
     | Set           {% id %}
 
 Array
@@ -632,7 +653,7 @@ Dictionary
     %}
 
 Tuple
-   -> "(" _ ")" {% (data, location) => new t.Tuple([], location) %}
+   -> "(" _ "," _ ")" {% (data, location) => new t.Tuple([], location) %}
     | "(" _ InlineExpression _ "," _ (
         delimited[InlineExpression {% id %}, _ "," _] _ {% id %}):? ")" {%
         (data, location) => {
@@ -741,7 +762,9 @@ Identifier
     %}
 
 _
-   -> "\n":*
+   -> ("\n" | Comment {% id %}):* {%
+            (data, i) => data[0].filter(i => i instanceof t.Comment)
+       %}
 
 # TODO: Assignment:
 # _ ("=" | ":=" | "<<=" | ">>=" | "+=" | "-=" | "/=" |
@@ -753,5 +776,10 @@ _
 #                                Documentation                                 #
 # ============================================================================ #
 
-Documentation
-   -> %documentation:+ {% (d, l) => new t.Documentation(d[0].join('\n'), l) %}
+Comment
+   -> %comment {%
+            (d, l) => new t.Comment(
+                d[0][0],
+                l
+            )
+       %}

@@ -5,7 +5,7 @@ import Node from './node';
  * expression).
  */
 export default class Generic extends Node {
-    
+
     /**
      * Creates a generic
      * @param  {Identifier} type - name of generic
@@ -18,28 +18,28 @@ export default class Generic extends Node {
         position: Object
     ) {
         super(position);
-        
+
         /** @type {Identifier} */
-        this.type = type;
+        this.head = type;
 
         /** @type {Node[]} */
         this.parameters = parameters;
     }
-    
+
     clone() {
         return new Generic(
             this.type.clone(),
             this.parameters.map(param => param.clone())
         )
     }
-    
+
     /** @override */
     get children() {
-        return ['type', 'parameters'];
+        return ['head', 'parameters'];
     }
-    
+
     /** @override */
     toString() {
-        return `${this.type}<${this.parameters.join(", ")}>`
+        return `${this.head}<${this.parameters.join(", ")}>`
     }
 }

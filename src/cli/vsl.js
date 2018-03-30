@@ -5,6 +5,7 @@ const subcommands = Object.create(null);
 subcommands["run"]   = modes.Default;
 subcommands["build"]   = modes.Build;
 subcommands["clean"]   = modes.Clean;
+subcommands["docgen"] = modes.Docgen;
 subcommands["install"] = modes.Install;
 subcommands["bindgen"] = modes.Bindgen;
 subcommands["debugsrc"] = modes.Debugsrc;

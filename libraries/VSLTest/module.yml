@@ -1,0 +1,7 @@
+name: VSLTest
+description: Test module for VSL
+
+version: 0.1.0-alpha.1
+
+sources:
+    - src/*.vsl

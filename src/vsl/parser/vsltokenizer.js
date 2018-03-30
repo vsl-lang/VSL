@@ -75,6 +75,9 @@ function parseBoolean(_, match) {
     return match === "true";
 }
 
+function singleLineComment(_, match) {
+    return match.replace(/^\/+/g, '');
+}
 
 let tokenMatchers = Array(VSLScope.MAX);
 tokenMatchers[VSLScope.Normal] = [
@@ -82,7 +85,7 @@ tokenMatchers[VSLScope.Normal] = [
         return '\n';
     }],
     [/(?:\s|\\\n)+/, noop],
-    [/\/\/[^\r\n]+/, noop],
+    [/\/\/[^\r\n]+/, singleLineComment, VSLTokenType.Comment],
     [/\/\*/, self => {
         self.variables.commentDepth++;
         self.begin(VSLScope.Comment);
@@ -94,7 +97,7 @@ tokenMatchers[VSLScope.Normal] = [
     [/\$+[0-9]+/, passThrough, VSLTokenType.SpecialArgument],
     [/\$[a-zA-Z_][a-zA-Z0-9_]*/, slice1, VSLTokenType.SpecialIdentifier],
     [/\.[0-9_]+/, strip_, VSLTokenType.Decimal],
-    [/[0-9][0-9_]*\.[0-9_]*/, strip_, VSLTokenType.Decimal],
+    [/[0-9][0-9_]*\.[0-9_]+/, strip_, VSLTokenType.Decimal],
     [/(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*/, strip_, VSLTokenType.Integer],
     [/[0-9][0-9_]*/, strip_, VSLTokenType.Integer],
     [/\/[^\/\*]([^\/\r\n]|\\[^\r\n])+\/[gmixc]*/, passThrough, VSLTokenType.Regex],

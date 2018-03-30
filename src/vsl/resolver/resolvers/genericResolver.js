@@ -43,7 +43,12 @@ export default class GenericResolver extends TypeResolver {
 
 
         // Resolve entire expression as a type.
-        let type = new TypeLookup(this.node, vslGetTypeChild).resolve(scope);
+        const type = new TypeLookup(this.node, vslGetTypeChild).resolve(scope);
+        const isCallee = negotiate(ConstraintType.BoundedFunctionContext);
+
+        if (isCallee) {
+            return [type];
+        }
 
         // Now that we have the type, we can return it as a metaclass
         return [
