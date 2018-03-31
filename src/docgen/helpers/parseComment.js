@@ -4,6 +4,6 @@
  * @return {Object} in form `{ content }`
  */
 export default function parseComment(comments) {
-    const content = comments.map(comment => comment.content).join(" ");
+    const content = comments.map(comment => comment.content).join("\n");
     return { content };
 }

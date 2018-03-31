@@ -1,0 +1,27 @@
+.giant {
+    font-size: @unit * 4;
+    font-weight: 300;
+
+    h1 {
+        margin: 0;
+        font-weight: 300;
+        font-size: 1em;
+    }
+
+    > * {
+        vertical-align: middle;
+        display: inline;
+    }
+
+    .dim {
+        font-size: 1.5 * @unit;
+        font-weight: 300;
+        color: fade(@fg, 60%);
+    }
+
+    .space {
+        margin: 0 @hunit;
+    }
+
+    margin-bottom: 1.5 * @unit;
+}

@@ -1,0 +1,87 @@
+@body-width: 70%;
+@sidebar-width: 20%;
+
+@real-fg: #000;
+@tint: #b6c4ff;
+
+// Calculate optimal fg
+@fg: mix(@real-fg, @tint, 90%);
+
+@unit: 16px;
+@hunit: @unit / 2;
+@qunit: @unit / 4;
+
+@font: 'Roboto', 'Helvetica Neue', sans-serif;
+@monospace-font: Menlo, Consolas, "DejaVu Sans Mono", Courier, monospace;
+
+@import (less) "icon.less";
+@import (less) "giant.less";
+@import (less) "body.less";
+@import (less) "func.less";
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    color: fade(@fg, 90%);
+
+    font-family: @font;
+}
+
+code {
+    font-family: @monospace-font;
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    padding: @unit @unit;
+    font-size: @unit * 1.5;
+    font-weight: 300;
+
+    .moduleName {}
+    .moduleDesc {
+        margin-left: @hunit;
+        color: fade(@fg, 70%);
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+#content {
+    flex: 1;
+    width: @body-width;
+
+    @media (max-width: 990px) {
+        width: 100%;
+    }
+
+    box-sizing: border-box;
+    padding: @unit;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    > div {
+        flex: 1;
+        overflow: auto;
+    }
+
+    #sidebar {
+        flex: 0 0 @sidebar-width;
+        padding: 0 @hunit;
+
+        @import (less) "sidebar.less";
+    }
+}

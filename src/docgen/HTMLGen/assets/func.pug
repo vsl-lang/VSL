@@ -1,0 +1,28 @@
+extends layout.pug
+include inlineType.pug
+
+block body
+    .giant
+        +inlineType(item)
+    
+    ul.overloadList
+        each overload in overloads
+            li.overload: pre: code
+                span.dim= "func "
+                span.em #{item.name}
+                span.dim (
+                each param, index in overload.params
+                    | #{param.name}
+                    span.dim= ": "
+                    +inlineType(param.argType)
+                    if index !== overload.params.length - 1
+                        span.dim= ", "
+                span.dim )
+                if overload.returnType
+                    span.dim= " -> "
+                    +inlineType(overload.returnType)
+    
+    if item.overview
+        .overview
+            h3 Overview
+            div.body!= render(item.overview)

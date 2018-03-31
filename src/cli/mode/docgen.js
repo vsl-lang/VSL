@@ -3,6 +3,7 @@ import TempFileManager from '../helpers/TempFileManager';
 import path from 'path';
 import fs from 'fs-extra';
 
+import HTMLGen from '../../docgen/HTMLGen/HTMLGen';
 import DocGen from '../../docgen/DocGen';
 
 export default class Doxgen extends CompilerCLI {
@@ -15,7 +16,8 @@ export default class Doxgen extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }]
             ]],
             ["Output Options", [
-                ["-o"                    , "The output directory of doc files ",     { output: true }]
+                ["-o"                    , "The output directory of doc files ",     { output: true }],
+                ["--json"                , "Dumps doc JSON to STDOUT. ",             { json: true }]
             ]]
         ]);
     }
@@ -26,8 +28,9 @@ export default class Doxgen extends CompilerCLI {
 
     run(args) {
         let verbose = false;
-        let directory = null;
+        let json = false;
 
+        let directory = null;
         let outputDirectory = null;
 
         if (args.length === 0) {
@@ -48,6 +51,7 @@ export default class Doxgen extends CompilerCLI {
                     outputDirectory = args[++i];
                 }
                 if ('verbose' in flagInfo) verbose = true;
+                if ('json' in flagInfo) json = true;
             } else {
                 // Check if directory file, or neither
                 if (!fs.existsSync(args[i])) {
@@ -79,6 +83,8 @@ export default class Doxgen extends CompilerCLI {
             this.error.cli(`provide output directory`);
         }
 
+        this.json = json;
+
         // Run module
         this.dispatch(directory, outputDirectory);
     }
@@ -104,7 +110,13 @@ export default class Doxgen extends CompilerCLI {
             }
         }
 
-        const docGen = new DocGen(items);
-        console.log(JSON.stringify(docGen.generate(), null, 4));
+        const docGen = new DocGen(items, module);
+        const json = docGen.generate();
+        if (this.json) {
+            console.log(json)
+        } else {
+            const htmlGen = new HTMLGen(outputDirectory);
+            await htmlGen.generate(json);
+        }
     }
 }

@@ -82,6 +82,13 @@ export default class ScopeGenericItem extends ScopeItem {
     }
 
     /**
+     * Gets the canonical instance
+     */
+    getCanonicalInstance() {
+        return this.usedWith(this.genericParents);
+    }
+
+    /**
      * Root name of generic
      * @type {string}
      */

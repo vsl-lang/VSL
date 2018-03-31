@@ -25,7 +25,7 @@ export default class DescribeClassDeclaration extends Transformation {
     modify(node: Node, tool: ASTTool) {
         let scope = node.parentScope.scope;
         let className = node.name.value;
-        let type;
+        let scopeType, type;
 
         let subscope = node.statements.scope;
         const staticSubscope = new Scope();
@@ -42,7 +42,7 @@ export default class DescribeClassDeclaration extends Transformation {
 
         if (node.generics.length === 0) {
 
-            type = new ScopeTypeItem(
+            scopeType = type = new ScopeTypeItem(
                 ScopeForm.indefinite,
                 className,
                 opts
@@ -50,11 +50,12 @@ export default class DescribeClassDeclaration extends Transformation {
 
         } else {
 
-            type = new ScopeGenericItem(
+            const genericClass = new ScopeGenericItem(
                 ScopeForm.indefinite,
                 className,
                 {
                     scopeTypeItem: opts,
+                    source: node,
                     genericParents: node.generics.map(_ => ScopeTypeItem.RootClass),
                     resolver: (self) => {
                         // TODO: When custom generic superclasses are supported
@@ -62,6 +63,9 @@ export default class DescribeClassDeclaration extends Transformation {
                     }
                 }
             );
+
+            scopeType = genericClass;
+            type = genericClass.getCanonicalInstance();
 
             // Add the TypeAliases for the scope.
             for (let i = 0; i < node.generics.length; i++) {
@@ -77,17 +81,16 @@ export default class DescribeClassDeclaration extends Transformation {
             }
         }
 
-        if (scope.set(type) === false) {
+        if (scope.set(scopeType) === false) {
             throw new TransformError(
                 `Duplicate declaration of class ${className}. In this scope ` +
                 `there is already another class with that name.`,
                 node, e.DUPLICATE_DECLARATION
             );
         } else {
-            subscope.owner = type;
-            staticSubscope.owner = type;
+            subscope.owner = scopeType;
+            staticSubscope.owner = scopeType;
             staticSubscope.isStaticContext = true;
-            type.source = node;
             node.scopeRef = type;
         }
     }

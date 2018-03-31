@@ -20,15 +20,16 @@ export default class DescribeTypeAlias extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         let scope = node.parentScope.scope;
-        
+
         let name = node.name.value;
         let aliasedTypeNode = node.type;
-        
+
         let type = new ScopeTypeAliasItem(
             ScopeForm.indefinite,
             name,
             {
                 item: aliasedTypeNode,
+                source: node,
                 resolver: (self) => {
                     self._ref = new TypeLookup(self._ref, vslGetTypeChild)
                         .resolve(scope);

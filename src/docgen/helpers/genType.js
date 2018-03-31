@@ -19,7 +19,8 @@ export default function genType(type) {
     }
 
     return {
-        ref: type.rootId,
+        ty: 'class',
+        name: type.rootId,
         module: module
     }
 }

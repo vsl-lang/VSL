@@ -19,12 +19,16 @@ export default class ScopeTypeAliasItem extends ScopeItem {
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
+
+        /** @type {?Node} */
+        this.source;
     }
 
     /** @protected */
-    init({ item, ...opts }) {
+    init({ item, source = null, ...opts }) {
         super.init(opts);
         this._ref = item;
+        this.source = source;
     }
 
     /** @return {string} */
