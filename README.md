@@ -11,8 +11,9 @@
     </a>
   </p>
   <p align="center">
-    <a href="https://staging.vihan.org/VSL/app">Website</a> &mdash;
-    <a href="https://staging.vihan.org/VSL/docs">Documentation</a>
+    <!-- <a href="https://staging.vihan.org/VSL/app">Website</a> &mdash; -->
+    <a href="https://github.com/vsl-lang/VSL/wiki/Introduction">Language Documentation</a>  &mdash;
+    <a href="https://staging.vihan.org/VSL/libvsl/index.html">API Documentation</a>
   </p>
   <p align="center">
     Versatile Scripting Language

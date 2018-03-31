@@ -84,6 +84,8 @@ export default class CallResolver extends TypeResolver {
         let items = [];
 
         for (let i = 0; i < headValues.length; i++) {
+            // Support initializers, if we call type we'll interpret it as
+            // an init call.
             if (headValues[i] instanceof ScopeTypeItem) {
                 items.push(...headValues[i].subscope.getAll('init'));
             } else {

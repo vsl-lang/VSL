@@ -1,0 +1,13 @@
+extends layout.pug
+include inlineType.pug
+
+block body
+    .giant
+        +inlineType(item)
+        span.dim.space aliases to
+        +inlineType(target)
+
+    if item.overview
+        .overview
+            h3 Overview
+            div.body!= render(item.overview)

@@ -25,6 +25,7 @@ export default class ItemDocGen {
     }
 
     generate(item) {
+        if (item.isScopeRestricted) return;
         switch (item.constructor) {
             case ScopeFuncItem: return this.generator.getGeneratorFor(ItemType.Function).generate(item);
             case ScopeTypeItem: return this.generator.getGeneratorFor(ItemType.Class).generate(item);

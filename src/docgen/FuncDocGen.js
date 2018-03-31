@@ -8,6 +8,9 @@ import parseComment from './helpers/parseComment';
  *      Function=
  *          ty: 'function'
  *          name: "name"
+ *          overloads: FunctionOverload
+ *
+ *      FunctionOverload=
  *          params: [FunctionParam]
  *          returns: Type
  *
@@ -17,12 +20,11 @@ import parseComment from './helpers/parseComment';
  */
 export default class FuncDocGen extends ItemDocGen {
     generate(item) {
-        const { content } = parseComment(item.source.precedingComments);
+        const funcName = item.rootId;
 
-        return {
-            ty: 'function',
+        const { content } = parseComment(item.source.precedingComments);
+        const func = {
             overview: content,
-            name: item.rootId,
             params: item.args.map(
                 arg => ({
                     name: arg.name,
@@ -30,6 +32,21 @@ export default class FuncDocGen extends ItemDocGen {
                 })
             ),
             returns: item.returnType ? genType(item.returnType) : null
+        }
+
+        // Check if function exists
+        if (this.generator.funcSymbols.has(funcName)) {
+            this.generator.funcSymbols.get(funcName).overloads.push(func);
+            return null;
+        } else {
+            const funcItem = {
+                ty: 'function',
+                name: funcName,
+                overloads: [func]
+            };
+
+            this.generator.funcSymbols.set(funcName, funcItem);
+            return funcItem;
         }
     }
 }

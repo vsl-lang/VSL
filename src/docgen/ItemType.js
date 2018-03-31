@@ -2,6 +2,7 @@
  * Identifies the type of a doc item.
  */
 export default {
+    Root: Symbol('VSL.Root'),
     Function: Symbol('VSL.Function'),
     Class: Symbol('VSL.Class'),
     Method: Symbol('VSL.Method'),

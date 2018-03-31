@@ -273,7 +273,7 @@ export default class Build extends CompilerCLI {
                 triple: this.target.triple,
                 optLevel: this.optimizationLevel,
                 emitByteCode: true,
-                redirect: process.stdout
+                redirect: this.outputStream
             });
         } else {
             // Otherwise compile to

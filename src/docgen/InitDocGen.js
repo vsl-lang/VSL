@@ -7,7 +7,6 @@ import genType from './helpers/genType';
 export default class InitDocGen extends ItemDocGen {
     generate(item) {
         return {
-            ty: 'initializer',
             params: item.args.map(
                 arg => ({
                     name: arg.name,

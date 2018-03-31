@@ -76,7 +76,7 @@ function parseBoolean(_, match) {
 }
 
 function singleLineComment(_, match) {
-    return match.replace(/^\/+/g, '');
+    return match.replace(/^\/+( (?! ))?/gm, '');
 }
 
 let tokenMatchers = Array(VSLScope.MAX);
