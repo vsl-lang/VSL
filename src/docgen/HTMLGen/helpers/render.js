@@ -2,7 +2,7 @@ import marked, { Renderer } from 'marked';
 
 const renderer = new Renderer();
 renderer.code = (code, lang) => {
-    return `<pre><code>${code}/code></pre>`;
+    return `<pre><code>${code}</code></pre>`;
 };
 
 marked.setOptions({ renderer });
