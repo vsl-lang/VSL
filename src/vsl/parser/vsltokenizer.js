@@ -85,7 +85,7 @@ tokenMatchers[VSLScope.Normal] = [
         return '\n';
     }],
     [/(?:\s|\\\n)+/, noop],
-    [/\/\/[^\r\n]+/, singleLineComment, VSLTokenType.Comment],
+    [/\/\/[^\r\n]*/, singleLineComment, VSLTokenType.Comment],
     [/\/\*/, self => {
         self.variables.commentDepth++;
         self.begin(VSLScope.Comment);
