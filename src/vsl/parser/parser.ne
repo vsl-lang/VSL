@@ -351,8 +351,8 @@ ArgumentList
         %}
 
 Argument
-   -> TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
-        (data, location) => new t.FunctionArgument(data[0], data[1], location)
+   -> (Identifier _ {% id %}):? TypedIdentifier ( _ "=" _ InlineExpression {% nth(3) %}):? {%
+        (data, location) => new t.FunctionArgument(data[0], data[1], data[2], location)
     %}
 
 FunctionBody

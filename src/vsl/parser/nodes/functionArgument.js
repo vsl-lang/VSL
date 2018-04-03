@@ -8,12 +8,16 @@ export default class FunctionArgument extends Node {
 
     /**
      * Makes new function argument
-     * @param  {TypedIdentifier} typedId Type and name of argument
-     * @param  {?Expression} defaultValue optional default argument value
-     * @param  {Object} position position object from nearley.
+     * @param {?Identifier} externalName External name
+     * @param {TypedIdentifier} typedId Type and name of argument
+     * @param {?Expression} defaultValue optional default argument value
+     * @param {Object} position position object from nearley.
      */
-    constructor(typedId, defaultValue, position) {
+    constructor(externalName, typedId, defaultValue, position) {
         super(position);
+
+        /** @type {?Identifier} */
+        this.externalName = externalName;
 
         /** @type {TypedIdentifier} */
         this.typedId = typedId;
@@ -30,11 +34,11 @@ export default class FunctionArgument extends Node {
 
     /** @override */
     get children() {
-        return ['typedId', 'defaultValue'];
+        return ['externalName', 'typedId', 'defaultValue'];
     }
 
     clone() {
-        return new FunctionArgument(this.typedId.clone(), this.defaultValue?.clone());
+        return new FunctionArgument(this.externalName.clone(), this.typedId.clone(), this.defaultValue?.clone());
     }
 
     /** @override */
