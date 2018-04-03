@@ -9,6 +9,7 @@ import VSLParser from '../vsl/parser/vslparser';
 import TransformationContext from '../vsl/transform/transformationContext';
 import VSLPreprocessor from '../vsl/transform/transformers/vslpreprocessor';
 import VSLScopeTransformer from '../vsl/transform/transformers/vslscopetransformer';
+import VSLPretransformer from '../vsl/transform/transformers/vslpretransformer';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
 import { CodeBlock } from '../vsl/parser/nodes/*';
@@ -18,6 +19,13 @@ import { CodeBlock } from '../vsl/parser/nodes/*';
 import LLVMBackend from '../vsl/backend/llvm';
 
 import e from '../vsl/errors'
+
+export const PROPAGATION_CONFIG = {
+    protected: p.Propogate,
+    private: p.Hide,
+    public: p.Propogate,
+    none: p.Propogate
+};
 
 /**
  * Represents the compilation of a single module. This doesn't actually have any
@@ -241,12 +249,7 @@ export default class CompilationGroup {
         // This will addd the public, protected, and no-access-modifier
         // declarations to our new scope (`block`).
         new PropogateModifierTraverser(
-            {
-                protected: p.Propogate,
-                private: p.Hide,
-                public: p.Propogate,
-                none: p.Propogate
-            },
+            PROPAGATION_CONFIG,
             (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
 
@@ -258,15 +261,22 @@ export default class CompilationGroup {
         // === 5B: Scope Sharing ===
         // Hook all the news ASTs together (again)
         new PropogateModifierTraverser(
-            {
-                protected: p.Propogate,
-                private: p.Hide,
-                public: p.Propogate,
-                none: p.Propogate
-            },
+            PROPAGATION_CONFIG,
             (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
 
+        // === 6B: Early Expression Resolution ===
+        new VSLPretransformer(this.context).queue(block);
+
+        // Resolves early expressions
+        new PropogateModifierTraverser(
+            PROPAGATION_CONFIG,
+            (scopeItem) => block.scope.set(scopeItem)
+        ).queue(asts); // `asts` is already an ast of sorts.
+
+        // === 6B: Early Evaluated Hooks ===
+
+        // === 6C: Expression Resolution ===
         // Now `block` is our AST with all the important things.
         // The VSLTransformer will do remaining checks so we'll use it to do the
         // type checking etc.

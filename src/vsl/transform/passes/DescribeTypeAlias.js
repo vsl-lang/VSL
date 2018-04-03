@@ -44,7 +44,7 @@ export default class DescribeTypeAlias extends Transformation {
                 node, e.DUPLICATE_DECLARATION
             );
         } else {
-            node.scopeRef = type;
+            node.reference = type;
         }
     }
 }

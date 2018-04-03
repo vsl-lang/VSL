@@ -267,14 +267,17 @@ export default class Build extends CompilerCLI {
     async compileLLVM(backend) {
         let start = hrtime();
         if (this.link === false) {
-            // Optimize and output byte code
-            // console.log(backend.getByteCode());
-            const opt = await this.opt(backend.getByteCode(), {
-                triple: this.target.triple,
-                optLevel: this.optimizationLevel,
-                emitByteCode: true,
-                redirect: this.outputStream
-            });
+            if (this.optimizationLevel == 0) {
+                this.outputStream.write(backend.getByteCode());
+            } else {
+                // Optimize and output byte code
+                const opt = await this.opt(backend.getByteCode(), {
+                    triple: this.target.triple,
+                    optLevel: this.optimizationLevel,
+                    emitByteCode: true,
+                    redirect: this.outputStream
+                });
+            }
         } else {
             // Otherwise compile to
             const fileManager = new TempFileManager();

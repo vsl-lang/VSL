@@ -25,4 +25,8 @@ export default class WhileStatement extends Node {
     get children() {
         return ['condition', 'body']
     }
+
+    toString() {
+        return `while ${this.condition} ${this.body}`
+    }
 }

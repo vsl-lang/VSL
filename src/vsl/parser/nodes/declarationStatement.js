@@ -28,6 +28,6 @@ export default class DeclarationStatement extends Node {
          * Reference to type item.
          * @type {?ScopeItem}
          */
-        this.scopeRef = null;
+        this.reference = null;
     }
 }

@@ -99,6 +99,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         continue;
                     }
 
+
                     // Check that they work for RHS since LHS must be type\
                     // anyway. This is ensured by VerifyOperatorOverload
                     for (let k = 0; k < rhsTypes.length; k++) {
@@ -111,18 +112,22 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         //  item. This becomes null if multiple.
                         if (precScore < lastHighestPrec) {
                             continue;
-                        } else if (precScore > lastHighestPrec) {
-                            highestPrec = operatorCandidates.length;
-                        } else {
-                            highestPrec = null;
                         }
-
-                        lastHighestPrec = precScore;
 
                         // Check if the RHS type works for this operator
                         // candidate. The second arg (.args[1]) refers to the
                         // RHS as the format is +(lhs, rhs)
                         if (rhsTypes[k].candidate.castableTo(candidates[j].args[1].type)) {
+                            // Now that we know they work, we'll see if we can set
+                            // the prec candidate.
+                            if (precScore > lastHighestPrec) {
+                                highestPrec = operatorCandidates.length;
+                            } else {
+                                highestPrec = null;
+                            }
+
+                            lastHighestPrec = precScore;
+
                             operatorCandidates.push({
                                 lhsType: lhsTypes[i],
                                 rhsType: rhsTypes[k],
@@ -140,7 +145,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
             const finalCandidate = operatorCandidates[highestPrec];
             lhs.resolve(finalResolver(finalCandidate.lhsType));
             rhs.resolve(finalResolver(finalCandidate.rhsType));
-            this.node.ref = finalCandidate.candidate;
+            this.node.reference = finalCandidate.candidate;
             return [new TypeCandidate(finalCandidate.candidate.returnType)];
         } else if (operatorCandidates.length === 0) {
             let overloads = [];
@@ -167,7 +172,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 const finalCandidate = operatorCandidates[0];
                 lhs.resolve(finalResolver(finalCandidate.lhsType));
                 rhs.resolve(finalResolver(finalCandidate.rhsType));
-                this.node.ref = finalCandidate.candidate;
+                this.node.reference = finalCandidate.candidate;
                 return [new TypeCandidate(finalCandidate.candidate.returnType)];
             } else {
                 return operatorCandidates.map(

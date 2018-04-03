@@ -10,7 +10,6 @@ export default class AssignmentExpression extends Node {
      *
      * @param {Expression} target What you are setting
      * @param {Expression} value What you are setting to
-     * @param {?string} operator The operator
      * @param {Object} position a position from nearley
      */
     constructor(target, value, operator, position) {
@@ -24,9 +23,6 @@ export default class AssignmentExpression extends Node {
 
         /** @type {Expression} */
         this.value = value;
-
-        /** @type {string} */
-        this.operator = operator || "";
     }
 
     /** @override */
@@ -40,6 +36,6 @@ export default class AssignmentExpression extends Node {
 
     /** @override */
     toString() {
-        return `${target} ${modifier}= ${value}`;
+        return `${this.target} = ${this.value}`;
     }
 }

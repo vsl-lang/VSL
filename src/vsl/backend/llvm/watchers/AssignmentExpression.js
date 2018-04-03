@@ -16,7 +16,7 @@ export default class LLVMAssignmentExpression extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        if (node.ref === null) {
+        if (node.reference === null) {
             this.emit(
                 `Ambiguous type of value in this assignment.`
             );

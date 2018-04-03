@@ -14,7 +14,7 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-        const aliasItem = node.ref;
+        const aliasItem = node.reference;
 
         // Check if global
         if (!node.isGlobal) {

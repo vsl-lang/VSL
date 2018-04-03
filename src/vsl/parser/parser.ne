@@ -379,25 +379,13 @@ ExternalMarker
 BinaryOp[self, ops, next]
    -> $self _ $ops _ $next {%
         (data, location) =>
-            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value,
-                data[0][0].isClosure ?
-                    (data[0][0].isClosure = false) || true :
-                    data[4][0].isClosure ?
-                        (data[4][0].isClosure = false) || true :
-                        data[0][0] instanceof t.Whatever || data[4][0] instanceof t.Whatever,
-                location)
+            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value, location)
     %}
     | $next {% mid %}
 BinaryOpRight[self, ops, next]
    -> $next _ $ops _ $self {%
         (data, location) =>
-            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value,
-                data[0][0].isClosure ?
-                    (data[0][0].isClosure = false) || true :
-                    data[4][0].isClosure ?
-                        (data[4][0].isClosure = false) || true :
-                        data[0][0] instanceof t.Whatever || data[4][0] instanceof t.Whatever,
-                location)
+            new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value, location)
     %}
     | $next {% mid %}
 
@@ -415,7 +403,7 @@ Ternary
     %}
     | Assign {% id %}
 Assign
-   -> BinaryOpRight[Assign, ("="), Is] {% id %}
+   -> BinaryOpRight[Assign, ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "**="), Is] {% id %}
 Is
    -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
 Comparison
@@ -447,9 +435,6 @@ Prefix
             new t.UnaryExpression(
                 data[1],
                 data[0][0].value,
-                data[0].isClosure ?
-                    (data[0].isClosure = false) || true :
-                    data[0] instanceof t.Whatever,
                 location
             )
     %}

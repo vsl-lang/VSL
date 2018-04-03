@@ -67,8 +67,8 @@ export default class LLVMBackend extends Backend {
         yield new w.InitializerCall(); // before: FunctionCall
         yield new w.FunctionCall();
         yield new w.Literal();
-        yield new w.BitCastExpression();
         yield new w.BinaryExpression();
+        yield new w.BitcastExpression();
         yield new w.OrExpression();
         yield new w.AndExpression();
         yield new w.AssignmentExpression();

@@ -116,6 +116,23 @@ export default class LiteralResolver extends TypeResolver {
             );
         }
 
+        const shouldResolveToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+        if (shouldResolveToPrecType) {
+            let precType = null;
+
+            for (let i = 0; i < typeCandidates.length; i++) {
+                const candidate = typeCandidates[i];
+                if (candidate.precType) {
+                    precType = candidate;
+                    break;
+                }
+            }
+
+            if (precType) {
+                typeCandidates = [precType];
+            }
+        }
+
         if (typeCandidates.length === 1) {
             this.node.typeRef = typeCandidates[0].candidate;
         }

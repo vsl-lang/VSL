@@ -38,7 +38,7 @@ export default class AssignmentStatement extends DeclarationStatement {
          * The ref in a scope this declares the alias too
          * @type {?ScopeAliasItem}
          */
-        this.ref = null;
+        this.reference = null;
 
         /**
          * If is a global/static assignment
@@ -60,8 +60,8 @@ export default class AssignmentStatement extends DeclarationStatement {
     toString() {
         let t;
         return (this.type === 0 ? "let" : "const") +
-            ` ${this.identifier.identifier}` +
-            ` ${(t = this.identifier.type || (this.value && this.value.exprType) || null) ? `: ${t} ` : ""}` +
+            ` ${this.name.identifier}` +
+            `${(t = this.name.type || (this.value && this.value.exprType) || null) ? `: ${t} ` : " "}` +
             (this.value ? "= " + this.value : "");
     }
 }

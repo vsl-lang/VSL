@@ -18,7 +18,7 @@ export default class LLVMClassStatement extends BackendWatcher {
         if (node.generics.length !== 0) return;
 
         const backend = context.backend;
-        const classRef = node.scopeRef;
+        const classRef = node.reference;
 
         // Generate all fields into the global object.
         const staticItems = classRef.staticScope.aliases;

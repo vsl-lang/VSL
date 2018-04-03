@@ -40,8 +40,8 @@ export default class IdResolver extends TypeResolver {
             maybeClassStatemet = this.node.parentScope?.parentNode;
 
         while (maybeClassStatemet) {
-            if (maybeClassStatemet.scopeRef instanceof ScopeTypeItem) {
-                parentClass = maybeClassStatemet.scopeRef;
+            if (maybeClassStatemet.reference instanceof ScopeTypeItem) {
+                parentClass = maybeClassStatemet.reference;
                 break;
             } else {
                 maybeClassStatemet = maybeClassStatemet.parentScope?.parentNode;

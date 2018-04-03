@@ -50,7 +50,7 @@ export default class FunctionStatement extends DeclarationStatement {
         this.argRefs = [];
 
         /** @type {?ScopeFuncItem} */
-        this.scopeRef = null;
+        this.reference = null;
 
         /** @type {CodeBlock} */
         this.statements = statements;

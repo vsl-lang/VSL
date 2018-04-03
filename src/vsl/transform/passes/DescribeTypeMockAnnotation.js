@@ -14,6 +14,6 @@ export default class DescribeTypeMockAnnotation extends Transformation {
         // Check that it's the correct annotation
         if (node.name !== "mock") return;
         let classDecl = tool.nthParent(2);
-        classDecl.scopeRef.mockType = node.args[0];
+        classDecl.reference.mockType = node.args[0];
     }
 }

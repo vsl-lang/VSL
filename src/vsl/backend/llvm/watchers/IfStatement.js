@@ -11,10 +11,8 @@ export default class LLVMIfStatement extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-        const curBlock = context.builder.getInsertBlock();
 
         const trueBlock = llvm.BasicBlock.create(backend.context, 'true', context.parentFunc);
-
         const endBlock = node.alwaysReturns ?
             null :
             llvm.BasicBlock.create(backend.context, 'finally', context.parentFunc);
@@ -47,8 +45,10 @@ export default class LLVMIfStatement extends BackendWatcher {
         context.builder.setInsertionPoint(block);
         regen(name, parent, context);
 
+        const newBlock = context.builder.getInsertBlock();
+
         // If there is a terminator, we won't add the break
-        if (block.getTerminator()) { return }
+        if (newBlock.getTerminator()) { return }
         if (endBlock) context.builder.createBr(endBlock);
     }
 }

@@ -31,9 +31,12 @@ export default class TypeDeductAssignment extends Transformation {
      * @param {Node} node Node should test for
      * @return {boolean} if the node should be run
      */
-    isValidNode(node) { return !(node instanceof t.FieldStatement); }
+    isValidNode(node) {
+        return !(node instanceof t.FieldStatement || node.parentScope.rootScope);
+    }
 
     modify(node: Node, tool: ASTTool) {
+        // Do NOT run for global or field
         if (!this.isValidNode(node)) return;
 
         const scope = tool.scope;
@@ -95,7 +98,7 @@ export default class TypeDeductAssignment extends Transformation {
             }
         );
 
-        node.ref = aliasItem;
+        node.reference = aliasItem;
         let result = assignmentScope.set(aliasItem);
         if (result === false) {
             throw new TransformError(

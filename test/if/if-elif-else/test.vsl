@@ -1,0 +1,9 @@
+func main() {
+    if true {
+        print('A')
+    } else if true {
+        print('B')
+    } else {
+        print('C')
+    }
+}

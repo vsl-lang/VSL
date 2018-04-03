@@ -1,7 +1,7 @@
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 
 /**
- * Determines if a scope item is an instance something.
+ * Determines if a scope item is an instance something. (e.g. field, method)
  * @param {ScopeItem} scopeItem
  * @return {boolean}
  */

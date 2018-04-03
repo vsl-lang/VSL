@@ -5,7 +5,7 @@ import t from '../../parser/nodes';
 
 import ScopeForm from '../../scope/scopeForm';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
-import ScopeAliasItem from '../../scope/items/scopeAliasItem';
+import ScopeAliasArgItem from '../../scope/items/scopeAliasArgItem';
 import ScopeFuncItemArgument from '../../scope/items/scopeFuncItemArgument';
 
 import TypeLookup from '../../typeLookup/typeLookup';
@@ -51,7 +51,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
                     sourceNode = all[index];
                 const isOptional = false;
 
-                let aliasItem = new ScopeAliasItem(
+                let aliasItem = new ScopeAliasArgItem(
                     ScopeForm.definite,
                     argName,
                     {
@@ -107,6 +107,6 @@ export default class RegisterFunctionDeclaration extends Transformation {
         }
 
         if (subscope) subscope.owner = type;
-        node.scopeRef = type;
+        node.reference = type;
     }
 }

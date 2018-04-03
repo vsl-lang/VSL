@@ -40,4 +40,8 @@ export default class IfStatement extends Node {
     get children() {
         return [ 'condition', 'trueBody', 'falseBody' ]
     }
+
+    toString() {
+        return `if ${this.condition} ${this.trueBody} ${this.falseBody ? "else " + this.falseBody.toString() : ""}`;
+    }
 }
