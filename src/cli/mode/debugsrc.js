@@ -1,6 +1,5 @@
 import ParserError from '../../vsl/parser/parserError';
 import VSLParser from '../../vsl/parser/vslparser';
-import VSLTransform from '../../vsl/transform/transform';
 import VSLTokenizer from '../../vsl/parser/vsltokenizer';
 
 import FixItController from '../../fixit/FixItController';

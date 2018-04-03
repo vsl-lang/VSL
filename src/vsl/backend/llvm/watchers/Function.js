@@ -24,7 +24,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-        const scopeItem = node.scopeRef;
+        const scopeItem = node.reference;
 
         const nodeArgs = node.args;
 
@@ -161,7 +161,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             // Specifies different linkage for private v public
             let linkage = isPublic ?
                 llvm.LinkageTypes.ExternalLinkage:
-                llvm.LinkageTypes.InternalLinkage;
+                llvm.LinkageTypes.PrivateLinkage;
 
             // Create this function's prototype
             func = llvm.Function.create(

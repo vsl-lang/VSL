@@ -12,11 +12,14 @@ export default class VSLPreprocessor extends Transformer {
             // Transform binary short-circut to their dedicated nodes
             pass.TransformShortCircut,
 
-            // Ensure LValues are correct,
-            pass.VerifyLValue,
-
             // Converts BinaryExpression(=) to AssignmentExpression
             pass.TransformAssignmentExpression,
+
+            // Converts BinaryExpression(::) to CastExpression
+            pass.TransformCastExpression,
+
+            // Ensure LValues are correct,
+            pass.VerifyLValue,
 
             // Marks global assignment
             pass.TransformGlobalAssignment,

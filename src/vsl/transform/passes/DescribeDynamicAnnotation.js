@@ -25,6 +25,6 @@ export default class DescribeDynamicAnnotation extends Transformation {
         }
 
         let classDecl = tool.nthParent(2);
-        classDecl.scopeRef.dynamicDispatch = value;
+        classDecl.reference.dynamicDispatch = value;
     }
 }

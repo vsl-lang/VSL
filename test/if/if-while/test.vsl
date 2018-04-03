@@ -1,0 +1,7 @@
+func main() {
+    if true {
+        print("Hello")
+    } else {
+        while false {}
+    }
+}

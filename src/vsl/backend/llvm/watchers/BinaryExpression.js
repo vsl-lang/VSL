@@ -16,7 +16,7 @@ export default class LLVMBinaryExpression extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         // If we don't have a ref,
-        if (node.ref === null) {
+        if (node.reference === null) {
             throw new BackendError(
                 `Ambiguous use of Binary Expression`,
                 node
@@ -26,7 +26,7 @@ export default class LLVMBinaryExpression extends BackendWatcher {
         const lhs = regen('lhs', node, context);
         const rhs = regen('rhs', node, context);
         return context.builder.createCall(
-            getFunctionInstance(node.ref, regen, context),
+            getFunctionInstance(node.reference, regen, context),
             [
                 lhs,
                 rhs

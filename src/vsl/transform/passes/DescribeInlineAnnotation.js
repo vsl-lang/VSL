@@ -11,6 +11,6 @@ export default class DescribeInlineAnnotation extends Transformation {
     modify(node: Node, tool: ASTTool) {
         // Check that it's the correct type
         if (node.name !== "inline") return;
-        tool.nthParent(2).scopeRef.shouldInline = true;
+        tool.nthParent(2).reference.shouldInline = true;
     }
 }

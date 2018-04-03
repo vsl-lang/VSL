@@ -17,6 +17,6 @@ export default class DescribePrimitiveAnnotation extends Transformation {
         
         let type = node.args[0];
         let precType = node.args[1] === "_precType";
-        tool.context.addPrimitive(type, precType, tool.nthParent(2).scopeRef);
+        tool.context.addPrimitive(type, precType, tool.nthParent(2).reference);
     }
 }

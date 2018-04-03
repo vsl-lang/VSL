@@ -91,7 +91,7 @@ export default class DescribeClassDeclaration extends Transformation {
             subscope.owner = scopeType;
             staticSubscope.owner = scopeType;
             staticSubscope.isStaticContext = true;
-            node.scopeRef = type;
+            node.reference = type;
         }
     }
 }

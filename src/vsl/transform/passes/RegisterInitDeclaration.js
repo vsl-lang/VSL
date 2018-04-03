@@ -5,7 +5,7 @@ import t from '../../parser/nodes';
 
 import ScopeForm from '../../scope/scopeForm';
 import ScopeInitItem from '../../scope/items/scopeInitItem';
-import ScopeAliasItem from '../../scope/items/scopeAliasItem';
+import ScopeAliasArgItem from '../../scope/items/scopeAliasArgItem';
 import ScopeFuncItemArgument from '../../scope/items/scopeFuncItemArgument';
 
 import TypeLookup from '../../typeLookup/typeLookup';
@@ -27,7 +27,7 @@ export default class RegisterInitDeclaration extends Transformation {
         const owningClass = tool.nthParent(3);
 
         // Get the ScopeTypeItem for that class
-        const classItem = owningClass.scopeRef;
+        const classItem = owningClass.reference;
 
         // Get th class's name
         const className = classItem.rootId;
@@ -52,7 +52,7 @@ export default class RegisterInitDeclaration extends Transformation {
                 // If this is a statement function, we'll add the arg to
                 // subscope.
                 if (subscope) {
-                    let aliasItem = new ScopeAliasItem(
+                    let aliasItem = new ScopeAliasArgItem(
                         ScopeForm.definite,
                         argName,
                         {
@@ -98,6 +98,6 @@ export default class RegisterInitDeclaration extends Transformation {
             );
         }
 
-        node.scopeRef = type;
+        node.reference = type;
     }
 }

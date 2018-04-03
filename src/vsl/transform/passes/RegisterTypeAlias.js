@@ -10,6 +10,6 @@ export default class RegisterTypeAlias extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        node.scopeRef.resolve();
+        node.reference.resolve();
     }
 }

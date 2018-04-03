@@ -63,7 +63,7 @@ export default class AssignmentResolver extends TypeResolver {
         });
 
         if (valueTypes.length === 1) {
-            this.node.ref = targetType;
+            this.node.reference = targetType;
         } else if (rhsTypes.length === 0) {
             this.emit(
                 `Assignment target is of ${targetType} however the value ` +

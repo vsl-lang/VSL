@@ -73,7 +73,7 @@ export default class PropogateModifierTraverser extends ScopeTraverser {
         else if (is('protected')) if (!shouldPropogate('protected')) return;
         else if (!shouldPropogate('none')) return;
 
-        let ref = node.scopeRef;
+        let ref = node.reference;
         if (ref !== null) {
             this.callback(ref);
         }

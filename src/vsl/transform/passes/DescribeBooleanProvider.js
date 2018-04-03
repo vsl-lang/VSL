@@ -22,7 +22,7 @@ export default class DescribeBooleanProvider extends Transformation {
                 node
             );
         } else {
-            tool.context.booleanType = tool.nthParent(2).scopeRef;
+            tool.context.booleanType = tool.nthParent(2).reference;
         }
     }
 }

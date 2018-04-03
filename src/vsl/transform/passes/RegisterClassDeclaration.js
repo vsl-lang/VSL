@@ -20,7 +20,7 @@ export default class RegisterClassDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        node.scopeRef.resolve();
+        node.reference.resolve();
 
         // Also check if there is an initalizer, if not add the default init.
         let isInitializer = false;
@@ -58,8 +58,8 @@ export default class RegisterClassDeclaration extends Transformation {
                 args: [],
                 source: null,
                 isDefaultInit: true,
-                returnType: node.scopeRef,
-                initializingType: node.scopeRef
+                returnType: node.reference,
+                initializingType: node.reference
             }
         );
 

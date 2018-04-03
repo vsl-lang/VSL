@@ -198,7 +198,6 @@ ng to the setup transformer. This is recursively
      * var final = new VSLTransformer(VSLTransformer.default).transform(AST);
      */
     transform(ast: any, parent: parent, name: any, passes: Transformation[] = this.passes) {
-
         for (let i = 0; i < passes.length; i++) {
             let result = this.transform_once(
                 ast,
@@ -213,8 +212,7 @@ ng to the setup transformer. This is recursively
                 if (newInstance) {
                     // Requeue with remaining transformations. Excluding current
                     let queuedTransforms = passes.slice(i + 1);
-                    if (queuedTransforms.length > 0)
-                        this.transform(parent[name], parent, name, queuedTransforms);
+                    this.transform(parent[name], parent, name, queuedTransforms);
                 }
 
                 break;
@@ -262,7 +260,6 @@ ng to the setup transformer. This is recursively
 
         // Get new node
         let result = parent[name];
-
         return ast === result;
     }
 }

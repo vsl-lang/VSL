@@ -132,9 +132,7 @@ export default class Traverser {
      *
      * @abstract
      */
-    receivedNode(parent: Node | Node[], name: string) {
-        throw new TypeError(`${this.constructor.name}: Did not implement required method #receivedNode(parent:name:)`);
-    }
+    receivedNode(parent: Node | Node[], name: string) { void 0; }
 
 
     /**

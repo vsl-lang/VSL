@@ -18,7 +18,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-        const scopeItem = node.scopeRef;
+        const scopeItem = node.reference;
         const args = scopeItem.args;
         const parentClass = scopeItem.initializingType; // Class being initalized
         const selfType = toLLVMType(parentClass, backend); // Class being initalized in LLVM

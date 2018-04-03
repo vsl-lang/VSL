@@ -1,3 +1,5 @@
+import ScopeTraverser from './scopetraverser';
+
 /**
  * Passed to Transformations to aid in traversing and modifying the AST
  *
@@ -65,7 +67,7 @@ export default class ASTTool {
      * @type {?Scope}
      */
     get staticScope() {
-        return this.fragment?.parentScope.parentNode?.scopeRef?.staticScope;
+        return this.fragment?.parentScope.parentNode?.reference?.staticScope;
     }
 
     /**
@@ -176,9 +178,11 @@ export default class ASTTool {
      * @param {Node} withNode - the replacement node
      */
     replace(withNode: Node) {
-        withNode.parentScope = this.parent[this.name].parentScope;
-        withNode.parentNode = this.parent;
         this.parent[this.name] = withNode;
+        const scopeTraverser = new ScopeTraverser();
+        scopeTraverser.scope.push(this.fragment.parentScope);
+        scopeTraverser.processNode(this.parent, this.name);
+        scopeTraverser.queue(this.parent[this.name]);
     }
 
     /**

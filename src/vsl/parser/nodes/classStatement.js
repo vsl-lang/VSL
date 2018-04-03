@@ -60,7 +60,7 @@ export default class ClassStatement extends DeclarationStatement {
         return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
         `${this.access.join(" ")}${this.access.length ? " " : ""}class` +
         ` ${this.name}: ${
-            this.superclasses === null ?
+            this.superclasses.length === 0 ?
             "Object" : this.superclasses.join(", ")
         } ${this.statements}`
     }

@@ -32,7 +32,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
             const globalVariable = backend.module.getGlobalVariable(nodeName, true);
             if (globalVariable) return;
 
-            const globalType = toLLVMType(node.ref.type, backend);
+            const globalType = toLLVMType(node.reference.type, backend);
             let varRef = new llvm.GlobalVariable(
                 backend.module,
                 globalType,
@@ -42,11 +42,11 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                 nodeName
             );
 
-            return node.ref.backendRef = new ValueRef(varRef, { isPtr: true });
+            return node.reference.backendRef = new ValueRef(varRef, { isPtr: true });
         } else if (node.value instanceof t.ExpressionStatement) {
             if (node.isGlobal) {
-                const name = node.ref.uniqueName;
-                const type = toLLVMType(node.ref.type, backend);
+                const name = node.reference.uniqueName;
+                const type = toLLVMType(node.reference.type, backend);
 
                 let varRef = new llvm.GlobalVariable(
                     backend.module,
@@ -62,14 +62,14 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                     context.builder.createStore(res, varRef);
                 })
 
-                return node.ref.backendRef = new ValueRef(varRef, { isPtr: true });
+                return node.reference.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {
                 const value = regen('value', node, context);
                 const alloca = context.builder.createAlloca(value.type);
                 context.builder.createStore(value, alloca);
 
                 // Check if the value type is a by-value
-                return node.ref.backendRef = new ValueRef(alloca, { isPtr: true });
+                return node.reference.backendRef = new ValueRef(alloca, { isPtr: true });
             }
         } else {
             throw new BackendError(
