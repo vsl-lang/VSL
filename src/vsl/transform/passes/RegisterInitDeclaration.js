@@ -38,12 +38,13 @@ export default class RegisterInitDeclaration extends Transformation {
         // Go through params and form ScopeFuncItemArguments
         const initArgs = node.params.map(
             ({
+                externalName: externalNameNode,
                 typedId: {
-                    identifier: argNameNode,
+                    identifier: { value: argName },
                     type: argTypeNode
                 }
             }, index, all) => {
-                const argName = argNameNode.value;
+                const externalName = externalNameNode?.value || argName;
                 const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(scope),
                     sourceNode = all[index];
                 const isOptional = false;
@@ -65,7 +66,7 @@ export default class RegisterInitDeclaration extends Transformation {
                 }
 
                 return new ScopeFuncItemArgument(
-                    argName,
+                    externalName,
                     argType,
                     isOptional,
                     sourceNode
