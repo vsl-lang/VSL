@@ -33,10 +33,11 @@ export default class RegisterFunctionDeclaration extends Transformation {
         let subscope = node.statements.scope;
 
         // Handle -> Void.
-        if (node.returnType instanceof t.Identifier && node.returnType.value !== "Void") {
+        const isVoid = node.returnType instanceof t.Identifier && node.returnType.value === "Void";
+        const hasReturn = !!node.returnType;
+        if (!isVoid && hasReturn) {
             node.returnRef = new TypeLookup(node.returnType, vslGetTypeChild).resolve(scope);
         }
-
 
         let argList = node.args.map(
             ({
