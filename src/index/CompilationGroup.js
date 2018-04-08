@@ -253,6 +253,7 @@ export default class CompilationGroup {
             (scopeItem) => block.scope.set(scopeItem)
         ).queue(asts); // `asts` is already an ast of sorts.
 
+
         // === 5: Scope Generation ===
         // This will finish generating the type scope. The next transformer
         // performs type deduction.

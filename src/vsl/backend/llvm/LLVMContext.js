@@ -1,3 +1,8 @@
+export const Key = {
+    LValueContext: Symbol('LValueContext'),
+    SpecializedGenericTy: Symbol('SpecializedGenericTy')
+}
+
 /**
  * Specifies a LLVM position
  */
@@ -15,14 +20,31 @@ export default class LLVMContext {
         /** @type {?llvm.Function} */
         this.parentFunc = null;
 
-        /** @type {boolean} */
-        this.lvalueContext = false;
+        this._keys = new Map();
     }
 
-    getLValueContextOnce() {
-        const status = this.lvalueContext;
-        this.lvalueContext = false;
-        return status;
+    /**
+     * Pushes a value for a key
+     * @param {Symbol} key
+     * @param {Object} value
+     */
+    pushValue(key, value) {
+        this._keys.set(key, value);
+    }
+
+    /**
+     * Pops a value given a key
+     * @param {Symbol} key Key as desc
+     * @return {?Object} any value
+     */
+    popValue(key) {
+        if (this._keys.has(key)) {
+            const value = this._keys.get(key);
+            this._keys.delete(key);
+            return value;
+        } else {
+            return null;
+        }
     }
 
     /**

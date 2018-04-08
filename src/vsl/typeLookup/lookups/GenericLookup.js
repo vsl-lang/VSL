@@ -30,7 +30,7 @@ export default class GenericLookup extends TypeLookup {
         let result = scope.get(new ScopeGenericItem(ScopeForm.query, name))?.resolved();
 
         // Ensure the generic exists
-        if (result === null) {
+        if (!result) {
             this.emit(
                 `There is no generic type with name \`${name}\` in this scope. Check ` +
                 `for typos or if this type declared in the current scope. If ` +

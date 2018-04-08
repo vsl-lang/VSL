@@ -3,6 +3,7 @@ import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
+import GenericTypeReferenceItem from '../../scope/items/GenericTypeReferenceItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
@@ -164,8 +165,15 @@ export default class CallResolver extends TypeResolver {
             }
 
             // Lets first do checks and see if return type works
-            if (expectedReturnType && !candidate.returnType?.castableTo(expectedReturnType.candidate)) {
-                continue;
+            if (expectedReturnType) {
+                if (!candidate.returnType) {
+                    // If we expect return and there is none then it is not a valid candidate
+                    continue;
+                } else if (!candidate.returnType.castableTo(expectedReturnType.candidate)) {
+                    // If the return type is not (up)castable to the expected return type,
+                    // then this is not a valid candidate
+                    continue;
+                }
             }
 
             // If same arg length & function name we'll have to go through each

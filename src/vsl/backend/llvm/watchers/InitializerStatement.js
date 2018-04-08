@@ -5,6 +5,7 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 import ValueRef from '../ValueRef';
+import { Key } from '../LLVMContext';
 
 import getFunctionName from '../helpers/getFunctionName';
 import getDefaultInit from '../helpers/getDefaultInit';
@@ -20,8 +21,13 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         const backend = context.backend;
         const scopeItem = node.reference;
         const args = scopeItem.args;
-        const parentClass = scopeItem.initializingType; // Class being initalized
-        const selfType = toLLVMType(parentClass, backend); // Class being initalized in LLVM
+
+        // Class being initalized. We try to see if there is a generic specialization
+        // otherwise we'll load the non-generic class type.
+        const parentClass = context.popValue(Key.SpecializedGenericTy) || scopeItem.initializingType;
+
+        // Class being initalized in LLVM
+        const selfType = toLLVMType(parentClass, backend);
 
         // What the init should be called
         const llvmFuncName = getFunctionName(scopeItem);

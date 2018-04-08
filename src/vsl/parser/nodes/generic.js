@@ -24,6 +24,9 @@ export default class Generic extends Node {
 
         /** @type {Node[]} */
         this.parameters = parameters;
+
+        /** @type {?ScopeGenericTemplateItem} */
+        this.reference = null;
     }
 
     clone() {

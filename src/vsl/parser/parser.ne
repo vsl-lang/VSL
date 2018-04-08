@@ -259,13 +259,15 @@ Field
     %}
 
 InitializerStatement
-   -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _
+   -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _ (
+       ExternalMarker {% id %} |
         ( "{" {% setState('inInit', true) %} )
         CodeBlock[statement {% id %}]
-        ( "}" {% setState('inInit', false) %} ) {%
+        ( "}" {% setState('inInit', false) %} ) {% nth(1) %}
+    ) {%
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
-                data[4] || [], data[7], location)
+                data[4], data[6], location)
     %}
 
 InterfaceItems
@@ -338,7 +340,7 @@ FunctionHead
     %}
 
 OverridableOperator
-   -> ("+" | "-" | "*" | "/" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
+   -> ("+" | "-" | "*" | "/" | "\\" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
         "<=" | ">=" | "==" | "!=") {%
         (data, location) =>
             new t.OperatorName(data[0][0].value, location)
@@ -418,7 +420,7 @@ Shift
 Sum
    -> BinaryOp[Sum, ("+" | "-"), Product] {% id %}
 Product
-   -> BinaryOp[Product, ("*" | "/" | "%"), Power] {% id %}
+   -> BinaryOp[Product, ("*" | "/" | "\\" | "%"), Power] {% id %}
 Power
    -> BinaryOpRight[Power, ("**"), Bitwise] {% id %}
 Bitwise

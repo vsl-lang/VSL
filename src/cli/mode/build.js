@@ -41,7 +41,8 @@ export default class Build extends CompilerCLI {
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
                 ["-Xllc"                 , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
-                                           "outputs `.ll`",                          { link: false }],
+                                           "outputs LLVM IR",                        { link: false }],
+                ["-ir"                   , "Dumps IR to STDOUT. Equal to `-S -o -`", { link: false, stdout: true }],
                 ["-t", "--target"        , "Compilation target. To see all " +
                                            "targets, use \`vsl build --targets\`",   { arg: "target", target: true }],
                 ["-T", "--triple"        , "The target triple to use for " +
@@ -103,6 +104,8 @@ export default class Build extends CompilerCLI {
         let llcArgs = [];
         let libraries = [];
 
+        let emitIR = false;
+
         let verbose = false;
 
         let directory = null;
@@ -133,6 +136,7 @@ export default class Build extends CompilerCLI {
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
                 if ('stl' in flagInfo) stl = args[++i];
                 if ('opt' in flagInfo) opt = args[++i];
+                if ('stdout' in flagInfo) outputStream = process.stdout;
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
                 if (flagInfo.output) {

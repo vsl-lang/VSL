@@ -8,7 +8,7 @@ import layoutType from './layoutType';
  * @param {Backend} backend the backend
  */
 export default function toLLVMType(type, backend) {
-    let mockType = type.mockType,
+    let mockType = type.resolved().mockType,
         context = backend.context;
     if (mockType) {
         switch(mockType) {

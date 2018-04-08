@@ -8,6 +8,7 @@ import toLLVMType from '../helpers/toLLVMType';
 import { getTypeOffset } from '../helpers/layoutType';
 import getDefaultInit from '../helpers/getDefaultInit';
 
+import { Key } from '../LLVMContext'
 import { alloc } from '../helpers/MemoryManager'
 import * as llvm from 'llvm-node';
 
@@ -28,7 +29,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
             );
         }
 
-        const classRef = initRef.initializingType;
+        const classRef = node.head.reference || initRef.initializingType;
         const classType = toLLVMType(classRef, backend);
 
         const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);
@@ -42,7 +43,9 @@ export default class LLVMInitializerCall extends BackendWatcher {
         if (initRef.isDefaultInit) {
             callee = getDefaultInit(classRef, context, regen);
         } else {
-            callee = getFunctionInstance(initRef, regen, context);
+            const ctx = context.bare();
+            ctx.pushValue(Key.SpecializedGenericTy, classRef);
+            callee = getFunctionInstance(initRef, regen, ctx);
         }
 
         // Allocate space for struct

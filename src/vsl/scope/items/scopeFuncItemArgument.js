@@ -39,6 +39,15 @@ export default class ScopeFuncItemArgument {
         this.node = node;
     }
 
+    clone() {
+        return new ScopeFuncItemArgument(
+            this.name,
+            this.type,
+            this.optional,
+            this.node
+        )
+    }
+
     /**
      * Gets the type at the index, performs resolution if needed because cannot
      * always be done on the first pass.

@@ -2,6 +2,8 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import { Key } from '../LLVMContext';
+
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 
 import * as llvm from 'llvm-node';
@@ -14,7 +16,7 @@ export default class LLVMIdentifier extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        const asLValue = context.getLValueContextOnce();
+        const asLValue = context.popValue(Key.LValueContext);
 
         if (node.reference === null) {
             throw new BackendError(

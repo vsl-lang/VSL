@@ -44,7 +44,7 @@ export default class GenericResolver extends TypeResolver {
 
         // Resolve entire expression as a type.
         const type = new TypeLookup(this.node, vslGetTypeChild).resolve(scope);
-        this.node.specializedType = type;
+        this.node.reference = type;
 
         const isCallee = negotiate(ConstraintType.BoundedFunctionContext);
 

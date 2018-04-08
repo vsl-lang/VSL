@@ -42,6 +42,15 @@ export default class ScopeGenericItem extends ScopeItem {
         this.types = new Set();
     }
 
+    /** @override */
+    clone(opts) {
+        super.clone({
+            scopeTypeItem: this.scopeTypeItem,
+            genericParents: this.genericParents,
+            ...opts
+        });
+    }
+
     /**
      * Notifies that this generic was used with a types.
      * @param  {ScopeTypeItem[]} types - The generic types this was used with.
@@ -93,7 +102,7 @@ export default class ScopeGenericItem extends ScopeItem {
      * @type {string}
      */
     rootToString() {
-        return super.toString();
+        return this.rootId;
     }
 
     /** @override */

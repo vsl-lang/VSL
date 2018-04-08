@@ -19,5 +19,5 @@ export default function getFunctionName(func) {
 
 export function getFunctionInstance(func, regen, context) {
     const node = func.source;
-    return regen(node.relativeName, node.parentNode, context.bare())
+    return regen(node.relativeName, node.parentNode, context)
 }

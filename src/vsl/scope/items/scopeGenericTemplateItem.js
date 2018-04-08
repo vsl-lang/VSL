@@ -35,6 +35,15 @@ export default class ScopeGenericTemplateItem extends ScopeTypeItem {
         this.parents = parents;
     }
 
+    /** @override */
+    clone(opts) {
+        super.clone({
+            template: this.template,
+            parents: this.parents,
+            ...opts
+        });
+    }
+
     /** @return {string} */
     toString() {
         return this.template.rootToString() + `<${this.parents.map(p => p.toString()).join(", ")}>`

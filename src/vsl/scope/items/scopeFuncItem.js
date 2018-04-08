@@ -65,13 +65,23 @@ export default class ScopeFuncItem extends ScopeItem {
         super.init(opts);
         this.args = args;
         this.source = source;
-        this.returnType = returnType?.resolved();
+        this.returnType = returnType;
 
         this.generated = false;
         this.shouldInline = false;
 
         // Default access modifier
         this.accessModifier = 'local';
+    }
+
+    /** @override */
+    clone(opts) {
+        super.clone({
+            args: this.args.map(arg => arg.clone()),
+            source: this.source,
+            returnType: this.returnType,
+            ...opts
+        })
     }
 
     /** @override */
