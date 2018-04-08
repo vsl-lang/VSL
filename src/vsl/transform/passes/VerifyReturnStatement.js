@@ -80,6 +80,14 @@ export default class VerifyReturnStatement extends Transformation {
 
                     return true;
                 } else {
+                    if (node.expression === null) {
+                        throw new TransformError(
+                            `Return statement must return \`${returnType}\` ` +
+                            `however this statement returns \`Void\``,
+                            node
+                        );
+                    }
+
                     let returnTypeCandidate = new TypeCandidate(returnType);
 
                     // First, also validate type. We'll type deduct this node.

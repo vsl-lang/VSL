@@ -67,6 +67,6 @@ export default class GenericLookup extends TypeLookup {
             }
         })
 
-        return result.usedWith(parameters);
+        return result;
     }
 }

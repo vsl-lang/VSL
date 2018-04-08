@@ -1,7 +1,7 @@
 import ScopeForm from '../scopeForm';
 import ScopeItem from '../scopeItem';
 
-import ScopeInitItem from './scopeInitItem';
+import Scope from '../scope';
 
 /**
  * @typedef {Object} ScopeTypeItemOptions
@@ -189,7 +189,6 @@ export default class ScopeTypeItem extends ScopeItem {
     equal(ref: ScopeItem): boolean {
         // Only the names need to be equal except for inits
         if (this.rootId !== ref.rootId) return false;
-        if (ref instanceof ScopeInitItem) return false;
         return true;
     }
 
@@ -198,7 +197,9 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     static RootClass = do {
         new ScopeTypeItem(ScopeForm.definite, "Object", {
-            superclass: null
+            superclass: null,
+            subscope: new Scope(),
+            staticScope: new Scope()
         });
     }
 

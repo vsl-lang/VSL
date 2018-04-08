@@ -2,6 +2,8 @@ import * as llvm from 'llvm-node';
 import BackendError from '../../BackendError';
 import layoutType from './layoutType';
 
+import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+
 /**
  * Converts a {@link ScopeTypeItem} to an LLVM type.
  * @param {ScopeTypeItem} type Type to convert
@@ -19,7 +21,7 @@ export default function toLLVMType(type, backend) {
             case "ui32": return llvm.Type.getInt32Ty(context);
             case "i64":
             case "ui64": return llvm.Type.getInt64Ty(context);
-            case "pointer": return toLLVMType(type.parents[0], backend).getPointerTo();
+            case "pointer": return toLLVMType(type.genericParents[0], backend).getPointerTo();
             case "double": return llvm.Type.getDoubleTy(context);
             case "float": return llvm.Type.getFloatTy(context);
             case "opaquepointer": return llvm.StructType.get(context, []).getPointerTo();
@@ -30,6 +32,9 @@ export default function toLLVMType(type, backend) {
                     null
                 );
         }
+    } else if (type === ScopeTypeItem.RootClass) {
+        // If we are the root class then we have special things to do
+        return llvm.Type.getInt64Ty(context);
     } else {
         return layoutType(type, backend).getPointerTo();
 
