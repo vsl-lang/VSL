@@ -34,6 +34,15 @@ export default class ScopeInitItem extends ScopeFuncItem {
     }
 
     /** @override */
+    clone(opts) {
+        super.clone({
+            initializingType: this.initializingType,
+            isDefaultInit: this.isDefaultInit,
+            ...opts
+        });
+    }
+
+    /** @override */
     toString() {
         return `init(${this.args.join(", ")})`;
     }

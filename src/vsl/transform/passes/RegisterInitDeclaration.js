@@ -27,7 +27,7 @@ export default class RegisterInitDeclaration extends Transformation {
         const owningClass = tool.nthParent(3);
 
         // Get the ScopeTypeItem for that class
-        const classItem = owningClass.reference;
+        const classItem = owningClass.typeReference;
 
         // Get th class's name
         const className = classItem.rootId;

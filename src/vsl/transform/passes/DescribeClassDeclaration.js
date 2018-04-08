@@ -74,7 +74,8 @@ export default class DescribeClassDeclaration extends Transformation {
                         ScopeForm.indefinite,
                         node.generics[i].name.value,
                         {
-                            item: ScopeTypeItem.RootClass
+                            item: ScopeTypeItem.RootClass,
+                            isGenericItem: true
                         }
                     )
                 );
@@ -91,7 +92,8 @@ export default class DescribeClassDeclaration extends Transformation {
             subscope.owner = scopeType;
             staticSubscope.owner = scopeType;
             staticSubscope.isStaticContext = true;
-            node.reference = type;
+            node.reference = scopeType;
+            node.typeReference = type;
         }
     }
 }

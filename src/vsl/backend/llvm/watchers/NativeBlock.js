@@ -5,8 +5,6 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 
-import { getFunctionInstance } from '../helpers/getFunctionName';
-
 import * as llvm from "llvm-node";
 
 export default class LLVMNativeBlock extends BackendWatcher {
@@ -65,6 +63,20 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         func.args[1].aliasRef.backendRef.generate(),
                         llvm.Type.getDoubleTy(backend.context)
                     )
+                )
+            );
+
+            case "sdiv": return context.builder.createRet(
+                context.builder.createSDiv(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "udiv": return context.builder.createRet(
+                context.builder.createSDiv(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
                 )
             );
 

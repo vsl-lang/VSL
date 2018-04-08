@@ -210,6 +210,21 @@ export default class ScopeTypeItem extends ScopeItem {
         return `T${this.isInterface ? "I" : "C"}${this.rootId}`;
     }
 
+    /** @override */
+    clone(opts) {
+        super.clone({
+            interfaces: this.interfaces,
+            superclass: this.superclass,
+            isInterface: this.isInterface,
+            staticScope: this.staticScope,
+            subscope: this.subscope,
+            mockType: this.mockType,
+            dynamicDispatch: this._dynamicDispatch,
+            source: source,
+            defaultInitializer: defaultInitializer
+        });
+    }
+
     /**
      * Get descriptive name
      * @return {string}

@@ -31,6 +31,14 @@ export default class ScopeMetaClassItem extends ScopeTypeItem {
         this.referencingClass = referencingClass;
     }
 
+    /** @override */
+    clone(opts) {
+        super.clone({
+            referencingClass: this.referencingClass,
+            ...opts
+        });
+    }
+
     /**
      * Returns a query for the current {@link ScopeItem}
      * @return {ScopeItem} of type Query.

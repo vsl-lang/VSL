@@ -4,6 +4,7 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
+import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 
 import e from '../../errors';
 
@@ -42,6 +43,9 @@ export default class IdResolver extends TypeResolver {
         while (maybeClassStatemet) {
             if (maybeClassStatemet.reference instanceof ScopeTypeItem) {
                 parentClass = maybeClassStatemet.reference;
+                break;
+            } else if (maybeClassStatemet.reference instanceof ScopeGenericItem) {
+                parentClass = maybeClassStatemet.reference.getCanonicalInstance();
                 break;
             } else {
                 maybeClassStatemet = maybeClassStatemet.parentScope?.parentNode;

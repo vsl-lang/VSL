@@ -3,6 +3,7 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
 import InitPriority from '../InitPriority';
 import toLLVMType from '../helpers/toLLVMType';
@@ -23,7 +24,7 @@ export default class LLVMAssignmentExpression extends BackendWatcher {
         }
 
         const lvalueCtx = context.clone();
-        lvalueCtx.lvalueContext = true;
+        lvalueCtx.pushValue(Key.LValueContext, true);
 
         const target = regen('target', node, lvalueCtx)
         const value = regen('value', node, context);

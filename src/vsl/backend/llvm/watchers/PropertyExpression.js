@@ -2,6 +2,7 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendWarning from '../../BackendWarning';
 import t from '../../../parser/nodes';
 
+import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
 
 import * as llvm from 'llvm-node';
@@ -17,7 +18,7 @@ export default class LLVMPropertyExpression extends BackendWatcher {
         const baseRef = node.baseRef;
         const propRef = node.propertyRef;
 
-        const asLValue = context.getLValueContextOnce();
+        const asLValue = context.popValue(Key.LValueContext);
 
         let value = regen('head', node, context);
         if (propRef.backendRef) {

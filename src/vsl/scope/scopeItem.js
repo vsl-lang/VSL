@@ -106,6 +106,23 @@ export default class ScopeItem {
     }
 
     /**
+     * Clones the current node
+     * @param {Object} opts
+     * @return {ScopeItem}
+     */
+    clone(opts) {
+        return new (this.constructor)(
+            this.form,
+            this.rootId,
+            {
+                resolver: this._resolver,
+                isScopeRestricted: this.isScopeRestricted,
+                ...opts
+            }
+        )
+    }
+
+    /**
      * Determines whether two `ScopeItem`s matches each other. You can use this
      * to verify a candidate matches the prototype. Always implement
      * `super.equal` as first condition.

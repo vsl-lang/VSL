@@ -77,6 +77,17 @@ export default class ScopeAliasItem extends ScopeItem {
         this.aliasType;
     }
 
+    /** @override */
+    clone(opts) {
+        super.clone({
+            source: this.source,
+            aliasType: this.aliasType,
+            type: this.type,
+            isStatic: this.isStatic,
+            ...opts
+        })
+    }
+
     init({ source, aliasType = AliasType.default, type, isStatic, ...opts }) {
         super.init(opts);
 
