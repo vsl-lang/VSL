@@ -58,6 +58,12 @@ export default class ScopeFuncItem extends ScopeItem {
          * @type {boolean}
          */
         this.shouldInline;
+
+        /**
+         * Foreign function name
+         * @type {string}
+         */
+        this.foreignName;
     }
 
     /** @override */
@@ -72,6 +78,8 @@ export default class ScopeFuncItem extends ScopeItem {
 
         // Default access modifier
         this.accessModifier = 'local';
+
+        this.foreignName = null;
     }
 
     /** @override */

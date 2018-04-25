@@ -11,6 +11,8 @@ export default function getFunctionName(func) {
 
     if (statements instanceof t.ExternalMarker) {
         return statements.rootId;
+    } else if (func.foreignName) {
+        return func.foreignName;
     } else {
         if (func.rootId === "main") return "main";
         return func.uniqueName;

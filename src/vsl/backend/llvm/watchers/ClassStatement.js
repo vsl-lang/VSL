@@ -51,5 +51,13 @@ export default class LLVMClassStatement extends BackendWatcher {
                 staticItems[i].backendRef = new ValueRef(externalValue, { isPtr: true });
             }
         }
+
+        // Compile all methods
+        for (let i = 0; i < node.statements.statements.length; i++) {
+            const statement = node.statements.statements[i];
+            if (statement instanceof t.FunctionStatement) {
+                regen(i, node.statements.statements, context.bare());
+            }
+        }
     }
 }

@@ -40,7 +40,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
         const rhs = this.getChild(this.node.rhs);
 
         // Get requested resolution constraint
-        const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)
+        const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
         // This will resolve the arguments
         const resolver = (type) => {
@@ -80,7 +80,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // then we'll make this `null`
         let highestPrec = null;
         for (let i = 0; i < lhsTypes.length; i++) {
-            const lhsType = lhsTypes[i].candidate;
+            const lhsType = lhsTypes[i].candidate.resolved();
 
             // The operator candidates for this type.
             const candidates = lhsType.staticScope.getAll(opName)
@@ -95,7 +95,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 if (candidates[j].args.length === 2) {
                     // If provided, check if requestedType matches. If it does
                     //  not, skip it.
-                    if (requestedType && !candidates[j].returnType.castableTo(requestedType.candidate)) {
+                    if (requestedType && !candidates[j].returnType.castableTo(requestedType)) {
                         continue;
                     }
 
@@ -117,7 +117,8 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         // Check if the RHS type works for this operator
                         // candidate. The second arg (.args[1]) refers to the
                         // RHS as the format is +(lhs, rhs)
-                        if (rhsTypes[k].candidate.castableTo(candidates[j].args[1].type)) {
+                        const rhsCandidate = rhsTypes[k].candidate.resolved();
+                        if (rhsCandidate.castableTo(candidates[j].args[1].type)) {
                             // Now that we know they work, we'll see if we can set
                             // the prec candidate.
                             if (precScore > lastHighestPrec) {
