@@ -36,7 +36,7 @@ export default class Build extends CompilerCLI {
                                            "Values are [0, 3], 3 being most " +
                                            "optimized.",                             { arg: "opt", opt: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
-                ["--library", "-l",      , "Specifies a C library to link with",     { arg: "library", library: true }],
+                ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
                 ["-Xllc"                 , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
@@ -187,6 +187,10 @@ export default class Build extends CompilerCLI {
 
         this.outputStream = outputStream;
 
+        if (triple) {
+            this.triple = triple;
+        }
+
         if (![0, 1, 2, 3].includes(+opt)) {
             this.error.cli(`invalid optimization level ${opt}`);
         }
@@ -197,7 +201,7 @@ export default class Build extends CompilerCLI {
             this.error.cli(`Provide output location.`);
         }
 
-        this.setTarget(target);
+        this.target =target;
 
         let backend = new LLVMBackend(this.createStream(), this.triple);
         if (directory) {
@@ -242,13 +246,20 @@ export default class Build extends CompilerCLI {
     }
 
     /**
-     * Sets the target
-     * @param {string} target
+     * @type {string}
      */
-    setTarget(target) {
+    get target() {
+        return this._target || Targets.get('native');
+    }
+
+    /**
+     * Sets the target
+     * @type {string}
+     */
+    set target(target) {
         let targetData = Targets.get(target);
         if (!targetData) this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
-        else this.target = targetData;
+        else this._target = targetData;
     }
 
     /**
@@ -276,7 +287,7 @@ export default class Build extends CompilerCLI {
             } else {
                 // Optimize and output byte code
                 const opt = await this.opt(backend.getByteCode(), {
-                    triple: this.target.triple,
+                    triple: this.triple,
                     optLevel: this.optimizationLevel,
                     emitByteCode: true,
                     redirect: this.outputStream
@@ -291,14 +302,14 @@ export default class Build extends CompilerCLI {
 
             // First optimize using -O
             const opt = await this.opt(byteCode, {
-                triple: this.target.triple,
+                triple: this.triple,
                 optLevel: this.optimizationLevel
             })
 
             this._colorCompilationStep(`<<input.ll>>`, `$opt`);
 
             await this.llc(opt, asmFile, {
-                triple: this.target.triple,
+                triple: this.triple,
                 type: this.target.type
             });
 
