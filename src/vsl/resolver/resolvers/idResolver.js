@@ -99,7 +99,7 @@ export default class IdResolver extends TypeResolver {
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
         // And this sets the candidates to the same one the ID had
-        const typeCandidates = [ new TypeCandidate(resultType) ];
+        const typeCandidates = [ new TypeCandidate(resultType.resolved()) ];
 
         // Filter amongst response
         if (response) {
