@@ -1,4 +1,5 @@
 export default {
-    GLOBAL_VAR: 1,
-    STATIC_VAR: 2
+    REGEX: 1,
+    GLOBAL_VAR: 10,
+    STATIC_VAR: 11,
 };

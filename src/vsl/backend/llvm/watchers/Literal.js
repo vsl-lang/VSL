@@ -2,7 +2,9 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 import VSLTokenType from '../../../parser/vsltokentype';
-
+import InitPriority from '../InitPriority';
+import { getPcreType } from '../helpers/pcreHelpers';
+import getOrInsertFunction from '../helpers/getOrInsertFunction';
 import toLLVMType from '../helpers/toLLVMType';
 
 import * as llvm from 'llvm-node';
@@ -71,6 +73,58 @@ export default class LLVMLiteral extends BackendWatcher {
 
             case VSLTokenType.ByteSequence:
                 return context.builder.createGlobalStringPtr(node.literal);
+
+            case VSLTokenType.Regex:
+                const [, regex, flags = ""] = node.literal.split('/');
+
+                context.backend.regularExpressionLibrary = 'pcre'; // Specify PCRE as regex library
+
+                const pcreTy = getPcreType(context).getPointerTo();
+
+                // Get the pcre_compile function
+                const pcre_compile = getOrInsertFunction(
+                    context,
+                    'pcre_compile',
+                    llvm.FunctionType.get(
+                        pcreTy,
+                        [
+                            llvm.Type.getInt8PtrTy(context.ctx), // pattern
+                            llvm.Type.getInt32Ty(context.ctx), // options
+                            llvm.Type.getInt8PtrTy(context.ctx).getPointerTo(), // error ptr
+                            llvm.Type.getInt32Ty(context.ctx).getPointerTo(), // error offset
+                            llvm.Type.getInt8PtrTy(context.ctx) // table pointer
+                        ],
+                        false
+                    ),
+                    llvm.LinkageTypes.ExternalLinkage
+                );
+
+                // Create the global function
+                const regexInstance = new llvm.GlobalVariable(
+                    backend.module,
+                    pcreTy,
+                    false,
+                    llvm.LinkageTypes.PrivateLinkage,
+                    llvm.ConstantPointerNull.get(pcreTy)
+                );
+
+                backend.addInitTask(InitPriority.REGEX, (context) => {
+                    context.builder.createStore(
+                        context.builder.createCall(
+                            pcre_compile,
+                            [
+                                context.builder.createGlobalStringPtr(regex),
+                                llvm.ConstantInt.get(context.ctx, 0, 32),
+                                llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(context.ctx, 0).getPointerTo()),
+                                llvm.ConstantPointerNull.get(llvm.Type.getInt32Ty(context.ctx).getPointerTo()),
+                                llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(context.ctx))
+                            ]
+                        ),
+                        regexInstance
+                    )
+                });
+
+                return regexInstance;
 
             default: throw new BackendError(
                 `Unknown literal with type id ${node.type}`,

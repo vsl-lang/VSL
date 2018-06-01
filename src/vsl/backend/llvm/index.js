@@ -39,6 +39,12 @@ export default class LLVMBackend extends Backend {
          * @type {Map<string, Function[]>}
          */
         this.initTasks = new Map();
+
+        /**
+         * Evaluates to the regular expression library being used. If so
+         * @param {?string}
+         */
+        this.regularExpressionLibrary = null;
     }
 
     /**

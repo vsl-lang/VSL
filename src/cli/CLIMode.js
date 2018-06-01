@@ -13,9 +13,10 @@ export default class CLIMode {
         flags.forEach(
             type => type[1]
                 .filter(flag => flag.length === 4)
-                .forEach(flag => this.aliases[flag[0]] = flag[1])
+                .forEach(flag => {
+                    this.aliases[flag[0]] = flag[1]
+                })
         );
-
 
         flags.forEach(
             type => type[1]
