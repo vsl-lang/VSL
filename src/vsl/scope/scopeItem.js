@@ -93,14 +93,22 @@ export default class ScopeItem {
          * @type {boolean}
          */
         this.isScopeRestricted;
+
+        /**
+         * Stores if the item is a generic item
+         * @type {boolean}
+         */
+        this.isGeneric;
     }
 
     /**
      * Called to initalize type with object.
      * @param {ScopeItemResolver} resolver - Function to resolve if node.
+     * @param {boolean} isScopeRestricted - If is private
+     * @param {boolean} isGeneric - If item is generic (or refs generic things)
      * @abstract
      */
-    init({ resolver = null, isScopeRestricted = false }) {
+    init({ resolver = null, isScopeRestricted = false, isGeneric = false }) {
         this._resolver = resolver;
         this.isScopeRestricted = isScopeRestricted;
     }

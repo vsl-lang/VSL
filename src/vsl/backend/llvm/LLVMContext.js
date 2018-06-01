@@ -24,6 +24,18 @@ export default class LLVMContext {
     }
 
     /**
+     * Returns the llvm.Context
+     * @type {llvm.LLVMContext}
+     */
+    get ctx() { return this.backend.context; }
+
+    /**
+     * Returns the module this represents
+     * @type {llvm.Module}
+     */
+    get module() { return this.backend.module; }
+
+    /**
      * Pushes a value for a key
      * @param {Symbol} key
      * @param {Object} value
