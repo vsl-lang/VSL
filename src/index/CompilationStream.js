@@ -16,7 +16,7 @@ export default class CompilationStream {
 
         /**
          * All data emitted by the stream
-         * @param {string}
+         * @type {string}
          */
         this.data = "";
 

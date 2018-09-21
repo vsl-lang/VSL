@@ -45,7 +45,7 @@ export default class ClassStatement extends DeclarationStatement {
 
         /**
          * Associated mock type attribute
-         * @param {?string}
+         * @type {?string}
          */
         this.mockType = null;
     }

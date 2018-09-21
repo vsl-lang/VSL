@@ -91,33 +91,31 @@ async function runTestDir(dir) {
 
     try {
         await index.compile(backend)
-        const expectedStdout = fs.openSync(path.join(dir, 'stdout.txt'), 'r');
+        const expectedStdout = fs.readFileSync(path.join(dir, 'stdout.txt'), 'utf8');
 
         const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
         instance.stdin.write(backend.getByteCode());
         instance.stdin.end();
 
-        let stdoutOffset = 0;
+        let actualStdout = "";
         instance.stdout.on('data', (data) => {
-            const ref = Buffer.allocUnsafe(data.length);
-            fs.readSync(expectedStdout, ref, stdoutOffset, data.length);
-            stdoutOffset += data.length;
-
-            if (!ref.equals(data)) {
-                console.log(
-                    `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
-                    `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
-                    ref.toString('utf8').replace(/^|\n/g, '$&        ') + "\n" +
-                    `    Instead got:\n` +
-                    data.toString('utf8').replace(/^|\n/g, '$&        ') + "\n"
-                );
-                instance.kill('SIGTERM');
-            }
+            actualStdout += data.toString('utf8');
         });
 
         instance.on('exit', (errorCode, signal) => {
             if (instance.killed) return;
             if (errorCode === 0) {
+                if (actualStdout !== expectedStdout) {
+                    console.log(
+                        `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
+                        `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
+                        expectedStdout.replace(/^|\n/g, '$&        ') + "\n" +
+                        `    Instead got:\n` +
+                        actualStdout.replace(/^|\n/g, '$&        ') + "\n"
+                    );
+                    instance.kill('SIGTERM');
+                }
+
                 console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m passed.\u001B[0m`);
             } else {
                 console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m errored with ${errorCode || signal}.\u001B[0m`);

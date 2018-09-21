@@ -1,11 +1,12 @@
 import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
+import GenericTypeReferenceItem from './GenericTypeReferenceItem';
 
 /**
- * Represents a Type Alias. You can use {@link ScopeTypeAliasItem#resolve} to
- * resolve this.
+ * Represents a template specialization placeholder. In an expression context,
+ *  the .getExpressionValue() can be used
  */
-export default class ScopeTypeAliasItem extends ScopeItem {
+export default class TemplateSpecialization extends ScopeItem {
 
     /**
      * Creates at type alias for a type. This will act like the aliased type. If
@@ -14,7 +15,7 @@ export default class ScopeTypeAliasItem extends ScopeItem {
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
      * @param {Object} data - Information about the class
-     * @param {ScopeTypeItem|Node} data.item - Referenced item.
+     * @param {ScopeTypeAliasItem} data.item - The generic conformant parent. Type does not matter
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
@@ -28,24 +29,14 @@ export default class ScopeTypeAliasItem extends ScopeItem {
 
     /** @return {string} */
     toString() {
-        return `${this.rootId} -> ${this._ref}`;
-    }
-
-    /** @override */
-    clone(opts) {
-        super.clone({
-            item: this._ref,
-            source: source,
-            ...opts
-        });
+        return `<>@${this.rootId}`;
     }
 
     /**
-     * Resolves a {@link ScopeItem} to its canolical form.
-     * @return {ScopeItem} normalized etc.
+     * Gets the expression value of the generic parameter, used for type
+     * deduction
      */
-    resolved() {
-        this.resolve();
+    getExpressionValue() {
         return this._ref.resolved();
     }
 }

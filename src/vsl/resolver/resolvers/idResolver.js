@@ -9,6 +9,7 @@ import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
+import TemplateSpecialization from '../../scope/items/TemplateSpecialization';
 
 import e from '../../errors';
 
@@ -85,6 +86,11 @@ export default class IdResolver extends TypeResolver {
             this.emit(
                 `Cannot use generic ${result.rootId} class without specifying ` +
                 `parameter types using \`${result.rootId}<...>\``
+            );
+        } else if (result instanceof TemplateSpecialization) {
+            this.emit(
+                `Cannot use generic parameter ${result.rootId} in an expression. ` +
+                `Only usable in type expressions.`
             );
         } else if (result) {
             resultType = result.type;

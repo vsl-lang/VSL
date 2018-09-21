@@ -41,7 +41,7 @@ export default class VSLModule {
 
         /**
          * Linker arguments if provided
-         * @param {string[]}
+         * @type {string[]}
          */
         this.linkerArgs = [];
     }

@@ -36,7 +36,7 @@ export default class LLVMBackend extends Backend {
 
         /**
          * Init tasks
-         * @type {Map<string, Function[]>}
+         * @type {Map<string, Array<Function>>}
          */
         this.initTasks = new Map();
 

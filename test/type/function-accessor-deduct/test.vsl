@@ -1,0 +1,13 @@
+class A {
+    func f() -> String {
+        return "Hello, World!"
+    }
+
+    func newA() -> A {
+        return A()
+    }
+}
+
+func main() {
+    print(A().newA().f())
+}

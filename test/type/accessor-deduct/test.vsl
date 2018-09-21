@@ -1,0 +1,10 @@
+class A {
+    let b = B()
+}
+
+class B {}
+
+func main() {
+    let a = A()
+    let b = a.b
+}

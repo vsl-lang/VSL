@@ -7,6 +7,8 @@ export default class ScopeError extends Error {
      * Creates an error given node and message. If you are in a resolver we
      * reccomend using the `#emit(message:)` function which will automatically
      * handle all of this stuff.
+     * @param {string} message 
+     * @param {Node} node
      */
     constructor(message: string, node: Node) {
         super(message);

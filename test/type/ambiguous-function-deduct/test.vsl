@@ -1,0 +1,15 @@
+func f(a: UInt32) -> UInt32 {
+    return 1
+}
+
+func f(a: UInt64) -> String {
+    return "abc"
+}
+
+func g(a: String) -> String {
+    return a
+}
+
+func main() {
+    print(g(f(a: 1)))
+}
