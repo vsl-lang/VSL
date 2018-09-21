@@ -23,6 +23,8 @@ export default class ScopeTypeAliasItem extends ScopeItem {
     /** @protected */
     init({ item, ...opts }) {
         super.init(opts);
+
+        // The actual class/type this refers to
         this._ref = item;
     }
 

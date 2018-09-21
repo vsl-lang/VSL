@@ -166,7 +166,6 @@ export default class CallResolver extends TypeResolver {
 
             // Lets first do checks and see if return type works
             if (expectedReturnType) {
-                console.log(candidate.returnType);
                 if (!candidate.returnType) {
                     // If we expect return and there is none then it is not a valid candidate
                     continue;

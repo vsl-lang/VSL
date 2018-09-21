@@ -123,6 +123,7 @@ async function runTestDir(dir) {
         });
     } catch (error) {
         try {
+            console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n`);
             errorManager.dynamicHandle(error);
         } catch(unhandledErr) {
             errorManager.rawError(

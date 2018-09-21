@@ -60,7 +60,10 @@ export default class LLVMBitcastExpression extends BackendWatcher {
                 return context.builder.createSIToFP(value, targetTy);
             }
         } else {
-            console.log('oh no');
+            throw new BackendError(
+                `Invalid bitcast between given types`,
+                node
+            );
         }
     }
 }
