@@ -210,8 +210,8 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('class'), passThrough],
     [kw('struct'), passThrough],
     [kw('interface'), passThrough],
-    [kw('enumeration'), passThrough],
-    [kw('enum'), ret('enumeration')],
+    [kw('enumeration'), ret('enum')],
+    [kw('enum'), passThrough],
     [kw('typealias'), passThrough],
 
     [kw('init'), passThrough],

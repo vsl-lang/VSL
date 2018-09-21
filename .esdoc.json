@@ -8,9 +8,6 @@
             "name": "esdoc-babel-7-plugin",
             "option": {
                 "plugins": [
-                  ["@babel/plugin-transform-runtime", {
-                      "polyfill": false
-                  }],
                   ["@babel/plugin-proposal-class-properties", { "loose": true }],
                   "@babel/plugin-proposal-do-expressions",
                   "@babel/plugin-proposal-function-bind",
@@ -22,19 +19,6 @@
                   ["babel-plugin-root-import", {
                       "rootPathPrefix": "@",
                       "rootPathSuffix": "node_modules/llir/lib/"
-                  }],
-                  ["babel-plugin-transform-builtin-extend", {
-                      "globals": ["Error"]
-                  }],
-                  "babel-plugin-wildcard"
-                ],
-                "presets": [
-                  "@babel/preset-react",
-                  ["@babel/preset-env", {
-                      "targets": {
-                          "node": "6.11"
-                      },
-                      "include": ["proposal-object-rest-spread"]
                   }]
                 ]
             }

@@ -172,6 +172,18 @@ ReturnStatement
 # ============================================================================ #
 #                            Classes and Interfaces                            #
 # ============================================================================ #
+# EnumerationStatement
+#    -> Annotations Modifier "enum" _ Identifier (_ type {% nth(1) %}):? _ "{" EnumerationItems "}"
+#
+# EnumerationItems
+#    -> CodeBlock[EnumerationItem {% id %}] {% id %}
+#
+# EnumerationItem
+#    -> "case" _ Identifier
+
+# ============================================================================ #
+#                            Classes and Interfaces                            #
+# ============================================================================ #
 
 # TODO: add _ after Modifier if it doesnt cause ambiguities
 
