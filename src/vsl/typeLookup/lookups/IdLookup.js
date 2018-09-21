@@ -16,7 +16,7 @@ export default class IdLookup extends TypeLookup {
      */
     resolve(scope) {
         let name = this.node.value;
-        let result = scope.get(new ScopeTypeItem(ScopeForm.query, name, {}));
+        let result = scope.get(new ScopeTypeItem(ScopeForm.query, name, {}))?.resolved();
 
         if (!result) {
             this.emit(

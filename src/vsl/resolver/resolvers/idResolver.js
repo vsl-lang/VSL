@@ -9,7 +9,6 @@ import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
-import TemplateSpecialization from '../../scope/items/TemplateSpecialization';
 
 import e from '../../errors';
 
@@ -79,22 +78,28 @@ export default class IdResolver extends TypeResolver {
 
         // Get result type
         if (result instanceof ScopeTypeItem) {
+            // If the identifier returns a 'Type' i.e. a class was directly
+            // references we'll return a 'MetaType' wrapper
+
             resultType = new ScopeMetaClassItem({
                 referencingClass: result
             });
         } else if (result instanceof ScopeGenericItem) {
+            // Generics cannot be called this way, instead they'll go through
+            // the GenericResolver class
+
             this.emit(
                 `Cannot use generic ${result.rootId} class without specifying ` +
                 `parameter types using \`${result.rootId}<...>\``
             );
-        } else if (result instanceof TemplateSpecialization) {
-            this.emit(
-                `Cannot use generic parameter ${result.rootId} in an expression. ` +
-                `Only usable in type expressions.`
-            );
         } else if (result) {
+            // This is what all other results SHOULD be. Anything else is an
+            // unexpected return for an identifier
+            //
+            // Typical identifiers (i.e. variables) fall here
             resultType = result.type;
         } else {
+            // Unexpected result type— this is an internal error.
             const ty = result?.constructor?.name || result;
             this.emit(
                 `Unexpected error of type ${ty}`
