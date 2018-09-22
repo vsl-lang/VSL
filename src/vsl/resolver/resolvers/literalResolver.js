@@ -7,6 +7,8 @@ import TypeResolver from '../typeResolver';
 
 import VSLTokenType from '../../parser/vsltokentype.js';
 
+import e from '../../errors';
+
 /**
  * Resolves any atomic literal described by an `Literal` token class.
  */
@@ -70,7 +72,7 @@ export default class LiteralResolver extends TypeResolver {
                 literalTypeContext = context.get("Regex");
                 break;
 
-            default: throw new TypeError(`Undeducatble literal of type ${this.node.type}`);
+            default: throw new TypeError(`Undeductable literal of type ${this.node.type}`);
         }
 
         // Make sure there is a type context that is valid and all
@@ -83,7 +85,8 @@ export default class LiteralResolver extends TypeResolver {
                 `associated with it.\n` +
                 `This is likely an internal bug, but check for an existing\n` +
                 `report before leaving your own. You can also try to define\n` +
-                `your own candidate using \`@primitive(...)\``
+                `your own candidate using \`@primitive(...)\``,
+                e.NO_VALID_TYPE
             );
         }
 
@@ -112,7 +115,8 @@ export default class LiteralResolver extends TypeResolver {
                 `order for everything to work. Candidates would include: \n\n` +
                 typeList.map(i => "    • " + i.toString()).join("\n") +
                 `\n\nHowever none of these are actually a type this literal could\n` +
-                `represent.`
+                `represent.`,
+                e.NO_VALID_TYPE
             );
         }
 

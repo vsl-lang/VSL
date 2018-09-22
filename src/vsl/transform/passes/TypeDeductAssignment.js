@@ -15,6 +15,8 @@ import ScopeForm from '../../scope/scopeForm';
 import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
 
+import e from '../../errors';
+
 /**
  * Type deducts basic assignment statements
  *
@@ -48,14 +50,16 @@ export default class TypeDeductAssignment extends Transformation {
             throw new TransformError(
                 `If assignment does not have value it must have type explicitly ` +
                 `specified.`,
-                node
+                node,
+                e.ASSIGNMENT_TYPE_REQUIRED
             );
         }
 
         if (tool.isStatic && !node.value) {
             throw new TransformError(
                 `Static field must have declared value.`,
-                node
+                node,
+                e.ASSIGNMENT_VALUE_REQUIRED
             );
         }
 
@@ -104,7 +108,8 @@ export default class TypeDeductAssignment extends Transformation {
             throw new TransformError(
                 `Attempted to create variable/field with name that already ` +
                 `exists in this scope.`,
-                node
+                node,
+                e.DUPLICATE_DECLARATION
             );
         }
     }

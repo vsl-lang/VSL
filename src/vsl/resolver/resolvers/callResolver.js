@@ -224,9 +224,13 @@ export default class CallResolver extends TypeResolver {
             if (candidatePrecTypeMap[i] === maxCandidateScore) {
                 if (maxCandidate !== null) {
                     this.emit(
-                        `Ambiguous use of function.`,
-                        e.AMBIGUOUS_REFERENCE
-                    )
+                        `Ambiguous use of function. Could not break tie between:\n${
+                            [maxCandidate, workingCandidates[i]]
+                                .map(candidate => `    • ${candidate} (score: ${maxCandidateScore})`)
+                                .join('\n')
+                        }\n`,
+                        e.AMBIGUOUS_CALL
+                    );
                 } else {
                     maxCandidate = workingCandidates[i];
                 }
@@ -248,7 +252,7 @@ export default class CallResolver extends TypeResolver {
                         }
                     ).join(", ")
                 }) -> ${expectedReturnType || "*"}\``,
-                e.UNKNOWN_REF
+                e.INVALID_FUNCTION_CALL
             );
         } else {
             // Re-resolve subtypes to ensure unambiguous refs.
@@ -269,7 +273,8 @@ export default class CallResolver extends TypeResolver {
             // We must make sure we can access it
             if (!this.node.parentScope.scope.canAccess(maxCandidate)) {
                 this.emit(
-                    `Cannot use private function from this context.`
+                    `Cannot use private function from this context.`,
+                    e.INVALID_ACCESS
                 );
             }
 

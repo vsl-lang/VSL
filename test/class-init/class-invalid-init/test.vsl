@@ -1,0 +1,12 @@
+class A {
+    let a: String
+
+    init(a: String) {
+        self.a = a
+    }
+}
+
+func main() {
+    let x = A(invalid_param: "a")
+    print(x.a)
+}

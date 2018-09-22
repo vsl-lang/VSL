@@ -4,7 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const child_process = require('child_process');
 
-var libvsl;
+var libvsl,
+    aTestErrored = false;
 async function start() {
     // First get the module
     const moduleLoader = new VSL.Module(path.join(__dirname, '../libraries/libvsl'));
@@ -42,22 +43,24 @@ async function start() {
         index
     );
 
-    runTests(__dirname);
+    runTests(__dirname)
+        .then(() => {
+        if (aTestErrored) process.exit(1);
+    });
 }
 
 start();
 
-function runTests(dir) {
+async function runTests(dir) {
     const files = fs.readdirSync(dir);
 
     // Check if VSL file
     for (let i = 0; i < files.length; i++) {
         const filePath = path.join(dir, files[i]);
         if (fs.statSync(filePath).isDirectory()) {
-            runTests(filePath);
+            await runTests(filePath);
         } else if (filePath.endsWith(".vsl")) {
-            runTestDir(dir);
-            break;
+            await runTestDir(dir);
         }
     }
 }
@@ -88,49 +91,96 @@ async function runTestDir(dir) {
         new VSL.CompilationStream()
     );
 
+    const stdoutFile = path.join(dir, 'stdout.txt');
+    const errorRefFile = path.join(dir, 'error.txt');
 
-    try {
-        await index.compile(backend)
-        const expectedStdout = fs.readFileSync(path.join(dir, 'stdout.txt'), 'utf8');
+    const testShouldPass = fs.existsSync(stdoutFile);
 
-        const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
-        instance.stdin.write(backend.getByteCode());
-        instance.stdin.end();
+    if (testShouldPass) {
+        const expectedStdout = fs.readFileSync(stdoutFile, 'utf8');
 
-        let actualStdout = "";
-        instance.stdout.on('data', (data) => {
-            actualStdout += data.toString('utf8');
-        });
+        return await new Promise(async (resolve) => {
+            try {
+                await index.compile(backend)
 
-        instance.on('exit', (errorCode, signal) => {
-            if (instance.killed) return;
-            if (errorCode === 0) {
-                if (actualStdout !== expectedStdout) {
-                    console.log(
-                        `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
-                        `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
-                        expectedStdout.replace(/^|\n/g, '$&        ') + "\n" +
-                        `    Instead got:\n` +
-                        actualStdout.replace(/^|\n/g, '$&        ') + "\n"
+                const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
+                instance.stdin.write(backend.getByteCode());
+                instance.stdin.end();
+
+                let actualStdout = "";
+                instance.stdout.on('data', (data) => {
+                    actualStdout += data.toString('utf8');
+                });
+
+                instance.on('exit', (errorCode, signal) => {
+                    if (instance.killed) return;
+                    if (errorCode === 0) {
+                        if (actualStdout !== expectedStdout) {
+                            console.log(
+                                `\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n` +
+                                `    Expected \u001B[1mSTDOUT\u001B[0m:\n` +
+                                expectedStdout.replace(/^|\n/g, '$&        ') + "\n" +
+                                `    Instead got:\n` +
+                                actualStdout.replace(/^|\n/g, '$&        ') + "\n"
+                            );
+                            aTestErrored = true;
+                            instance.kill('SIGTERM');
+                        }
+
+                        console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m passed.\u001B[0m`);
+                    } else {
+                        console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m errored with ${errorCode || signal}.\u001B[0m`);
+                        aTestErrored = true;
+                    }
+                    resolve();
+                });
+            } catch (error) {
+                try {
+                    console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n`);
+                    errorManager.dynamicHandle(error);
+                    aTestErrored = true;
+                } catch(unhandledErr) {
+                    errorManager.rawError(
+                        `✗ Test ${testName} failed`,
+                        unhandledErr.message,
+                        unhandledErr.stack
                     );
-                    instance.kill('SIGTERM');
+                    aTestErrored = true;
+                } finally {
+                    resolve();
                 }
-
-                console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m passed.\u001B[0m`);
-            } else {
-                console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m errored with ${errorCode || signal}.\u001B[0m`);
             }
         });
-    } catch (error) {
-        try {
-            console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed.\u001B[0m\n`);
-            errorManager.dynamicHandle(error);
-        } catch(unhandledErr) {
-            errorManager.rawError(
-                `✗ Test ${testName} failed`,
-                unhandledErr.message,
-                unhandledErr.stack
-            );
+    } else if (fs.existsSync(errorRefFile)) {
+        const errorName = fs.readFileSync(errorRefFile, 'utf8').trim();
+        if (!VSL.Error[errorName]) {
+            console.log(`\u001B[31m✗✗✗ Test \u001B[1m${testName}\u001B[0;31m with invalid error ${errorName}\u001B[0m`);
+            aTestErrored = true;
         }
+
+        try {
+            await index.compile(backend);
+            console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m unexpectedly passed (expected error \u001B[33m${errorName}\u001B[31m).\u001B[0m\n`);
+            aTestErrored = true;
+        } catch(error) {
+            if (error && error.ref === VSL.Error[errorName]) {
+                console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m correctly errored with \u001B[33m${errorName}\u001B[32m.\u001B[0m`);
+            } else {
+                aTestErrored = true;
+                try {
+                    console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed (expected error \u001B[33m${errorName}\u001B[31m).\u001B[0m\n`);
+                    errorManager.dynamicHandle(error);
+                } catch(unhandledErr) {
+                    errorManager.rawError(
+                        `✗ Test ${testName} failed (expected error ${errorName})`,
+                        unhandledErr.message,
+                        unhandledErr.stack
+                    );
+                }
+            }
+        }
+    } else {
+        console.log(`\u001B[31m✗✗✗ Test \u001B[1m${testName}\u001B[0;31m missing type\u001B[0m`);
+        aTestErrored = true;
     }
 }

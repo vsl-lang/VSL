@@ -90,7 +90,8 @@ export default class IdResolver extends TypeResolver {
 
             this.emit(
                 `Cannot use generic ${result.rootId} class without specifying ` +
-                `parameter types using \`${result.rootId}<...>\``
+                `parameter types using \`${result.rootId}<...>\``,
+                e.GENERIC_SPECIALIZATION_REQUIRED
             );
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
