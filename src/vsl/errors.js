@@ -13,6 +13,7 @@ import t from './parser/nodes';
 
 /**
  * @typedef {Object} ErrorRef
+ * @property {string} name
  * @property {FixItDeclaration[]} fixits
  */
 
@@ -70,7 +71,7 @@ export default {
             }
         ]
     },
-    
+
     // Functions
     FUNCTION_ARG_MISSING_TYPE: {
         fixits: [
@@ -81,13 +82,32 @@ export default {
             }
         ]
     },
-    
-    // Identifier deductions
+
+    // Assignment
+    ASSIGNMENT_TYPE_REQUIRED: {},
+    ASSIGNMENT_VALUE_REQUIRED: {},
+
+    // Type deduct
+    AMBIGUOUS_CALL: {},
+    AMBIGUOUS_EXPRESSION: {},
+    NO_VALID_TYPE: {},
+
+    // Generics
+    GENERIC_SPECIALIZATION_REQUIRED: {},
+
+    // Functions
+    INVALID_FUNCTION_CALL: {},
+
+    // Access modifiers
+    INVALID_ACCESS: {},
+
+    // Declaration
     DUPLICATE_DECLARATION: {},
-    UNDECLARED_FUNCTION: {},
+
+    // Identifiers
     UNDECLARED_IDENTIFIER: {},
     CANNOT_RESOLVE_IDENTIFIER: {},
-    
+
     // Modules
     UNDEFINED_MODULE: {},
     DUPLICATE_BY_IMPORT: {}

@@ -2,6 +2,8 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeResolver from '../typeResolver';
 
+import e from '../../errors';
+
 /**
  * Resolves `ExpressionStatement`s at the top level. This class takes in a
  * `TransformationContext` for primitive identification. For functions this
@@ -68,7 +70,8 @@ export default class RootResolver extends TypeResolver {
             if (result.length === 0) {
                 this.emit(
                     `Expression is invalid, resolves to no valid type.`,
-                    this.node
+                    this.node,
+                    e.NO_VALID_TYPE
                 );
             }
 
@@ -79,7 +82,8 @@ export default class RootResolver extends TypeResolver {
                         this.emit(
                             `Expression is ambiguous. Additionally multiple ` +
                             `precedence candidates found.`,
-                            this.node
+                            this.node,
+                            e.AMBIGUOUS_EXPRESSION
                         );
                     } else {
                         precCandidate = result[i];
@@ -90,7 +94,8 @@ export default class RootResolver extends TypeResolver {
             if (precCandidate === null) {
                 this.emit(
                     `Expression is ambiguous.`,
-                    this.node
+                    this.node,
+                    e.AMBIGUOUS_EXPRESSION
                 );
             }
 

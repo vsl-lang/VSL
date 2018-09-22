@@ -1,0 +1,6 @@
+class A {}
+
+func main() {
+    let a = A()
+    print(a.undefined_prop)
+}
