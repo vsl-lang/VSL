@@ -45,7 +45,7 @@ export default class VSLPreprocessor extends Transformer {
             // behavior for one.
             pass.DescribePrimitiveAnnotation,
 
-            // Registers _mockType so prepared ScopeItem can capture
+            // Registers @mock so prepared ScopeItem can capture
             pass.DescribeTypeMockAnnotation,
 
             // Registers @dynamic() to avoid primitive dynamic dispatch.

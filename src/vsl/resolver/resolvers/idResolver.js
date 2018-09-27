@@ -84,15 +84,17 @@ export default class IdResolver extends TypeResolver {
             resultType = new ScopeMetaClassItem({
                 referencingClass: result
             });
-        } else if (result instanceof ScopeGenericItem) {
-            // Generics cannot be called this way, instead they'll go through
-            // the GenericResolver class
 
-            this.emit(
-                `Cannot use generic ${result.rootId} class without specifying ` +
-                `parameter types using \`${result.rootId}<...>\``,
-                e.GENERIC_SPECIALIZATION_REQUIRED
-            );
+            // Generics would be resolved using TypeResolver so if we see one
+            // here that means it was not specialized
+
+            if (result.isGeneric) {
+                this.emit(
+                    `Cannot use generic ${result.rootId} class without specifying ` +
+                    `parameter types using \`${result.rootId}<...>\``,
+                    e.GENERIC_SPECIALIZATION_REQUIRED
+                );
+            }
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
             // unexpected return for an identifier
@@ -110,15 +112,11 @@ export default class IdResolver extends TypeResolver {
         // Negotiate the requested type for this identifier.
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
-        // And this sets the candidates to the same one the ID had
-        const typeCandidates = [ new TypeCandidate(resultType.resolved()) ];
+        // Resolve the result type
+        resultType.resolve();
 
-        // Filter amongst response
-        if (response) {
-            this.mutableIntersect([response], typeCandidates);
-        }
-
-        if (typeCandidates.length === 0) {
+        // Check if the given ID does actually have type (response).
+        if (response && !resultType.castableTo(response.candidate)) {
             this.emit(
                 `Use of ${rootId} has no types which it can be deducted to\n` +
                 `in this context. This means the variable is one type but for ` +
@@ -127,10 +125,8 @@ export default class IdResolver extends TypeResolver {
             );
         }
 
-        if (typeCandidates.length === 1) {
-            this.node.reference = result;
-        }
+        this.node.reference = result;
 
-        return typeCandidates;
+        return [new TypeCandidate(resultType)];
     }
 }

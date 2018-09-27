@@ -4,9 +4,11 @@
  */
 export default class GenericInfo {
     /**
-     * [constructor description]
+     * @param {Object} opts
+     * @param {GenericParameterItem[]} opts.parameters
      */
-    constructor() {
-
+    constructor({ parameters }) {
+        /** @type {GenericParameterItem[]} */
+        this.parameters = parameters;
     }
 }

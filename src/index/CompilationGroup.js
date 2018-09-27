@@ -12,6 +12,7 @@ import VSLScopeTransformer from '../vsl/transform/transformers/vslscopetransform
 import VSLPretransformer from '../vsl/transform/transformers/vslpretransformer';
 import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
+import ScopeTraverser from '../vsl/transform/scopetraverser';
 import { CodeBlock } from '../vsl/parser/nodes/*';
 
 // import LLIR from '../vsl/backend/llir';
@@ -238,6 +239,11 @@ export default class CompilationGroup {
                 });
             });
         });
+
+        // === 3: Setup AST ===
+        // Setup for processing by setting up and connecting the AST graph
+        // nodes
+        new ScopeTraverser(true).queue(block);
 
         // === 4: Pre-processor ===
         // Now that basic STL etc. are registered, we can pre-proc the AST

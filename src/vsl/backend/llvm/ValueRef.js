@@ -66,10 +66,14 @@ export default class ValueRef {
      */
     generate(context) {
         let value = this.value;
+
+        // If is computed prop then return call to fn to get val
         if (this.isDyn) {
             value = context.builder.createCall(value, []);
         }
 
+        // If it ptr then deref ptr. Examples are global vars which are always
+        // ptrs
         if (this.isPtr) {
             return context.builder.createLoad(value);
         } else {

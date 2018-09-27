@@ -1,5 +1,6 @@
 import BackendWatcher from '../../BackendWatcher';
 import BackendWarning from '../../BackendWarning';
+import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import { Key } from '../LLVMContext';
@@ -20,7 +21,8 @@ export default class LLVMPropertyExpression extends BackendWatcher {
 
         const asLValue = context.popValue(Key.LValueContext);
 
-        let value = regen('head', node, context);
+        // If RHS has special behavior then we'll use that. This includes things
+        // like computed properties
         if (propRef.backendRef) {
             if (asLValue) {
                 return propRef.backendRef;
@@ -29,6 +31,14 @@ export default class LLVMPropertyExpression extends BackendWatcher {
                 return propRef.backendRef.generate(context);
             }
         } else {
+            let value = regen('head', node, context);
+            if (!value) {
+                throw new BackendError(
+                    `Head of property expression did not compile to a value.`,
+                    node.head
+                );
+            }
+
             // Calculate index of prop in layout.
             const indexOfProp = node.baseRef.subscope.aliases.indexOf(node.propertyRef);
             const gep = context.builder.createInBoundsGEP(

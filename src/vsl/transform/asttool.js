@@ -134,11 +134,12 @@ export default class ASTTool {
      *
      * This is merely a wrapper which makes execution simpler.
      *
-     * @param {Node|Node[]} node - The node(s) to be processed and queued.
+     * @param {string} name - name of the field of the node(s) to be processed.
      * @param {?Transformation} transformation - The desired transformation to run
      */
-    queueThen(node: node, transformation: ?Transformation) {
-        this.queueThenDeep(node, this.parent, this.name, transformation);
+    queueThen(name, transformation) {
+        const node = this.parent[this.name];
+        this.queueThenDeep(node[name], node, name, transformation);
     }
 
     /**
@@ -156,7 +157,7 @@ export default class ASTTool {
      * @param {any} name - The reference to the child relative to the parent.
      * @param {?Transformation} transformation - The desired transformation to run
      */
-    queueThenDeep(node: Node, parent: parent, name: any, transformation: ?Transformation) {
+    queueThenDeep(node: Node, parent: parent, name: any, transformation: ?Transformation = null) {
         if (transformation === null) {
             this.transformer.transform(node, parent, name);
         } else {

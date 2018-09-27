@@ -12,6 +12,11 @@
  *                                   return type of `Void`.
  * @property {Scope} TypeScope - The subscope of the lookup location used. Will
  *                             refer to subscope in member situations.
+ * @property {GenericInstance} GenericSpecializationInstance - For a generic,
+ *                                                           this represents the
+ *                                                           instance with the
+ *                                                           info needed to
+ *                                                           resolve.
  */
 const ConstraintType = {
     RequestedTypeResolutionConstraint: 1 << 1,
@@ -19,7 +24,8 @@ const ConstraintType = {
     BoundedFunctionContext: 1 << 3,
     VoidableContext: 1 << 4,
     TypeScope: 1 << 6,
-    SimplifyToPrecType: 1 << 7
+    SimplifyToPrecType: 1 << 7,
+    GenericSpecializationInstance: 1 << 8,
 };
 
 export default ConstraintType;
