@@ -40,15 +40,15 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // This specifies if the function should be compiled publically.
         // This means it will be visible externally. When not the case, it will
         // have a private linkage meaning the function may be optimizedo out.
-        let isPublic = true;
+        let isPublic;
 
         // Check the access modifier. This sets up the direct compilation step.
         switch (scopeItem.accessModifier) {
             case "private":
+            case "local":
                 isPublic = false;
                 break;
 
-            case "local":
             case "public":
                 isPublic = true;
                 break;
@@ -159,9 +159,9 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             }
 
             // Specifies different linkage for private v public
-            let linkage = isPublic ?
+            let linkage = isPublic || isEntry ?
                 llvm.LinkageTypes.ExternalLinkage:
-                llvm.LinkageTypes.PrivateLinkage;
+                llvm.LinkageTypes.InternalLinkage;
 
             // Create this function's prototype
             func = llvm.Function.create(

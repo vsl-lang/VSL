@@ -1,5 +1,5 @@
 import TypeLookup from '../typeLookup';
-import ScopeGenericItem from '../../scope/items/scopeGenericItem';
+import GenericInstance from '../../scope/items/genericInstance';
 import ScopeForm from '../../scope/scopeForm';
 
 const util = require('util')
@@ -17,7 +17,7 @@ export default class GenericLookup extends TypeLookup {
      */
     resolve(scope) {
         // Generic value should be a ID so we'll get the .value
-        let name = this.node.head.value;
+        let head = this.node.head;
 
         // First resolve sub-things.
         // These are the parameters e.g. in A<T, U> these are T, U
@@ -26,11 +26,11 @@ export default class GenericLookup extends TypeLookup {
             param => this.getChild(param).resolve(scope)
         );
 
-        // Now we'll (try to) get the template. I.e. locate the generic.
-        let result = scope.get(new ScopeGenericItem(ScopeForm.query, name))?.resolved();
+        // Now we'll (try to) get the generic class. In A.B<T, U> this is A.B
+        let genericClass = this.getChild(head).resolve(scope, { allowGenerics: true });
 
         // Ensure the generic exists
-        if (!result) {
+        if (!genericClass) {
             this.emit(
                 `There is no generic type with name \`${name}\` in this scope. Check ` +
                 `for typos or if this type declared in the current scope. If ` +
@@ -40,11 +40,11 @@ export default class GenericLookup extends TypeLookup {
         }
 
         // Check the correct amount of parameters were provided.
-        if (this.node.parameters.length !== result.genericParents.length) {
+        if (parameters.length !== genericClass.genericInfo.parameters.length) {
             this.emit(
-                `Incorect amount of parameters for ${result}. This takes ` +
-                `${result.genericParents.length} generic parameters but you ` +
-                `provided ${this.node.parameters.length}.`
+                `Incorect amount of parameters for ${genericClass}. This ` +
+                `takes ${genericClass.genericInfo.parameters.length} generic ` +
+                `parameters but you provided ${parameters.length}.`
             )
         }
 
@@ -56,17 +56,22 @@ export default class GenericLookup extends TypeLookup {
             //    let a: A<B> we'll check if `B is U`
             // This means at this time result.genericParents[i] should be
             //  resolved.
-            if (!param.castableTo(result.genericParents[i])) {
-                this.emit(
-                    `Generic parameter needed to be of ` +
-                    `${result.genericParents[i]}. However ${param} was ` +
-                    `passed instead. Ensure ${param} is either implements or ` +
-                    `inherits ${result.genericParents[i]}.`,
-                    this.node.parameters[i]
-                );
-            }
-        })
 
-        return result;
+            // // TODO: Generic limit types
+            // if (!param.castableTo(genericClass.genericInfo.parameters[i])) {
+            //     this.emit(
+            //         `Generic parameter needed to be of ` +
+            //         `${result.genericParents[i]}. However ${param} was ` +
+            //         `passed instead. Ensure ${param} is either implements or ` +
+            //         `inherits ${result.genericParents[i]}.`,
+            //         this.node.parameters[i]
+            //     );
+            // }
+        });
+
+        return new GenericInstance({
+            base: genericClass,
+            parameters: parameters
+        });
     }
 }

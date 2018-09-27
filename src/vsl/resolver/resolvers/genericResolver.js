@@ -55,11 +55,7 @@ export default class GenericResolver extends TypeResolver {
 
         // Now that we have the type, we can return it as a metaclass
         return [
-            new TypeCandidate(
-                new ScopeMetaClassItem({
-                    referencingClass: type
-                })
-            )
+            new TypeCandidate(type)
         ];
     }
 }

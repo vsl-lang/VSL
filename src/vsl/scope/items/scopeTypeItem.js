@@ -21,6 +21,8 @@ import Scope from '../scope';
  * @property {string} data.mockType - A property for backends if the type needs
  *                                  to act like a native type. ANY fields will
  *                                  likely be ignored.
+ * @property {?GenericInfo} data.genericInfo - Can be `null`. This is info
+ *                                           specifying how generic params do.
  */
 
 /**
@@ -102,7 +104,13 @@ export default class ScopeTypeItem extends ScopeItem {
          * Specifies the source node of the type.
          * @type {?Node}
          */
-         this.source;
+        this.source;
+
+        /**
+         * The generic info
+         * @type {GenericInfo}
+         */
+        this.genericInfo;
     }
 
     /**
@@ -117,6 +125,14 @@ export default class ScopeTypeItem extends ScopeItem {
         if (this._dynamicDispatch === null) {
             this._dynamicDispatch = state;
         }
+    }
+
+    /**
+     * Returns if generic
+     * @type {boolean}
+     */
+    get isGeneric() {
+        return this.genericInfo && this.genericInfo.parameters.length > 0;
     }
 
     /**
@@ -140,6 +156,7 @@ export default class ScopeTypeItem extends ScopeItem {
         source = null,
         dynamicDispatch = null,
         defaultInitializer = null,
+        genericInfo,
         ...opts
     } = {}) {
         super.init(opts);
@@ -152,6 +169,7 @@ export default class ScopeTypeItem extends ScopeItem {
         this.mockType = mockType;
         this._dynamicDispatch = dynamicDispatch;
         this.source = source;
+        this.genericInfo = genericInfo;
 
         this.defaultInitializer = defaultInitializer;
     }

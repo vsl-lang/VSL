@@ -2,15 +2,11 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
-import { Key } from '../LLVMContext';
-
-import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
-
 import * as llvm from 'llvm-node';
 
-export default class LLVMIdentifier extends BackendWatcher {
+export default class LLVMGeneric extends BackendWatcher {
     match(type) {
-        return type instanceof t.Identifier;
+        return type instanceof t.Generic;
     }
 
     receive(node, tool, regen, context) {

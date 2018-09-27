@@ -41,7 +41,11 @@ export default class LLVMContext {
      * @param {Object} value
      */
     pushValue(key, value) {
-        this._keys.set(key, value);
+        if (this._keys.has(key)) {
+            this._keys.get(key).push(value);
+        } else {
+            this._keys.set(key, [value]);
+        }
     }
 
     /**
@@ -51,8 +55,7 @@ export default class LLVMContext {
      */
     popValue(key) {
         if (this._keys.has(key)) {
-            const value = this._keys.get(key);
-            this._keys.delete(key);
+            const value = this._keys.get(key).pop();
             return value;
         } else {
             return null;

@@ -267,7 +267,7 @@ Field
    -> AssignmentStatement {%
         (data, location) =>
             new t.FieldStatement(data[0].access, data[0].type, data[0].name,
-                data[0].value, location)
+                data[0].value, data[0].isLazy, location)
     %}
 
 InitializerStatement
@@ -744,7 +744,7 @@ className
 
 typeDeclaration
    -> Identifier (_ "=" _ type {% nth(3) %}):? {%
-        (data, location) => new t.TypeDeclaration(data[0], data[1])
+        (data, location) => new t.TypeDeclaration(data[0], data[1], location)
        %}
 
 genericDeclaration

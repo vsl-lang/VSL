@@ -9,6 +9,9 @@ import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeTypeAliasItem from '../../scope/items/scopeTypeAliasItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 
+import GenericInfo from '../../scope/items/genericInfo';
+import GenericParameterItem from '../../scope/items/genericParameterItem';
+
 import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
 
@@ -25,10 +28,30 @@ export default class DescribeClassDeclaration extends Transformation {
     modify(node: Node, tool: ASTTool) {
         let scope = node.parentScope.scope;
         let className = node.name.value;
-        let type;
 
         let subscope = node.statements.scope;
         const staticSubscope = new Scope();
+
+        // Handles generic classes
+        const genericParameters = [];
+        tool.queueThen('generics', null);
+
+        for (let i = 0; i < node.generics.length; i++) {
+            // Populate generic nodes
+            const genericDeclNode = node.generics[i];
+            const genericParameter = new GenericParameterItem(ScopeForm.definite, genericDeclNode.name.value, {});
+
+            genericParameters.push(genericParameter);
+            if (subscope.set(genericParameter) === false) {
+                throw new TransformError(
+                    `Generic parameter ${genericDeclNode.name} for class ` +
+                    `${className} already has another item with the name the ` +
+                    `parameter would take.`,
+                    genericDeclNode,
+                    e.DUPLICATE_DECLARATION
+                );
+            }
+        }
 
         let opts = {
             subscope: node.statements.scope,
@@ -37,42 +60,17 @@ export default class DescribeClassDeclaration extends Transformation {
             subscope: subscope,
             source: node,
             staticScope: staticSubscope,
-            isScopeRestricted: tool.isPrivate
+            isScopeRestricted: tool.isPrivate,
+            genericInfo: new GenericInfo({
+                parameters: genericParameters
+            })
         };
 
-        if (node.generics.length === 0) {
-
-            type = new ScopeTypeItem(
-                ScopeForm.indefinite,
-                className,
-                opts
-            );
-
-        } else {
-
-            type = new ScopeGenericItem(
-                ScopeForm.indefinite,
-                className,
-                {
-                    ...opts,
-                    genericParents: node.generics.map(_ => ScopeTypeItem.RootClass)
-                }
-            );
-
-            // Add the TypeAliases for the scope.
-            for (let i = 0; i < node.generics.length; i++) {
-                subscope.set(
-                    new ScopeTypeAliasItem(
-                        ScopeForm.indefinite,
-                        node.generics[i].name.value,
-                        {
-                            item: ScopeTypeItem.RootClass,
-                            isGenericItem: true
-                        }
-                    )
-                );
-            }
-        }
+        const type = new ScopeTypeItem(
+            ScopeForm.indefinite,
+            className,
+            opts
+        );
 
         if (scope.set(type) === false) {
             throw new TransformError(

@@ -32,7 +32,7 @@ export default class LLVMClassStatement extends BackendWatcher {
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
                     type,
-                    staticItems[i].source.type === t.AssignmentType.Constant,
+                    false,
                     llvm.LinkageTypes.PrivateLinkage,
                     llvm.UndefValue.get(type),
                     staticVarName

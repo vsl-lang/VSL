@@ -3,6 +3,8 @@ import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
+import GenericInstance from '../../scope/items/genericInstance';
+
 import e from '../../errors';
 
 /**
@@ -62,11 +64,21 @@ export default class PropertyResolver extends TypeResolver {
 
         // Try IdResolver for each candidate.
         for (let i = 0; i < candidates.length; i++) {;
+            const candidate = candidates[i].candidate;
+
             // Here we will attempt to find if the property exists
             let matchingFields = tailResolver.resolve((type) => {
                 switch (type) {
                     case ConstraintType.TypeScope:
-                        return candidates[i].candidate.subscope;
+                        return candidate.subscope;
+
+                    case ConstraintType.GenericSpecializationInstance:
+                        // We'll pass the generic to the candidate, that way it
+                        // knows the type.
+                        return candidate instanceof GenericInstance ?
+                            candidate :
+                            null;
+
                     default: return negotiate(type);
                 }
             });
