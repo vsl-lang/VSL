@@ -35,6 +35,8 @@ export default class Build extends CompilerCLI {
                 ["-O"                    , "Optimization level, default is 2." +
                                            "Values are [0, 3], 3 being most " +
                                            "optimized.",                             { arg: "opt", opt: true }],
+                ["-g", "--debug"         , "Performs a 'debug' or development " +
+                                           "build. This allows nicer errors.",       { debug: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
                 ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
