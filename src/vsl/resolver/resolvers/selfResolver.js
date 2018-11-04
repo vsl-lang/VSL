@@ -63,7 +63,8 @@ export default class IdResolver extends TypeResolver {
         const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
         if (callArgs) {
             this.emit(
-                `Cannot call \`self\``
+                `Cannot call \`self\``,
+                e.SELF_IS_NOT_FUNCTION
             );
         }
 
@@ -71,7 +72,8 @@ export default class IdResolver extends TypeResolver {
         if (requestedType && !parentClass.castableTo(requestedType)) {
             this.emit(
                 `\`self\` must refer to type ${requestedType} in this context ` +
-                `however it refers to an imcompatible type ${parentClass}.`
+                `however it refers to an incompatible type ${parentClass}.`,
+                e.NO_VALID_TYPE
             );
         }
 

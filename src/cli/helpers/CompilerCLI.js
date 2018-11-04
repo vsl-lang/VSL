@@ -132,17 +132,47 @@ export default class CompilerCLI extends CLIMode {
         // TODO: Don't make data global and use stream to get data.
         let data;
         for (let i = 0; i < files.length; i++) {
-            try {
-                data = await fs.readFile(files[i], { encoding: 'utf-8' });
-            } catch(e) {
-                this.error.cli(
-                    e.code === 'ENOENT' ?
-                    `Could not find file ${files[i]}` :
-                    `Could not read file ${files[i]} (${e.code})`
-                );
-            }
+            // `-` is STDIN
+            if (files[i] === '-') {
+                const stream = compilationGroup.createStream();
 
-            compilationGroup.createStream().send(data);
+                // Wait until STDIN is ready
+                const data = await new Promise((resolve, reject) => {
+                    let processedFirstChunk = false,
+                        data = Buffer.from([]);
+                    process.stdin.on('readable', () => {
+                        let chunk;
+                        if (null === (chunk = process.stdin.read())) {
+                            if (!processedFirstChunk) {
+                                this.error.cli(`No readable STDIN`);
+                            } else {
+                                // All done
+                                resolve(data.toString('utf8'));
+                            }
+                        } else {
+                            data = Buffer.concat([data, chunk]);
+                            processedFirstChunk = true;
+                        }
+                    });
+                });
+
+                stream.send(data);
+
+            } else {
+                try {
+                    if (files[i]) {
+                        data = await fs.readFile(files[i], { encoding: 'utf-8' });
+                    }
+                } catch(e) {
+                    this.error.cli(
+                        e.code === 'ENOENT' ?
+                        `Could not find file ${files[i]}` :
+                        `Could not read file ${files[i]} (${e.code})`
+                    );
+                }
+
+                compilationGroup.createStream().send(data);
+            }
         }
 
         let index = new CompilationIndex(

@@ -49,7 +49,7 @@ export default class CallResolver extends TypeResolver {
                 // So we'll filter candidates here.
                 case ConstraintType.BoundedFunctionContext: return true;
 
-                // The child cannot be voidable
+                // The child (function head) cannot be void
                 case ConstraintType.VoidableContext: return false;
 
                 // Propogate negotation as this only handles the one
@@ -69,7 +69,7 @@ export default class CallResolver extends TypeResolver {
         // them down as best as we can and use those as the candidates
         let headValues = this.getChild(this.node.head)
             .resolve(headResolver) // Resolve expression
-            .map(item => item.resolved()); // Resolve types
+            .map(item => item.candidate.resolved()); // Resolve types
 
 
         ////////////////////////////////////////////////////////////////////////

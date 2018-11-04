@@ -3,8 +3,6 @@ import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
-import GenericInstance from '../../scope/items/genericInstance';
-
 import e from '../../errors';
 
 /**
@@ -71,13 +69,6 @@ export default class PropertyResolver extends TypeResolver {
                 switch (type) {
                     case ConstraintType.TypeScope:
                         return candidate.subscope;
-
-                    case ConstraintType.GenericSpecializationInstance:
-                        // We'll pass the generic to the candidate, that way it
-                        // knows the type.
-                        return candidate instanceof GenericInstance ?
-                            candidate :
-                            null;
 
                     default: return negotiate(type);
                 }

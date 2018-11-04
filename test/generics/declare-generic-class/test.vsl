@@ -1,0 +1,4 @@
+class GenericClass<T> {
+}
+
+func main() {}

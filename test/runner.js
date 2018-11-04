@@ -163,16 +163,19 @@ async function runTestDir(dir) {
             console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m unexpectedly passed (expected error \u001B[33m${errorName}\u001B[31m).\u001B[0m\n`);
             aTestErrored = true;
         } catch(error) {
+            const actualErrorName = (Object.entries(VSL.Error)
+                .find(([name, value]) => value === error.ref) || ["unknown error"])[0];
+
             if (error && error.ref === VSL.Error[errorName]) {
                 console.log(`\u001B[32m✓ \u001B[1m${testName}\u001B[0;32m correctly errored with \u001B[33m${errorName}\u001B[32m.\u001B[0m`);
             } else {
                 aTestErrored = true;
                 try {
-                    console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed (expected error \u001B[33m${errorName}\u001B[31m).\u001B[0m\n`);
+                    console.log(`\u001B[31m✗ Test \u001B[1m${testName}\u001B[0;31m failed (expected error \u001B[33m${errorName}\u001B[31m but got \u001B[33m${actualErrorName}\u001B[31m).\u001B[0m\n`);
                     errorManager.dynamicHandle(error);
                 } catch(unhandledErr) {
                     errorManager.rawError(
-                        `✗ Test ${testName} failed (expected error ${errorName})`,
+                        `✗ Test ${testName} failed (expected error \u001B[33m${errorName}\u001B[31m but got \u001B[33m${actualErrorName}\u001B[31m).\u001B[0m\n`,
                         unhandledErr.message,
                         unhandledErr.stack
                     );

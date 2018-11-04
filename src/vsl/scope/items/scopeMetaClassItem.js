@@ -1,5 +1,4 @@
 import ScopeTypeItem from './scopeTypeItem';
-import GenericInstance from './genericInstance';
 import ScopeForm from '../scopeForm';
 import Scope from '../Scope';
 

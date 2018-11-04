@@ -1,11 +1,12 @@
-import ScopeItem from '../scopeItem';
+import ScopeTypeItem from './scopeTypeItem';
 import ScopeForm from '../scopeForm';
+import Scope from '../scope';
 
 /**
  * Represents a generic parameter in a class. This cannot resolve to a type.
  * Instead you must contextually determine this value through negotiation.
  */
-export default class GenericParameterItem extends ScopeItem {
+export default class GenericParameterItem extends ScopeTypeItem {
 
     /**
      * @param {ScopeForm} form - The form or type of the scope item.
@@ -18,7 +19,12 @@ export default class GenericParameterItem extends ScopeItem {
 
     /** @protected */
     init({ item, ...opts }) {
-        super.init(opts);
+        super.init({
+            interfaces: [],
+            staticScope: new Scope(),
+            subscope: new Scope(),
+            ...opts
+        });
     }
 
     /** @return {string} */

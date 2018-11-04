@@ -1,5 +1,5 @@
 import TypeLookup from '../typeLookup';
-import GenericInstance from '../../scope/items/genericInstance';
+import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 import ScopeForm from '../../scope/scopeForm';
 
 const util = require('util')
@@ -39,6 +39,13 @@ export default class GenericLookup extends TypeLookup {
             )
         }
 
+        // Ensure the class is a generic
+        if (!genericClass.isGeneric) {
+            this.emit(
+                `The class ${name} is specialized however it is not a generic.`
+            );
+        }
+
         // Check the correct amount of parameters were provided.
         if (parameters.length !== genericClass.genericInfo.parameters.length) {
             this.emit(
@@ -69,8 +76,8 @@ export default class GenericLookup extends TypeLookup {
             // }
         });
 
-        return new GenericInstance({
-            base: genericClass,
+        return new ScopeGenericSpecialization(ScopeForm.definite, `${genericClass}<${parameters.join(", ")}>`, {
+            genericClass: genericClass,
             parameters: parameters
         });
     }

@@ -97,6 +97,7 @@ export default {
 
     // Functions
     INVALID_FUNCTION_CALL: {},
+    SELF_IS_NOT_FUNCTION: {},
 
     // Access modifiers
     INVALID_ACCESS: {},

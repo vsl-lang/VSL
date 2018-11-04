@@ -4,6 +4,7 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
+import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 
 import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
@@ -46,16 +47,15 @@ export default class GenericResolver extends TypeResolver {
         const type = new TypeLookup(this.node, vslGetTypeChild).resolve(scope);
         this.node.reference = type;
 
-        const isCallee = negotiate(ConstraintType.BoundedFunctionContext);
-
-        if (isCallee) {
-            return [type];
-        }
+        const genericMetaClass = new ScopeGenericSpecialization({
+            genericClass: new ScopeMetaClassItem({ referencingClass: type.genericClass }),
+            parameters: type.parameters
+        });
 
 
         // Now that we have the type, we can return it as a metaclass
         return [
-            new TypeCandidate(type)
+            new TypeCandidate(genericMetaClass)
         ];
     }
 }
