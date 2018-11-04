@@ -1,0 +1,8 @@
+class GenericClass<T> {
+    let field: T
+    init(field: T) {
+        self.field = field
+    }
+}
+
+func main() {}

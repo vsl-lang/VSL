@@ -12,6 +12,7 @@ import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import WASMIndex from '../../../wasm/index.json';
 import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
 import findDefaultLinker from '../helpers/findDefaultLinker';
+import findCRT from '../helpers/findCRT';
 import Linker from '../helpers/Linker';
 
 const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
@@ -26,6 +27,10 @@ export default class Build extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }],
                 ["--targets"             , "Lists supported compilation targets " +
                                            "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
+                ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.name)); return false } }],
+                ["--default-linker-args" , "Default arguments passed to linker",     { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.defaultArgs.join('\n'))); return false } }],
+                ["--crt-path"            , "Outputs the CRT path that would " +
+                                           "be used with typical linker usage",      { run: _ => { findCRT().then(path => _.printAndDie(path)); return false } }],
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
                 ["--no-color"            , "Disables output colorization",           { color: false }],
             ]],
@@ -125,7 +130,12 @@ export default class Build extends CompilerCLI {
 
                 const flagInfo = flagName[3] || flagName[2];
 
-                if (flagInfo.run) flagInfo.run(this);
+                if (flagInfo.run) {
+                    const runResult = flagInfo.run(this);
+                    if (runResult === false) {
+                        return;
+                    }
+                }
 
                 if ('verbose' in flagInfo) verbose = flagInfo.verbose;
                 if ('color' in flagInfo) color = flagInfo.color;
@@ -152,8 +162,8 @@ export default class Build extends CompilerCLI {
                     }
                 }
             } else {
-                // Check if directory file, or neither
-                if (!fs.existsSync(args[i])) {
+                // Check if directory, file, STDIN, or neither
+                if (args[i] !== '-' && !fs.existsSync(args[i])) {
                     this.error.cli(`no such file or directory: \`${args[i]}\``);
                 }
 
@@ -164,7 +174,7 @@ export default class Build extends CompilerCLI {
                     );
                 }
 
-                if (fs.statSync(args[i]).isDirectory()) {
+                if (args[i] !== '-' && fs.statSync(args[i]).isDirectory()) {
                     directory = args[i];
                 } else {
                     files.push(args[i]);

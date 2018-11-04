@@ -9,6 +9,7 @@ import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
+import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 
 import e from '../../errors';
 
@@ -65,7 +66,8 @@ export default class IdResolver extends TypeResolver {
         const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
         if (callArgs) {
             // Return candidates for parent function to handle.
-            return results;
+            return results
+                .map(item => new TypeCandidate(item));
         }
 
         let resultType;
@@ -76,7 +78,7 @@ export default class IdResolver extends TypeResolver {
 
         const result = results[0];
 
-        // Get result type
+        // Get the WHAT the identifier is (result)
         if (result instanceof ScopeTypeItem) {
             // If the identifier returns a 'Type' i.e. a class was directly
             // references we'll return a 'MetaType' wrapper

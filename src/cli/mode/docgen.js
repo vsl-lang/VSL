@@ -75,12 +75,14 @@ export default class Doxgen extends CompilerCLI {
             }
         }
 
-        if (!directory) {
-            this.error.cli(`specify path to module`);
-        }
+        if (!json) {
+            if (!directory) {
+                this.error.cli(`specify path to module`);
+            }
 
-        if (!outputDirectory) {
-            this.error.cli(`provide output directory`);
+            if (!outputDirectory) {
+                this.error.cli(`provide output directory`);
+            }
         }
 
         this.json = json;
@@ -90,12 +92,14 @@ export default class Doxgen extends CompilerCLI {
     }
 
     async dispatch(directory, outputDirectory) {
-        if (fs.existsSync(outputDirectory)) {
-            if (!fs.statSync(outputDirectory).isDirectory()) {
-                this.error.cli(`${outputDirectory} exists but is not a directory.`)
+        if (!this.json) {
+            if (fs.existsSync(outputDirectory)) {
+                if (!fs.statSync(outputDirectory).isDirectory()) {
+                    this.error.cli(`${outputDirectory} exists but is not a directory.`)
+                }
+            } else {
+                await fs.mkdirp(outputDirectory);
             }
-        } else {
-            await fs.mkdirp(outputDirectory);
         }
 
         const { index, module } = await this.executeModule(directory);
@@ -113,7 +117,7 @@ export default class Doxgen extends CompilerCLI {
         const docGen = new DocGen(items, module);
         const json = docGen.generate();
         if (this.json) {
-            console.log(json)
+            console.log(json);
         } else {
             const htmlGen = new HTMLGen(outputDirectory);
             await htmlGen.generate(json);

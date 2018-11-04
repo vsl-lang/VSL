@@ -1,0 +1,15 @@
+class A {
+    let a: String
+    init() {
+        self.a = A.getValue()
+    }
+
+    static func getValue() -> String {
+        return "initial value"
+    }
+}
+
+func main() {
+    let a = A()
+    print(a.a)
+}

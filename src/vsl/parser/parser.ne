@@ -751,8 +751,8 @@ genericDeclaration
    -> "<" _ delimited[typeDeclaration {% id %}, _ "," _] _ ">" {% nth(2) %}
 
 TypeAlias
-   -> Modifier _ "typealias" _ Identifier _ "=" _ type {%
-        (data, location) => new t.TypeAlias(data[0], data[4], data[8], location)
+   -> Modifier "typealias" _ Identifier _ "=" _ type {%
+        (data, location) => new t.TypeAlias(data[0], data[3], data[7], location)
     %}
 
 Identifier

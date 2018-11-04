@@ -3,6 +3,8 @@ import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeForm from '../../scope/scopeForm';
 
+import e from '../../errors';
+
 /**
  * Looks up a type in a scope. e.g. `A` in `parentScope` or for `A.B`, `B` in A.
  */
@@ -26,13 +28,17 @@ export default class IdLookup extends TypeLookup {
                 `There is no type with name \`${name}\` in this scope. Check ` +
                 `for typos or if this type declared in the current scope. If ` +
                 `this is a module, check you are using the right version and ` +
-                `it is imported properly.`
+                `it is imported properly.`,
+                this.node,
+                e.UNDECLARED_IDENTIFIER
             );
         } else if (result.isGeneric && !allowGenerics) {
             this.emit(
                 `The class \`${name}\` is a generic class. This means you ` +
                 `must specify the generic types and parameters using ` +
-                `\`${name}<...>\``
+                `\`${name}<...>\``,
+                this.node,
+                e.GENERIC_SPECIALIZATION_REQUIRED
             );
         }
 
