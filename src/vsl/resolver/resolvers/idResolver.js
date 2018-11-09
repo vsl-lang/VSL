@@ -67,6 +67,14 @@ export default class IdResolver extends TypeResolver {
         if (callArgs) {
             // Return candidates for parent function to handle.
             return results
+                .map(result => {
+                    // If it is a class we MUST wrap it as a metaclass.
+                    if (result instanceof ScopeTypeItem) {
+                        return this.wrapType(result);
+                    } else {
+                        return result;
+                    }
+                })
                 .map(item => new TypeCandidate(item));
         }
 
@@ -80,23 +88,7 @@ export default class IdResolver extends TypeResolver {
 
         // Get the WHAT the identifier is (result)
         if (result instanceof ScopeTypeItem) {
-            // If the identifier returns a 'Type' i.e. a class was directly
-            // references we'll return a 'MetaType' wrapper
-
-            resultType = new ScopeMetaClassItem({
-                referencingClass: result
-            });
-
-            // Generics would be resolved using TypeResolver so if we see one
-            // here that means it was not specialized
-
-            if (result.isGeneric) {
-                this.emit(
-                    `Cannot use generic ${result.rootId} class without specifying ` +
-                    `parameter types using \`${result.rootId}<...>\``,
-                    e.GENERIC_SPECIALIZATION_REQUIRED
-                );
-            }
+            resultType = this.wrapType(wrapType);
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
             // unexpected return for an identifier
@@ -130,5 +122,30 @@ export default class IdResolver extends TypeResolver {
         this.node.reference = result;
 
         return [new TypeCandidate(resultType)];
+    }
+
+    /**
+     * Wraps a type into a metaclass.
+     * @param {ScopeTypeItem} result - A normal type item to wrap as a metaclass.
+     * @protected
+     * @return {ScopeMetaClassItem}
+     */
+    wrapType(result) {
+        // Generics would be resolved using TypeResolver so if we see one
+        // here that means it was not specialized
+
+        if (result.isGeneric) {
+            this.emit(
+                `Cannot use generic ${result.rootId} class without specifying ` +
+                `parameter types using \`${result.rootId}<...>\``,
+                e.GENERIC_SPECIALIZATION_REQUIRED
+            );
+        }
+
+        // If the identifier returns a 'Type' i.e. a class was directly
+        // references we'll return a 'MetaType' wrapper
+        return new ScopeMetaClassItem({
+            referencingClass: result
+        });
     }
 }
