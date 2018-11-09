@@ -3,9 +3,9 @@ import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
-import GenericTypeReferenceItem from '../../scope/items/GenericTypeReferenceItem';
+import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
+import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
-import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 
 import e from '../../errors';
 
@@ -37,6 +37,7 @@ export default class CallResolver extends TypeResolver {
      *     `{ nil }` to reject all offers (bad idea though).
      */
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
+        const functionName = this.node.head.toString();
         const args = this.node.arguments;
         const argc = args.length;
 
@@ -71,7 +72,6 @@ export default class CallResolver extends TypeResolver {
             .resolve(headResolver) // Resolve expression
             .map(item => item.candidate.resolved()); // Resolve types
 
-
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
         //                          GET CANDIDATES                            //
@@ -84,13 +84,34 @@ export default class CallResolver extends TypeResolver {
         // or have less arguments than called with,
         let items = [];
 
+        // Error message to use if they are no functions with the name
+        let errorMessage = `Use of undeclared function \`${functionName}\``;
+
         for (let i = 0; i < headValues.length; i++) {
-            // Support initializers, if we call type we'll interpret it as
-            // an init call.
-            if (headValues[i] instanceof ScopeTypeItem) {
-                items.push(...headValues[i].subscope.getAll('init'));
-            } else {
+            if (headValues[i] instanceof ScopeMetaClassItem) {
+                // ===== CONSTRUCTORS =====
+                // Support initializers, if we call type we'll interpret it as
+                // an init call.
+
+                const classToConstruct = headValues[i].referencingClass;
+
+                if (classToConstruct instanceof ScopeGenericSpecialization) {
+                    // ===== GENERIC CLASS =====
+                    const sourceClass = classToConstruct.genericClass;
+                    items.push(...sourceClass.subscope.getAll('init'));
+                } else {
+                    // ===== NORMAL CLASS ====
+                    items.push(...classToConstruct.subscope.getAll('init'));
+                }
+                errorMessage = `Class \`${functionName}\` has no intializers.`;
+            } else if (headValues[i] instanceof ScopeFuncItem) {
+                // ===== FUNCTIONS =====
+                // These are regular ol' functions
                 items.push(headValues[i]);
+            } else {
+                this.emit(
+                    `Cannot call a non-function type`
+                );
             }
         }
 
@@ -103,7 +124,7 @@ export default class CallResolver extends TypeResolver {
         // actually has the name
         if (candidates.length === 0) {
             this.emit(
-                `Use of undeclared function \`${this.node.head.toString()}\``,
+                errorMessage,
                 e.UNDECLARED_FUNCTION
             )
         }

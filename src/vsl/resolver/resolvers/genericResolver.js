@@ -1,3 +1,4 @@
+import ScopeForm from '../../scope/scopeForm';
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
@@ -47,10 +48,7 @@ export default class GenericResolver extends TypeResolver {
         const type = new TypeLookup(this.node, vslGetTypeChild).resolve(scope);
         this.node.reference = type;
 
-        const genericMetaClass = new ScopeGenericSpecialization({
-            genericClass: new ScopeMetaClassItem({ referencingClass: type.genericClass }),
-            parameters: type.parameters
-        });
+        const genericMetaClass = new ScopeMetaClassItem({ referencingClass: type });
 
 
         // Now that we have the type, we can return it as a metaclass
