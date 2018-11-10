@@ -26,6 +26,7 @@ export default class TypeDeductExpression extends Transformation {
         new RootResolver(node, vslGetChild, tool.context)
             .resolve((type) => {
             switch (type) {
+                case ConstraintType.SimplifyToPrecType: return true;
                 case ConstraintType.VoidableContext: return true;
                 default: return null;
             }

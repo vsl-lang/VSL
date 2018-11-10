@@ -12,6 +12,8 @@
  *                                   return type of `Void`.
  * @property {Scope} TypeScope - The subscope of the lookup location used. Will
  *                             refer to subscope in member situations.
+ * @property {boolean} SimplifyToPrecType - If the parent CANNOT take multiple
+ *                                        types so ONLY ONE should be returned.
  * @property {GenericInstance} GenericSpecializationInstance - For a generic,
  *                                                           this represents the
  *                                                           instance with the
@@ -26,6 +28,7 @@ const ConstraintType = {
     TypeScope: 1 << 6,
     SimplifyToPrecType: 1 << 7,
     GenericSpecializationInstance: 1 << 8,
+
 };
 
 export default ConstraintType;

@@ -88,7 +88,7 @@ export default class IdResolver extends TypeResolver {
 
         // Get the WHAT the identifier is (result)
         if (result instanceof ScopeTypeItem) {
-            resultType = this.wrapType(wrapType);
+            resultType = this.wrapType(result);
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
             // unexpected return for an identifier
@@ -111,12 +111,13 @@ export default class IdResolver extends TypeResolver {
 
         // Check if the given ID does actually have type (response).
         if (response && !resultType.castableTo(response.candidate)) {
-            this.emit(
-                `Use of ${rootId} has no types which it can be deducted to\n` +
-                `in this context. This means the variable is one type but for ` +
-                `everything to work it would need to be a different type.`,
-                e.CANNOT_RESOLVE_IDENTIFIER
-            );
+            return [];
+            // this.emit(
+            //     `Use of ${rootId} has no types which it can be deducted to\n` +
+            //     `in this context. This means the variable is one type but for ` +
+            //     `everything to work it would need to be a different type.`,
+            //     e.CANNOT_RESOLVE_IDENTIFIER
+            // );
         }
 
         this.node.reference = result;

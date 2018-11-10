@@ -53,6 +53,9 @@ export default class CallResolver extends TypeResolver {
                 // The child (function head) cannot be void
                 case ConstraintType.VoidableContext: return false;
 
+                // The child (function head) we'll allow multiple values
+                case ConstraintType.SimplifyToPrecType: return false;
+
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
@@ -63,6 +66,9 @@ export default class CallResolver extends TypeResolver {
 
         // Check if voidable here
         const voidableContext = negotiate(ConstraintType.VoidableContext);
+
+        // If a definite deduction is expected
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
         // Negotiate the requested type for this identifier.
         // Generate the arg object and we'll ref that for lookup
@@ -143,27 +149,12 @@ export default class CallResolver extends TypeResolver {
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
 
-        let orderedArgCandidates = [];
-        // Resolve all arguments
-        for (let i = 0; i < argc; i++) {
-            orderedArgCandidates.push(
-                this.getChild(args[i].value).resolve((type) => {
-                    switch (type) {
-                        // The child cannot be voidable
-                        case ConstraintType.VoidableContext: return false;
-
-                        case ConstraintType.RequestedTypeResolutionConstraint: return null;
-
-                        // Right no they are no parent constraints. We'll resolve
-                        // that later.
-                        default: return negotiate(type);
-                    }
-                })
-            );
-        }
 
         // List of working candidates
         let workingCandidates = [];
+
+        // List of the candidate's chosen arg types.
+        let workingCandidateArgTypes = [];
 
         // This is a list of candidate => amount of types a prec type is used.
         let candidatePrecTypeMap = [];
@@ -197,12 +188,13 @@ export default class CallResolver extends TypeResolver {
                 }
             }
 
+            const candidateArgTypes = [];
+
             // If same arg length & function name we'll have to go through each
             // arg and check for compatibility.
             for (let j = 0; j < argc; j++) {
                 let arg = args[j],
                     argName = arg.name?.value,
-                    argTypes = orderedArgCandidates[j],
                     targetArgName = candidate.args[j].name,
                     targetArgType = candidate.args[j].type;
 
@@ -212,35 +204,58 @@ export default class CallResolver extends TypeResolver {
                 // Will store the candidate arg type for the given arg.
                 let workingArgType = null;
 
-                // Go through each type and check which conflicts
-                // NOTE: ambiguous types should NEVER be related in the
-                // candidate list.
-                for (let k = 0; k < argTypes.length; k++) {
-                    if (argTypes[k].candidate.castableTo(targetArgType)) {
-                        workingArgType = argTypes[k];
-                        break;
+                const argumentTypes = this.getChild(arg.value).resolve((type) => {
+                    switch (type) {
+                        // The child cannot be voidable
+                        case ConstraintType.VoidableContext: return false;
+
+                        case ConstraintType.RequestedTypeResolutionConstraint:
+                            return new TypeCandidate(targetArgType);
+
+                        case ConstraintType.SimplifyToPrecType:
+                            return false;
+
+                        // Right no they are no parent constraints. We'll resolve
+                        // that later.
+                        default: return negotiate(type);
                     }
-                }
+                });
 
                 // If we couldn't find a matching type, then this overload
                 // doesn't work.
-                if (workingArgType === null) continue main;
+                if (argumentTypes.length === 0) continue main;
+
+                // There shouldn't be more than one arguments given that we
+                // specify a type resolution constraint.
+                if (argumentTypes.length > 1) {
+                    this.emit(
+                        `Argument at index ${j} incorrectly had an ambiguous ` +
+                        `value. Report this error.`,
+                        e.AMBIGUOUS_EXPRESSION
+                    );
+                }
+
+                const argumentType = argumentTypes[0];
 
                 // If it was a prec type we will specify that we are using a
                 // prec type in this case.
-                if (workingArgType.precType === true) {
+                if (argumentType.precType === true) {
                     precedencePreferalCount += 1;
                 }
+
+                candidateArgTypes.push(argumentType);
             }
 
 
             // If we are here then the two functions match.
             workingCandidates.push(candidate);
+            workingCandidateArgTypes.push(candidateArgTypes);
             candidatePrecTypeMap.push(precedencePreferalCount);
         }
 
         let maxCandidateScore = Math.max(...candidatePrecTypeMap);
-        let maxCandidate = null;
+        let maxCandidate = null,
+            maxCandidateIndex = null;
         for (let i = 0; i < workingCandidates.length; i++) {
             if (candidatePrecTypeMap[i] === maxCandidateScore) {
                 if (maxCandidate !== null) {
@@ -254,27 +269,34 @@ export default class CallResolver extends TypeResolver {
                     );
                 } else {
                     maxCandidate = workingCandidates[i];
+                    maxCandidateIndex = i;
                 }
             }
         }
 
         if (maxCandidate === null) {
-            this.emit(
-                `Call to function does not match any valid candidates. Valid ` +
-                `candidates are:\n` +
-                candidates.map(
-                    candidate => `    • ${candidate}`
-                ).join("\n") +
-                `\nInstead, deducted to \`func (${
-                    orderedArgCandidates.map(
-                        (type, i) => {
-                            let argName = args[i].name?.value || "*";
-                            return `${argName}: ${type.join(" | ")}`
-                        }
-                    ).join(", ")
-                }) -> ${expectedReturnType || "*"}\``,
-                e.INVALID_FUNCTION_CALL
-            );
+            if (simplifyToPrecType) {
+                this.emit(
+                    `Call to function does not match any valid candidates. Valid ` +
+                    `candidates are:\n` +
+                    candidates.map(
+                        candidate => `    • ${candidate}`
+                    ).join("\n") +
+                    `\nInstead, deducted to \`${functionName}(${
+                        workingCandidateArgTypes[0] ? workingCandidateArgTypes[0].map(
+                            (_, i) => {
+                                types.map((type, i) => {
+                                    let argName = args[i].name?.value || "*";
+                                    return `${argName}: ${workingCandidateArgTypes.map(candidate => candidate[i]).join(" | ")}`
+                                }).join(" | ")
+                            }
+                        ).join(", ") : ""
+                    }) -> ${expectedReturnType || "*"}\``,
+                    e.INVALID_FUNCTION_CALL
+                );
+            } else {
+                return [];
+            }
         } else {
             // Re-resolve subtypes to ensure unambiguous refs.
             for (let i = 0; i < argc; i++) {
@@ -284,7 +306,7 @@ export default class CallResolver extends TypeResolver {
                         case ConstraintType.VoidableContext: return false;
 
                         case ConstraintType.RequestedTypeResolutionConstraint:
-                            return new TypeCandidate(maxCandidate.args[i].type);
+                            return workingCandidateArgTypes[maxCandidateIndex][i];
 
                         default: return negotiate(type);
                     }
