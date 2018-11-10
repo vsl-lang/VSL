@@ -110,14 +110,15 @@ export default class LiteralResolver extends TypeResolver {
         // This is because errors have already been thrown for no actually
         // type candidates.
         if (typeCandidates.length === 0) {
-            this.emit(
-                `This literal would need to be a type which it cannot be in\n` +
-                `order for everything to work. Candidates would include: \n\n` +
-                typeList.map(i => "    • " + i.toString()).join("\n") +
-                `\n\nHowever none of these are actually a type this literal could\n` +
-                `represent.`,
-                e.NO_VALID_TYPE
-            );
+            return [];
+            // this.emit(
+            //     `This literal would need to be a type which it cannot be in\n` +
+            //     `order for everything to work. Candidates would include: \n\n` +
+            //     typeList.map(i => "    • " + i.toString()).join("\n") +
+            //     `\n\nHowever none of these are actually a type this literal could\n` +
+            //     `represent.`,
+            //     e.NO_VALID_TYPE
+            // );
         }
 
         const shouldResolveToPrecType = negotiate(ConstraintType.SimplifyToPrecType);

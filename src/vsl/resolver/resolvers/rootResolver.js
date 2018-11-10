@@ -52,7 +52,7 @@ export default class RootResolver extends TypeResolver {
             switch (type) {
                 case ConstraintType.TypeScope: return this.node.parentScope.scope;
                 case ConstraintType.TransformationContext: return this.context || negotiate(type);
-                case ConstraintType.SimplifyToPrecType: return false;
+                case ConstraintType.SimplifyToPrecType: return negotiate(type);
                 default: return negotiate(type);
             }
         };
@@ -69,8 +69,7 @@ export default class RootResolver extends TypeResolver {
             if (result.length === 1) return result;
             if (result.length === 0) {
                 this.emit(
-                    `Expression is invalid, resolves to no valid type.`,
-                    this.node,
+                    `Expression has no valid type.`,
                     e.NO_VALID_TYPE
                 );
             }
@@ -82,7 +81,6 @@ export default class RootResolver extends TypeResolver {
                         this.emit(
                             `Expression is ambiguous. Additionally multiple ` +
                             `precedence candidates found.`,
-                            this.node,
                             e.AMBIGUOUS_EXPRESSION
                         );
                     } else {
@@ -94,7 +92,6 @@ export default class RootResolver extends TypeResolver {
             if (precCandidate === null) {
                 this.emit(
                     `Expression is ambiguous.`,
-                    this.node,
                     e.AMBIGUOUS_EXPRESSION
                 );
             }
