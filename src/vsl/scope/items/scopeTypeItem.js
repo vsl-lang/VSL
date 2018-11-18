@@ -203,6 +203,15 @@ export default class ScopeTypeItem extends ScopeItem {
         return 0;
     }
 
+    /**
+     * Returns the type in a context. Can be used to resolve generic.
+     * @param {TypeContext} typeContext
+     * @return {ScopeTypeItem} may return a different class FYI.
+     */
+    contextualType(typeContext) {
+        return this;
+    }
+
     /** @override */
     equal(ref: ScopeItem): boolean {
         // Only the names need to be equal except for inits
