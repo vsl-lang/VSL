@@ -1,6 +1,13 @@
 # CHANGELOG
 Development progress and changes over time.
 
+## Nov 11, 2018
+ - Add a `contextualType(TypeContext)` (Nov 4, 2017 Plan 2.5)
+    - This allows resolving generics in context.
+
+Plan:
+ 1. Differentiate between explicit and implicit `castableTo`.
+
 ## Nov 10, 2018
  1. Added constraint which specifies whether an expression can return multiple
     candidates. This allows lower-level errors to be thrown (Nov 9, 2018 Plan 3)

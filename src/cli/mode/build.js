@@ -213,7 +213,7 @@ export default class Build extends CompilerCLI {
             this.error.cli(`Provide output location.`);
         }
 
-        this.target =target;
+        this.target = target;
 
         let backend = new LLVMBackend(this.createStream(), this.triple);
         if (directory) {
