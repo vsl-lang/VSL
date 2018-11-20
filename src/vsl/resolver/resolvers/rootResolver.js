@@ -1,6 +1,7 @@
 import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeResolver from '../typeResolver';
+import TypeContext from '../../scope/TypeContext';
 
 import e from '../../errors';
 
@@ -53,6 +54,7 @@ export default class RootResolver extends TypeResolver {
                 case ConstraintType.TypeScope: return this.node.parentScope.scope;
                 case ConstraintType.TransformationContext: return this.context || negotiate(type);
                 case ConstraintType.SimplifyToPrecType: return negotiate(type);
+                case ConstraintType.TypeContext: return TypeContext.empty();
                 default: return negotiate(type);
             }
         };
