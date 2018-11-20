@@ -1,5 +1,6 @@
 import ScopeForm from '../scopeForm';
 import ScopeItem from '../scopeItem';
+import TypeContext from '../TypeContext';
 
 import Scope from '../scope';
 
@@ -223,6 +224,14 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     contextualType(typeContext) {
         return this;
+    }
+
+    /**
+     * Returns TypeContext for just this specialization.
+     * @return {TypeContext}
+     */
+    getTypeContext() {
+        return TypeContext.empty();
     }
 
     /** @override */

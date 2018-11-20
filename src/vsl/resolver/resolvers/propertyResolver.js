@@ -52,6 +52,8 @@ export default class PropertyResolver extends TypeResolver {
                     return null;
                 case ConstraintType.BoundedFunctionContext:
                     return null;
+                case ConstraintType.VoidableContext:
+                    return false;
                 default: return negotiate(type);
             }
         });
@@ -69,6 +71,9 @@ export default class PropertyResolver extends TypeResolver {
                 switch (type) {
                     case ConstraintType.TypeScope:
                         return candidate.subscope;
+
+                    case ConstraintType.TypeContext:
+                        return candidate.getTypeContext();
 
                     default: return negotiate(type);
                 }

@@ -13,7 +13,7 @@ export default class GenericInfo {
 
         /**
          * Caches specializations.
-         * @param {Array<GenericParameterItem[], ScopeGenericSpecialization>}
+         * @type {Array<GenericParameterItem[], ScopeGenericSpecialization>}
          */
         this.existingSpecializations = [];
     }

@@ -1,11 +1,17 @@
 # CHANGELOG
 Development progress and changes over time.
 
-## Nov 13, 2018
+## Nov 14, 2018
+ - Implement property negotiation (Nov 19, 2018 Plan 2)
+
+Plan:
+ 1. Need to figure out upwards negotiation
+
+## Nov 19, 2018
  - Add `contextualType(TypeContext)` to `GenericParameterItem`
- - Implement (Nov 13, 2018 Plan 4)
- - Implement (Nov 13, 2018 Plan 1)
- - Implement (Nov 13, 2018 Plan 6)
+ - Implement (Nov 19, 2018 Plan 4)
+ - Implement (Nov 19, 2018 Plan 1)
+ - Implement (Nov 19, 2018 Plan 6)
 
 Plan:
  1. ScopeGenericSpecialization probably maybe might need to perhaps maybe be a

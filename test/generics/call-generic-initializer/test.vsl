@@ -1,0 +1,10 @@
+class A<T> {
+    let b: T
+    init(b: T) {
+        self.b = b
+    }
+}
+
+func main() {
+    let a = A<Int>(b: 1)
+}

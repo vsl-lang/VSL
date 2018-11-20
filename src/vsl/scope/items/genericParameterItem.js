@@ -31,9 +31,7 @@ export default class GenericParameterItem extends ScopeTypeItem {
     contextualType(typeContext) {
         const instanceType = typeContext.getTypeForGenericParameter(this);
         if (instanceType === null) {
-            throw new TypeError(
-                `Cannot resolve generic paramter ${this} in context,`
-            );
+            return this;
         }
 
         return instanceType;

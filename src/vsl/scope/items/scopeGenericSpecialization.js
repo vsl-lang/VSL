@@ -140,6 +140,7 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
     /**
      * Returns TypeContext for just this specialization.
      * @return {TypeContext}
+     * @override
      */
     getTypeContext() {
         const genericParameters = this.genericClass.genericInfo.parameters;

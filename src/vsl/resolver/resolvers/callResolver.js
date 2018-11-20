@@ -107,8 +107,7 @@ export default class CallResolver extends TypeResolver {
 
                 if (classToConstruct instanceof ScopeGenericSpecialization) {
                     // ===== GENERIC CLASS =====
-                    const sourceClass = classToConstruct.genericClass;
-                    items.push(...sourceClass.subscope.getAll('init'));
+                    items.push(...classToConstruct.subscope.getAll('init'));
                     typeContext = classToConstruct.getTypeContext();
                 } else {
                     // ===== NORMAL CLASS ====

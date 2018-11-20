@@ -46,6 +46,8 @@ export default class IdResolver extends TypeResolver {
         const scope = negotiate(ConstraintType.TypeScope);
         const rootId = this.node.value;
 
+        const typeContext = negotiate(ConstraintType.TypeContext);
+
         // Get the variable this references
         // Pass this.node so we can know that this node referenced the
         // variable we are trying to get.
@@ -88,6 +90,7 @@ export default class IdResolver extends TypeResolver {
 
         // Get the WHAT the identifier is (result)
         if (result instanceof ScopeTypeItem) {
+            // If it's a metaclass.
             resultType = this.wrapType(result);
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
@@ -108,6 +111,9 @@ export default class IdResolver extends TypeResolver {
 
         // Resolve the result type
         resultType.resolve();
+
+        // Get the type in context
+        resultType = resultType.contextualType(typeContext);
 
         // Check if the given ID does actually have type (response).
         if (response && !resultType.castableTo(response.candidate)) {
