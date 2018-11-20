@@ -2,6 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
+import TypeContext from '../TypeContext';
 
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
@@ -93,6 +94,9 @@ export default class CallResolver extends TypeResolver {
         // Error message to use if they are no functions with the name
         let errorMessage = `Use of undeclared function \`${functionName}\``;
 
+        // Type context we'll use when resolving return and parameter types.
+        let typeContext = TypeContext.empty();
+
         for (let i = 0; i < headValues.length; i++) {
             if (headValues[i] instanceof ScopeMetaClassItem) {
                 // ===== CONSTRUCTORS =====
@@ -105,6 +109,7 @@ export default class CallResolver extends TypeResolver {
                     // ===== GENERIC CLASS =====
                     const sourceClass = classToConstruct.genericClass;
                     items.push(...sourceClass.subscope.getAll('init'));
+                    typeContext = classToConstruct.getTypeContext();
                 } else {
                     // ===== NORMAL CLASS ====
                     items.push(...classToConstruct.subscope.getAll('init'));
@@ -145,7 +150,7 @@ export default class CallResolver extends TypeResolver {
 
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
-        //                          RESOLVE ARGS                              //
+        //                      FIND VALID OVERLOADS                          //
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
 
@@ -155,6 +160,9 @@ export default class CallResolver extends TypeResolver {
 
         // List of the candidate's chosen arg types.
         let workingCandidateArgTypes = [];
+
+        // List of working candidate return types.
+        let workingCandidateReturnTypes = [];
 
         // This is a list of candidate => amount of types a prec type is used.
         let candidatePrecTypeMap = [];
@@ -170,23 +178,43 @@ export default class CallResolver extends TypeResolver {
             // Amount of times we chose a prec type over normal.
             let precedencePreferalCount = 0;
 
+
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
+            //                        CHECK RETURN TYPE                           //
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
+
             // Additionally check VoidableContext. If this context is not
             // voidable and there is a void return then this is not valid.
             if (!voidableContext && !candidate.returnType) {
                 continue;
             }
 
+
+            const candidateReturnType =
+                candidate.returnType &&
+                candidate.returnType.contextualType(typeContext);
+
             // Lets first do checks and see if return type works
             if (expectedReturnType) {
-                if (!candidate.returnType) {
+                if (!candidateReturnType) {
                     // If we expect return and there is none then it is not a valid candidate
                     continue;
-                } else if (!candidate.returnType.castableTo(expectedReturnType.candidate)) {
+                }
+
+                if (!candidateReturnType.castableTo(expectedReturnType.candidate)) {
                     // If the return type is not (up)castable to the expected return type,
                     // then this is not a valid candidate
                     continue;
                 }
             }
+
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
+            //                         CHECK ARGUMENTS                            //
+            ////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////
 
             const candidateArgTypes = [];
 
@@ -250,6 +278,7 @@ export default class CallResolver extends TypeResolver {
             // If we are here then the two functions match.
             workingCandidates.push(candidate);
             workingCandidateArgTypes.push(candidateArgTypes);
+            workingCandidateReturnTypes.push(candidateReturnType);
             candidatePrecTypeMap.push(precedencePreferalCount);
         }
 

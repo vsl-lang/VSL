@@ -27,6 +27,12 @@ export default class GenericParameterItem extends ScopeTypeItem {
         });
     }
 
+    /** @override */
+    contextualType(typeContext) {
+        const instanceType = typeContext.getTypeForGenericParameter(this);
+        return instanceType;
+    }
+
     /** @return {string} */
     toString() {
         return `${this.rootId}`;
