@@ -1,6 +1,20 @@
 # CHANGELOG
 Development progress and changes over time.
 
+## Nov 13, 2018
+ - Add `contextualType(TypeContext)` to `GenericParameterItem`
+
+Plan:
+ 1. ScopeGenericSpecialization probably maybe might need to perhaps maybe be a
+    ScopeTypeItem
+ 2. Other classes probably also need to support generics.
+ 3. Also need to support method generics.
+ 4. Change CallResolver to use objects
+
+## Nov 12, 2018
+ - Add documentation about the different APIs
+ - Add `vsl/interop` for creating VSL binary compat items.
+
 ## Nov 11, 2018
  - Add a `contextualType(TypeContext)` (Nov 4, 2017 Plan 2.5)
     - This allows resolving generics in context.

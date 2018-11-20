@@ -8,6 +8,16 @@
 export default class TypeContext {
 
     /**
+     * Creates an empty type context
+     * @return {TypeContext}
+     */
+    static empty() {
+        return new TypeContext({
+            genericParameters: new Map()
+        })
+    }
+
+    /**
      * Creates a type context
      * @param {Object} opts
      * @param {GenericContext} genericParameters - The types of generic params.
@@ -24,5 +34,19 @@ export default class TypeContext {
      */
     getTypeForGenericParameter(genericParameterItem) {
         return this.genericParameters.get(genericParameterItem) || null;
+    }
+
+    /**
+     * Returns a new type context with current and another merged. Immutable
+     * @param {TypeContext} otherContext
+     * @return {TypeContext}
+     */
+    merge(otherContext) {
+        return new TypeContext({
+            genericParameters: new Map([
+                ...this.genericParameters,
+                otherContext.genericParameters
+            ])
+        })
     }
 }
