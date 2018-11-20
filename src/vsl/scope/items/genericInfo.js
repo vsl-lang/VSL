@@ -10,5 +10,11 @@ export default class GenericInfo {
     constructor({ parameters }) {
         /** @type {GenericParameterItem[]} */
         this.parameters = parameters;
+
+        /**
+         * Caches specializations.
+         * @param {Array<GenericParameterItem[], ScopeGenericSpecialization>}
+         */
+        this.existingSpecializations = [];
     }
 }

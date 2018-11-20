@@ -3,13 +3,18 @@ Development progress and changes over time.
 
 ## Nov 13, 2018
  - Add `contextualType(TypeContext)` to `GenericParameterItem`
+ - Implement (Nov 13, 2018 Plan 4)
+ - Implement (Nov 13, 2018 Plan 1)
+ - Implement (Nov 13, 2018 Plan 6)
 
 Plan:
  1. ScopeGenericSpecialization probably maybe might need to perhaps maybe be a
     ScopeTypeItem
- 2. Other classes probably also need to support generics.
+ 2. Other resolve classes probably also need to support generics.
  3. Also need to support method generics.
  4. Change CallResolver to use objects
+ 5. Verify generic and non-generic functions cannot be mixed with same name
+ 6. Probably need to de-duplicate `ScopeGenericSpecialization`s
 
 ## Nov 12, 2018
  - Add documentation about the different APIs

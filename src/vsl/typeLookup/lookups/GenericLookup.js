@@ -76,9 +76,6 @@ export default class GenericLookup extends TypeLookup {
             // }
         });
 
-        return new ScopeGenericSpecialization(ScopeForm.definite, `${genericClass}<${parameters.join(", ")}>`, {
-            genericClass: genericClass,
-            parameters: parameters
-        });
+        return ScopeGenericSpecialization.specialize(genericClass, parameters);
     }
 }

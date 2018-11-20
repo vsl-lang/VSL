@@ -2,7 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
-import TypeContext from '../TypeContext';
+import TypeContext from '../../scope/TypeContext';
 
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
@@ -158,17 +158,6 @@ export default class CallResolver extends TypeResolver {
         // List of working candidates
         let workingCandidates = [];
 
-        // List of the candidate's chosen arg types.
-        let workingCandidateArgTypes = [];
-
-        // List of working candidate return types.
-        let workingCandidateReturnTypes = [];
-
-        // This is a list of candidate => amount of types a prec type is used.
-        let candidatePrecTypeMap = [];
-
-        // This works by:
-        //  - Go through each candidates
 
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
@@ -176,7 +165,8 @@ export default class CallResolver extends TypeResolver {
             const candidate = candidates[i];
 
             // Amount of times we chose a prec type over normal.
-            let precedencePreferalCount = 0;
+            // used to break ties when multiple candidates could work.
+            let tiebreakerBonus = 0;
 
 
             ////////////////////////////////////////////////////////////////////////
@@ -191,8 +181,7 @@ export default class CallResolver extends TypeResolver {
                 continue;
             }
 
-
-            const candidateReturnType =
+            let candidateReturnType =
                 candidate.returnType &&
                 candidate.returnType.contextualType(typeContext);
 
@@ -224,7 +213,7 @@ export default class CallResolver extends TypeResolver {
                 let arg = args[j],
                     argName = arg.name?.value,
                     targetArgName = candidate.args[j].name,
-                    targetArgType = candidate.args[j].type;
+                    targetArgType = candidate.args[j].type.contextualType(typeContext);
 
                 // If there is an arg name, but they don't match then continue.
                 if (argName && argName !== targetArgName) continue main;
@@ -268,7 +257,7 @@ export default class CallResolver extends TypeResolver {
                 // If it was a prec type we will specify that we are using a
                 // prec type in this case.
                 if (argumentType.precType === true) {
-                    precedencePreferalCount += 1;
+                    tiebreakerBonus += 1;
                 }
 
                 candidateArgTypes.push(argumentType);
@@ -276,56 +265,53 @@ export default class CallResolver extends TypeResolver {
 
 
             // If we are here then the two functions match.
-            workingCandidates.push(candidate);
-            workingCandidateArgTypes.push(candidateArgTypes);
-            workingCandidateReturnTypes.push(candidateReturnType);
-            candidatePrecTypeMap.push(precedencePreferalCount);
+            workingCandidates.push({
+                candidate: candidate,
+                argTypes: candidateArgTypes,
+                returnType: candidateReturnType,
+                tiebreakerBonus: tiebreakerBonus
+            });
         }
 
-        let maxCandidateScore = Math.max(...candidatePrecTypeMap);
-        let maxCandidate = null,
-            maxCandidateIndex = null;
+        let topTiebreakerBonus = Math.max(...workingCandidates.map(_ => _.tiebreakerBonus));
+        let bestCandidate = null;
+
         for (let i = 0; i < workingCandidates.length; i++) {
-            if (candidatePrecTypeMap[i] === maxCandidateScore) {
-                if (maxCandidate !== null) {
+            const currentCandidate = workingCandidates[i];
+
+            // If current function is best candidate and another is also best
+            // candidate then we must throw error.
+            if (currentCandidate.tiebreakerBonus === topTiebreakerBonus) {
+                if (bestCandidate !== null) {
                     this.emit(
                         `Ambiguous use of function. Could not break tie between:\n${
-                            [maxCandidate, workingCandidates[i]]
-                                .map(candidate => `    • ${candidate} (score: ${maxCandidateScore})`)
+                            [bestCandidate, currentCandidate]
+                                .map(candidate => `    • ${candidate} (score: ${topTiebreakerBonus})`)
                                 .join('\n')
                         }\n`,
                         e.AMBIGUOUS_CALL
                     );
                 } else {
-                    maxCandidate = workingCandidates[i];
-                    maxCandidateIndex = i;
+                    bestCandidate = currentCandidate;
                 }
             }
         }
 
-        if (maxCandidate === null) {
+        if (bestCandidate === null) {
+
             if (simplifyToPrecType) {
                 this.emit(
                     `Call to function does not match any valid candidates. Valid ` +
                     `candidates are:\n` +
                     candidates.map(
-                        candidate => `    • ${candidate}`
-                    ).join("\n") +
-                    `\nInstead, deducted to \`${functionName}(${
-                        workingCandidateArgTypes[0] ? workingCandidateArgTypes[0].map(
-                            (_, i) => {
-                                types.map((type, i) => {
-                                    let argName = args[i].name?.value || "*";
-                                    return `${argName}: ${workingCandidateArgTypes.map(candidate => candidate[i]).join(" | ")}`
-                                }).join(" | ")
-                            }
-                        ).join(", ") : ""
-                    }) -> ${expectedReturnType || "*"}\``,
+                        functionCandidate => `    • ${functionCandidate}`
+                    ).join("\n"),
                     e.INVALID_FUNCTION_CALL
                 );
             } else {
                 return [];
             }
+
         } else {
             // Re-resolve subtypes to ensure unambiguous refs.
             for (let i = 0; i < argc; i++) {
@@ -335,7 +321,7 @@ export default class CallResolver extends TypeResolver {
                         case ConstraintType.VoidableContext: return false;
 
                         case ConstraintType.RequestedTypeResolutionConstraint:
-                            return workingCandidateArgTypes[maxCandidateIndex][i];
+                            return bestCandidate.argTypes[i];
 
                         default: return negotiate(type);
                     }
@@ -343,7 +329,7 @@ export default class CallResolver extends TypeResolver {
             }
 
             // We must make sure we can access it
-            if (!this.node.parentScope.scope.canAccess(maxCandidate)) {
+            if (!this.node.parentScope.scope.canAccess(bestCandidate.candidate)) {
                 this.emit(
                     `Cannot use private function from this context.`,
                     e.INVALID_ACCESS
@@ -351,8 +337,8 @@ export default class CallResolver extends TypeResolver {
             }
 
             // If we have succesfully found the one correct candidate...
-            this.node.headRef = maxCandidate;
-            return [new TypeCandidate(maxCandidate.returnType)];
+            this.node.headRef = bestCandidate.candidate;
+            return [new TypeCandidate(bestCandidate.returnType)];
         }
     }
 }

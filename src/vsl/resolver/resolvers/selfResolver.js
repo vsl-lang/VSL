@@ -38,17 +38,14 @@ export default class IdResolver extends TypeResolver {
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         // Find the parent class.
         let parentClass = null,
-            maybeClassStatemet = this.node.parentScope?.parentNode;
+            maybeClassStatement = this.node.parentScope?.parentNode;
 
-        while (maybeClassStatemet) {
-            if (maybeClassStatemet.reference instanceof ScopeTypeItem) {
-                parentClass = maybeClassStatemet.reference;
-                break;
-            } else if (maybeClassStatemet.reference instanceof ScopeGenericItem) {
-                parentClass = maybeClassStatemet.reference.getCanonicalInstance();
+        while (maybeClassStatement) {
+            if (maybeClassStatement.reference instanceof ScopeTypeItem) {
+                parentClass = maybeClassStatement.reference.selfType;
                 break;
             } else {
-                maybeClassStatemet = maybeClassStatemet.parentScope?.parentNode;
+                maybeClassStatement = maybeClassStatement.parentScope?.parentNode;
             }
         }
 

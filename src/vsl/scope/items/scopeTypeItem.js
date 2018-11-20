@@ -23,6 +23,9 @@ import Scope from '../scope';
  *                                  likely be ignored.
  * @property {?GenericInfo} data.genericInfo - Can be `null`. This is info
  *                                           specifying how generic params do.
+ * @property {?ScopeTypeItem} data.selfType - If this is a generic. Set this to
+ *                                          `genericInfo.parameters`. Else this
+ *                                          defaults to `this`.
  */
 
 /**
@@ -111,6 +114,13 @@ export default class ScopeTypeItem extends ScopeItem {
          * @type {GenericInfo}
          */
         this.genericInfo;
+
+        /**
+         * Refers to the type of a `self`. This may differ from the current
+         * `ScopeTypeItem` object in the case of generics.
+         * @type {ScopeTypeItem}
+         */
+        this.selfType;
     }
 
     /**
@@ -157,6 +167,7 @@ export default class ScopeTypeItem extends ScopeItem {
         dynamicDispatch = null,
         defaultInitializer = null,
         genericInfo,
+        selfType,
         ...opts
     } = {}) {
         super.init(opts);
@@ -170,6 +181,8 @@ export default class ScopeTypeItem extends ScopeItem {
         this._dynamicDispatch = dynamicDispatch;
         this.source = source;
         this.genericInfo = genericInfo;
+
+        this.selfType = this;
 
         this.defaultInitializer = defaultInitializer;
     }
