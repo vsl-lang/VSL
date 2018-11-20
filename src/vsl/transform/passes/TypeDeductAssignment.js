@@ -78,6 +78,8 @@ export default class TypeDeductAssignment extends Transformation {
                             return requestedTypeCandidate;
                         case ConstraintType.SimplifyToPrecType:
                             return true;
+                        case ConstraintType.VoidableContext:
+                            return false;
                         default:
                             return null;
                     }

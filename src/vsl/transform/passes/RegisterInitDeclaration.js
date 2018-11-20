@@ -7,6 +7,7 @@ import ScopeForm from '../../scope/scopeForm';
 import ScopeInitItem from '../../scope/items/scopeInitItem';
 import ScopeAliasArgItem from '../../scope/items/scopeAliasArgItem';
 import ScopeFuncItemArgument from '../../scope/items/scopeFuncItemArgument';
+import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 
 import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
@@ -74,6 +75,12 @@ export default class RegisterInitDeclaration extends Transformation {
             }
         );
 
+        // Get the return type
+        let returnType = classItem;
+        if (classItem.isGeneric) {
+            returnType = ScopeGenericSpecialization.specialize(classItem, classItem.genericInfo.parameters);
+        }
+
         // Add the initalizer to the class
         let type = new ScopeInitItem(
             ScopeForm.definite,
@@ -81,7 +88,7 @@ export default class RegisterInitDeclaration extends Transformation {
             {
                 args: initArgs,
                 source: node,
-                returnType: classItem,
+                returnType: returnType,
                 initializingType: classItem
             }
         );
