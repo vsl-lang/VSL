@@ -10,7 +10,7 @@ import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 
 import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
 import isInstanceCtx from '../helpers/isInstanceCtx';
-import getFunctionName from '../helpers/getFunctionName';
+import { getFunctionName } from '../helpers/getFunctionInstance';
 
 import * as llvm from "llvm-node";
 
@@ -34,7 +34,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         const llvmFuncName = getFunctionName(scopeItem);
 
         // Check if this has already been generated
-        const callee = backend.module.getFunction(llvmFuncName);
+        const callee = scopeItem.backendRef;
         if (callee) return callee;
 
         // This specifies if the function should be compiled publically.
@@ -217,6 +217,8 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             }
         }
 
+
+        scopeItem.backendRef = func;
         return func;
     }
 }

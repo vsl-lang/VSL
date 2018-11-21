@@ -333,7 +333,8 @@ export default class CallResolver extends TypeResolver {
             }
 
             // If we have succesfully found the one correct candidate...
-            this.node.headRef = bestCandidate.candidate;
+            this.node.reference = bestCandidate.candidate;
+            this.node.returnType = bestCandidate.returnType;
             return [new TypeCandidate(bestCandidate.returnType)];
         }
     }

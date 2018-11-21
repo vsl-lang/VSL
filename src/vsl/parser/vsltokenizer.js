@@ -215,6 +215,7 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('typealias'), passThrough],
 
     [kw('init'), passThrough],
+    [kw('deinit'), passThrough],
 
     [kw('if'), passThrough],
     [kw('else'), passThrough],

@@ -51,7 +51,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                 let varRef = new llvm.GlobalVariable(
                     backend.module,
                     type,
-                    node.type === t.AssignmentType.Constant,
+                    false,
                     llvm.LinkageTypes.InternalLinkage,
                     llvm.UndefValue.get(type),
                     name

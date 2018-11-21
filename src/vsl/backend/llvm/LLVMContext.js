@@ -1,6 +1,6 @@
 export const Key = {
-    LValueContext: Symbol('LValueContext'),
-    SpecializedGenericTy: Symbol('SpecializedGenericTy')
+    LValueContext: Symbol('LLVMContext.Key.LValueContext'),
+    TypeContext: Symbol('LLVMContext.Key.TypeContext')
 }
 
 /**

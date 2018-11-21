@@ -1,5 +1,6 @@
 import * as llvm from 'llvm-node';
 import toLLVMType from './toLLVMType';
+import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -22,6 +23,7 @@ import toLLVMType from './toLLVMType';
 export default function layoutType(type, backend) {
     const { context, module } = backend;
     const typeName = type.uniqueName;
+    const typeContext = type.getTypeContext();
 
     let existingType = module.getTypeByName(typeName);
     if (existingType) return existingType;
@@ -31,10 +33,12 @@ export default function layoutType(type, backend) {
         typeName
     );
 
+    const fieldTypes = type.subscope.aliases.map(
+        alias => alias.type.contextualType(typeContext));
+
     // Convert all fields to LLVM types.
-    let layout = type.subscope.aliases.map(
-        field => toLLVMType(field.type, backend)
-    );
+    let layout = fieldTypes.map(
+        fieldType => toLLVMType(fieldType, backend));
 
     structType.setBody(
         layout,

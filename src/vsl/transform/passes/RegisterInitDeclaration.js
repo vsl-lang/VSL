@@ -75,12 +75,6 @@ export default class RegisterInitDeclaration extends Transformation {
             }
         );
 
-        // Get the return type
-        let returnType = classItem;
-        if (classItem.isGeneric) {
-            returnType = ScopeGenericSpecialization.specialize(classItem, classItem.genericInfo.parameters);
-        }
-
         // Add the initalizer to the class
         let type = new ScopeInitItem(
             ScopeForm.definite,
@@ -88,7 +82,7 @@ export default class RegisterInitDeclaration extends Transformation {
             {
                 args: initArgs,
                 source: node,
-                returnType: returnType,
+                returnType: classItem.selfType,
                 initializingType: classItem
             }
         );

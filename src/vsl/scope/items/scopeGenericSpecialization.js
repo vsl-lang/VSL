@@ -153,6 +153,14 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
         return new TypeContext({ genericParameters: specializationMap })
     }
 
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     */
+    get uniqueName() {
+        return `${this.genericClass}${this.getTypeContext().getMangling()}`
+    }
+
     /** @return {string} */
     toString() {
         return `${this.genericClass}<${this.parameters.join(", ")}>`;

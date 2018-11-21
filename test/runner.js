@@ -6,7 +6,8 @@ const child_process = require('child_process');
 
 var libvsl,
     aTestErrored = false;
-async function start() {
+
+async function loadLibvsl() {
     // First get the module
     const moduleLoader = new VSL.Module(path.join(__dirname, '../libraries/libvsl'));
     try {
@@ -42,7 +43,9 @@ async function start() {
         VSL.HookType.Strong,
         index
     );
+}
 
+async function start() {
     runTests(__dirname)
         .then(() => {
         if (aTestErrored) process.exit(1);
@@ -82,6 +85,8 @@ async function runTestDir(dir) {
     const testName = path.basename(dir);
     group.metadata.name = 'test-' + testName;
 
+    await loadLibvsl();
+
     const index = new VSL.CompilationIndex(
         group,
         [libvsl]
@@ -103,7 +108,7 @@ async function runTestDir(dir) {
             try {
                 await index.compile(backend)
 
-                const instance = child_process.spawn('lli', [], { stdio: 'pipe' })
+                const instance = child_process.spawn('lli', ['-O2'], { stdio: 'pipe' })
                 instance.stdin.write(backend.getByteCode());
                 instance.stdin.end();
 

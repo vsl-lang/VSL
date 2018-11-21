@@ -5,7 +5,7 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 
-import { getFunctionInstance } from '../helpers/getFunctionName';
+import getFunctionInstance from '../helpers/getFunctionInstance';
 
 import * as llvm from "llvm-node";
 
@@ -26,7 +26,7 @@ export default class LLVMBinaryExpression extends BackendWatcher {
         const lhs = regen('lhs', node, context);
         const rhs = regen('rhs', node, context);
         return context.builder.createCall(
-            getFunctionInstance(node.reference, regen, context.bare()),
+            getFunctionInstance(node.reference, context.bare(), regen),
             [
                 lhs,
                 rhs

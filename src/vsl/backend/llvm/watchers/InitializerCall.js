@@ -3,7 +3,7 @@ import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import ScopeInitItem from '../../../scope/items/scopeInitItem';
-import getFunctionName, { getFunctionInstance } from '../helpers/getFunctionName';
+import getFunctionInstance from '../helpers/getFunctionInstance';
 import toLLVMType from '../helpers/toLLVMType';
 import { getTypeOffset } from '../helpers/layoutType';
 import getDefaultInit from '../helpers/getDefaultInit';
@@ -14,14 +14,14 @@ import * as llvm from 'llvm-node';
 
 export default class LLVMInitializerCall extends BackendWatcher {
     match(type) {
-        return type instanceof t.FunctionCall && type.headRef instanceof ScopeInitItem;
+        return type instanceof t.FunctionCall && type.reference instanceof ScopeInitItem;
     }
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        const initRef = node.headRef;
-
+        // Get the init function item.
+        const initRef = node.reference;
         if (initRef === null) {
             throw new BackendError(
                 `Initializer call is ambiguous. Multiple possible references.`,
@@ -29,24 +29,40 @@ export default class LLVMInitializerCall extends BackendWatcher {
             );
         }
 
-        const classRef = node.head.reference || initRef.initializingType;
+        // Try to get what type is being initialized (should be a class meta type).
+        const classRef = node.returnType;
+        if (!classRef) {
+            throw new BackendError(
+                `Initializer call is ambiguous. Multiple possible references.`,
+                node.head
+            );
+        }
+
+        // Type of the class in LLVM.
         const classType = toLLVMType(classRef, backend);
 
+        // Size of the class in bytes
         const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);
 
-        // Get the name of this function so we can ref it
-        const calleeName = getFunctionName(initRef);
+
+
+
+        // Create context for intializer
+        const ctx = context.bare();
+
 
         // Then, with the callee. We'll either get initializer or we'll get the
         //  default init
         let callee;
         if (initRef.isDefaultInit) {
-            callee = getDefaultInit(classRef, context, regen);
+            callee = getDefaultInit(classRef, ctx, regen);
         } else {
-            const ctx = context.bare();
-            ctx.pushValue(Key.SpecializedGenericTy, classRef);
-            callee = getFunctionInstance(initRef, regen, ctx);
+            // We only need to pass type context to function instance because
+            // the default init never even refs the generic params.
+            ctx.pushValue(Key.TypeContext, classRef.getTypeContext());
+            callee = getFunctionInstance(initRef, ctx, regen);
         }
+
 
         // Allocate space for struct
         // malloc() returns a void* (i8*) so lets also convert that to the
@@ -57,12 +73,14 @@ export default class LLVMInitializerCall extends BackendWatcher {
             classType
         );
 
-        // Create argument instruction list
+
+        // Compile the arguments
         let compiledArgs = [instance];
         for (let i = 0; i < node.arguments.length; i++) {
             let value = regen('value', node.arguments[i], context);
             compiledArgs.push(value);
         }
+
 
         return context.builder.createCall(
             callee,

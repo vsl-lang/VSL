@@ -21,7 +21,7 @@ export default function toLLVMType(type, backend) {
             case "ui32": return llvm.Type.getInt32Ty(context);
             case "i64":
             case "ui64": return llvm.Type.getInt64Ty(context);
-            case "pointer": return toLLVMType(type.genericParents[0], backend).getPointerTo();
+            case "pointer": return toLLVMType(type.parameters[0], backend).getPointerTo();
             case "double": return llvm.Type.getDoubleTy(context);
             case "float": return llvm.Type.getFloatTy(context);
             case "opaquepointer": return llvm.StructType.get(context, []).getPointerTo();

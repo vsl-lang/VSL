@@ -7,8 +7,10 @@ import toLLVMType from '../helpers/toLLVMType';
 import ValueRef from '../ValueRef';
 import { Key } from '../LLVMContext';
 
-import getFunctionName from '../helpers/getFunctionName';
+import { getFunctionName } from '../helpers/getFunctionInstance';
 import getDefaultInit from '../helpers/getDefaultInit';
+
+import TypeContext from '../../../scope/TypeContext';
 
 import * as llvm from "llvm-node";
 
@@ -22,15 +24,17 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         const scopeItem = node.reference;
         const args = scopeItem.args;
 
+        const typeContext = context.popValue(Key.TypeContext) || TypeContext.empty();
+
         // Class being initalized. We try to see if there is a generic specialization
         // otherwise we'll load the non-generic class type.
-        const parentClass = context.popValue(Key.SpecializedGenericTy) || scopeItem.initializingType;
+        const parentClass = scopeItem.initializingType.selfType.contextualType(typeContext);
 
         // Class being initalized in LLVM
         const selfType = toLLVMType(parentClass, backend);
 
         // What the init should be called
-        const llvmFuncName = getFunctionName(scopeItem);
+        const llvmFuncName = getFunctionName(scopeItem, typeContext);
 
         // Check if this has already been generated
         const callee = backend.module.getFunction(llvmFuncName);
@@ -50,7 +54,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
                 [
                     selfType,
                     ...args.map(
-                        arg => toLLVMType(arg.type, backend)
+                        arg => toLLVMType(arg.type.contextualType(typeContext), backend)
                     )
                 ],
                 false
