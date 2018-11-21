@@ -46,82 +46,6 @@ export default class ScopeTypeItem extends ScopeItem {
      */
     constructor(form, rootId, options) {
         super(form, rootId, options);
-
-        /**
-         * Types which this can safely be cast to. We'll assume that you've done
-         * all the checks because if something is wrong here expect big giant
-         * segfaults. If you have a superclass, specified it'll just go in the
-         * superclass field. Interfaces go here for example.
-         * @type {?(ScopeTypeItem[])}
-         */
-        this.interfaces;
-
-        /**
-         * The single superclass defaulting to the root class. The superclass
-         * (not interface) of the current class, don't specify if there is none.
-         * You don't need to resolve inheritance or anything. This is null for
-         * interfaces.
-         * @type {ScopeTypeItem}
-         */
-        this.superclass;
-
-        /**
-         * Specifies static scope for a type
-         * @type {Scope}
-         */
-        this.staticScope;
-
-        /**
-         * Specifies the subscope for the function.
-         * @type {Scope}
-         */
-        this.subscope;
-
-        /**
-         * Whether the type is an interface. This is used to determine how
-         * casting will occur and dynamic dispatch so ensure that it is not
-         * possible to declare fields.
-         * @type {Boolean}
-         */
-        this.isInterface;
-
-        /**
-         * A property for backends if the type needs to act like a native type.
-         * ANY fields will likely be ignored.
-         * @type {string}
-         */
-        this.mockType;
-
-        /**
-         * If a type explicitly is unqualified for dynamic dispatch.
-         * @param {boolean}
-         */
-        this._dynamicDispatch;
-
-        /**
-         * The default initializer if needed
-         * @type {?ScopeInitItem}
-         */
-        this.defaultInitializer;
-
-        /**
-         * Specifies the source node of the type.
-         * @type {?Node}
-         */
-        this.source;
-
-        /**
-         * The generic info
-         * @type {GenericInfo}
-         */
-        this.genericInfo;
-
-        /**
-         * Refers to the type of a `self`. This may differ from the current
-         * `ScopeTypeItem` object in the case of generics.
-         * @type {ScopeTypeItem}
-         */
-        this.selfType;
     }
 
     /**
@@ -173,18 +97,76 @@ export default class ScopeTypeItem extends ScopeItem {
     } = {}) {
         super.init(opts);
 
+        /**
+         * Types which this can safely be cast to. We'll assume that you've done
+         * all the checks because if something is wrong here expect big giant
+         * segfaults. If you have a superclass, specified it'll just go in the
+         * superclass field. Interfaces go here for example.
+         * @type {?(ScopeTypeItem[])}
+         */
         this.interfaces = interfaces;
+
+        /**
+         * The single superclass defaulting to the root class. The superclass
+         * (not interface) of the current class, don't specify if there is none.
+         * You don't need to resolve inheritance or anything. This is null for
+         * interfaces.
+         * @type {ScopeTypeItem}
+         */
         this.superclass = superclass;
+
+        /**
+         * Whether the type is an interface. This is used to determine how
+         * casting will occur and dynamic dispatch so ensure that it is not
+         * possible to declare fields.
+         * @type {Boolean}
+         */
         this.isInterface = isInterface;
+
+        /**
+         * Specifies static scope for a type
+         * @type {Scope}
+         */
         this.staticScope = staticScope;
+
+        /**
+         * Specifies the subscope for the function.
+         * @type {Scope}
+         */
         this.subscope = subscope;
+
+        /**
+         * A property for backends if the type needs to act like a native type.
+         * ANY fields will likely be ignored.
+         * @type {string}
+         */
         this.mockType = mockType;
+
         this._dynamicDispatch = dynamicDispatch;
+
+        /**
+         * Specifies the source node of the type.
+         * @type {?Node}
+         */
         this.source = source;
+
+        /**
+         * The generic info
+         * @type {GenericInfo}
+         */
         this.genericInfo = genericInfo;
 
+        /**
+         * Refers to the type of a `self`. This may differ from the current
+         * `ScopeTypeItem` object in the case of generics.
+         * @type {ScopeTypeItem}
+         */
         this.selfType = this;
 
+        /**
+         * The default initializer if needed
+         * @type {?ScopeInitItem}
+         */
         this.defaultInitializer = defaultInitializer;
     }
 

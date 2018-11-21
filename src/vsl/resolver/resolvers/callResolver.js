@@ -44,7 +44,7 @@ export default class CallResolver extends TypeResolver {
 
         // This will resolve the head of the function. e.g. in `a.b(c)` this
         // negotiates the resolution of `a.b`
-        const headResolver = (type) => {
+        const headNegotiator = (type) => {
             switch (type) {
                 // This basically says we want a function in return
                 // This will return ALL of the function with the rootId
@@ -75,8 +75,9 @@ export default class CallResolver extends TypeResolver {
         // Generate the arg object and we'll ref that for lookup
         // The types of these children are not yet known so we'll need to narrow
         // them down as best as we can and use those as the candidates
-        let headValues = this.getChild(this.node.head)
-            .resolve(headResolver) // Resolve expression
+        let headResolver = this.getChild(this.node.head);
+        let headValues = headResolver
+            .resolve(headNegotiator) // Resolve expression
             .map(item => item.candidate.resolved()); // Resolve types
 
         ////////////////////////////////////////////////////////////////////////
@@ -95,7 +96,7 @@ export default class CallResolver extends TypeResolver {
         let errorMessage = `Use of undeclared function \`${functionName}\``;
 
         // Type context we'll use when resolving return and parameter types.
-        let typeContext = TypeContext.empty();
+        let typeContext = headResolver.getNegotiatationProposal(ConstraintType.TypeContext) || TypeContext.empty();
 
         for (let i = 0; i < headValues.length; i++) {
             if (headValues[i] instanceof ScopeMetaClassItem) {
@@ -104,15 +105,10 @@ export default class CallResolver extends TypeResolver {
                 // an init call.
 
                 const classToConstruct = headValues[i].referencingClass;
+                items.push(...classToConstruct.subscope.getAll('init'));
 
-                if (classToConstruct instanceof ScopeGenericSpecialization) {
-                    // ===== GENERIC CLASS =====
-                    items.push(...classToConstruct.subscope.getAll('init'));
-                    typeContext = classToConstruct.getTypeContext();
-                } else {
-                    // ===== NORMAL CLASS ====
-                    items.push(...classToConstruct.subscope.getAll('init'));
-                }
+                typeContext = typeContext.merge(classToConstruct.getTypeContext());
+
                 errorMessage = `Class \`${functionName}\` has no intializers.`;
             } else if (headValues[i] instanceof ScopeFuncItem) {
                 // ===== FUNCTIONS =====
@@ -156,7 +152,6 @@ export default class CallResolver extends TypeResolver {
 
         // List of working candidates
         let workingCandidates = [];
-
 
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
@@ -304,7 +299,9 @@ export default class CallResolver extends TypeResolver {
                     `candidates are:\n` +
                     candidates.map(
                         functionCandidate => `    • ${functionCandidate}`
-                    ).join("\n"),
+                    ).join("\n") + (
+                        typeContext.isEmpty() ? `` : `\nwhere ${typeContext} in context.`
+                    ),
                     e.INVALID_FUNCTION_CALL
                 );
             } else {

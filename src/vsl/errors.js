@@ -99,6 +99,10 @@ export default {
     INVALID_FUNCTION_CALL: {},
     SELF_IS_NOT_FUNCTION: {},
 
+    // Property
+    PROPERTY_DOES_NOT_EXIST: {},
+    METHOD_DOES_NOT_EXIST: {},
+
     // Access modifiers
     INVALID_ACCESS: {},
 

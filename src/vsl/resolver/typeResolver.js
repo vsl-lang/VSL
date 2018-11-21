@@ -79,8 +79,11 @@ export default class TypeResolver {
     ) {
         this.node = node;
         this.getChild = getChild;
+
+        /** @private */
+        this.upwardNegotiationValues = new Map();
     }
-    
+
     /**
      * Returns plane intersection plane bounds.
      * @private
@@ -94,19 +97,19 @@ export default class TypeResolver {
                 `compiler saying 'wat'.`
             );
         }
-        
+
         if (appliedSet === null || rootSet === null) {
             return null;
         }
-        
+
         let derivedCandidates = [];
-        
+
         // Iterate through each of the valid candidates
         // we need to check that one of the
         for (let i = rootSet.length - 1; i >= 0; i--) {
             let rootItem = rootSet.pop();
             let match = null;
-            
+
             // Look for an applied candidate that matches the current rootSet.
             for (let j = appliedSet.length - 1; j >= 0; j--) {
                 if (appliedSet[j].candidate.resolved().castableTo(rootItem.candidate)) {
@@ -114,7 +117,7 @@ export default class TypeResolver {
                     break;
                 }
             }
-            
+
             // If there is one, this is a succesful candidate match.
             if (match !== null) {
                 derivedCandidates.push({
@@ -123,10 +126,10 @@ export default class TypeResolver {
                 });
             }
         }
-        
+
         return derivedCandidates;
     }
-    
+
     /**
      * Performs a set-intersection between two types, you can specify error
      * handling to centralize errors caused.
@@ -195,16 +198,16 @@ export default class TypeResolver {
     mutableIntersect(rootSet, appliedSet) {
         let derivedCandidates = this._intersect(rootSet, appliedSet);
         if (derivedCandidates === null) return null;
-        
+
         // Clear both arrays
         appliedSet.splice(0, appliedSet.length)
-        
+
         // Reapply types
         for (let i = 0; i < derivedCandidates.length; i++) {
             appliedSet.push(derivedCandidates[i].value);
         }
     }
-    
+
     /**
      * Please reference `mutableIntersect` for information. This merely also
      * mutates the root.
@@ -221,11 +224,11 @@ export default class TypeResolver {
     dualPlaneIntersection(rootSet, appliedSet) {
         let derivedCandidates = this._intersect(rootSet, appliedSet);
         if (derivedCandidates === null) return null;
-        
+
         // Clear both arrays
         rootSet.splice(0, rootSet.length);
         appliedSet.splice(0, appliedSet.length)
-        
+
         // Reapply types
         for (let i = 0; i < derivedCandidates.length; i++) {
             rootSet.push(derivedCandidates[i].type);
@@ -233,7 +236,7 @@ export default class TypeResolver {
         }
 
     }
-    
+
     /**
      * Resolves types for a given node.
      *
@@ -246,6 +249,27 @@ export default class TypeResolver {
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         throw new TypeError("resolve must be overriden");
     }
+
+    /**
+     * Negotiates upward, you can use this when you wish to pass some
+     * information independent of the return candidate.
+     * @param {ConstraintType} constraint
+     * @param {Object} value
+     */
+    negotiateUpward(constraint, value) {
+        this.upwardNegotiationValues.set(constraint, value);
+    }
+
+    /**
+     * Call this from a higher negotiator, this returns a negotiation proposal
+     * from this resolution node
+     * @param {ConstraintType} constraint
+     * @return {?Object} contraint value
+     */
+    getNegotiatationProposal(constraint) {
+        return this.upwardNegotiationValues.get(constraint);
+    }
+
 
     /**
      * Emits an error. Usually used when a type conflict is encountered.

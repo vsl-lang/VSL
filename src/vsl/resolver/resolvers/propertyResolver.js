@@ -45,13 +45,19 @@ export default class PropertyResolver extends TypeResolver {
         // Call to resolve head
         const tailResolver = this.getChild(this.node.tail);
 
+        // If a definite deduction is expected
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
+        // If the result of this expression is being called.
+        const isCallee = negotiate(ConstraintType.BoundedFunctionContext);
+
         // The candidates of the head
         const candidates = this.getChild(head).resolve((type) => {
             switch (type) {
                 case ConstraintType.RequestedTypeResolutionConstraint:
                     return null;
                 case ConstraintType.BoundedFunctionContext:
-                    return null;
+                    return false;
                 case ConstraintType.VoidableContext:
                     return false;
                 default: return negotiate(type);
@@ -59,8 +65,8 @@ export default class PropertyResolver extends TypeResolver {
         });
 
         // Stores a respective list of candidates in form
-        // { headType: TypeCandidate, fieldType: TypeCandidate }
-        let candidateList = [];
+        //  Map<headType: TypeCandidate, fields[]>
+        let candidateList = new Map();
 
         // Try IdResolver for each candidate.
         for (let i = 0; i < candidates.length; i++) {;
@@ -79,33 +85,71 @@ export default class PropertyResolver extends TypeResolver {
                 }
             });
 
-            // Makes 0 sense if there is more than one returned here. If this is
-            // the case we'll just error, maybe post a bug report.
-            if (matchingFields.length > 1) {
-                throw new TransformationError(
-                    `Object has multiple fields with name ${this.node.tail.value}.` +
-                    `This is not ordinarially possible, please report a bug ` +
-                    `with the code causing this error.`,
-                    node
-                );
-            } else if (matchingFields.length === 1) {
-                candidateList.push({
-                    headType: candidates[i],
-                    aliasItem: this.node.tail.reference,
-                    candidate: matchingFields[0]
-                });
+            const possibleFieldTypes = matchingFields.map(matchingField => ({
+                tailReference: this.node.tail.reference,
+                tailType: matchingField
+            }));
+
+            if (possibleFieldTypes.length === 0) continue;
+            candidateList.set(candidate, possibleFieldTypes);
+        }
+
+        if (candidateList.size > 1) {
+            this.emit(
+                `Left-hand side of property is ambiguous.`,
+                e.AMBIGUOUS_EXPRESSION
+            );
+        } else if (candidateList.size === 0) {
+            if (simplifyToPrecType) {
+                if (isCallee) {
+                    this.emit(
+                        `Left-hand side of expression does not have method named ` +
+                        `\`${this.node.tail.value}\`.`,
+                        e.METHOD_DOES_NOT_EXIST
+                    );
+                } else {
+                    this.emit(
+                        `Left-hand side of expression does not have property named ` +
+                        `\`${this.node.tail.value}\`.`,
+                        e.PROPERTY_DOES_NOT_EXIST
+                    );
+                }
             } else {
-                // If they are no matching fields that means this overload
-                // doesn't work.
+                return [];
             }
         }
 
-        if (candidateList.length === 1) {
-            this.node.baseRef = candidateList[0].headType.candidate;
-            this.node.propertyRef = candidateList[0].aliasItem;
+        const [headType, tailTypes]  = [...candidateList][0];
+
+        // If it is call we'll pass the generic of LHS to the function
+        if (isCallee) {
+            this.negotiateUpward(ConstraintType.TypeContext, headType.getTypeContext());
+        }
+
+        this.node.baseRef = headType;
+
+        if (tailTypes.length > 1) {
+            if (!isCallee) {
+                this.emit(
+                    `Left-hand side of expression has multiple properties named ` +
+                    `\`${this.node.tail.value}\`. This should't be possible, ` +
+                    `report this error.`,
+                    e.AMBIGUOUS_EXPRESSION
+                );
+            } else {
+                // If we are here then we'll just return all and the parent should specialize.
+            }
+        } else if (tailTypes.length === 1) {
+            this.node.propertyRef = tailTypes[0].tailReference;
+        } else {
+            // This should never be reached because we ensure no length < 1 is
+            // passed.
+            this.emit(
+                `Internal error: the definite head type has no tail types.`
+            );
         }
 
         // TODO: handle these
-        return candidateList.map(i => i.candidate);
+        return tailTypes.map(type => type.tailType);
     }
 }
