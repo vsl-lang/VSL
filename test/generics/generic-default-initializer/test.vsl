@@ -1,0 +1,8 @@
+class ValueWrapper<T> {
+    let x: String = "Hello, World!"
+}
+
+func main() {
+    let goat: ValueWrapper<Int> = ValueWrapper<Int>()
+    print(goat.x)
+}

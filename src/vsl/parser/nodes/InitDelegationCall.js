@@ -24,7 +24,7 @@ export default class InitDelegationCall extends Node {
         /**
          * @type {ScopeFuncItem}
          */
-        this.headRef = null;
+        this.reference = null;
     }
 
     clone() {

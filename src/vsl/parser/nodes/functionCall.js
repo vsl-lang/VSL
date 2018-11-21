@@ -27,7 +27,14 @@ export default class FunctionCall extends Node {
         /**
          * @type {ScopeFuncItem}
          */
-        this.headRef = null;
+        this.reference = null;
+
+        /**
+         * Resolved return type. Different than `this.reference.returnType` in
+         * the case of generics
+         * @type {?ScopeTypeItem}
+         */
+        this.returnType = null;
     }
 
     clone() {

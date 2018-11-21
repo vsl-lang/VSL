@@ -1,7 +1,7 @@
 import * as llvm from 'llvm-node';
-import getFunctionName from './getFunctionName';
 import toLLVMType from './toLLVMType';
 import { getTypeOffset } from './layoutType';
+import { Key } from '../LLVMContext'
 
 /**
  * Obtains the default initializer for a class.

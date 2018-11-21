@@ -1,0 +1,12 @@
+class ValueWrapper<T> {
+    let x: T
+
+    init(x: T) {
+        self.x = x
+    }
+}
+
+func main() {
+    let goat: ValueWrapper<String> = ValueWrapper<String>(x: "test")
+    print(goat.x)
+}

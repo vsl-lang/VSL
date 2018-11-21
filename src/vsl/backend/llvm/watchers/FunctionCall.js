@@ -3,7 +3,7 @@ import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import isInstanceCtx from '../helpers/isInstanceCtx';
-import getFunctionName from '../helpers/getFunctionName';
+import getFunctionInstance from '../helpers/getFunctionInstance';
 
 export default class LLVMFunctionCall extends BackendWatcher {
     match(type) {
@@ -15,7 +15,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
         // Get list of possible overloads
         // at this point there should only beo ne
-        const functionRef = node.headRef;
+        const functionRef = node.reference;
 
         if (functionRef === null) {
             throw new BackendError(
@@ -24,8 +24,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
             );
         }
 
-        const calleeName = getFunctionName(functionRef);
-        let callee = backend.module.getFunction(calleeName);
+        let callee = getFunctionInstance(functionRef, context.bare(), regen);
 
         // Check if callee is generated yet. If not we'll generate it.
         if (!callee) {
@@ -59,6 +58,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
             const headValue = regen('head', node.head, context);
             compiledArgs.unshift(headValue);
         }
+
 
         let result = context.builder.createCall(
             callee,

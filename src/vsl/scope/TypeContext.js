@@ -45,6 +45,21 @@ export default class TypeContext {
     }
 
     /**
+     * Adds a mangling suffix to this type context
+     * @return {string}
+     */
+    getMangling() {
+        if (this.isEmpty()) {
+            return "";
+        } else {
+            return `.generic.${
+                [...this.genericParameters]
+                    .map(([_, type]) => type.uniqueName)
+            }`;
+        }
+    }
+
+    /**
      * Returns human-readable description of type context.
      * @return {string}
      */

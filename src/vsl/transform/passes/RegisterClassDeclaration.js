@@ -58,7 +58,7 @@ export default class RegisterClassDeclaration extends Transformation {
                 args: [],
                 source: null,
                 isDefaultInit: true,
-                returnType: node.reference,
+                returnType: node.reference.selfType,
                 initializingType: node.reference
             }
         );

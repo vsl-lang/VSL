@@ -5,6 +5,8 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 
+import { alloc, free } from '../helpers/MemoryManager';
+
 import * as llvm from "llvm-node";
 
 export default class LLVMNativeBlock extends BackendWatcher {
@@ -162,6 +164,11 @@ export default class LLVMNativeBlock extends BackendWatcher {
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
+            );
+
+            case "free": return free(
+                func.args[0].aliasRef.backendRef.generate(),
+                context.ctx
             );
 
             default: throw new BackendError(

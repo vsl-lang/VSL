@@ -1,14 +1,34 @@
 # CHANGELOG
 Development progress and changes over time.
 
-## Nov 14, 2018
+## Nov 21, 2018
+ - Address (Nov 20, 2018 Plan 5)
+ - Add backend contextual generic initialization.
+ - Add mangling for generic specializations.
+ - Adjust `getFunctionName` to support generic function mangling.
+ - Modify `ScopeInitItem` for better stringification representation.
+ - `CallResolver` now stores contextual return type.
+ - Add contextual construction support to `layoutType`
+ - Default initializers now support `selfType`.
+
+## Nov 20, 2018
  - Implement property negotiation (Nov 19, 2018 Plan 2)
  - Add upward negotiation (Nov 20, 2018 Plan 1)
  - Modify `PropertyResolver` for proper ambiguity resolution.
  - Add `TypeContext` stringification and propogation.
+ - Support laying out generic types.
+ - Address (Nov 20, 2018 Plan 4)
+ - Refactor initializers.
+ - Make functions so backendRefs are used.
+ - Fix bug where global variables would be declared as constants.
 
 Plan:
  1. Need to figure out upwards negotiation
+ 2. Do we need upward negotiation for backend?
+    1. Should backend have access to type contexts.
+ 3. Is special behavior needed to compile default inits.
+ 4. Add mangler to `TypeContext`
+ 5. Adjust test runner to avoid duplicate stdlib.
 
 ## Nov 19, 2018
  - Add `contextualType(TypeContext)` to `GenericParameterItem`

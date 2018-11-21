@@ -44,7 +44,7 @@ export default class ScopeInitItem extends ScopeFuncItem {
 
     /** @override */
     toString() {
-        return `init(${this.args.join(", ")})`;
+        return `${this.initializingType.selfType}(${this.args.join(", ")})`;
     }
 
     /**

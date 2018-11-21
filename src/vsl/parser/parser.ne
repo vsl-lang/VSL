@@ -262,6 +262,7 @@ ClassItems
 ClassItem
    -> InterfaceItem {% id %}
     | InitializerStatement {% id %}
+    | DeinitializerStatement {% id %}
 
 Field
    -> AssignmentStatement {%
@@ -273,6 +274,7 @@ Field
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _ (
        ExternalMarker {% id %} |
+       NativeBlock {% id %} |
         ( "{" {% setState('inInit', true) %} )
         CodeBlock[statement {% id %}]
         ( "}" {% setState('inInit', false) %} ) {% nth(1) %}
@@ -280,6 +282,18 @@ InitializerStatement
         (data, location) =>
             new t.InitializerStatement(data[0] ? data[0].value : "", !!data[2],
                 data[4], data[6], location)
+    %}
+
+DeinitializerStatement
+   -> "deinit" _ (
+           ("{" {% setState('inFunction', true) %})
+           (CodeBlock[statement {% id %}] {% id %})
+           ("}" {% setState('inFunction', false) %}) {% nth(1) %}
+        | ExternalMarker {% id %}
+        | NativeBlock {% id %}
+    ) {%
+        (data, location) =>
+            new t.DeinitializerStatement(data[2], location)
     %}
 
 InterfaceItems
