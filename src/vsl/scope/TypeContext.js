@@ -37,6 +37,23 @@ export default class TypeContext {
     }
 
     /**
+     * Returns true if no contextual information
+     * @return {boolean}
+     */
+    isEmpty() {
+        return this.genericParameters.size === 0;
+    }
+
+    /**
+     * Returns human-readable description of type context.
+     * @return {string}
+     */
+    toString() {
+        return [...this.genericParameters]
+            .map(([key, value]) => `${key} => ${value}`).join("; ")
+    }
+
+    /**
      * Returns a new type context with current and another merged. Immutable
      * @param {TypeContext} otherContext
      * @return {TypeContext}
@@ -45,7 +62,7 @@ export default class TypeContext {
         return new TypeContext({
             genericParameters: new Map([
                 ...this.genericParameters,
-                otherContext.genericParameters
+                ...otherContext.genericParameters
             ])
         })
     }

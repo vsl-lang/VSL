@@ -24,7 +24,7 @@ export default class PropertyExpression extends Node {
      * @param {boolean} optional - Whether the RHS is optional.
      * @param {Object} position a position from nearley
      */
-    constructor(head: any, tail: any, optional: boolean, isClosure: boolean, position: Object) {
+    constructor(head: any, tail: any, optional: boolean, position: Object) {
         super(position);
 
         /** @type {Expression} */
@@ -35,9 +35,6 @@ export default class PropertyExpression extends Node {
 
         /** @type {boolean} */
         this.optional = optional;
-
-        /** @type {boolean} */
-        this.isClosure = isClosure;
 
         /** @type {?ScopeAliasItem} */
         this.baseRef = null;

@@ -583,7 +583,7 @@ propertyTail
 
 # TODO: undeclared struct (uses syntax meant for named tuple) will make this a pain but still need to change
 nullableProperty
-   -> "?" "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], true, true, l) %}
+   -> "?" "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
     | "?" Array            {% (d, l) => new t.Subscript(null, d[0].array, true, l) %}
     | "<" delimited[type {% id %}, _ ","] ">" {% (d, l) => new t.Generic(null, d[1], l) %}
     | "(" _ (delimited[ArgumentCall {% id %}, _ "," _] _ {% id %}):? ")" {%

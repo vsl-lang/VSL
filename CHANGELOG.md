@@ -3,6 +3,9 @@ Development progress and changes over time.
 
 ## Nov 14, 2018
  - Implement property negotiation (Nov 19, 2018 Plan 2)
+ - Add upward negotiation (Nov 20, 2018 Plan 1)
+ - Modify `PropertyResolver` for proper ambiguity resolution.
+ - Add `TypeContext` stringification and propogation.
 
 Plan:
  1. Need to figure out upwards negotiation

@@ -1,0 +1,15 @@
+class A {
+    func f(a: Int) -> String {
+        return "Int"
+    }
+
+    func f(a: String) -> String {
+        return "String"
+    }
+}
+
+func main() {
+    let a = A()
+    print(a.f(a: 1))
+    print(a.f(a: "foo"))
+}
