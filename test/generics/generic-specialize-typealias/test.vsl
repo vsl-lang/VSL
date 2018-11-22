@@ -1,0 +1,18 @@
+class ValueWrapper<T> {
+    let x: T
+    init(x: T) {
+        self.x = x
+    }
+
+    func getX() -> T {
+        return self.x
+    }
+}
+
+public typealias StringValueWrapper = ValueWrapper<String>
+
+func main() {
+    let a = StringValueWrapper(x: "Hello, World!")
+    print(a.getX())
+
+}

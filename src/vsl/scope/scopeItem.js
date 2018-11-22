@@ -93,12 +93,6 @@ export default class ScopeItem {
          * @type {boolean}
          */
         this.isScopeRestricted;
-
-        /**
-         * Stores if the item is a generic item
-         * @type {boolean}
-         */
-        this.isGeneric;
     }
 
     /**

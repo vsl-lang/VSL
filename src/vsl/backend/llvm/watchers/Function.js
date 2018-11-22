@@ -8,9 +8,11 @@ import ValueRef from '../ValueRef';
 
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 
+import { Key } from '../LLVMContext';
 import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import { getFunctionName } from '../helpers/getFunctionInstance';
+import TypeContext from '../../../scope/TypeContext';
 
 import * as llvm from "llvm-node";
 
@@ -31,11 +33,19 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         const returnRef = scopeItem.returnType;
         const argsRef = scopeItem.args;
 
-        const llvmFuncName = getFunctionName(scopeItem);
+        const typeContext = context.typeContext;
+
+        const llvmFuncName = getFunctionName(scopeItem, typeContext);
 
         // Check if this has already been generated
-        const callee = scopeItem.backendRef;
-        if (callee) return callee;
+        // We'll store a Map with the type context.
+        if (scopeItem.isGeneric) {
+            const callee = scopeItem.backendRef.get(typeContext);
+            if (callee) return callee;
+        } else {
+            const callee = scopeItem.backendRef.get(TypeContext.empty());
+            if (callee) return callee;
+        }
 
         // This specifies if the function should be compiled publically.
         // This means it will be visible externally. When not the case, it will
@@ -45,12 +55,9 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // Check the access modifier. This sets up the direct compilation step.
         switch (scopeItem.accessModifier) {
             case "private":
+            case "public":
             case "local":
                 isPublic = false;
-                break;
-
-            case "public":
-                isPublic = true;
                 break;
 
             case "protected":
@@ -67,13 +74,13 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // void so we do not construct.
         let returnType;
         if (scopeItem.returnType) {
-            returnType = toLLVMType(scopeItem.returnType, backend);
+            returnType = toLLVMType(scopeItem.returnType.selfType.contextualType(typeContext), backend);
         } else {
             returnType = llvm.Type.getVoidTy(backend.context);
         }
 
         const argTypes = argsRef.map(
-            arg => toLLVMType(arg.type, backend)
+            arg => toLLVMType(arg.type.selfType.contextualType(typeContext), backend)
         );
 
         // Where the physical args start
@@ -83,7 +90,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         //  sure we add `self` as the first argument. Also should not be static
         if (isInstanceCtx(scopeItem)) {
             argAccessOffset += 1;
-            const selfType = toLLVMType(scopeItem.owner.owner, backend);
+            const selfType = toLLVMType(scopeItem.owner.owner.selfType.contextualType(typeContext), backend);
             argTypes.unshift(
                 selfType
             );
@@ -193,21 +200,18 @@ export default class LLVMFunctionStatement extends BackendWatcher {
                 func
             );
 
-            let builder = new llvm.IRBuilder(entryBlock);
-            let newContext = context.clone();
-            newContext.builder = builder;
-            newContext.parentFunc = func;
-
-            regen('statements', node, newContext);
+            context.builder = new llvm.IRBuilder(entryBlock);
+            context.parentFunc = func;
+            regen('statements', node, context);
 
             // Add exit block for void functions.
             if (!scopeItem.returnType && !isEntry) {
-                builder.createRetVoid();
+                context.builder.createRetVoid();
             }
 
             // Add `ret 0` for entry case
             if (isEntry) {
-                builder.createRet(
+                context.builder.createRet(
                     llvm.ConstantInt.get(
                         backend.context,
                         0,
@@ -218,7 +222,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         }
 
 
-        scopeItem.backendRef = func;
+        scopeItem.backendRef.set(scopeItem.isGeneric ? typeContext : TypeContext.empty(), func);
         return func;
     }
 }

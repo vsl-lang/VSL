@@ -11,8 +11,9 @@ export default class LLVMBitcastExpression extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
+        const typeContext = context.typeContext;
 
-        const targetTy = toLLVMType(node.targetTy, backend);
+        const targetTy = toLLVMType(node.targetTy.contextualType(typeContext), backend);
         const valueTy = node.valueTy;
 
         const valueIsUnsignedInt = valueTy.mockType?.indexOf('ui') === 0;

@@ -166,9 +166,15 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
-            case "free": return free(
-                func.args[0].aliasRef.backendRef.generate(),
-                context.ctx
+            case "sizeof": return context.builder.createRet(
+                llvm.ConstantInt.get(
+                    context.ctx,
+                    backend.module.dataLayout.getTypeAllocSize(
+                        toLLVMType([...context.typeContext.genericParameters][0][1], context.backend)
+                    ),
+                    64,
+                    false
+                )
             );
 
             default: throw new BackendError(

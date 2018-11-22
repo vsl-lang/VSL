@@ -1,0 +1,14 @@
+class A {
+    let string: String
+
+    init(string: String) {
+        self.string = string
+    }
+}
+
+typealias B = A
+
+func main() {
+    let a: A = B(string: "Hello, World!")
+    print(a.string)
+}

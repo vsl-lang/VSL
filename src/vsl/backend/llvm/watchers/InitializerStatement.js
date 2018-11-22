@@ -24,7 +24,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         const scopeItem = node.reference;
         const args = scopeItem.args;
 
-        const typeContext = context.popValue(Key.TypeContext) || TypeContext.empty();
+        const typeContext = context.typeContext;
 
         // Class being initalized. We try to see if there is a generic specialization
         // otherwise we'll load the non-generic class type.

@@ -7,12 +7,15 @@
  */
 export default class TypeContext {
 
+    static _empty = null;
+
     /**
-     * Creates an empty type context
+     * Creates an empty type context. Always returns same object.
      * @return {TypeContext}
      */
     static empty() {
-        return new TypeContext({
+        if (TypeContext._empty) return TypeContext._empty;
+        return TypeContext._empty = new TypeContext({
             genericParameters: new Map()
         })
     }
@@ -66,6 +69,21 @@ export default class TypeContext {
     toString() {
         return [...this.genericParameters]
             .map(([key, value]) => `${key} => ${value}`).join("; ")
+    }
+
+    /**
+     * Propogates from a passed context to the current context and returns a new
+     * context.
+     * @param {TypeContext} parentContext
+     * @return {TypeContext}
+     */
+    propogateContext(parentContext) {
+        return new TypeContext({
+            genericParameters: new Map(
+                [...this.genericParameters].map(
+                    ([parameter, type]) => [parameter, parentContext.genericParameters.get(type) || type])
+            )
+        });
     }
 
     /**

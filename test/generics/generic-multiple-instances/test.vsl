@@ -1,0 +1,16 @@
+class ValueWrapper<T> {
+    private let value: T
+
+    init(value: T) {
+        self.value = value
+    }
+
+    func getValue() -> T {
+        return self.value
+    }
+}
+
+func main() {
+    let a = ValueWrapper< ValueWrapper<String> >(value: ValueWrapper<String>(value: "Hello, World!"))
+    print(a.getValue().getValue())
+}

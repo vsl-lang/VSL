@@ -16,7 +16,7 @@ export function getFunctionName(func, typeContext) {
         return func.foreignName;
     } else {
         if (func.rootId === "main") return "main";
-        return func.uniqueName + (typeContext ? typeContext.getMangling() : "");
+        return func.uniqueName + (func.isGeneric && typeContext ? typeContext.getMangling() : "");
     }
 }
 

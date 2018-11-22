@@ -12,9 +12,8 @@ export default class LLVMGeneric extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        throw new BackendError(
-            `Generics not supported :(.`,
-            node
-        );
+        // If we're at this point then we are ACCESSING a STATIC FIELD on a GENERIC CLASS.
+        // In that case we can just return the normal class because generic props don't matter.
+        return regen('head', node, context);
     }
 }
