@@ -91,6 +91,7 @@ export default {
     AMBIGUOUS_CALL: {},
     AMBIGUOUS_EXPRESSION: {},
     NO_VALID_TYPE: {},
+    NO_VALID_OVERLOAD: {},
 
     // Generics
     GENERIC_SPECIALIZATION_REQUIRED: {},

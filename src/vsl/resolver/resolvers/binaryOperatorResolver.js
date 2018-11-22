@@ -91,7 +91,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 if (lastHighestPrec > 1 && rhsTypes.precType === false)
                     continue;
 
-                // Is binary operator so *must* have 3 args
+                // Is binary operator so *must* have 2 args
                 if (candidates[j].args.length === 2) {
                     // If provided, check if requestedType matches. If it does
                     //  not, skip it.
@@ -161,7 +161,8 @@ export default class BinaryOperatorResolver extends TypeResolver {
 
             this.emit(
                 `No matching candidate for \`${opName}\`. Could not find ` +
-                `overload matching any of:\n${overloads.join("\n")}\n`
+                `overload matching any of:\n${overloads.join("\n")}\n`,
+                e.NO_VALID_OVERLOAD
             );
         } else {
             // Remove which aren't highest prec
