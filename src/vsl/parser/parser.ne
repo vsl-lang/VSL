@@ -365,7 +365,7 @@ FunctionHead
 
 OverridableOperator
    -> ("+" | "-" | "*" | "/" | "\\" | "%" | "&" | "^" | "|" | "**" | "<" | ">" |
-        "<=" | ">=" | "==" | "!=") {%
+        "<<" | ">>" | ">>>" | "<=" | ">=" | "==" | "!=" | "!" | "~") {%
         (data, location) =>
             new t.OperatorName(data[0][0].value, location)
     %}

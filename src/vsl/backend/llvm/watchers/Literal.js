@@ -9,6 +9,9 @@ import toLLVMType from '../helpers/toLLVMType';
 
 import * as llvm from 'llvm-node';
 
+const VSL_STRING_OPT_NONE = 0x00;
+const VSL_STRING_OPT_NO_DEALLOC = 1 << 0;
+
 export default class LLVMLiteral extends BackendWatcher {
     match(type) {
         return type instanceof t.Literal;
@@ -49,6 +52,12 @@ export default class LLVMLiteral extends BackendWatcher {
                     llvm.ConstantStruct.get(
                         targetTy,
                         [
+                            llvm.ConstantInt.get(
+                                backend.context,
+                                VSL_STRING_OPT_NO_DEALLOC,
+                                8,
+                                false
+                            ),
                             llvm.ConstantInt.get(
                                 backend.context,
                                 node.literal.length,

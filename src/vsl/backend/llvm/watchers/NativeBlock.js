@@ -166,6 +166,59 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
+            case "inot": return context.builder.createRet(
+                context.builder.createNot(
+                    func.args[0].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "ineg": return context.builder.createRet(
+                context.builder.createNeg(
+                    func.args[0].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "ashr": return context.builder.createRet(
+                context.builder.createcreateAShr(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "lshr": return context.builder.createRet(
+                context.builder.createcreateLShr(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "shl": return context.builder.createRet(
+                context.builder.createcreateShl(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "load": return context.builder.createRet(
+                context.builder.createLoad(
+                    context.parentFunc.getArguments()[0]
+                )
+            );
+
+            case "store": return context.builder.createRet(
+                context.builder.createStore(
+                    context.parentFunc.getArguments()[0],
+                    context.parentFunc.getArguments()[1]
+                )
+            );
+
+            case "offset": return context.builder.createRet(
+                context.builder.createInBoundsGEP(
+                    context.parentFunc.getArguments()[0],
+                    [context.parentFunc.getArguments()[1]]
+                )
+            );
+
             case "sizeof": return context.builder.createRet(
                 llvm.ConstantInt.get(
                     context.ctx,
@@ -185,7 +238,8 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         [],
                         false
                     )
-                )
+                ),
+                []
             );
 
             case "log32": return context.builder.createCall(
@@ -196,7 +250,8 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         [llvm.Type.getFloatTy(backend.context)],
                         false
                     )
-                )
+                ),
+                []
             );
 
             case "log64": return context.builder.createCall(
@@ -207,7 +262,8 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         [llvm.Type.getDoubleTy(backend.context)],
                         false
                     )
-                )
+                ),
+                []
             );
 
             default: throw new BackendError(

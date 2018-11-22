@@ -38,6 +38,10 @@ binary/executable:
   [2]: https://staging.vihan.org/VSL/macos/vsl
   [3]: https://staging.vihan.org/VSL/linux/vsl
 
+## Changes
+Git revision history is a mess but checkout CHANGELOG.md for detailed devleopment
+information.
+
 ## Building
 
 Building isn't _too_ diffiult. Usually you'll want to install a pre-built binary
@@ -108,9 +112,8 @@ you can use VSL for tasks low-level such as read/writing bits from a serial port
 to running a server.
 
  - **Reliability**: through bindings of reliable, trusted, and industry-standard
-libraries such as libcurl, and glibc backends, VSL has powerful low-level
-pointer interopability and the power of full OO-classes, but assembly-level bit
-alignment.
+libraries such as libcurl, and libc backends, VSL has powerful low-level
+pointer interopability and the power of full OO-classes.
 
 ## Examples
 VSL functions both as a scripting and a full-blown language so two alterntaives

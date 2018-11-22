@@ -20,9 +20,10 @@ Development progress and changes over time.
  - Add allocation intrinsics
 
 Plan:
- 1. Implement native initializers
+ 1. Implement native initializers (abandoned)
  2. Prohibit generic static fields.
  3. Delegating initializers
+ 4. Do away with 'prec' types. Only one type with implicit type conversions.
 
 ## Nov 20, 2018
  - Implement property negotiation (Nov 19, 2018 Plan 2)
