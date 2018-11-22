@@ -177,6 +177,39 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
+            case "trap": return context.builder.createCall(
+                backend.module.getOrInsertFunction(
+                    'llvm.trap',
+                    llvm.FunctionType.get(
+                        llvm.Type.getVoidTy(backend.context),
+                        [],
+                        false
+                    )
+                )
+            );
+
+            case "log32": return context.builder.createCall(
+                backend.module.getOrInsertFunction(
+                    'llvm.log.f32',
+                    llvm.FunctionType.get(
+                        llvm.Type.getFloatTy(backend.context),
+                        [llvm.Type.getFloatTy(backend.context)],
+                        false
+                    )
+                )
+            );
+
+            case "log64": return context.builder.createCall(
+                backend.module.getOrInsertFunction(
+                    'llvm.log.f64',
+                    llvm.FunctionType.get(
+                        llvm.Type.getDoubleTy(backend.context),
+                        [llvm.Type.getDoubleTy(backend.context)],
+                        false
+                    )
+                )
+            );
+
             default: throw new BackendError(
                 `Unsupported native operation ${name}`,
                 node

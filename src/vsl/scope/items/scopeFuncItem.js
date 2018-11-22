@@ -54,6 +54,8 @@ export default class ScopeFuncItem extends ScopeItem {
          */
         this.shouldInline = false;
 
+        this._shouldForceInline = false;
+
         /**
          * The relative access modifier of the function. This can be:
          *
@@ -71,6 +73,23 @@ export default class ScopeFuncItem extends ScopeItem {
          * @type {string}
          */
         this.foreignName = null;
+    }
+
+    /**
+     * If inline should be forced. This is never true if
+     * {@link ScopeFuncItem#shouldInline} is ever false.
+     * @type {boolean}
+     */
+    get shouldForceInline() {
+        return this.shouldInline && this._shouldForceInline;
+    }
+
+    /**
+     * If inline should be forced.
+     * @type {boolean}
+     */
+    set shouldForceInline(shouldForceInline) {
+        this._shouldForceInline = shouldForceInline;
     }
 
     /** @override */

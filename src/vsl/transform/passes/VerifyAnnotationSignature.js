@@ -14,14 +14,14 @@ export default class VerifyAnnotationSignature extends Transformation {
     constructor() {
         super(t.Annotation, "Verify::AnnotationSignature");
     }
-    
+
     /** @overide */
     modify(node: Node, tool: ASTTool) {
         let name = node.name;
         let response = Annotations.get(name);
         if (response !== undefined) {
             let [res, nodeType = null] = response;
-            
+
             // Check if correct type
             let parent = tool.nthParent(2);
             if (nodeType && !(parent instanceof nodeType)) {
@@ -31,30 +31,22 @@ export default class VerifyAnnotationSignature extends Transformation {
                     node, e.BAD_ANNOTATION_PARENT
                 );
             }
-            
-            if (res === null && node.args !== null) {
-                throw new TransformError(
-                    `Annotation \`${name}\` does not take any arguments but ` +
-                    `you provided ${node.args.length}`,
-                    node, e.ANNOTATION_NO_ARGS
-                );
-            } else if (res !== null) {
-                let len = node.args ? node.args.length : 0;
-                if (res.length === 2) {
-                    if (len < res[0] || len > res[1]) {
-                        throw new TransformError(
-                            `Annotation \`${name}\` expected between ${res[0]} ` +
-                            `and ${res[1]} args; you provided ${len}.`,
-                            node, e.WRONG_ANNOTATION_ARG_COUNT
-                        )
-                    }
-                } else if (len !== res) {
+
+            let len = node.args.length;
+            if (res.length === 2) {
+                if (len < res[0] || len > res[1]) {
                     throw new TransformError(
-                        `Annotation \`${name}\` expected exactly ${res} args; you` +
-                        ` provided ${res} arguments.`,
+                        `Annotation \`${name}\` expected between ${res[0]} ` +
+                        `and ${res[1]} args; you provided ${len}.`,
                         node, e.WRONG_ANNOTATION_ARG_COUNT
-                    );
+                    )
                 }
+            } else if (len !== res[0]) {
+                throw new TransformError(
+                    `Annotation \`${name}\` expected exactly ${res} args; you` +
+                    ` provided ${res} arguments.`,
+                    node, e.WRONG_ANNOTATION_ARG_COUNT
+                );
             }
         } else {
             throw new TransformError(
