@@ -2,6 +2,7 @@ import ConstraintType from '../constraintType';
 import TypeConstraint from '../typeConstraint';
 import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
+import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 
 import e from '../../errors';
 
@@ -123,7 +124,11 @@ export default class PropertyResolver extends TypeResolver {
 
         // If it is call we'll pass the generic of LHS to the function
         if (isCallee) {
-            this.negotiateUpward(ConstraintType.TypeContext, headType.getTypeContext());
+            if (headType instanceof ScopeMetaClassItem) {
+                this.negotiateUpward(ConstraintType.TypeContext, headType.referencingClass.getTypeContext());
+            } else {
+                this.negotiateUpward(ConstraintType.TypeContext, headType.getTypeContext());
+            }
         }
 
         this.node.baseRef = headType;

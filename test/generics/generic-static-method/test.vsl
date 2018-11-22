@@ -1,0 +1,10 @@
+class A<T> {
+    static func f(value: T) -> T {
+        return value
+    }
+}
+
+func main() {
+    let string = A<String>.f(value: "Hello, World!")
+    print(string)
+}

@@ -273,8 +273,6 @@ Field
 
 InitializerStatement
    -> (AccessModifier _ {% id %}):? "init" "?":? _ ArgumentList _ (
-       ExternalMarker {% id %} |
-       NativeBlock {% id %} |
         ( "{" {% setState('inInit', true) %} )
         CodeBlock[statement {% id %}]
         ( "}" {% setState('inInit', false) %} ) {% nth(1) %}

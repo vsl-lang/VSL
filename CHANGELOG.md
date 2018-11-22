@@ -10,6 +10,19 @@ Development progress and changes over time.
  - `CallResolver` now stores contextual return type.
  - Add contextual construction support to `layoutType`
  - Default initializers now support `selfType`.
+ - Context propagation
+ - Initializers now support deep context propagation
+ - Context now also propagates type context.
+ - `Function` now supports generics for generic type construction.
+ - Static generic methods
+ - Support static fields on generic methods
+ - Add `Pointer<T>.sizeof()`
+ - Add allocation intrinsics
+
+Plan:
+ 1. Implement native initializers
+ 2. Prohibit generic static fields.
+ 3. Delegating initializers
 
 ## Nov 20, 2018
  - Implement property negotiation (Nov 19, 2018 Plan 2)

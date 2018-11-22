@@ -2,6 +2,7 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import { Key } from '../LLVMContext';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionInstance from '../helpers/getFunctionInstance';
 
@@ -12,6 +13,12 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
+
+        // Get the env type context
+        const parentTypeContext = context.typeContext;
+
+        // Get type context of the function call
+        const typeContext = node.typeContext.propogateContext(parentTypeContext);
 
         // Get list of possible overloads
         // at this point there should only beo ne
@@ -24,19 +31,12 @@ export default class LLVMFunctionCall extends BackendWatcher {
             );
         }
 
-        let callee = getFunctionInstance(functionRef, context.bare(), regen);
 
-        // Check if callee is generated yet. If not we'll generate it.
-        if (!callee) {
-            let calleeNode = functionRef.source,
-                parent = calleeNode.parentNode,
-                name = calleeNode.relativeName;
+        // Create context to generate function call with
+        const ctx = context.bare();
+        ctx.typeContext = typeContext;
+        const callee = getFunctionInstance(functionRef, ctx, regen);
 
-            // Anon. IR builder
-            let calleeContext = context.bare();
-
-            callee = regen(name, parent, calleeContext);
-        }
 
         // Create argument instruction list
         let compiledArgs = [];
@@ -58,7 +58,6 @@ export default class LLVMFunctionCall extends BackendWatcher {
             const headValue = regen('head', node.head, context);
             compiledArgs.unshift(headValue);
         }
-
 
         let result = context.builder.createCall(
             callee,

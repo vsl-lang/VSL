@@ -70,6 +70,7 @@ export default class IdResolver extends TypeResolver {
         if (callArgs) {
             // Return candidates for parent function to handle.
             return results
+                .map(result => result.resolved())
                 .map(result => {
                     // If it is a class we MUST wrap it as a metaclass.
                     if (result instanceof ScopeTypeItem) {
@@ -87,7 +88,7 @@ export default class IdResolver extends TypeResolver {
             this.emit(`Ambiguous reference to variable ${rootId}`);
         }
 
-        const result = results[0];
+        const result = results[0].resolved();
 
         // Get the WHAT the identifier is (result)
         if (result instanceof ScopeTypeItem) {

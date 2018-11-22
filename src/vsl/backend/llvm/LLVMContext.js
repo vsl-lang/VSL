@@ -1,6 +1,7 @@
+import TypeContext from '../../scope/TypeContext';
+
 export const Key = {
-    LValueContext: Symbol('LLVMContext.Key.LValueContext'),
-    TypeContext: Symbol('LLVMContext.Key.TypeContext')
+    LValueContext: Symbol('LLVMContext.Key.LValueContext')
 }
 
 /**
@@ -21,7 +22,21 @@ export default class LLVMContext {
         this.parentFunc = null;
 
         this._keys = new Map();
+
+        this._typeContext = TypeContext.empty();
     }
+
+    /**
+     * Returns the type context.
+     * @type {TypeContext}
+     */
+    get typeContext() { return this._typeContext }
+
+    /**
+     * Resets the type context
+     * @type {TypeContext}
+     */
+    set typeContext(typeContext) { this._typeContext = typeContext; }
 
     /**
      * Returns the llvm.Context
@@ -80,6 +95,7 @@ export default class LLVMContext {
         );
         context.builder = this.builder;
         context.parentFunc = this.parentFunc;
+        context.typeContext = this.typeContext;
         return context;
     }
 }

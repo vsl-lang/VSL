@@ -8,8 +8,8 @@ import toLLVMType from '../helpers/toLLVMType';
 import { getTypeOffset } from '../helpers/layoutType';
 import getDefaultInit from '../helpers/getDefaultInit';
 
-import { Key } from '../LLVMContext'
-import { alloc } from '../helpers/MemoryManager'
+import { Key } from '../LLVMContext';
+import { alloc } from '../helpers/MemoryManager';
 import * as llvm from 'llvm-node';
 
 export default class LLVMInitializerCall extends BackendWatcher {
@@ -19,6 +19,12 @@ export default class LLVMInitializerCall extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
+
+        // Get the parent type context.
+        const parentTypeContext = context.typeContext;
+
+        // Get the type context
+        const typeContext = node.typeContext.propogateContext(parentTypeContext);
 
         // Get the init function item.
         const initRef = node.reference;
@@ -30,7 +36,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
         }
 
         // Try to get what type is being initialized (should be a class meta type).
-        const classRef = node.returnType;
+        const classRef = node.returnType?.contextualType(parentTypeContext);
         if (!classRef) {
             throw new BackendError(
                 `Initializer call is ambiguous. Multiple possible references.`,
@@ -49,7 +55,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
 
         // Create context for intializer
         const ctx = context.bare();
-
+        ctx.typeContext = typeContext;
 
         // Then, with the callee. We'll either get initializer or we'll get the
         //  default init
@@ -59,7 +65,6 @@ export default class LLVMInitializerCall extends BackendWatcher {
         } else {
             // We only need to pass type context to function instance because
             // the default init never even refs the generic params.
-            ctx.pushValue(Key.TypeContext, classRef.getTypeContext());
             callee = getFunctionInstance(initRef, ctx, regen);
         }
 
