@@ -105,6 +105,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
 
         // Handles annotations for the function
         const shouldInline = scopeItem.shouldInline;
+        const shouldForceInline = scopeItem.shouldForceInline;
 
         // Stores the LLVM function Constant* which will be the return value of
         // this fnuction
@@ -187,7 +188,10 @@ export default class LLVMFunctionStatement extends BackendWatcher {
 
             // Add the appropriate attribute if a @inline tag exists
             if (shouldInline && !isEntry) {
-                func.addFnAttr(llvm.Attribute.AttrKind.AlwaysInline);
+                func.addFnAttr(
+                    shouldForceInline ?
+                        llvm.Attribute.AttrKind.AlwaysInline :
+                        llvm.Attribute.AttrKind.InlineHint);
 
                 // TODO: if exceptions are supported, remove this
                 func.addFnAttr(llvm.Attribute.AttrKind.NoUnwind);

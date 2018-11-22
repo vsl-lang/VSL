@@ -1,0 +1,6 @@
+func main() {
+    let x: Int32 = 2
+    let y: Int32 = 2
+    let z: Int32 = 4
+    assert(x * y == 1)
+}
