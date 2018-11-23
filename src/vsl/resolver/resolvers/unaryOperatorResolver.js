@@ -39,6 +39,9 @@ export default class UnaryOperatorResolver extends TypeResolver {
         // Unary operation
         const opName = this.node.op;
 
+        // If a definite deduction is expected
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
         // Get requested type
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
@@ -65,9 +68,12 @@ export default class UnaryOperatorResolver extends TypeResolver {
 
             for (let j = 0; j < possibleOperators.length; j++) {
                 const returnType = possibleOperators[j].returnType;
+                const argCount = possibleOperators[j].args.length;
+
+                if (argCount !== 1) continue;
 
                 // Check if return type matches.
-                if (!returnType.castableTo(requestedType)) continue;
+                if (requestedType && !returnType.castableTo(requestedType)) continue;
 
                 if (isPrecType) {
                     // If there is another preferred candidate then we have
@@ -75,7 +81,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
                     if (bestCandidate) {
                         this.emit(
                             `Ambiguous unary expression. Possible candidates include:\n` +
-                            `    • ${lastPrecCandidate}\n` +
+                            `    • ${bestCandidate}\n` +
                             `    • ${possibleOperators[j]}`,
                             e.AMBIGUOUS_EXPRESSION
                         );
@@ -109,14 +115,18 @@ export default class UnaryOperatorResolver extends TypeResolver {
             this.node.reference = bestCandidate;
             return [new TypeCandidate(bestCandidate.returnType)]
         } else if (unaryCandidates.length === 0) {
-            this.emit(
-                `No working overload found for use of \`func ${opName}(expression: ${
-                    typeCandidates
-                        .map(String)
-                        .join(" | ")
-                }) -> ${requestedType || "*"}\``,
-                e.NO_VALID_OVERLOAD
-            );
+            if (simplifyToPrecType) {
+                this.emit(
+                    `No working overload found for use of \`func ${opName}(expression: ${
+                        typeCandidates
+                            .map(String)
+                            .join(" | ")
+                    }) -> ${requestedType || "*"}\``,
+                    e.NO_VALID_OVERLOAD
+                );
+            } else {
+                return [];
+            }
         } else if (unaryCandidates.length > 1) {
             return unaryCandidates.map(candidate => new TypeCandidate(candidate.returnType));
         } else {

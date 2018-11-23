@@ -1,0 +1,5 @@
+func main() {
+    let x = 0b1111_1111
+    let y = 255
+    assert(x == y)
+}

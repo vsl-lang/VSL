@@ -179,21 +179,42 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "ashr": return context.builder.createRet(
-                context.builder.createcreateAShr(
+                context.builder.createAShr(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
             );
 
             case "lshr": return context.builder.createRet(
-                context.builder.createcreateLShr(
+                context.builder.createLShr(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
             );
 
             case "shl": return context.builder.createRet(
-                context.builder.createcreateShl(
+                context.builder.createShl(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "and": return context.builder.createRet(
+                context.builder.createAnd(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "or": return context.builder.createRet(
+                context.builder.createOr(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "xor": return context.builder.createRet(
+                context.builder.createXor(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
@@ -205,12 +226,11 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
-            case "store": return context.builder.createRet(
-                context.builder.createStore(
-                    context.parentFunc.getArguments()[0],
-                    context.parentFunc.getArguments()[1]
-                )
+            case "store": context.builder.createStore(
+                    context.parentFunc.getArguments()[1],
+                    context.parentFunc.getArguments()[0]
             );
+            return context.builder.createRetVoid();
 
             case "offset": return context.builder.createRet(
                 context.builder.createInBoundsGEP(
@@ -230,18 +250,6 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
-            case "trap": return context.builder.createCall(
-                backend.module.getOrInsertFunction(
-                    'llvm.trap',
-                    llvm.FunctionType.get(
-                        llvm.Type.getVoidTy(backend.context),
-                        [],
-                        false
-                    )
-                ),
-                []
-            );
-
             case "log32": return context.builder.createCall(
                 backend.module.getOrInsertFunction(
                     'llvm.log.f32',
@@ -251,7 +259,9 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         false
                     )
                 ),
-                []
+                [
+                    context.parentFunc.getArguments()[0]
+                ]
             );
 
             case "log64": return context.builder.createCall(
@@ -263,7 +273,9 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         false
                     )
                 ),
-                []
+                [
+                    context.parentFunc.getArguments()[0]
+                ]
             );
 
             default: throw new BackendError(

@@ -1,5 +1,6 @@
 import BackendWatcher from '../../BackendWatcher';
 import BackendWarning from '../../BackendWarning';
+import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import toLLVMType from '../helpers/toLLVMType';
@@ -60,10 +61,14 @@ export default class LLVMBitcastExpression extends BackendWatcher {
             } else {
                 return context.builder.createSIToFP(value, targetTy);
             }
+        } else if (sourceTy.isIntegerTy() && targetTy.isPointerTy()) {
+            return context.builder.createIntToPtr(value, targetTy);
+        } else if (sourceTy.isPointerTy() && targetTy.isIntegerTy()) {
+            return context.builder.createPtrToInt(value, targetTy);
         } else {
             throw new BackendError(
                 `Invalid bitcast between given types`,
-                node
+                node.target
             );
         }
     }

@@ -2,12 +2,6 @@ import Transformation from '../transformation.js';
 import TransformError from '../transformError.js';
 import t from '../../parser/nodes';
 
-import { RootResolver } from '../../resolver/resolvers/*';
-import vslGetChild from '../../resolver/vslGetChild';
-
-import ConstraintType from '../../resolver/constraintType';
-import TypeCandidate from '../../resolver/typeCandidate';
-
 /**
  * Verifies returns of `ReturnStatement`s.
  */
@@ -88,17 +82,8 @@ export default class VerifyReturnStatement extends Transformation {
                         );
                     }
 
-                    let returnTypeCandidate = new TypeCandidate(returnType);
-
-                    // First, also validate type. We'll type deduct this node.
-                    let result = new RootResolver(node.expression, vslGetChild, tool.context)
-                        .resolve((constraint) => {
-                            switch (constraint) {
-                                case ConstraintType.RequestedTypeResolutionConstraint:
-                                    return returnTypeCandidate;
-                                default: return null;
-                            }
-                        });
+                    // Now we'll set the expected return type on the return node.
+                    node.expectedReturnType = returnType;
                 }
 
                 return true;

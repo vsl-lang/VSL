@@ -37,11 +37,18 @@ export default class TransformAssignmentExpression extends Transformation {
             case "-=": return tool.replace(operatorByOne(node, '-'));
             case "*=": return tool.replace(operatorByOne(node, '*'));
             case "/=": return tool.replace(operatorByOne(node, '/'));
+            case "\\=": return tool.replace(operatorByOne(node, '\\'));
             case "%=": return tool.replace(operatorByOne(node, '%'));
+            case "**=": return tool.replace(operatorByOne(node, '**'));
+
             case "&=": return tool.replace(operatorByOne(node, '&'));
             case "^=": return tool.replace(operatorByOne(node, '^'));
             case "|=": return tool.replace(operatorByOne(node, '|'));
-            case "**=": return tool.replace(operatorByOne(node, '**'));
+
+            case ">>=": return tool.replace(operatorByOne(node, '|'));
+            case ">>>=": return tool.replace(operatorByOne(node, '|'));
+            case "<<=": return tool.replace(operatorByOne(node, '|'));
+
         }
     }
 }

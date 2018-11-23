@@ -1,0 +1,6 @@
+func main() {
+    let x: Int8 = 0b1010_0010
+    let y: Int8 = 1
+    let z: Int8 = 0b1101_0001
+    assert(x >> y == z)
+}

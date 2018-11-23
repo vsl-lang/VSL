@@ -1,0 +1,5 @@
+func main() {
+    let x: UInt32 = 1
+    let y: UInt32 = 4294967294
+    assert(~x == y)
+}

@@ -12,12 +12,11 @@ import * as pass from '../passes/';
 export default class VSLTransformer extends Transformer {
     constructor(context: TransformationContext) {
         super([
-            pass.VerifyReturnStatement,
-
             pass.TypeDeductIfStatement,
             pass.TypeDeductWhileStatement,
             pass.TypeDeductExpression,
             pass.TypeDeductAssignment,
+            pass.TypeDeductReturnStatement,
 
             pass.VerifyLValueBinding
         ], context);

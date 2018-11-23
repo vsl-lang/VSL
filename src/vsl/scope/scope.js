@@ -274,32 +274,39 @@ export default class Scope {
      * @return {string} The visualized scope.
      */
     toString() {
-        let res = "";
-        const format = (name) => name.constructor.name.replace(/^Scope(.+)Item$/, "$1");
+        let root = `\u001B[1mScope\u001B[0m`;
 
-        for (let [id, candidates] of this.ids) {
-            let str = `├ ${id}`;
-
-            if (candidates.length > 1) {
-                candidates.forEach(candidate => {
-                    str += `\n   ├ ${format(candidate)}`;
-                    str += `\n     ├ ${candidate.toString()}`
-                });
-            } else {
-                str += ` (${format(candidates[0])})`;
-                str += `\n   ├ ${candidates[0].toString()}`;
-            }
-
-            res += "\n" + str;
+        function indent(strings) {
+            return strings.map(
+                (string, index, array) => string
+                    .split(`\n`)
+                    .map((line, index) => '  ' + (
+                        array.length - 1 === index ?
+                            (index === 0 ? '├' : '│') :
+                             (index === 0 ? '└' : ' ')
+                        ) + ' ' + line).join(`\n`)).join(`\n`)
         }
 
-        let prefix = "";
-        if (this.parentScope !== null) {
-            prefix = this.parentScope.toString();
-        } else {
-            prefix = "Root";
+        const items = [];
+        for (const [id, items] of this.ids) {
+            const item = id + '\n';
+            const children = items.map(
+                item => {
+                    let itemString = item.toString();
+
+                    // Get the item subscope if it exists
+                    if (item.subscope) {
+                        itemString += '\n' + item.subscope.toString();
+                    }
+
+                    return itemString;
+                }
+            )
+
+            items.push(item + indent(children));
         }
 
-        return prefix + res.split("\n").map(line => " " + line).join("\n");
+        const final = root + '\n' + indent(items);
+        return final;
     }
 }

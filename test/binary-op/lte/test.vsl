@@ -1,0 +1,9 @@
+func main() {
+    let x = 1
+    let y = 2
+    assert(x <= y)
+
+    let a = 1
+    let b = 1
+    assert(a <= b)
+}

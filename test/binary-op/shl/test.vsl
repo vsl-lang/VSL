@@ -1,0 +1,6 @@
+func main() {
+    let x: UInt32 = 0b0101
+    let y: UInt32 = 1
+    let z: UInt32 = 0b1010
+    assert(x << y == z)
+}
