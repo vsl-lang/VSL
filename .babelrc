@@ -1,8 +1,6 @@
 {
     "plugins": [
-        ["@babel/plugin-transform-runtime", {
-            "polyfill": false
-        }],
+        "@babel/plugin-transform-runtime",
         ["@babel/plugin-proposal-class-properties", { "loose": true }],
         "@babel/plugin-proposal-do-expressions",
         "@babel/plugin-proposal-function-bind",
@@ -27,6 +25,7 @@
             "targets": {
                 "node": "6.11"
             },
+            "useBuiltIns": "usage",
             "include": ["proposal-object-rest-spread"]
         }]
     ],
