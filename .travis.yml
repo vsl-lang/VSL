@@ -3,7 +3,10 @@ node_js:
     - "6.10"
     - "8.9"
     - node
-
+apt:
+    packages:
+        - llvm-toolchain-trusty-7
+        - clang-7.0
 install:
     - npm install
 script:
