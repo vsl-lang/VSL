@@ -42,6 +42,9 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // Get requested resolution constraint
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
+        // If a definite deduction is expected
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
         // This will resolve the arguments
         const resolver = (type) => {
             switch (type) {
@@ -51,6 +54,9 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 // By default we want all candidates
                 case ConstraintType.RequestedTypeResolutionConstraint: return null;
 
+                // Don't simplify that's what we'll do
+                case ConstraintType.SimplifyToPrecType: return false;
+
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
@@ -59,6 +65,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // Creates a resolver with a prec type
         const finalResolver = (reqRes) => (type) => {
             switch (type) {
+                case ConstraintType.VoidableContext: return false;
                 case ConstraintType.RequestedTypeResolutionConstraint: return reqRes;
                 default: return negotiate(type);
             }
@@ -83,7 +90,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
             const lhsType = lhsTypes[i].candidate.resolved();
 
             // The operator candidates for this type.
-            const candidates = lhsType.staticScope.getAll(opName)
+            const candidates = lhsType.staticScope.getAll(opName);
 
             for (let j = 0; j < candidates.length; j++) {
                 // If we have a dual prec. prec. case and this isn't prec we'll
@@ -149,21 +156,25 @@ export default class BinaryOperatorResolver extends TypeResolver {
             this.node.reference = finalCandidate.candidate;
             return [new TypeCandidate(finalCandidate.candidate.returnType)];
         } else if (operatorCandidates.length === 0) {
-            let overloads = [];
+            if (simplifyToPrecType) {
+                let overloads = [];
 
-            for (let i = 0; i < lhsTypes.length; i++) {
-                for (let j = 0; j < rhsTypes.length; j++) {
-                    overloads.push(
-                        `    • static func ${opName}(${lhsTypes[i].candidate}, ${rhsTypes[j].candidate}) -> ${requestedType ? requestedType.candidate : '*'}`
-                    );
+                for (let i = 0; i < lhsTypes.length; i++) {
+                    for (let j = 0; j < rhsTypes.length; j++) {
+                        overloads.push(
+                            `    • static func ${opName}(${lhsTypes[i].candidate}, ${rhsTypes[j].candidate}) -> ${requestedType || '*'}`
+                        );
+                    }
                 }
-            }
 
-            this.emit(
-                `No matching candidate for \`${opName}\`. Could not find ` +
-                `overload matching any of:\n${overloads.join("\n")}\n`,
-                e.NO_VALID_OVERLOAD
-            );
+                this.emit(
+                    `No matching candidate for \`${opName}\`. Could not find ` +
+                    `overload matching any of:\n${overloads.join("\n")}\n`,
+                    e.NO_VALID_OVERLOAD
+                );
+            } else {
+                return [];
+            }
         } else {
             // Remove which aren't highest prec
             while (operatorCandidates[0] && operatorCandidates[0].precCount < lastHighestPrec) {

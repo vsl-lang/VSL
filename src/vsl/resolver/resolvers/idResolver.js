@@ -53,7 +53,6 @@ export default class IdResolver extends TypeResolver {
         // variable we are trying to get.
         let results = scope.getAll(rootId);
 
-
         if (results.length === 0) {
             this.emit(
                 `Use of undeclared identifier ${rootId}. If you wanted to ` +

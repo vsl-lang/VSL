@@ -1,0 +1,6 @@
+func main() {
+    let a: Int = 1
+    let b: Int = 2
+    let c: Int = 0
+    assert(a \ b == c)
+}

@@ -28,7 +28,7 @@ function kw(name) {
 
 // from https://github.com/iamakulov/unescape-js/blob/master/src/index.js
 
-const jsEscapeRegex = /\\(u\{([0-9A-Fa-f]+)\}|u([0-9A-Fa-f]{4})|x([0-9A-Fa-f]{2})|([1-7][0-7]{0,2}|[0-7]{2,3})|(['"tbrnfv0\\]))/g;
+const jsEscapeRegex = /\\(?:u\{([0-9A-Fa-f]+)\}|([0bfnrtev'"\\]))/g;
 
 const usualEscapeSequences = {
     '0': '\0',
@@ -37,27 +37,19 @@ const usualEscapeSequences = {
     'n': '\n',
     'r': '\r',
     't': '\t',
+    'e': '\u001B',
     'v': '\v',
     '\'': '\'',
     '"': '"',
     '\\': '\\'
 };
 
-const fromHex = (str) => String.fromCodePoint(parseInt(str, 16));
-const fromOct = (str) => String.fromCodePoint(parseInt(str, 8));
-
 function unescapeString(_, match) {
-    return match.slice(1, -1).replace(jsEscapeRegex, (_, __, varHex, longHex, shortHex, octal, specialCharacter) => {
-        if (varHex !== undefined)
-            return fromHex(varHex);
-        if (longHex !== undefined)
-            return fromHex(longHex);
-        if (shortHex !== undefined)
-            return fromHex(shortHex);
-        if (octal !== undefined)
-            return fromOct(octal);
-        else
-            return usualEscapeSequences[specialCharacter];
+    return match.slice(1, -1).replace(jsEscapeRegex, (_, unicodeSequence, escapeSequence) => {
+        if (unicodeSequence)
+            return String.fromCodePoint(parseInt(unicodeSequence, 16));
+        if (escapeSequence)
+            return usualEscapeSequences[escapeSequence];
     });
 }
 
@@ -65,6 +57,14 @@ function unescapeByteSequence(_, match) {
     return match.slice(1, -1).replace(/\\x([a-fA-F0-9]{2})/g, (_, match) => {
         return String.fromCharCode(parseInt(match, 16));
     });
+}
+
+function parseBinaryInt(_, match) {
+    return +match.replace(/_/g, '');
+}
+
+function parseHexInt(_, match) {
+    return +match.replace(/_/g, '');
 }
 
 function nthmatch(matchNum) {
@@ -90,16 +90,24 @@ tokenMatchers[VSLScope.Normal] = [
         self.variables.commentDepth++;
         self.begin(VSLScope.Comment);
     }, null],
-    [/"(?:\\["bfnrt\/\\]|\\u\{[a-fA-F0-9]+\}|[^"\\])*"/, unescapeString, VSLTokenType.String],
-    [/'(?:\\['bfnrt\/\\]|\\u\{[a-fA-F0-9]+\}|[^'\\])*'/, unescapeString, VSLTokenType.String],
+
+    [/"(?:\\.|[^"\\])*"/, unescapeString, VSLTokenType.String],
+    [/'(?:\\.|[^'\\])*'/, unescapeString, VSLTokenType.String],
+
     [/`(?:\\.|[^`\\])*`/, unescapeByteSequence, VSLTokenType.ByteSequence],
+
     [/import[ \t]+([A-Za-z_-][A-Za-z_0-9-]*)/, nthmatch(1), VSLTokenType.ImportStatement],
     [/\$+[0-9]+/, passThrough, VSLTokenType.SpecialArgument],
     [/\$[a-zA-Z_][a-zA-Z0-9_]*/, slice1, VSLTokenType.SpecialIdentifier],
+
     [/\.[0-9_]+/, strip_, VSLTokenType.Decimal],
     [/[0-9][0-9_]*\.[0-9_]+/, strip_, VSLTokenType.Decimal],
-    [/(?:[1-5]?[0-9]|6[0-2])b[0-9a-zA-Z_]*/, strip_, VSLTokenType.Integer],
+
+    [/0b([01](_[01])?)+/, parseBinaryInt, VSLTokenType.Integer],
+    [/0x([0-9a-fA-F](_[0-9a-fA-F])?)+/, parseHexInt, VSLTokenType.Integer],
+
     [/[0-9][0-9_]*/, strip_, VSLTokenType.Integer],
+
     [/\/[^\/\*]([^\/\r\n]|\\[^\r\n])+\/[gmixc]*/, passThrough, VSLTokenType.Regex],
     [/true|false/, parseBoolean, VSLTokenType.Boolean],
     [/\.\.\./, passThrough],

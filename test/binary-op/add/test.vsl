@@ -2,5 +2,5 @@ func main() {
     let x: Int32 = 1
     let y: Int32 = 2
     let z: Int32 = 3
-    assert(x + y == 3)
+    assert(x + y == z)
 }

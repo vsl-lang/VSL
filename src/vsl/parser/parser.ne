@@ -394,8 +394,8 @@ NativeBlock
     %}
 
 ExternalMarker
-   -> "external" "(" %identifier ")" {%
-       (data, location) => new t.ExternalMarker(data[2][0], location)
+   -> "external" "(" ( %identifier {% mid %} | %string {% mid %}) ")" {%
+       (data, location) => new t.ExternalMarker(data[2], location)
    %}
 
 # ============================================================================ #
@@ -440,7 +440,7 @@ Or
 And
    -> BinaryOp[And, ("&&"), Shift] {% id %}
 Shift
-   -> BinaryOp[Shift, ("<<" | ">>"), Sum] {% id %}
+   -> BinaryOp[Shift, ("<<" | ">>" | ">>>"), Sum] {% id %}
 Sum
    -> BinaryOp[Sum, ("+" | "-"), Product] {% id %}
 Product

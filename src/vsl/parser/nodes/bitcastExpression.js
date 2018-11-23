@@ -42,6 +42,6 @@ export default class BitcastExpression extends Node {
 
     /** @override */
     toString() {
-        return `${this.target} = ${this.value}`;
+        return `${this.target}::${this.value}`;
     }
 }

@@ -17,6 +17,9 @@ export default class ReturnStatement extends Node {
 
         /** @type {Expression} */
         this.expression = expression;
+
+        /** @type {?ScopeTypeItem} */
+        this.expectedReturnType = null;
     }
 
     clone() {

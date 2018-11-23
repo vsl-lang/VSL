@@ -15,6 +15,9 @@ export default class VSLScopeTransformer extends Transformer {
             pass.RegisterClassDeclaration,
             pass.RegisterInitDeclaration,
 
+            // Check return statements are correctly formed.
+            pass.VerifyReturnStatement,
+
             // Verify operators are declared correctly
             pass.VerifyOperatorOverloadType,
 
