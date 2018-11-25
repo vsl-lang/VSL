@@ -14,6 +14,8 @@
  *                             refer to subscope in member situations.
  * @property {boolean} SimplifyToPrecType - If the parent CANNOT take multiple
  *                                        types so ONLY ONE should be returned.
+ * @property {boolean} RequireType - Specifies that at LEAST one type must be
+ *                                 returned.
  * @property {GenericInstance} TypeContext - A propogated `TypeContext` class if
  *                                         applicable.
  */
@@ -24,6 +26,7 @@ const ConstraintType = {
     VoidableContext: 1 << 4,
     TypeScope: 1 << 6,
     SimplifyToPrecType: 1 << 7,
+    RequireType: 1 << 5,
     TypeContext: 1 << 8,
 };
 

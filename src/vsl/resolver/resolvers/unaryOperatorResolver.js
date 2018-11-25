@@ -42,6 +42,9 @@ export default class UnaryOperatorResolver extends TypeResolver {
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
+        // If a definite deduction is expected
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // Get requested type
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
@@ -115,7 +118,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
             this.node.reference = bestCandidate;
             return [new TypeCandidate(bestCandidate.returnType)]
         } else if (unaryCandidates.length === 0) {
-            if (simplifyToPrecType) {
+            if (requireType) {
                 this.emit(
                     `No working overload found for use of \`func ${opName}(expression: ${
                         typeCandidates
@@ -128,7 +131,15 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 return [];
             }
         } else if (unaryCandidates.length > 1) {
-            return unaryCandidates.map(candidate => new TypeCandidate(candidate.returnType));
+            if (simplifyToPrecType) {
+                this.emit(
+                    `Ambiguous deduction for unary statement. Found multiple ` +
+                    `working candidates: \n` +
+                    unaryCandidates.map(candidate => `    • ${candidate}`).join('\n')
+                );
+            } else {
+                return unaryCandidates.map(candidate => new TypeCandidate(candidate.returnType));
+            }
         } else {
             // This state should never be reached.
             this.emit(

@@ -57,6 +57,9 @@ export default class CallResolver extends TypeResolver {
                 // The child (function head) we'll allow multiple values
                 case ConstraintType.SimplifyToPrecType: return false;
 
+                // The function head should have at least one type
+                case ConstraintType.RequireType: return true;
+
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
             }
@@ -70,6 +73,9 @@ export default class CallResolver extends TypeResolver {
 
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
+        // If at least one type is expected
+        const requestedType = negotiate(ConstraintType.RequestedType);
 
         // Negotiate the requested type for this identifier.
         // Generate the arg object and we'll ref that for lookup
@@ -223,6 +229,7 @@ export default class CallResolver extends TypeResolver {
                         case ConstraintType.RequestedTypeResolutionConstraint:
                             return new TypeCandidate(targetArgType);
 
+                        case ConstraintType.RequireType:
                         case ConstraintType.SimplifyToPrecType:
                             return false;
 
@@ -256,7 +263,6 @@ export default class CallResolver extends TypeResolver {
 
                 candidateArgTypes.push(argumentType);
             }
-
 
             // If we are here then the two functions match.
             workingCandidates.push({

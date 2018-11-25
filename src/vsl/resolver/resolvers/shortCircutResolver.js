@@ -49,10 +49,17 @@ export default class ShortCircutResolver extends TypeResolver {
         const booleanResolver = (type) => {
             switch (type) {
                 // The child cannot be voidable
-                case ConstraintType.VoidableContext: return false;
+                case ConstraintType.VoidableContext:
+                    return false;
 
                 // Always boolean for both sides
-                case ConstraintType.RequestedTypeResolutionConstraint: return new TypeCandidate(booleanType);
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return new TypeCandidate(booleanType);
+
+                // Both sides must deduct
+                case ConstraintType.RequireType:
+                case ConstraintType.SimplifyToPrecType:
+                    return true;
 
                 default: return negotiate(type);
             }

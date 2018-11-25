@@ -49,6 +49,9 @@ export default class PropertyResolver extends TypeResolver {
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
+        // If a definite deduction is expected
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // If the result of this expression is being called.
         const isCallee = negotiate(ConstraintType.BoundedFunctionContext);
 
@@ -64,6 +67,13 @@ export default class PropertyResolver extends TypeResolver {
                 default: return negotiate(type);
             }
         });
+
+        if (requireType && candidates.length === 0) {
+            this.emit(
+                `Left-hand side of property could not be resolved.`,
+                e.NO_VALID_TYPE
+            );
+        }
 
         // Stores a respective list of candidates in form
         //  Map<headType: TypeCandidate, fields[]>
@@ -102,7 +112,7 @@ export default class PropertyResolver extends TypeResolver {
                 e.AMBIGUOUS_EXPRESSION
             );
         } else if (candidateList.size === 0) {
-            if (simplifyToPrecType) {
+            if (requireType) {
                 if (isCallee) {
                     this.emit(
                         `Left-hand side of expression does not have method named ` +

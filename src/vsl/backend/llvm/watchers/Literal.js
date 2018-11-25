@@ -42,6 +42,12 @@ export default class LLVMLiteral extends BackendWatcher {
                     desc.signed
                 );
 
+            case VSLTokenType.Decimal:
+                return llvm.ConstantFP.get(
+                    context.ctx,
+                    +node.literal
+                );
+
             case VSLTokenType.String:
                 let targetTy = toLLVMType(type, backend).elementType;
                 let globalVar = new llvm.GlobalVariable(

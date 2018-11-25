@@ -31,6 +31,9 @@ export default class TypeDeductWhileStatement extends Transformation {
             switch (type) {
                 case ConstraintType.RequestedTypeResolutionConstraint:
                     return new TypeCandidate(tool.context.booleanType);
+                case ConstraintType.RequireType:
+                case ConstraintType.SimplifyToPrecType:
+                    return true;
                 default: return null;
             }
         });

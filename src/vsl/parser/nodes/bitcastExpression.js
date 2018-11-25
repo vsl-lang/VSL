@@ -12,7 +12,7 @@ export default class BitcastExpression extends Node {
      * @param {Expression} value value to cast.
      * @param {Object} position a position from nearley
      */
-    constructor(target, value, operator, position) {
+    constructor(target, value, position) {
         super(position);
 
         /**

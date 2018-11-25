@@ -39,6 +39,9 @@ export default class TernaryResolver extends TypeResolver {
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
+        // If a type is required
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // Resolves conditional expressions seperately.
         const context = negotiate(ConstraintType.TransformationContext);
         const booleanType = context.booleanType;
@@ -59,7 +62,9 @@ export default class TernaryResolver extends TypeResolver {
                 case ConstraintType.RequestedTypeResolutionConstraint: return new TypeCandidate(booleanType);
 
                 // Must resolve to a type
-                case ConstraintType.SimplifyToPrecType: return true;
+                case ConstraintType.SimplifyToPrecType:
+                case ConstraintType.RequireType:
+                    return true;
 
                 default: return negotiate(type);
             }
@@ -113,21 +118,19 @@ export default class TernaryResolver extends TypeResolver {
             }
         }
 
-        if (simplifyToPrecType) {
-            if (typesInCommon.length === 0) {
-                this.emit(
-                    `Branches of ternary evaluate to different types:\n` +
-                    `  Truthy Branch: ${trueTypes.map(_ => _.candidate.toString()).join(", ")}\n` +
-                    `  Falsey Branch: ${falseTypes.map(_ => _.candidate.toString()).join(", ")}\n`
-                );
-            }
+        if (requireType && typesInCommon.length === 0) {
+            this.emit(
+                `Branches of ternary evaluate to different types:\n` +
+                `  Truthy Branch: ${trueTypes.map(_ => _.candidate.toString()).join(", ")}\n` +
+                `  Falsey Branch: ${falseTypes.map(_ => _.candidate.toString()).join(", ")}\n`
+            );
+        }
 
-            if (typesInCommon.length > 1) {
-                this.emit(
-                    `Branches of ternary are ambiguous. Valid types include\n` +
-                    typesInCommon.map(_ => `    • ${_.candidate}`).join(`\n`)
-                );
-            }
+        if (simplifyToPrecType && typesInCommon.length > 1) {
+            this.emit(
+                `Branches of ternary are ambiguous. Valid types include\n` +
+                typesInCommon.map(_ => `    • ${_.candidate}`).join(`\n`)
+            );
         }
 
         return typesInCommon;
