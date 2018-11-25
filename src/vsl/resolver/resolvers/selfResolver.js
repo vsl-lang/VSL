@@ -39,6 +39,9 @@ export default class IdResolver extends TypeResolver {
         let parentClass = null,
             maybeClassStatement = this.node.parentScope?.parentNode;
 
+        // If a type is required
+        const requireType = negotiate(ConstraintType.RequireType);
+
         while (maybeClassStatement) {
             if (maybeClassStatement.reference instanceof ScopeTypeItem) {
                 parentClass = maybeClassStatement.reference.selfType;
@@ -66,11 +69,15 @@ export default class IdResolver extends TypeResolver {
 
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate;
         if (requestedType && !parentClass.castableTo(requestedType)) {
-            this.emit(
-                `\`self\` must refer to type ${requestedType} in this context ` +
-                `however it refers to an incompatible type ${parentClass}.`,
-                e.NO_VALID_TYPE
-            );
+            if (requireType) {
+                this.emit(
+                    `\`self\` must refer to type ${requestedType} in this context ` +
+                    `however it refers to an incompatible type ${parentClass}.`,
+                    e.NO_VALID_TYPE
+                );
+            } else {
+                return [];
+            }
         }
 
         this.node.reference = parentClass;

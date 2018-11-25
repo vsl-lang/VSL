@@ -47,6 +47,9 @@ export default class IdResolver extends TypeResolver {
 
         const typeContext = negotiate(ConstraintType.TypeContext);
 
+        // If a deduction is expected
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // Get the variable this references
         // Pass this.node so we can know that this node referenced the
         // variable we are trying to get.
@@ -117,13 +120,16 @@ export default class IdResolver extends TypeResolver {
 
         // Check if the given ID does actually have type (response).
         if (response && !resultType.castableTo(response.candidate)) {
-            return [];
-            // this.emit(
-            //     `Use of ${rootId} has no types which it can be deducted to\n` +
-            //     `in this context. This means the variable is one type but for ` +
-            //     `everything to work it would need to be a different type.`,
-            //     e.CANNOT_RESOLVE_IDENTIFIER
-            // );
+            if (requireType) {
+                this.emit(
+                    `Use of ${rootId} has no types which it can be deducted to` +
+                    `in this context. It is of type \`${resultType}\` but is ` +
+                    `contextually constrained to \`${response.candidate}\``,
+                    e.CANNOT_RESOLVE_IDENTIFIER
+                );
+            } else {
+                return [];
+            }
         }
 
         this.node.reference = result;

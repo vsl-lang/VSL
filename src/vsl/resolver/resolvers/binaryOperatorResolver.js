@@ -45,6 +45,9 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
+        // If at least one type is expected
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // This will resolve the arguments
         const resolver = (type) => {
             switch (type) {
@@ -156,7 +159,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
             this.node.reference = finalCandidate.candidate;
             return [new TypeCandidate(finalCandidate.candidate.returnType)];
         } else if (operatorCandidates.length === 0) {
-            if (simplifyToPrecType) {
+            if (requireType) {
                 let overloads = [];
 
                 for (let i = 0; i < lhsTypes.length; i++) {

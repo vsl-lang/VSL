@@ -25,6 +25,9 @@ export default class TypeDeductReturnStatement extends Transformation {
             switch (type) {
                 case ConstraintType.RequestedTypeResolutionConstraint:
                     return node.expectedReturnType && new TypeCandidate(node.expectedReturnType);
+                case ConstraintType.RequireType:
+                case ConstraintType.SimplifyToPrecType:
+                    return true;
                 default: return null;
             }
         });

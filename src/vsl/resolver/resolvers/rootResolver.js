@@ -53,8 +53,10 @@ export default class RootResolver extends TypeResolver {
             switch (type) {
                 case ConstraintType.TypeScope: return this.node.parentScope.scope;
                 case ConstraintType.TransformationContext: return this.context || negotiate(type);
-                case ConstraintType.SimplifyToPrecType: return negotiate(type);
                 case ConstraintType.TypeContext: return TypeContext.empty();
+
+                case ConstraintType.RequireType:
+                case ConstraintType.SimplifyToPrecType:
                 default: return negotiate(type);
             }
         };

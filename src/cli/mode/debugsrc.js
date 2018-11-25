@@ -326,10 +326,6 @@ export default class Debug extends CLIMode {
             },
 
             "dryRunGen": (ast) => {
-                if (this.persistentScope) ast[0].scope.parentScope = this.previousScope;
-                this.previousScope = ast[0].scope;
-
-                this.previousContext = VSLTransform(ast, this.previousContext);
                 console.log(ast[0].toString());
             }
 

@@ -41,6 +41,16 @@ export default class CastResolver extends TypeResolver {
         // Scope of expression
         const scope = this.node.parentScope.scope;
 
+        // If a definite deduction is expected
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
+        // If a deduction is expected
+        const requireType = negotiate(ConstraintType.RequireType);
+
+        // Get requested type
+        const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
+
+
         // Resolve entire expression as a type.
         const targetTy = new TypeLookup(this.node.target, vslGetTypeChild).resolve(scope);
         this.node.targetTy = targetTy;
@@ -50,6 +60,7 @@ export default class CastResolver extends TypeResolver {
             switch (type) {
                 case ConstraintType.VoidableContext: return false;
                 case ConstraintType.RequestedTypeResolutionConstraint: return null;
+                case ConstraintType.RequireType:
                 case ConstraintType.SimplifyToPrecType: return true;
                 default: return negotiate(type);
             }
@@ -60,6 +71,19 @@ export default class CastResolver extends TypeResolver {
             this.emit(`Amiguous types for right-hand side of bitcast`);
         } else {
             this.node.valueTy = typeCandidates[0].candidate;
+        }
+
+        // If the requested type conflicts
+        if (requestedType && !targetTy.castableTo(requestedType)) {
+            if (requireType) {
+                this.emit(
+                    `In this context the bit-cast would need to resolve to type ` +
+                    `${requestedType} but has type ${targetTy}.`,
+                    e.NO_VALID_TYPE
+                );
+            } else {
+                return [];
+            }
         }
 
         return [new TypeCandidate(targetTy)];

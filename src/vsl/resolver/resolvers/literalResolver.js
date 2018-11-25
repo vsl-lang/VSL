@@ -43,6 +43,12 @@ export default class LiteralResolver extends TypeResolver {
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
 
+        // Check if this must resolve
+        const requireType = negotiate(ConstraintType.RequireType);
+
+        // Check if this cannot be ambiguous
+        const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
+
         let literalTypeContext = null;
         // Specify default types for the candidates
         // Perhaps in the future a STL item would have to register or request
@@ -110,15 +116,18 @@ export default class LiteralResolver extends TypeResolver {
         // This is because errors have already been thrown for no actually
         // type candidates.
         if (typeCandidates.length === 0) {
-            return [];
-            // this.emit(
-            //     `This literal would need to be a type which it cannot be in\n` +
-            //     `order for everything to work. Candidates would include: \n\n` +
-            //     typeList.map(i => "    • " + i.toString()).join("\n") +
-            //     `\n\nHowever none of these are actually a type this literal could\n` +
-            //     `represent.`,
-            //     e.NO_VALID_TYPE
-            // );
+            if (requireType) {
+                this.emit(
+                    `This literal would need to be a type which it cannot be in\n` +
+                    `order for everything to work. Candidates would include: \n\n` +
+                    typeList.map(i => "    • " + i.toString()).join("\n") +
+                    `\n\nHowever none of these are actually a type this literal could\n` +
+                    `represent.`,
+                    e.NO_VALID_TYPE
+                );
+            } else {
+                return [];
+            }
         }
 
         const shouldResolveToPrecType = negotiate(ConstraintType.SimplifyToPrecType);

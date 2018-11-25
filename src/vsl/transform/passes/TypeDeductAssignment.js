@@ -76,6 +76,7 @@ export default class TypeDeductAssignment extends Transformation {
                     switch (constraint) {
                         case ConstraintType.RequestedTypeResolutionConstraint:
                             return requestedTypeCandidate;
+                        case ConstraintType.RequireType:
                         case ConstraintType.SimplifyToPrecType:
                             return true;
                         case ConstraintType.VoidableContext:
