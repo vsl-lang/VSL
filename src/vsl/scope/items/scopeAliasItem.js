@@ -97,6 +97,13 @@ export default class ScopeAliasItem extends ScopeItem {
         this.type = type;
     }
 
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Variable'; }
+
     /** @return {string} */
     toString() {
         return `${this.rootId}`;

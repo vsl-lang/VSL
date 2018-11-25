@@ -1,0 +1,20 @@
+block variables
+doctype html
+html
+    head
+        - var title = `${name}: ${module.name} ${module.version} Documentation`
+        title= title
+        meta(name='title', content=title)
+        
+        meta(name='description', content=description)
+        link(rel='stylesheet', href=STYLESHEET_PATH)
+    body.body-split
+        header.header
+            h1.header__component.header__title= module.name
+            span.header__component.header__versiontag
+                | v
+                span.header__versiontag__version= module.version
+        div.body-split__split
+            include sidebar.pug
+            main.body-split__split__wide
+                block body

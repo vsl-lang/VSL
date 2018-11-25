@@ -1,0 +1,6 @@
+.sidebar
+    each items, sectionName in docGen.sections
+        h2.sidebar__sectionheader= sectionName
+        ul.sidebar__section
+            each scopeItems, name in items
+                li.sidebar__section__item: a(href='')= name

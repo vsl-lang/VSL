@@ -19,6 +19,12 @@ export default class VSLModule {
         this.description = null;
 
         /**
+         * Valid semver version
+         * @type {String}
+         */
+        this.version = '1.0.0';
+
+        /**
          * The output type, one of LLVM's targets
          * @type {string}
          */
@@ -44,5 +50,11 @@ export default class VSLModule {
          * @type {string[]}
          */
         this.linkerArgs = [];
+
+        /**
+         * Options for doc generator
+         * @type {Object}
+         */
+        this.docopts = {};
     }
 }

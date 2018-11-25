@@ -1,0 +1,19 @@
+@import "functions.scss";
+
+// For the theme color
+$contrast-color: white;
+
+// Colors
+$version-tag-background: rgba(0, 0, 0, 0.4);
+
+// Neutral colors
+$neutral-7: #212932; // Text, headers
+$neutral-6: #616B78; // Subtitles
+$neutral-5: #8A95A5; // Content overviews
+$neutral-4: #BAC4CC; // Light titles
+$neutral-3: #CFD6DD; // Borders
+$neutral-2: #E1E7EC; // Darker backgroungs
+$neutral-1: #FFF; // Background
+
+// For padding
+$body-padding: 2rem;

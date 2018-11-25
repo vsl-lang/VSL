@@ -48,6 +48,13 @@ export default class ScopeInitItem extends ScopeFuncItem {
     }
 
     /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Initializer'; }
+
+    /**
      * Returns unique name for scope item
      * @type {string}
      */

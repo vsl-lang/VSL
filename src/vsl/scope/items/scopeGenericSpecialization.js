@@ -104,10 +104,17 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
             );
         }
 
-        /** @type {ScopeTypeItem} */
+        /**
+         * This is the source backing class of this.
+         * @type {ScopeTypeItem}
+         */
         this.genericClass = genericClass;
 
-        /** @type {ScopeTypeItem[]} */
+        /**
+         * These are the generic parameters or the values of the generic
+         * specialization
+         * @type {ScopeTypeItem[]}
+         */
         this.parameters = parameters;
     }
 
@@ -115,8 +122,11 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
     resolve() {
         super.resolve();
 
+        /** @private */
         this.interfaces = this.genericClass.interfaces;
+        /** @private */
         this.superclass = this.genericClass.superclass;
+        /** @private */
         this.defaultInitializer = this.genericClass.defaultInitializer;
     }
 
@@ -165,6 +175,13 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
     toString() {
         return `${this.genericClass}<${this.parameters.join(", ")}>`;
     }
+
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Generic Specialization'; }
 
     /** @override */
     clone(opts) {
