@@ -95,6 +95,7 @@ export default class Module {
             ModuleError.type.invalidVersion,
             { version: yaml.version }
         );
+        this.module.version = yaml.version;
 
         ////////////////////////////////////////////////////////////////////////
         // .TARGET
@@ -128,6 +129,15 @@ export default class Module {
         this.module.stdlib = stdlib;
 
         ////////////////////////////////////////////////////////////////////////
+        // .DOCGEN
+        ////////////////////////////////////////////////////////////////////////
+        let docgenOptions = yaml.docgen ? this.validateDocgen(yaml.docgen) : {};
+        this.module.docopts = {
+            themeColor: '#09F',
+            ...docgenOptions
+        };
+
+        ////////////////////////////////////////////////////////////////////////
         // .SOURCES
         ////////////////////////////////////////////////////////////////////////
         let sources = yaml.sources || [];
@@ -157,6 +167,32 @@ export default class Module {
         }
 
         this.module.sources = expandedSources;
+    }
+
+    /**
+     * Validates docgen options
+     * @param {Object} options
+     * @return {Object} same object.
+     * @throws {ModuleError}
+     */
+    validateDocgen(options) {
+        if (options.themeColor && !this.validateColor(options.themeColor)) {
+            throw new ModuleError(
+                `Module theme color must be a valid color (6-digit hex code.)`,
+                ModuleError.type.invalidDocgenConfig
+            );
+        }
+
+        return options;
+    }
+
+    /**
+     * Validates color
+     * @param {string} color
+     * @return {boolean}
+     */
+    validateColor(color) {
+        return /^#[0-9a-f]{6}/i.test(color);
     }
 
     /**

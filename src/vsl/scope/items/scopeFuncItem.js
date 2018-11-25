@@ -27,7 +27,7 @@ export default class ScopeFuncItem extends ScopeItem {
     }
 
     /** @override */
-    init({ args, source, returnType = null, ...opts }) {
+    init({ args, returnType = null, ...opts }) {
         super.init(opts);
 
         /**
@@ -35,12 +35,6 @@ export default class ScopeFuncItem extends ScopeItem {
          * @type {ScopeFuncItemArgument[]}
          */
         this.args = args;
-
-        /**
-         * The original referencing node.
-         * @type {Node}
-         */
-        this.source = source;
 
         /**
          * The return type of the function if it returns.
@@ -171,6 +165,13 @@ export default class ScopeFuncItem extends ScopeItem {
     get uniqueName() {
         return `F${super.uniqueName}${this.args.map(arg => arg.uniqueName).join("")}`;
     }
+
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Function'; }
 
     /** @override */
     toString() {

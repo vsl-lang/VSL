@@ -55,6 +55,13 @@ export default class ScopeMetaClassItem extends ScopeTypeItem {
         return `vsl.MetaClass.${this.referencingClass.uniqueName}`
     }
 
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Meta Class'; }
+
     /** @return {string} */
     toString() {
         return `MetaClass<<${this.referencingClass}>>`

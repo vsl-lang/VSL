@@ -1,0 +1,12 @@
+.body-split {
+
+  .body-split__split {
+    display: flex;
+    flex-direction: row;
+
+    .body-split__split__wide {
+      flex: 1;
+    }
+  }
+
+}

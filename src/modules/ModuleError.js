@@ -14,7 +14,7 @@ export default class ModuleError {
         this.type = type;
         this.data = data;
     }
-    
+
     static type = {
         modulePathNotFound: 0,
         moduleNoYml: 1,
@@ -24,6 +24,7 @@ export default class ModuleError {
         invalidSourceType: 5,
         invalidSourceItemType: 6,
         invalidStdlibSpec: 6,
-        invalidTargetType: 7
+        invalidTargetType: 7,
+        invalidDocgenConfig: 8
     }
 }

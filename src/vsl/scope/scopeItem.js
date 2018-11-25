@@ -99,11 +99,18 @@ export default class ScopeItem {
      * Called to initalize type with object.
      * @param {ScopeItemResolver} resolver - Function to resolve if node.
      * @param {boolean} isScopeRestricted - If is private
+     * @param {Node} source - orignial node.
      * @abstract
      */
-    init({ resolver = null, isScopeRestricted = false }) {
+    init({ resolver = null, isScopeRestricted = false, source = null }) {
         this._resolver = resolver;
         this.isScopeRestricted = isScopeRestricted;
+
+        /**
+         * The original referencing node.
+         * @type {Node}
+         */
+        this.source = source;
     }
 
     /**
@@ -165,6 +172,12 @@ export default class ScopeItem {
     getQuery() {
         return new (this.constructor)(ScopeForm.query, this.rootId, {});
     }
+
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     */
+    get typeDescription() { return 'Unknown'; }
 
     /**
      * Returns unique name for scope item

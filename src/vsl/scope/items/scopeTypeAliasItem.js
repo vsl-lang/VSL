@@ -43,6 +43,13 @@ export default class ScopeTypeAliasItem extends ScopeItem {
     }
 
     /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Type Alias'; }
+
+    /**
      * Resolves a {@link ScopeItem} to its canolical form.
      * @return {ScopeItem} normalized etc.
      */

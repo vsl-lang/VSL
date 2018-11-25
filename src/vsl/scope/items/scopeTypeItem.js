@@ -265,6 +265,13 @@ export default class ScopeTypeItem extends ScopeItem {
         return `${this.isInterface ? "interface" : "class"} ${this.rootId}`
     }
 
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Class'; }
+
     /** @return {string} */
     toString() {
         return `${this.rootId}`

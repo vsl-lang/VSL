@@ -3,7 +3,6 @@ import TempFileManager from '../helpers/TempFileManager';
 import path from 'path';
 import fs from 'fs-extra';
 
-import HTMLGen from '../../docgen/HTMLGen/HTMLGen';
 import DocGen from '../../docgen/DocGen';
 
 export default class Doxgen extends CompilerCLI {
@@ -16,8 +15,7 @@ export default class Doxgen extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }]
             ]],
             ["Output Options", [
-                ["-o"                    , "The output directory of doc files ",     { output: true }],
-                ["--json"                , "Dumps doc JSON to STDOUT. ",             { json: true }]
+                ["-o"                    , "The output directory of doc files ",     { output: true }]
             ]]
         ]);
     }
@@ -28,7 +26,6 @@ export default class Doxgen extends CompilerCLI {
 
     run(args) {
         let verbose = false;
-        let json = false;
 
         let directory = null;
         let outputDirectory = null;
@@ -51,7 +48,6 @@ export default class Doxgen extends CompilerCLI {
                     outputDirectory = args[++i];
                 }
                 if ('verbose' in flagInfo) verbose = true;
-                if ('json' in flagInfo) json = true;
             } else {
                 // Check if directory file, or neither
                 if (!fs.existsSync(args[i])) {
@@ -75,52 +71,28 @@ export default class Doxgen extends CompilerCLI {
             }
         }
 
-        if (!json) {
-            if (!directory) {
-                this.error.cli(`specify path to module`);
-            }
-
-            if (!outputDirectory) {
-                this.error.cli(`provide output directory`);
-            }
+        if (!outputDirectory) {
+            this.error.cli(`provide output directory`);
         }
-
-        this.json = json;
 
         // Run module
         this.dispatch(directory, outputDirectory);
     }
 
     async dispatch(directory, outputDirectory) {
-        if (!this.json) {
-            if (fs.existsSync(outputDirectory)) {
-                if (!fs.statSync(outputDirectory).isDirectory()) {
-                    this.error.cli(`${outputDirectory} exists but is not a directory.`)
-                }
-            } else {
-                await fs.mkdirp(outputDirectory);
+        if (fs.existsSync(outputDirectory)) {
+            if (!fs.statSync(outputDirectory).isDirectory()) {
+                this.error.cli(`${outputDirectory} exists but is not a directory.`)
             }
+        } else {
+            await fs.mkdirp(outputDirectory);
         }
 
         const { index, module } = await this.executeModule(directory);
 
-        const items = [];
-        const sources = index.root.globalScope.statements;
+        const scope = index.root.globalScope.scope;
 
-        for (let i = 0; i < sources.length; i++) {
-            const scope = sources[i].scope;
-            for (const [_, value] of scope.ids) {
-                items.push(...value);
-            }
-        }
-
-        const docGen = new DocGen(items, module);
-        const json = docGen.generate();
-        if (this.json) {
-            console.log(json);
-        } else {
-            const htmlGen = new HTMLGen(outputDirectory);
-            await htmlGen.generate(json);
-        }
+        const docGen = new DocGen({ scope, module, outputDirectory });
+        await docGen.generate();
     }
 }

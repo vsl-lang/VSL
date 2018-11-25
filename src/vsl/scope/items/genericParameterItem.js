@@ -42,6 +42,13 @@ export default class GenericParameterItem extends ScopeTypeItem {
         return `${this.rootId}`;
     }
 
+    /**
+     * Returns human-readable description of type.
+     * @type {string}
+     * @override
+     */
+    get typeDescription() { return 'Generic Parameter'; }
+
     /** @override */
     clone(opts) {
         super.clone({
