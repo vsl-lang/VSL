@@ -1,6 +1,6 @@
 import ScopeTypeItem from './scopeTypeItem';
 import ScopeForm from '../scopeForm';
-import Scope from '../Scope';
+import Scope from '../scope';
 
 /**
  * Represents a metaclass by mocking/redirecting the subscope.s
