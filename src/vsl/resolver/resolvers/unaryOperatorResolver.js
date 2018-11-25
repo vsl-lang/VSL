@@ -53,6 +53,10 @@ export default class UnaryOperatorResolver extends TypeResolver {
             switch (type) {
                 case ConstraintType.VoidableContext: return false;
                 case ConstraintType.RequestedTypeResolutionConstraint: return null;
+
+                case ConstraintType.SimplifyToPrecType:
+                    return false;
+
                 default: return negotiate(type);
             }
         });
@@ -109,7 +113,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 this.getChild(this.node.expression).resolve((type) => {
                     switch (type) {
                         case ConstraintType.VoidableContext: return false;
-                        case ConstraintType.RequestedTypeResolutionConstraint: return new TypeCandidate(bestCandidate);
+                        case ConstraintType.RequestedTypeResolutionConstraint: return new TypeCandidate(bestCandidate.args[0].type);
                         default: return negotiate(type);
                     }
                 });

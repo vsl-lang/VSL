@@ -2,4 +2,8 @@ func main() {
     let x = 1
     let y = 1
     assert(x == y)
+
+    let a: UInt = 1
+    let b: UInt = 1
+    assert(a == b)
 }

@@ -3,4 +3,9 @@ func main() {
     let y: Int32 = 1
     let z: Int32 = 1
     assert(x - y == 1)
+
+    let a: UInt32 = 2
+    let b: UInt32 = 1
+    let c: UInt32 = 1
+    assert(a - b == c)
 }

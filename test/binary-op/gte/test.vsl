@@ -1,9 +1,17 @@
 func main() {
-    let x = 2
-    let y = 1
+    let x: Int = 2
+    let y: Int = 1
     assert(x >= y)
 
-    let a = 1
-    let b = 1
+    let a: Int = 1
+    let b: Int = 1
     assert(a >= b)
+
+    let c: UInt = 2
+    let d: UInt = 1
+    assert(c >= d)
+
+    let e: UInt = 1
+    let f: UInt = 1
+    assert(e >= f)
 }

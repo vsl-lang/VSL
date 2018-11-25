@@ -1,5 +1,9 @@
 func main() {
-    let x = -1
-    let y = 4294967295
+    let x: Int = -1
+    let y: Int = 4294967295
     assert(x == y)
+
+    let a: UInt = -1
+    let b: UInt = 4294967295
+    assert(a == b)
 }

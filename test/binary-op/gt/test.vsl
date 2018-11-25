@@ -1,5 +1,9 @@
 func main() {
-    let x = 2
-    let y = 1
+    let x: Int = 2
+    let y: Int = 1
     assert(x > y)
+
+    let a: UInt = 2
+    let b: UInt = 1
+    assert(a > b)
 }

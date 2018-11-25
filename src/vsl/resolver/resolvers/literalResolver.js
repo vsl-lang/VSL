@@ -122,7 +122,7 @@ export default class LiteralResolver extends TypeResolver {
                     `order for everything to work. Candidates would include: \n\n` +
                     typeList.map(i => "    • " + i.toString()).join("\n") +
                     `\n\nHowever none of these are actually a type this literal could\n` +
-                    `represent.`,
+                    `represent.${response ? ` Contextualy this must be ${response}` : ''}`,
                     e.NO_VALID_TYPE
                 );
             } else {
