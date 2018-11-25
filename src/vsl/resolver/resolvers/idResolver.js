@@ -7,7 +7,6 @@ import ScopeForm from '../../scope/scopeForm';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 import ScopeAliasItem from '../../scope/items/scopeAliasItem';
-import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 
