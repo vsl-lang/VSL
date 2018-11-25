@@ -280,7 +280,7 @@ export default class CallResolver extends TypeResolver {
                     this.emit(
                         `Ambiguous use of function. Could not break tie between:\n${
                             [bestCandidate, currentCandidate]
-                                .map(candidate => `    • ${candidate} (score: ${topTiebreakerBonus})`)
+                                .map(candidate => `    • ${candidate.candidate} (score: ${topTiebreakerBonus})`)
                                 .join('\n')
                         }\n`,
                         e.AMBIGUOUS_CALL
@@ -290,6 +290,7 @@ export default class CallResolver extends TypeResolver {
                 }
             }
         }
+
 
         if (bestCandidate === null) {
 

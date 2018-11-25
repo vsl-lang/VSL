@@ -431,14 +431,13 @@ Ternary
 Assign
    -> BinaryOpRight[Assign, ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "**="), Is] {% id %}
 Is
-   -> BinaryOp[Is, ("is" | "issub"), Comparison] {% id %}
-Comparison
-   -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" |
-        "<"), Or]  {% id %}
+   -> BinaryOp[Is, ("is" | "issub"), Or] {% id %}
 Or
    -> BinaryOp[Or, ("||"), And] {% id %}
 And
-   -> BinaryOp[And, ("&&"), Shift] {% id %}
+   -> BinaryOp[And, ("&&"), Comparison] {% id %}
+Comparison
+   -> BinaryOp[Comparison, ("==" | "!=" | "<>" | "<=>" | "<=" | ">=" | ">" | "<"), Shift]  {% id %}
 Shift
    -> BinaryOp[Shift, ("<<" | ">>" | ">>>"), Sum] {% id %}
 Sum

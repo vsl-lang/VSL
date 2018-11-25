@@ -106,7 +106,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 this.getChild(this.node.expression).resolve((type) => {
                     switch (type) {
                         case ConstraintType.VoidableContext: return false;
-                        case ConstraintType.RequestedTypeResolutionConstraint: return bestCandidate;
+                        case ConstraintType.RequestedTypeResolutionConstraint: return new TypeCandidate(bestCandidate);
                         default: return negotiate(type);
                     }
                 });

@@ -16,6 +16,7 @@ export default function vslGetChild(from: Node): TypeResolver {
         case t.AndExpression: return new resolvers.ShortCircutResolver(from, vslGetChild);
         case t.BitcastExpression: return new resolvers.CastResolver(from, vslGetChild);
         case t.UnaryExpression: return new resolvers.UnaryOperatorResolver(from, vslGetChild);
+        case t.Ternary: return new resolvers.TernaryResolver(from, vslGetChild);
         default: throw new TypeError(`No deduction child handler for ${from.constructor.name}`);
     }
 }

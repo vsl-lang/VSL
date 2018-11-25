@@ -95,6 +95,7 @@ export default class PropertyResolver extends TypeResolver {
             candidateList.set(candidate, possibleFieldTypes);
         }
 
+
         if (candidateList.size > 1) {
             this.emit(
                 `Left-hand side of property is ambiguous.`,
