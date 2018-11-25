@@ -1,6 +1,5 @@
 import TypeLookup from '../typeLookup';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
-import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 import ScopeForm from '../../scope/scopeForm';
 
 import e from '../../errors';

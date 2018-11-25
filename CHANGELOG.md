@@ -1,6 +1,16 @@
 # CHANGELOG
 Development progress and changes over time.
 
+## Nov 24, 2018
+
+Plan:
+ - Start to implement enumerations
+   - Definite enum backed by any value (default UInt32)
+
+## Nov 22, 2018
+ - Implement new STL methods, operators, etc.
+ - Many, many more bugfixes
+
 ## Nov 21, 2018
  - Address (Nov 20, 2018 Plan 5)
  - Add backend contextual generic initialization.
@@ -18,6 +28,7 @@ Development progress and changes over time.
  - Support static fields on generic methods
  - Add `Pointer<T>.sizeof()`
  - Add allocation intrinsics
+ - A lot more misc bug fixes
 
 Plan:
  1. Implement native initializers (abandoned)

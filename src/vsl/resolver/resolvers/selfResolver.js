@@ -4,7 +4,6 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
-import ScopeGenericItem from '../../scope/items/scopeGenericItem';
 
 import e from '../../errors';
 
