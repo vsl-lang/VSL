@@ -1,7 +1,16 @@
 # CHANGELOG
 Development progress and changes over time.
 
+## Nov 25, 2018
+ - Bug fixes
+
+Plan:
+ - Delegating initializers
+ - Default parameters
+ - enumerations
+
 ## Nov 24, 2018
+ - Bug fixes
 
 Plan:
  - Start to implement enumerations
