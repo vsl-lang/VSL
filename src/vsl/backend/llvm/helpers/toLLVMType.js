@@ -3,6 +3,7 @@ import BackendError from '../../BackendError';
 import layoutType from './layoutType';
 
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+import ScopeEnumItem from '../../../scope/items/scopeEnumItem';
 
 /**
  * Converts a {@link ScopeTypeItem} to an LLVM type.
@@ -35,6 +36,26 @@ export default function toLLVMType(type, backend) {
     } else if (type === ScopeTypeItem.RootClass) {
         // If we are the root class then we have special things to do
         return llvm.Type.getInt64Ty(context);
+    } else if (type instanceof ScopeEnumItem) {
+        if (!type.backingType) {
+            throw new BackendError(
+                `No static enumeration backing type. Specify one using ` +
+                `\`@staticEnumProvider\``,
+                type.source
+            );
+        }
+
+        const backingType = toLLVMType(type.backingType, backend);
+
+        if (!(backingType instanceof llvm.IntegerType)) {
+            throw new BackendError(
+                `The \`@staticEnumProvider\` should compile to a primitive ` +
+                `integer type.`,
+                type.backingType.source
+            );
+        }
+
+        return backingType;
     } else {
         return layoutType(type, backend).getPointerTo();
 

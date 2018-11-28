@@ -51,7 +51,8 @@ export default class LLVMEnumerationStatement extends BackendWatcher {
                     staticItems[i].backendRef = new ValueRef(
                         llvm.ConstantInt.get(
                             context.ctx,
-                            staticItems[i].caseIndex
+                            staticItems[i].caseIndex,
+                            toLLVMType(classRef, backend).bitWidth
                         ),
                         { isPtr: false }
                     );

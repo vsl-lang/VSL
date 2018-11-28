@@ -61,6 +61,7 @@ export default class TransformationContext {
         // O: KEEP
         target.primitives.forEach((context, name) => this.primitives.set(name, context));
         this.booleanType = target.booleanType;
+        this.staticEnumerationType = target.staticEnumerationType;
     }
 
     /**

@@ -1,0 +1,14 @@
+enum Planet {
+case mercury
+case venus
+case earth
+case mars
+case jupiter
+case saturn
+case uranus
+case neptune
+}
+
+func main() {
+    let planet: Planet = Planet.mercury
+}
