@@ -13,6 +13,7 @@ export default class VSLScopeTransformer extends Transformer {
             pass.RegisterTypeAlias,
             pass.RegisterFunctionDeclaration,
             pass.RegisterClassDeclaration,
+            pass.RegisterEnumerationDeclaration,
             pass.RegisterInitDeclaration,
 
             // Check return statements are correctly formed.

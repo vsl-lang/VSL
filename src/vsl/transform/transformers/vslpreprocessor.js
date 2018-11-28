@@ -54,9 +54,20 @@ export default class VSLPreprocessor extends Transformer {
             // Registers @booleanProvider
             pass.DescribeBooleanProvider,
 
+            // Registers @staticEnumProvider
+            pass.DescribeStaticEnumProvider,
+
             // Add to first scope pass
             // adds just the name and ref to class
             pass.DescribeClassDeclaration,
+
+            // Registers enum
+            pass.DescribeEnumerationDeclaration,
+
+            // Registers the cases for enums
+            pass.DescribeEnumerationCase,
+
+            // Registers type alias
             pass.DescribeTypeAlias
         ], context);
     }

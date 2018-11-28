@@ -48,33 +48,6 @@ export default class ScopeAliasItem extends ScopeItem {
          * @type {boolean}
          */
         this.escapesScope = false;
-
-        /**
-         * The source node in which this item was declared. Do note that this
-         * might now always be the same but you can assume it will have type
-         * info e.g. `.typeCandidates`.
-         *
-         * @type {Node}
-         */
-        this.source;
-
-        /**
-         * If this is static relative to parent scope
-         * @type {boolean}
-         */
-        this.isStatic;
-
-        /**
-         * Type of the node (reccomended to call .resolved()).
-         * @type {ScopeTypeItem}
-         */
-        this.type;
-
-        /**
-         * Type of the alias item
-         * @type {ScopeAliasItem}
-         */
-        this.aliasType;
     }
 
     /** @override */
@@ -83,17 +56,33 @@ export default class ScopeAliasItem extends ScopeItem {
             source: this.source,
             aliasType: this.aliasType,
             type: this.type,
-            isStatic: this.isStatic,
             ...opts
         })
     }
 
-    init({ source, aliasType = AliasType.default, type, isStatic, ...opts }) {
+    init({ source, aliasType = AliasType.default, type, ...opts }) {
         super.init(opts);
 
-        this.isStatic = isStatic;
+
+        /**
+         * Type of the alias item
+         * @type {ScopeAliasItem}
+         */
         this.aliasType = aliasType;
+
+        /**
+         * The source node in which this item was declared. Do note that this
+         * might now always be the same but you can assume it will have type
+         * info e.g. `.typeCandidates`.
+         *
+         * @type {Node}
+         */
         this.source = source;
+
+        /**
+         * Type of the node (reccomended to call .resolved()).
+         * @type {ScopeTypeItem}
+         */
         this.type = type;
     }
 

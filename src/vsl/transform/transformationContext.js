@@ -43,6 +43,12 @@ export default class TransformationContext {
          * @type {?ScopeTypeItem}
          */
         this.booleanType = null;
+
+        /**
+         * Stores the primary enumeration backing instance.
+         * @type {?ScopeTypeItem}
+         */
+        this.staticEnumerationType = null;
     }
 
     /**
