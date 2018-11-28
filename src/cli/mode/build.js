@@ -188,6 +188,7 @@ export default class Build extends CompilerCLI {
         this.link = link;
         this.perfBreakdown = perfBreakdown;
         this.triple = triple;
+        this.arch = this.triple.split('-')[0] || 'UNKNOWN_ARCH';
         this.tty = tty.isatty(1);
 
         this.verbose = verbose;
@@ -466,6 +467,7 @@ export default class Build extends CompilerCLI {
             const linker = this.linker ? new Linker(this.linker) : await findDefaultLinker(this.error);
             const ldArgs = [
                 sourceFile,
+                '-arch', this.arch,
                 '-lc',
                 '-o', outputFile
             ].concat(linker.defaultArgs, this.linkerArgs, this.libraries);

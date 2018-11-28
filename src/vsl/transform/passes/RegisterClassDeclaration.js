@@ -41,7 +41,7 @@ export default class RegisterClassDeclaration extends Transformation {
                     // Check if has value
                     if (alias.value === null) {
                         throw new TransformError(
-                            `Class has no initializers so an implicit ` +
+                            `Type has no initializers so an implicit ` +
                             `initializer was being created. For an implicit ` +
                             `initializer, all fields must have a default value.`,
                             alias

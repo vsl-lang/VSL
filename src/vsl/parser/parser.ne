@@ -127,7 +127,7 @@ separator
 statement
    -> ClassStatement       {% id %}
     | InterfaceStatement   {% id %}
-    # | EnumerationStatement {% id %}
+    | EnumerationStatement {% id %}
     | IfStatement          {% id %}
     # | ForStatement         {% id %}
     | WhileStatement       {% id %}
@@ -170,16 +170,26 @@ ReturnStatement
    %}
 
 # ============================================================================ #
-#                            Classes and Interfaces                            #
+#                                 Enumerations                                 #
 # ============================================================================ #
-# EnumerationStatement
-#    -> Annotations Modifier "enum" _ Identifier (_ type {% nth(1) %}):? _ "{" EnumerationItems "}"
-#
-# EnumerationItems
-#    -> CodeBlock[EnumerationItem {% id %}] {% id %}
-#
-# EnumerationItem
-#    -> "case" _ Identifier
+EnumerationStatement
+   -> Annotations Modifier "enum" _ Identifier _ "{" EnumerationItems "}" {%
+        (d, l) => new t.EnumerationStatement(
+           d[1], // Access
+           d[4], // Name
+           d[7], // Statements
+           d[0], // Annotations
+           l
+        )
+   %}
+
+EnumerationItems
+   -> CodeBlock[EnumerationItem {% id %}] {% id %}
+
+EnumerationItem
+   -> "case" _ Identifier {% (d, l) => new t.EnumerationCase(d[2], l) %}
+    | FunctionStatement {% id %}
+    | Field {% id %}
 
 # ============================================================================ #
 #                            Classes and Interfaces                            #
@@ -302,8 +312,6 @@ InterfaceItem
     | FunctionStatement {% id %}
     | Field {% id %}
 
-EnumerationItems
-   -> delimited[Identifier, _ "," _] (_ ";"):? {% id %}
 
 # ============================================================================ #
 #                             Assignment Statement                             #
