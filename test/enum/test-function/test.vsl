@@ -1,0 +1,18 @@
+enum Planet {
+case mercury
+case venus
+case earth
+case mars
+case jupiter
+case saturn
+case uranus
+case neptune
+}
+
+func echoEnum(planet: Planet) -> Planet {
+    return planet
+}
+
+func main() {
+    let planet: Planet = echoEnum(planet: Planet.mercury)
+}
