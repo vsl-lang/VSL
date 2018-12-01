@@ -27,7 +27,7 @@ export function generateEnumerationComparator(comparator, context) {
 
     comparatorFunction.addFnAttr(llvm.Attribute.AttrKind.AlwaysInline);
 
-    comparator.backendRef = comparatorFunction;
+    comparator.backendRef.set(TypeContext.empty(), comparatorFunction);
 
     const comparatorArgs = comparatorFunction.getArguments();
 
