@@ -1,0 +1,15 @@
+enum Planet {
+    case mercury
+    case venus
+    case earth
+    case mars
+    case jupiter
+    case saturn
+    case uranus
+    case neptune
+}
+
+func main() {
+    print(Planet.mercury == Planet.mercury)
+    print(Planet.mercury == Planet.earth)
+}
