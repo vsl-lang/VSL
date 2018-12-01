@@ -16,13 +16,13 @@ export default class VerifyInitDelegationFormat extends Transformation {
         // It doesn't make sense to apply for native inits for example.
         if (!(node.statements instanceof t.CodeBlock)) return;
 
-        if (tool.nthParent(2) instanceof t.InitializerStatement) {
-            return;
-        } else {
-            throw new TransformError(
-                'Delegating initalizers must be top-level in initializer.',
-                node
-            )
-        }
+        // if (tool.nthParent(2) instanceof t.InitializerStatement) {
+        //     return;
+        // } else {
+        //     throw new TransformError(
+        //         'Delegating initalizers must be top-level in initializer.',
+        //         node
+        //     )
+        // }
     }
 }

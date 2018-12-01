@@ -17,7 +17,12 @@ export default class VerifyOperatorOverload extends Transformation {
         // Ensure the name is operator
         if (!(node.name instanceof t.OperatorName)) return;
 
-        if (!(tool.nthParent(3) instanceof t.ClassStatement)) {
+        // The node this decl is wrapped in.
+        const declNode = tool.declarationNode;
+        if (!(
+            declNode instanceof t.ClassStatement ||
+            declNode instanceof t.EnumerationStatement
+        )) {
             throw new TransformError(
                 `Function overloading an operator must be within a type ` +
                 `declaration`,
@@ -25,8 +30,27 @@ export default class VerifyOperatorOverload extends Transformation {
             );
         }
 
+        // If its an enumeration they cannot override == and !=
+        if (declNode instanceof t.EnumerationStatement) {
+            if (['==', '!='].includes(node.name.value)) {
+                throw new TransformError(
+                    `An enumeration cannot overload the ${node.name.value} ` +
+                    `operator.`,
+                    node
+                );
+            }
+        }
+
         // Validate access modifiers
         const accessModifiers = node.access;
+
+        // Cannot be private
+        if (tool.isPrivate) {
+            throw new TransformError(
+                `Operator overloads cannot be private`,
+                node
+            );
+        }
 
         // Must be static
         if (!accessModifiers.includes('static')) {
@@ -36,6 +60,7 @@ export default class VerifyOperatorOverload extends Transformation {
             );
         }
 
+        // Cannot be void
         if (!node.returnType || node.returnType.value === 'Void') {
             throw new TransformError(
                 `Function overloading an operator cannot have void return`,
@@ -43,6 +68,7 @@ export default class VerifyOperatorOverload extends Transformation {
             );
         }
 
+        // Must have 1 or 2 args
         if (node.args.length < 1 || node.args.length > 2) {
             throw new TransformError(
                 `Function overloading an operator must have either one or two ` +

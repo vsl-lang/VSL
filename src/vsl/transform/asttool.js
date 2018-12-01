@@ -91,6 +91,15 @@ export default class ASTTool {
     }
 
     /**
+     * Gets the parent declaration for a declaration. I.e. if this is a method,
+     * field, etc. this will give the class/itf/etc. node.
+     * @type {DeclarationStatement}
+     */
+    get declarationNode() {
+        return this.fragment.parentScope.parentNode;
+    }
+
+    /**
      * Determines is a declaration is explicitly declared private
      * @type {Boolean}
      */

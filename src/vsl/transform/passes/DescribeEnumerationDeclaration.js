@@ -6,6 +6,8 @@ import t from '../../parser/nodes';
 import Scope from '../../scope/scope';
 import ScopeForm from '../../scope/scopeForm';
 import ScopeEnumItem from '../../scope/items/scopeEnumItem';
+import ScopeFuncItem from '../../scope/items/scopeTypeItem';
+import ScopeEnumComparatorFuncItem from '../../scope/items/scopeEnumComparatorFuncItem';
 
 import GenericInfo from '../../scope/items/genericInfo';
 
@@ -34,6 +36,22 @@ export default class DescribeEnumerationDeclaration extends Transformation {
             genericInfo: new GenericInfo({ parameters: [] }),
             resolver: (self) => {
                 self.backingType = tool.context.staticEnumerationType;
+
+                self.staticScope.set(
+                    new ScopeEnumComparatorFuncItem(
+                        '==',
+                        self,
+                        tool.context.booleanType
+                    )
+                );
+
+                self.staticScope.set(
+                    new ScopeEnumComparatorFuncItem(
+                        '!=',
+                        self,
+                        tool.context.booleanType
+                    )
+                );
             }
         };
 

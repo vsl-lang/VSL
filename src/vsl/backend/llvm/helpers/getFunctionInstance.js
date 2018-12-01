@@ -1,24 +1,7 @@
 import t from '../../../parser/nodes';
 import LLVMContext from '../LLVMContext';
-
-/**
- * Gets the name for a {@link ScopeFuncItem}.
- * @param {ScopeFuncItem} func - Function scope item.
- * @param {?TypeContext} typeContext - Type context for function.
- * @return {string}
- */
-export function getFunctionName(func, typeContext) {
-    let statements = func.source?.statements;
-
-    if (statements instanceof t.ExternalMarker) {
-        return statements.rootId;
-    } else if (func.foreignName) {
-        return func.foreignName;
-    } else {
-        if (func.rootId === "main") return "main";
-        return func.uniqueName + (func.isGeneric && typeContext ? typeContext.getMangling() : "");
-    }
-}
+import ScopeEnumComparatorFuncItem from '../../../scope/items/scopeEnumComparatorFuncItem';
+import { generateEnumerationComparator } from './EnumerationHelpers';
 
 /**
  * Returns the function as an LLVM object.
@@ -29,6 +12,10 @@ export function getFunctionName(func, typeContext) {
  * @return {llvm.Function}
  */
 export default function getFunctionInstance(func, context, regen) {
-    const node = func.source;
-    return regen(node.relativeName, node.parentNode, context)
+    if (func instanceof ScopeEnumComparatorFuncItem) {
+        return generateEnumerationComparator(func, context);
+    } else {
+        const node = func.source;
+        return regen(node.relativeName, node.parentNode, context)
+    }
 }

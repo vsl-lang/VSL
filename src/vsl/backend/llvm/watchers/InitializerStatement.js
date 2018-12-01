@@ -7,7 +7,7 @@ import toLLVMType from '../helpers/toLLVMType';
 import ValueRef from '../ValueRef';
 import { Key } from '../LLVMContext';
 
-import { getFunctionName } from '../helpers/getFunctionInstance';
+import getFunctionName from '../helpers/getFunctionName';
 import getDefaultInit from '../helpers/getDefaultInit';
 
 import TypeContext from '../../../scope/TypeContext';
