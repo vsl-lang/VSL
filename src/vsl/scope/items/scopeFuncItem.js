@@ -14,7 +14,10 @@ export default class ScopeFuncItem extends ScopeItem {
      *
      * @param {ScopeForm} form - The form or type of the scope item.
      * @param {string} rootId - the root identifier in a scope.
-     * @param {Object} data - Information about the class
+     * @param {Object} data - Information about the class. See {@link ScopeItem}
+     * @param {ScopeFuncItemArgument[]} data.args - The arguments passable.
+     * @param {?ScopeTypeItem} [data.returnType=null] - Return type of function
+     *                                                or null fpr void.
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);

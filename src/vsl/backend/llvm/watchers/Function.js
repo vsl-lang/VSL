@@ -11,7 +11,7 @@ import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import { Key } from '../LLVMContext';
 import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
 import isInstanceCtx from '../helpers/isInstanceCtx';
-import { getFunctionName } from '../helpers/getFunctionInstance';
+import getFunctionName from '../helpers/getFunctionName';
 import TypeContext from '../../../scope/TypeContext';
 
 import * as llvm from "llvm-node";

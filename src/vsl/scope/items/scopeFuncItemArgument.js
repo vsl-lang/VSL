@@ -10,11 +10,11 @@ export default class ScopeFuncItemArgument {
      * default value for the param, mark that parameter as optional if
      * applicable, meaning that it does not create any conflicts.
      *
-     * @param  {string} name     The name of the function argument, leave
+     * @param {string} name     The name of the function argument, leave
      *                           empty if there is none
      * @param {ScopeTypeItem} type The type of the argument, if it is an
      *                             optional, mark the next param as so.
-     * @param  {bool}   optional Whether the argument is optional, if the
+     * @param {bool}   optional Whether the argument is optional, if the
      *                           argument has a default value, then you may mark
      *                           this.
      * @param {Node}    node     The node in which the ScopeFuncItemArgument
