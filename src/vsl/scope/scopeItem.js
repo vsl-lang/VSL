@@ -136,7 +136,7 @@ export default class ScopeItem {
      * `super.equal` as first condition.
      *
      * @param {ScopeItem} ref - The value of the other scope item. It will
-     *     be of the same subclass. Must be **query** type.
+     *     be of the same subclass.
      * @return {bool} Indicates whether or not the `signature` is the same.
      *
      * @abstract

@@ -2,8 +2,6 @@ import TypeLookup from '../typeLookup';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 import ScopeForm from '../../scope/scopeForm';
 
-const util = require('util')
-
 /**
  * Locates and resolves a generic. Returns a ``
  */

@@ -130,6 +130,7 @@ statement
     | EnumerationStatement {% id %}
     | IfStatement          {% id %}
     # | ForStatement         {% id %}
+    | SwitchStatement      {% id %}
     | WhileStatement       {% id %}
     | AssignmentStatement  {% id %}
     | FunctionStatement    {% id %}
@@ -146,6 +147,7 @@ statement
 CodeBlockBody
    -> "{" CodeBlock[statement {% id %}] "}" {% nth(1) %}
     | statement {% (d, l, f) => d[0] instanceof t.CodeBlock ? f : d[0] %}
+    | ":" statement {% (d, l) => new t.CodeBlock([d[1]], l) %}
 
 IfStatement
    -> "if" _ InlineExpression _ CodeBlockBody (
@@ -153,6 +155,17 @@ IfStatement
             CodeBlockBody {% id %}
         ) {% nth(3) %}
     ):? {% (d, l) => new t.IfStatement(d[2], d[4], d[5], l) %}
+
+SwitchStatement
+   -> "switch" _ InlineExpression _ "{" CodeBlock[SwitchCase {% id %}] "}" {% (d, l) => new t.SwitchStatement(d[2], d[5], l) %}
+
+SwitchCase
+   -> "case" _ InlineExpression _ SwitchBody {% (d, l) => new t.SwitchCase(d[2], d[4], l) %}
+    | "default" _ SwitchBody {% (d, l) => new t.SwitchDefaultCase(d[2], l) %}
+
+SwitchBody
+   -> CodeBlockBody {% id %}
+    | ":" _ "break" {% (d, l) => new t.CodeBlock([], l) %}
 
 # ForStatement
 #    -> "for" _ InlineExpression _ CodeBlockBody {%
@@ -732,6 +745,16 @@ type
    -> delimited[className {% id  %}, _ "." _] {%
         (data, location) => recursiveType(data[0], location)
     %}
+    | TupleType {% id %}
+
+TupleType
+   -> "(" TupleParameter (_ "," _ TupleParameter {% nth(3) %}):+ ")" {%
+       (data, location) => new t.TupleType(data[2].concat(data[1]), location)
+    %}
+
+TupleParameter
+   -> Identifier ":" type {% (d, l) => new t.TupleTypeParameter(d[0], d[2], l) %}
+
 className
    -> Identifier {% id %}
     | Identifier "[" "]" {%
