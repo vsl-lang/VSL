@@ -1,11 +1,15 @@
+import ScopeAliasItem from './scopeAliasItem';
 import ScopeTypeItem from './scopeTypeItem';
 import GenericInfo from './genericInfo';
+import { AliasType } from './scopeAliasItem';
+import ScopeForm from '../scopeForm';
 import Scope from '../scope';
 
 /**
  * @typedef {Object} TupleParameterDescription
  * @property {string} name - The name of the type.
  * @property {ScopeTypeItem} type - The resolved type.
+ * @property {?Node} source - Optional but the source of the node
  */
 
 /**
@@ -31,6 +35,20 @@ export default class ScopeTupleItem extends ScopeTypeItem {
     init({ parameters, ...opts }) {
         const subscope = new Scope();
         const staticScope = new Scope();
+
+        for (let i = 0; i < parameters.length; i++) {
+            subscope.set(
+                new ScopeAliasItem(
+                    ScopeForm.definite,
+                    parameters[i].name,
+                    {
+                        source: parameters[i].source,
+                        aliasType: AliasType.default,
+                        type: parameters[i].type,
+                    }
+                )
+            )
+        }
 
         super.init({
             subscope: subscope,
