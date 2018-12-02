@@ -14,15 +14,26 @@ export default class TupleLookup extends TypeLookup {
      *                           info.
      */
     resolve(scope) {
-        // Generic value should be a ID so we'll get the .value
-        const params = this.node
-            .params
-            .map(
-                parameter => ({
-                    name: parameter.name.value,
-                    type: this.getChild(parameter.type).resolve(scope)
-                })
+        const paramNodes = this.node.params;
+
+        // Ensure no duplicate parameter names
+        const hasDuplicateName = paramNodes
+            .map(param => param.name.value)
+            .filter((paramName, index, array) => array.indexOf(paramName) < index);
+
+        if (hasDuplicateName.length) {
+            this.emit(
+                `Tuple has duplicate parameter name \`${hasDuplicateName[0]}\`.`
             );
+        }
+
+        // Generic value should be a ID so we'll get the .value
+        const params = paramNodes
+            .map(parameter => ({
+                name: parameter.name.value,
+                type: this.getChild(parameter.type).resolve(scope),
+                source: parameter
+            }));
 
         const tupleItem = new ScopeTupleItem(
             ScopeForm.definite,
