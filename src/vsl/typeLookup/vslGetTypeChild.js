@@ -6,6 +6,7 @@ export default function vslGetTypeChild(from: Node): TypeLookup {
     switch(from.constructor) {
         case t.Identifier: return new lookups.IdLookup(from, vslGetTypeChild);
         case t.Generic: return new lookups.GenericLookup(from, vslGetTypeChild);
+        case t.TupleType: return new lookups.TupleLookup(from, vslGetTypeChild);
         default: throw new TypeLookupError(
             `Invalid node in type expression`,
             from
