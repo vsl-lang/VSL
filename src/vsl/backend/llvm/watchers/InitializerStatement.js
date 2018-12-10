@@ -93,6 +93,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             let newContext = context.clone();
             newContext.builder = builder;
             newContext.parentFunc = func;
+            newContext.selfReference = self;
 
             builder.createCall(defaultInit, [self]);
 

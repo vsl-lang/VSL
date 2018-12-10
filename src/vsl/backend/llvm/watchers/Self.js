@@ -13,9 +13,6 @@ export default class LLVMSelf extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-
-        // Always refers to first argument.
-        const [ self ] = context.parentFunc.getArguments();
-        return self;
+        return context.selfReference;
     }
 }

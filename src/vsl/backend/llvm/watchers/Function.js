@@ -86,9 +86,11 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // Where the physical args start
         let argAccessOffset = 0;
 
+        const hasSelfParameter = isInstanceCtx(scopeItem);
+
         // If this _is_ a method (i.e. instance function), we'll want to make
         //  sure we add `self` as the first argument. Also should not be static
-        if (isInstanceCtx(scopeItem)) {
+        if (hasSelfParameter) {
             argAccessOffset += 1;
             const selfType = toLLVMType(scopeItem.owner.owner.selfType.contextualType(typeContext), context);
             argTypes.unshift(
@@ -186,6 +188,9 @@ export default class LLVMFunctionStatement extends BackendWatcher {
                 nodeArgs[i].aliasRef.backendRef = new ValueRef(llvmFuncArgs[argAccessOffset + i], { isPtr: false });
             }
 
+            // Find the 'self' argument if exists. It's first arg if exists
+            let selfValue = hasSelfParameter ? llvmFuncArgs[0] : null;
+
             // Add the appropriate attribute if a @inline tag exists
             if (shouldInline && !isEntry) {
                 func.addFnAttr(
@@ -206,6 +211,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
 
             context.builder = new llvm.IRBuilder(entryBlock);
             context.parentFunc = func;
+            context.selfReference = selfValue;
             regen('statements', node, context);
 
             // Add exit block for void functions.

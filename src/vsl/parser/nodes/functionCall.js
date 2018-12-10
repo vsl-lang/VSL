@@ -33,9 +33,16 @@ export default class FunctionCall extends Node {
          * Resolved return type. Different than `this.reference.returnType` in
          * the case of generics. This is the same as
          * `this.reference.returnType.selfType.contextualType(this.typeContext)`
+         * for inits.
          * @type {?ScopeTypeItem}
          */
         this.returnType = null;
+
+        /**
+         * List of indexes treated as optional.
+         * @type {number[]}
+         */
+        this.argPositionsTreatedOptional = [];
 
         /**
          * The type context with which this is resolved with.

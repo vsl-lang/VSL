@@ -50,7 +50,8 @@ export default class LLVMInitializerCall extends BackendWatcher {
         // Size of the class in bytes
         const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);
 
-
+        // Get args which should use default param
+        const argPositionsTreatedOptional = node.argPositionsTreatedOptional;
 
 
         // Create context for intializer
@@ -81,8 +82,17 @@ export default class LLVMInitializerCall extends BackendWatcher {
 
         // Compile the arguments
         let compiledArgs = [instance];
-        for (let i = 0; i < node.arguments.length; i++) {
-            let value = regen('value', node.arguments[i], context);
+        for (let i = 0, k = 0; i < initRef.args.length; i++, k++) {
+            let value;
+            if (argPositionsTreatedOptional.includes(i)) {
+                const optionalContext = context.clone();
+                const defaultExprArg = initRef.args[i].node.defaultValue;
+                optionalContext.selfReference = takesSelfParameter ? compiledArgs[0] : null;
+                value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
+                k--;
+            } else {
+                value = regen('value', node.arguments[k], context);
+            }
             compiledArgs.push(value);
         }
 

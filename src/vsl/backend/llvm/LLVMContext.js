@@ -21,6 +21,9 @@ export default class LLVMContext {
         /** @type {?llvm.Function} */
         this.parentFunc = null;
 
+        /** @type {?llvm.Value} */
+        this.selfReference = null;
+
         this._keys = new Map();
 
         this._typeContext = TypeContext.empty();
@@ -96,6 +99,7 @@ export default class LLVMContext {
         context.builder = this.builder;
         context.parentFunc = this.parentFunc;
         context.typeContext = this.typeContext;
+        context.selfReference = this.selfReference;
         return context;
     }
 }

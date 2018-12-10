@@ -1,0 +1,5 @@
+func f(a: Int, b: Int = 1) {}
+
+func main() {
+    f(a: 1)
+}

@@ -24,6 +24,9 @@ export default class LLVMFunctionCall extends BackendWatcher {
         // at this point there should only beo ne
         const functionRef = node.reference;
 
+        // Get args which should use default param
+        const argPositionsTreatedOptional = node.argPositionsTreatedOptional;
+
         if (functionRef === null) {
             throw new BackendError(
                 `Function call is ambiguous. Multiple possible references.`,
@@ -31,6 +34,9 @@ export default class LLVMFunctionCall extends BackendWatcher {
             );
         }
 
+
+        // See if takes self
+        const takesSelfParameter = isInstanceCtx(functionRef)
 
         // Create context to generate function call with
         const ctx = context.bare();
@@ -40,14 +46,10 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
         // Create argument instruction list
         let compiledArgs = [];
-        for (let i = 0; i < node.arguments.length; i++) {
-            let value = regen('value', node.arguments[i], context);
-            compiledArgs.push(value);
-        }
 
         // If this is an instance we'll pass in self. We'll get this from the
         // LHS CallRef
-        if (isInstanceCtx(functionRef)) {
+        if (takesSelfParameter) {
             // Get the value
             if (!(node.head instanceof t.PropertyExpression)) {
                 throw new BackendError(
@@ -56,7 +58,22 @@ export default class LLVMFunctionCall extends BackendWatcher {
             }
 
             const headValue = regen('head', node.head, context);
-            compiledArgs.unshift(headValue);
+            compiledArgs.push(headValue);
+        }
+
+        // Compile arguments
+        for (let i = 0, k = 0; i < functionRef.args.length; i++, k++) {
+            let value;
+            if (argPositionsTreatedOptional.includes(i)) {
+                const optionalContext = context.clone();
+                const defaultExprArg = functionRef.args[i].node.defaultValue;
+                optionalContext.selfReference = takesSelfParameter ? compiledArgs[0] : null;
+                value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
+                k--;
+            } else {
+                value = regen('value', node.arguments[k], context);
+            }
+            compiledArgs.push(value);
         }
 
         let result = context.builder.createCall(
