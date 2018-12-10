@@ -45,12 +45,13 @@ export default class RegisterFunctionDeclaration extends Transformation {
                 typedId: {
                     identifier: { value: argName },
                     type: argTypeNode
-                }
+                },
+                defaultValue: argDefaultValue
             }, index, all) => {
                 const externalName = externalNameNode?.value || argName;
                 const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(scope),
                     sourceNode = all[index];
-                const isOptional = false;
+                const isOptional = !!argDefaultValue;
 
                 let aliasItem = new ScopeAliasArgItem(
                     ScopeForm.definite,

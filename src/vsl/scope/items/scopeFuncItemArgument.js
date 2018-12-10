@@ -91,6 +91,6 @@ export default class ScopeFuncItemArgument {
 
     /** @override */
     toString() {
-        return `${this.name || "*"}: ${this.type}${this.optional ? "?" : ""}`;
+        return `${this.name}${this.optional ? "?" : ""}: ${this.type}`;
     }
 }

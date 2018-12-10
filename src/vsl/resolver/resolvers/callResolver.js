@@ -12,7 +12,11 @@ import e from '../../errors';
 
 /**
  * Resolves and chooses the correct function to call of the head. This is  NOT
- * an atomic resolution
+ * an atomic resolution.
+ *
+ * This implementation is not so simple because we must handle things like
+ * default params so this is a pretty slow algorithm relatively. Which can be
+ * worst case $O(n lg n)$ per case.
  */
 export default class CallResolver extends TypeResolver {
 
@@ -129,7 +133,7 @@ export default class CallResolver extends TypeResolver {
 
         // Filter the valid function types
         let candidates = items.filter(item => {
-            return item instanceof ScopeFuncItem && item.args.length === argc;
+            return item instanceof ScopeFuncItem && item.args.length >= argc;
         });
 
         // If they are 0 candidates that means there is no function which
@@ -206,17 +210,62 @@ export default class CallResolver extends TypeResolver {
             ////////////////////////////////////////////////////////////////////////
 
             const candidateArgTypes = [];
+            const argPositionsTreatedOptional = [];
 
             // If same arg length & function name we'll have to go through each
             // arg and check for compatibility.
-            for (let j = 0; j < argc; j++) {
-                let arg = args[j],
-                    argName = arg.name?.value,
+            argIterator:
+            for (let j = 0, k = 0; j < candidate.args.length; j++) {
+                let arg = args[k],
+                    argName = arg?.name?.value,
                     targetArgName = candidate.args[j].name,
-                    targetArgType = candidate.args[j].type.contextualType(typeContext);
+                    targetArgType = candidate.args[j].type.contextualType(typeContext),
+                    targetArgOptional = candidate.args[j].optional;
+
+
+                // Here things are not so simple. We need to check first of all
+                // if there is even a corresponding argument and if not then
+                // we must figure how much it is offset.
+
+                // If there is no arg and it's optional then we're OK but
+                // otherwise this candidate not work.
+                if (!arg) {
+                    if (targetArgOptional) {
+                        argPositionsTreatedOptional.push(j);
+                        continue;
+                    } else {
+                        continue main;
+                    }
+                }
+
 
                 // If there is an arg name, but they don't match then continue.
-                if (argName && argName !== targetArgName) continue main;
+                // UNLESS it is optional in which we'll see if it matches.
+                if (argName && argName !== targetArgName) {
+                    if (targetArgOptional) {
+                        argPositionsTreatedOptional.push(j);
+
+                        // We are going to look at all the next arguments and
+                        // see if one fits.
+                        for (++j; j < candidate.args.length; j++) {
+                            if (candidate.args[j].name === argName) {
+                                // If there is an arg further down the line that
+                                // does have this arg name then OK we'll go
+                                // there.
+
+                                j--; // Reduce j because next ier will increase again
+                                continue argIterator;
+                            } else {
+                                argPositionsTreatedOptional.push(j);
+                            }
+                        }
+
+                        // Otherwise at this point continue on.
+                        continue main;
+                    } else {
+                        continue main;
+                    }
+                }
 
                 // Will store the candidate arg type for the given arg.
                 let workingArgType = null;
@@ -261,6 +310,7 @@ export default class CallResolver extends TypeResolver {
                     tiebreakerBonus += 1;
                 }
 
+                k++;
                 candidateArgTypes.push(argumentType);
             }
 
@@ -269,7 +319,8 @@ export default class CallResolver extends TypeResolver {
                 candidate: candidate,
                 argTypes: candidateArgTypes,
                 returnType: candidateReturnType,
-                tiebreakerBonus: tiebreakerBonus
+                tiebreakerBonus: tiebreakerBonus,
+                argPositionsTreatedOptional: argPositionsTreatedOptional
             });
         }
 
@@ -317,14 +368,20 @@ export default class CallResolver extends TypeResolver {
 
         } else {
             // Re-resolve subtypes to ensure unambiguous refs.
-            for (let i = 0; i < argc; i++) {
-                this.getChild(args[i].value).resolve((type) => {
+            for (let i = 0, j = 0; i < bestCandidate.candidate.args.length; i++, j++) {
+                if (bestCandidate.argPositionsTreatedOptional.includes(i)) {
+                    j--;
+                    continue;
+                }
+
+                // console.log(String(args[j]), String(bestCandidate.argTypes))
+                this.getChild(args[j].value).resolve((type) => {
                     switch (type) {
                         // The child cannot be voidable
                         case ConstraintType.VoidableContext: return false;
 
                         case ConstraintType.RequestedTypeResolutionConstraint:
-                            return bestCandidate.argTypes[i];
+                            return bestCandidate.argTypes[j];
 
                         default: return negotiate(type);
                     }
@@ -342,6 +399,7 @@ export default class CallResolver extends TypeResolver {
             // If we have succesfully found the one correct candidate...
             this.node.reference = bestCandidate.candidate;
             this.node.returnType = bestCandidate.returnType;
+            this.node.argPositionsTreatedOptional = bestCandidate.argPositionsTreatedOptional;
             this.node.typeContext = typeContext;
             return [new TypeCandidate(bestCandidate.returnType)];
         }
