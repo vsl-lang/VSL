@@ -1,0 +1,12 @@
+public func processVoid() {
+    // Do nothing
+}
+
+public func process() {
+    let evaluationValue: Object = #evaluationValue
+    if let evaluationTypeStringConvertable = evaluationValue as? DebugStringConvertible {
+        print(evaluationTypeStringConvertable.toDebugString())
+    } else {
+
+    }
+}

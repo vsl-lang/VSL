@@ -13,7 +13,7 @@ export default function getDefaultInit(ty, context, regen) {
     const id = `F${ty.uniqueName}.init`;
     const backend = context.backend;
 
-    const llvmTy = toLLVMType(ty, backend);
+    const llvmTy = toLLVMType(ty, context);
 
     let existingFunc = backend.module.getFunction(id);
     if (existingFunc) return existingFunc;

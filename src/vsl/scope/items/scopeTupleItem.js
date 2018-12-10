@@ -10,6 +10,7 @@ import Scope from '../scope';
  * @property {string} name - The name of the type.
  * @property {ScopeTypeItem} type - The resolved type.
  * @property {?Node} source - Optional but the source of the node
+ * @property {?ScopeAliasItem} reference - Don't pass but available on an tuple.
  */
 
 /**
@@ -37,17 +38,19 @@ export default class ScopeTupleItem extends ScopeTypeItem {
         const staticScope = new Scope();
 
         for (let i = 0; i < parameters.length; i++) {
-            subscope.set(
-                new ScopeAliasItem(
-                    ScopeForm.definite,
-                    parameters[i].name,
-                    {
-                        source: parameters[i].source,
-                        aliasType: AliasType.default,
-                        type: parameters[i].type,
-                    }
-                )
-            )
+            const aliasItem = new ScopeAliasItem(
+                ScopeForm.definite,
+                parameters[i].name,
+                {
+                    source: parameters[i].source,
+                    aliasType: AliasType.default,
+                    type: parameters[i].type,
+                }
+            );
+
+            parameters[i].reference = aliasItem;
+
+            subscope.set(aliasItem);
         }
 
         super.init({
@@ -63,6 +66,31 @@ export default class ScopeTupleItem extends ScopeTypeItem {
          * @type {TupleParameterDescription[]}
          */
         this.parameters = parameters;
+    }
+
+    /**
+     * Returns the type in a context. Can be used to resolve generic.
+     * @param {TypeContext} typeContext
+     * @return {ScopeTypeItem} may return a different class FYI.
+     * @override
+     */
+    contextualType(typeContext) {
+        const parameters = this.parameters.map(
+            parameter => ({
+                name: parameter.name,
+                source: parameter.source,
+                type: parameter.type.contextualType(typeContext)
+            })
+        );
+
+        return new ScopeTupleItem(
+            ScopeForm.definite,
+            `(${parameters.map(param => `${param.name}: ${param.type}`).join(", ")})`,
+            {
+                parameters: parameters,
+                source: this.source
+            }
+        );
     }
 
     /**
@@ -96,6 +124,15 @@ export default class ScopeTupleItem extends ScopeTypeItem {
             .every((param, idx) =>
                 param.type.resolved().equal(ref.parameters[idx].type.resolved()) &&
                 param.name === ref.parameters[idx].name);
+    }
+
+    /**
+     * Returns unique name for scope item
+     * @type {string}
+     * @override
+     */
+    get uniqueName() {
+        return `T.tuple.${this.parameters.map(param => param.type.uniqueName).join(".")}`;
     }
 
 }

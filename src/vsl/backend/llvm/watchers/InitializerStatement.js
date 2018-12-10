@@ -31,7 +31,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
         const parentClass = scopeItem.initializingType.selfType.contextualType(typeContext);
 
         // Class being initalized in LLVM
-        const selfType = toLLVMType(parentClass, backend);
+        const selfType = toLLVMType(parentClass, context);
 
         // What the init should be called
         const llvmFuncName = getFunctionName(scopeItem, typeContext);
@@ -54,7 +54,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
                 [
                     selfType,
                     ...args.map(
-                        arg => toLLVMType(arg.type.contextualType(typeContext), backend)
+                        arg => toLLVMType(arg.type.contextualType(typeContext), context)
                     )
                 ],
                 false

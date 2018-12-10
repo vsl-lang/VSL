@@ -213,6 +213,7 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('native'), passThrough],
 
     [kw('is'), passThrough],
+    [kw('as'), passThrough],
 
     [kw('function'), passThrough],
     [kw('func'), ret('function')],

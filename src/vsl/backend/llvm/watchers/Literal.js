@@ -49,7 +49,7 @@ export default class LLVMLiteral extends BackendWatcher {
                 );
 
             case VSLTokenType.String:
-                let targetTy = toLLVMType(type, backend).elementType;
+                let targetTy = toLLVMType(type, context).elementType;
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
                     targetTy,

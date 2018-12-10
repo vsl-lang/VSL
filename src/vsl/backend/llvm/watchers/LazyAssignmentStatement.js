@@ -31,7 +31,7 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         const globalVar = backend.module.getGlobalVariable(backingValueName, true);
         if (globalVar) return;
 
-        const varType = toLLVMType(aliasItem.type, backend);
+        const varType = toLLVMType(aliasItem.type, context);
         const backingType = llvm.StructType.get(backend.context, [
             llvm.Type.getInt1Ty(backend.context),
             varType

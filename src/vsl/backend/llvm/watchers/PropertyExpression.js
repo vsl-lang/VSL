@@ -21,6 +21,8 @@ export default class LLVMPropertyExpression extends BackendWatcher {
 
         const asLValue = context.popValue(Key.LValueContext);
 
+        const value = regen('head', node, context);
+
         // If RHS has special behavior then we'll use that. This includes things
         // like computed properties
         if (propRef.backendRef) {
@@ -31,7 +33,6 @@ export default class LLVMPropertyExpression extends BackendWatcher {
                 return propRef.backendRef.generate(context);
             }
         } else {
-            let value = regen('head', node, context);
             if (!value) {
                 throw new BackendError(
                     `Head of property expression did not compile to a value.`,

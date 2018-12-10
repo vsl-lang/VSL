@@ -19,6 +19,10 @@ export default class LLVMEnumerationStatement extends BackendWatcher {
         const backend = context.backend;
         const classRef = node.reference;
 
+        if (classRef.backendRef?.isCompiled) {
+            return;
+        }
+
         // Generate all fields into the global object.
         const staticItems = classRef.staticScope.aliases;
 
@@ -27,7 +31,7 @@ export default class LLVMEnumerationStatement extends BackendWatcher {
             if (backend.module.getGlobalVariable(staticVarName, true)) continue;
 
             if (staticItems[i].source.value instanceof t.ExpressionStatement) {
-                let type = toLLVMType(staticItems[i].type, backend);
+                let type = toLLVMType(staticItems[i].type, context);
                 let globalVar = new llvm.GlobalVariable(
                     backend.module,
                     type,
@@ -52,7 +56,7 @@ export default class LLVMEnumerationStatement extends BackendWatcher {
                         llvm.ConstantInt.get(
                             context.ctx,
                             staticItems[i].caseIndex,
-                            toLLVMType(classRef, backend).bitWidth
+                            toLLVMType(classRef, context).bitWidth
                         ),
                         { isPtr: false }
                     );
@@ -70,5 +74,7 @@ export default class LLVMEnumerationStatement extends BackendWatcher {
                 regen(i, node.statements.statements, context.bare());
             }
         }
+
+        classRef.backendRef = { isCompiled: true };
     }
 }
