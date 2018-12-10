@@ -411,13 +411,13 @@ FunctionBody
 
 NativeBlock
    -> "native" _ "(" _ Identifier _ ")" {%
-        (data, location) => new t.NativeBlock(data[4].value, location)
-    %}
+        (data, location) => new t.NativeBlock(data[4].value, location) %}
+    | "native" _ "(" _ %any {% unlessNodeErr(`Native block argument must be identifier`, identifier, 4) %}
 
 ExternalMarker
    -> "external" "(" ( %identifier {% mid %} | %string {% mid %}) ")" {%
        (data, location) => new t.ExternalMarker(data[2], location)
-   %}
+    %}
 
 # ============================================================================ #
 #                                 Expressions                                  #
