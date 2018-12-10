@@ -32,7 +32,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
             const globalVariable = backend.module.getGlobalVariable(nodeName, true);
             if (globalVariable) return;
 
-            const globalType = toLLVMType(node.reference.type, backend);
+            const globalType = toLLVMType(node.reference.type, context);
             let varRef = new llvm.GlobalVariable(
                 backend.module,
                 globalType,
@@ -46,7 +46,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
         } else if (node.value instanceof t.ExpressionStatement) {
             if (node.isGlobal) {
                 const name = node.reference.uniqueName;
-                const type = toLLVMType(node.reference.type, backend);
+                const type = toLLVMType(node.reference.type, context);
 
                 let varRef = new llvm.GlobalVariable(
                     backend.module,

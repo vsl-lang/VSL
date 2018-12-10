@@ -74,13 +74,13 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // void so we do not construct.
         let returnType;
         if (scopeItem.returnType) {
-            returnType = toLLVMType(scopeItem.returnType.selfType.contextualType(typeContext), backend);
+            returnType = toLLVMType(scopeItem.returnType.selfType.contextualType(typeContext), context);
         } else {
             returnType = llvm.Type.getVoidTy(backend.context);
         }
 
         const argTypes = argsRef.map(
-            arg => toLLVMType(arg.type.selfType.contextualType(typeContext), backend)
+            arg => toLLVMType(arg.type.selfType.contextualType(typeContext), context)
         );
 
         // Where the physical args start
@@ -90,7 +90,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         //  sure we add `self` as the first argument. Also should not be static
         if (isInstanceCtx(scopeItem)) {
             argAccessOffset += 1;
-            const selfType = toLLVMType(scopeItem.owner.owner.selfType.contextualType(typeContext), backend);
+            const selfType = toLLVMType(scopeItem.owner.owner.selfType.contextualType(typeContext), context);
             argTypes.unshift(
                 selfType
             );

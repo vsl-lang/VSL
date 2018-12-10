@@ -326,7 +326,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 llvm.ConstantInt.get(
                     context.ctx,
                     backend.module.dataLayout.getTypeAllocSize(
-                        toLLVMType([...context.typeContext.genericParameters][0][1], context.backend)
+                        toLLVMType([...context.typeContext.genericParameters][0][1], context)
                     ),
                     64,
                     false

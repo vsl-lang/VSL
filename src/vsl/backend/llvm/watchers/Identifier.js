@@ -5,6 +5,7 @@ import t from '../../../parser/nodes';
 import { Key } from '../LLVMContext';
 
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+import ScopeMetaClassItem from '../../../scope/items/scopeMetaClassItem';
 
 import * as llvm from 'llvm-node';
 
@@ -32,8 +33,28 @@ export default class LLVMIdentifier extends BackendWatcher {
                 const source = node.reference.source;
                 const newCtx = context.bare();
                 return regen(source.relativeName, source.parentNode, newCtx);
+            } else if (node.reference instanceof ScopeMetaClassItem) {
+                // Here we're referring to metatype
+
+                // If it exists, we'll generate that class.
+                const source = node.reference.referencingClass.source;
+                regen(source.relativeName, source.parentNode, context.bare());
+
+                // The next item should be property (i.e. accessing static var)
+                // This shouldn't be called in static methods because that doesn't
+                // gen the head.
+
+                if (!(node.parentNode instanceof t.PropertyExpression)) {
+                    backend.warn(
+                        `MetaType expression cannot be used outside of referencing ` +
+                        `a static member.`,
+                        node
+                    );
+                }
+
+                return void 0;
             } else {
-                // Otherwise we're referring to variable
+                // Otherwise we're referring to local variable
                 if (asLValue) {
                     return node.reference.backendRef;
                 } else {

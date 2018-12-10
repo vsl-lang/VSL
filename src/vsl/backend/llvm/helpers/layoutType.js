@@ -18,10 +18,10 @@ import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecial
  * potentially a suffix `typeId` will be stored.
  *
  * @param {ScopeTypeItem} type
- * @param {LLVMBackend} backend
+ * @param {LLVMContext} context
  */
-export default function layoutType(type, backend) {
-    const { context, module } = backend;
+export default function layoutType(type, context) {
+    const { context: ctx, module } = context.backend;
     const typeName = type.uniqueName;
     const typeContext = type.getTypeContext();
 
@@ -29,7 +29,7 @@ export default function layoutType(type, backend) {
     if (existingType) return existingType;
 
     let structType = llvm.StructType.create(
-        context,
+        ctx,
         typeName
     );
 
@@ -38,7 +38,7 @@ export default function layoutType(type, backend) {
 
     // Convert all fields to LLVM types.
     let layout = fieldTypes.map(
-        fieldType => toLLVMType(fieldType, backend));
+        fieldType => toLLVMType(fieldType, context));
 
     structType.setBody(
         layout,

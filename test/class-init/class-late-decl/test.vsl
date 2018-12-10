@@ -1,0 +1,7 @@
+func main() {
+    print(A().value)
+}
+
+class A {
+    const value = "Hello, World!"
+}

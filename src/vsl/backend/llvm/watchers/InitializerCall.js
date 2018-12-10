@@ -45,7 +45,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
         }
 
         // Type of the class in LLVM.
-        const classType = toLLVMType(classRef, backend);
+        const classType = toLLVMType(classRef, context);
 
         // Size of the class in bytes
         const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);

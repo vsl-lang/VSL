@@ -16,8 +16,8 @@ export function generateEnumerationComparator(comparator, context) {
     const typeContext = context.typeContext;
     const comparatorFunction = llvm.Function.create(
         llvm.FunctionType.get(
-            toLLVMType(comparator.returnType, context.backend),
-            comparator.args.map(arg => toLLVMType(arg.type, context.backend)),
+            toLLVMType(comparator.returnType, context),
+            comparator.args.map(arg => toLLVMType(arg.type, context)),
             false
         ),
         llvm.LinkageTypes.InternalLinkage,

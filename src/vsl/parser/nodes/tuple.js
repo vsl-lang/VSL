@@ -10,24 +10,32 @@ export default class Tuple extends Node {
     /**
      * Creates a wrapper for tuples
      *
-     * @param {Node[]} tuple the literal tuple value of the literal
+     * @param {ExpressionStatement[]} expressions the literal tuple value of the literal
      * @param {Object} position a position from nearley
      */
-    constructor (tuple: array, position: Object) {
+    constructor (expressions, position) {
         super(position);
 
-        /** @type {array} */
-        this.tuple = tuple;
+        /** @type {ExpressionStatement[]} */
+        this.expressions = expressions;
+
+        /** @type {?ScopeTupleItem} */
+        this.reference = null;
     }
-    
+
     clone() {
         return new Tuple(
-            this.tuple.map(item => item.clone())
+            this.expressions.map(item => item.clone())
         )
     }
-    
+
     /** @override */
     get children() {
-        return null;
+        return ['expressions'];
+    }
+
+    /** @override */
+    toString() {
+        return `(${this.expressions.join(", ")})`;
     }
 }

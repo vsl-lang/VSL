@@ -93,6 +93,9 @@ export default {
     NO_VALID_TYPE: {},
     NO_VALID_OVERLOAD: {},
 
+    // Tuples
+    TUPLE_DUPLICATE_LABEL: {},
+
     // Generics
     GENERIC_SPECIALIZATION_REQUIRED: {},
 
