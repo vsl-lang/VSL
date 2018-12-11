@@ -122,7 +122,7 @@ export default class IdResolver extends TypeResolver {
         if (response && !resultType.castableTo(response.candidate)) {
             if (requireType) {
                 this.emit(
-                    `Use of ${rootId} has no types which it can be deducted to` +
+                    `Use of ${rootId} has no types which it can be deducted to ` +
                     `in this context. It is of type \`${resultType}\` but is ` +
                     `contextually constrained to \`${response.candidate}\``,
                     e.CANNOT_RESOLVE_IDENTIFIER

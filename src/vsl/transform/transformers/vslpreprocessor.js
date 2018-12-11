@@ -57,6 +57,9 @@ export default class VSLPreprocessor extends Transformer {
             // Registers @staticEnumProvider
             pass.DescribeStaticEnumProvider,
 
+            // Registers @manifestAsRoot
+            pass.DescribeManifestAsRoot,
+
             // Add to first scope pass
             // adds just the name and ref to class
             pass.DescribeClassDeclaration,
