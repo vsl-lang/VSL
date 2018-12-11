@@ -66,7 +66,7 @@ export default class RegisterClassDeclaration extends Transformation {
         if (isInitializer === false) {
             const subscope = node.statements.scope;
 
-            // Register the type in the parent scope
+            // Register the init in the class's scope
             subscope.set(type);
         }
     }

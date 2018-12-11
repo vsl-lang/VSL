@@ -29,6 +29,24 @@ export default class DescribeClassDeclaration extends Transformation {
         let scope = node.parentScope.scope;
         let className = node.name.value;
 
+        // If this is being 'manifested as root' then we'll handle sepecially
+        if (node.annotations.map(_ => _.name).includes('manifestAsRoot')) {
+            // If this class is to be manifested as root then OK we'll do that
+            if (ScopeTypeItem.RootClass.owner) {
+                throw new TransformError(
+                    `Cannot manifest this class as the root class as it already ` +
+                    `has an owner.`,
+                    node
+                );
+            }
+
+            node.reference = ScopeTypeItem.RootClass;
+            ScopeTypeItem.RootClass.rootId = className;
+            scope.set(node.reference);
+            return;
+        }
+
+
         let subscope = node.statements.scope;
         const staticSubscope = new Scope();
 

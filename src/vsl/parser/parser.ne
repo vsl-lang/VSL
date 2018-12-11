@@ -430,12 +430,12 @@ BinaryOp[self, ops, next]
     %}
     | $next {% mid %}
 
-BinaryOpLeft[self, ops, lhs, next]
-   -> $self _ $ops _ $lhs {%
+BinaryOpLeft[self, ops, next, else]
+   -> $self _ $ops _ $next {%
         (data, location) =>
             new t.BinaryExpression(data[0][0], data[4][0], data[2][0][0].value, location)
     %}
-    | $next {% mid %}
+    | $else {% mid %}
 
 BinaryOpRight[self, ops, next]
    -> $next _ $ops _ $self {%
@@ -485,6 +485,8 @@ Range
    -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
 Cast
    -> BinaryOp[type, ("::"), Prefix] {% id %}
+AsExpression
+   -> BinaryOpLeft[AsExpression, ("as"), type, Prefix] {% id %}
 Prefix
    -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {%
         (data, location) =>
