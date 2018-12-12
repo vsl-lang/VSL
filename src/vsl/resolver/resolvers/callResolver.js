@@ -377,6 +377,10 @@ export default class CallResolver extends TypeResolver {
                 // console.log(String(args[j]), String(bestCandidate.argTypes))
                 this.getChild(args[j].value).resolve((type) => {
                     switch (type) {
+                        case ConstraintType.RequireType:
+                        case ConstraintType.SimplifyToPrecType:
+                            return true;
+
                         // The child cannot be voidable
                         case ConstraintType.VoidableContext: return false;
 

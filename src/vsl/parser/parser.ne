@@ -132,6 +132,7 @@ statement
     # | ForStatement         {% id %}
     | SwitchStatement      {% id %}
     | WhileStatement       {% id %}
+    | DoWhileStatement     {% id %}
     | AssignmentStatement  {% id %}
     | FunctionStatement    {% id %}
     | BlockExpression      {% id %}
@@ -174,6 +175,11 @@ SwitchBody
 WhileStatement
    -> "while" _ InlineExpression _ CodeBlockBody {%
         (d, l) => new t.WhileStatement(d[2], d[4], l)
+    %}
+
+DoWhileStatement
+   -> "do" _ "{" CodeBlock[statement {% id %}] "}" _ "while" _ InlineExpression {%
+        (d, l) => new t.DoWhileStatement(d[8], d[3], l)
     %}
 
 ReturnStatement
@@ -458,7 +464,7 @@ Ternary
     %}
     | Assign {% id %}
 Assign
-   -> BinaryOpRight[Assign, ("=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "**="), Is] {% id %}
+   -> BinaryOpRight[Assign, ("=" | "+=" | "-=" | "*=" | "/=" | "\\=" | "%=" | "&=" | "|=" | "^=" | "**="), Is] {% id %}
 Is
    -> BinaryOpLeft[Is, ("is" | "issub"), type, Or] {% id %}
 Or

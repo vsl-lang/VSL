@@ -79,6 +79,9 @@ export default class PropertyResolver extends TypeResolver {
         //  Map<headType: TypeCandidate, fields[]>
         let candidateList = new Map();
 
+        // If one of the heads is prec type
+        let hasPrecType = false;
+
         // Try IdResolver for each candidate.
         for (let i = 0; i < candidates.length; i++) {;
             const candidate = candidates[i].candidate;
@@ -92,23 +95,74 @@ export default class PropertyResolver extends TypeResolver {
                     case ConstraintType.TypeContext:
                         return candidate.getTypeContext();
 
+                    case ConstraintType.RequireType:
+                        return false;
+
                     default: return negotiate(type);
                 }
             });
 
             const possibleFieldTypes = matchingFields.map(matchingField => ({
                 tailReference: this.node.tail.reference,
-                tailType: matchingField
+                tailType: matchingField,
+                headIsPrecType: candidates[i].precType
             }));
 
+            if (candidates[i].precType) hasPrecType = true;
+
             if (possibleFieldTypes.length === 0) continue;
-            candidateList.set(candidate, possibleFieldTypes);
+            candidateList.set(candidates[i], possibleFieldTypes);
         }
 
+        // Simplify prec type if applicable.
+        if (candidateList.size > 1 && hasPrecType) {
+            // Go through heads
+            for (const [headCandidate, _] of candidateList) {
+                // Remove non-prec head
+                if (!headCandidate.precType) {
+                    candidateList.delete(headCandidate);
+                }
+            }
+
+            // If we have now simplfied then re-resolve head
+            if (candidateList.size === 1) {
+                this.getChild(head).resolve((type) => {
+                    switch (type) {
+                        case ConstraintType.RequestedTypeResolutionConstraint:
+                            const [ headCandidate ] = [...candidateList][0];
+                            return headCandidate;
+                        case ConstraintType.SimplifyToPrecType:
+                            return true;
+                        case ConstraintType.BoundedFunctionContext:
+                            return false;
+                        case ConstraintType.VoidableContext:
+                            return false;
+                        default: return negotiate(type);
+                    }
+                });
+            }
+        }
 
         if (candidateList.size > 1) {
+            // Since in this case LHS is ambiguous, we'll try to resolve LHS
+            // forcing it to deduct and if it fails then we'll throw our fallback
+            // error. This provides more informative errors.
+            this.getChild(head).resolve((type) => {
+                switch (type) {
+                    case ConstraintType.RequestedTypeResolutionConstraint:
+                        return null;
+                    case ConstraintType.SimplifyToPrecType:
+                        return true;
+                    case ConstraintType.BoundedFunctionContext:
+                        return false;
+                    case ConstraintType.VoidableContext:
+                        return false;
+                    default: return negotiate(type);
+                }
+            });
+
             this.emit(
-                `Left-hand side of property is ambiguous.`,
+                `Left-hand side of property is ambiguous. Report this error.`,
                 e.AMBIGUOUS_EXPRESSION
             );
         } else if (candidateList.size === 0) {
@@ -131,7 +185,7 @@ export default class PropertyResolver extends TypeResolver {
             }
         }
 
-        const [headType, tailTypes]  = [...candidateList][0];
+        const [{ candidate: headType }, tailTypes]  = [...candidateList][0];
 
         // If it is call we'll pass the generic of LHS to the function
         if (isCallee) {

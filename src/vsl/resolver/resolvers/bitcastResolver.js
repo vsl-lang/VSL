@@ -59,8 +59,7 @@ export default class CastResolver extends TypeResolver {
         const typeCandidates = this.getChild(this.node.value).resolve((type) => {
             switch (type) {
                 case ConstraintType.VoidableContext: return false;
-                case ConstraintType.RequestedTypeResolutionConstraint:
-                    return new TypeCandidate(targetTy);
+                case ConstraintType.RequestedTypeResolutionConstraint: return null;
                 case ConstraintType.RequireType:
                 case ConstraintType.SimplifyToPrecType: return true;
                 default: return negotiate(type);
@@ -69,25 +68,16 @@ export default class CastResolver extends TypeResolver {
 
         // The === 0 case will be handle by the resolver itself
         if (typeCandidates.length > 1) {
-            this.emit(`Amiguous types for left-hand side of cast expression`);
+            this.emit(`Amiguous types for right-hand side of bitcast`);
         } else {
             this.node.valueTy = typeCandidates[0].candidate;
-        }
-
-        const valueType = typeCandidates[0].candidate;
-        if (!valueType.castableTo(targetTy)) {
-            this.emit(
-                `Expression with type ${valueType} cannot be OO-cast to ` +
-                `${targetTy}. Perhaps you which to use the downcasting \`as?\` ` +
-                `or \`as!\` operators?`
-            );
         }
 
         // If the requested type conflicts
         if (requestedType && !targetTy.castableTo(requestedType)) {
             if (requireType) {
                 this.emit(
-                    `In this context the cast would need to resolve to type ` +
+                    `In this context the bit-cast would need to resolve to type ` +
                     `${requestedType} but has type ${targetTy}.`,
                     e.NO_VALID_TYPE
                 );

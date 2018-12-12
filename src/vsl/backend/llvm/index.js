@@ -79,6 +79,7 @@ export default class LLVMBackend extends Backend {
         yield new w.BinaryExpression();
         yield new w.UnaryExpression();
         yield new w.BitCastExpression();
+        yield new w.CastExpression();
         yield new w.OrExpression();
         yield new w.AndExpression();
         yield new w.AssignmentExpression();
@@ -91,6 +92,7 @@ export default class LLVMBackend extends Backend {
         yield new w.IfStatement();
         yield new w.Ternary();
         yield new w.WhileStatement();
+        yield new w.DoWhileStatement();
         yield new w.CodeBlock();
         yield new w.ReturnStatement();
         yield new w.InitializerStatement();

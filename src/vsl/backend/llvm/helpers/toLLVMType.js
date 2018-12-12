@@ -38,7 +38,7 @@ export default function toLLVMType(type, context) {
         }
     } else if (type === ScopeTypeItem.RootClass) {
         // If we are the root class then we have special things to do
-        return getObjectTy(context);
+        return getObjectTy(context).getPointerTo();
     } else if (type instanceof ScopeTupleItem) {
         return layoutTuple(type, context);
     } else if (type instanceof ScopeEnumItem) {
