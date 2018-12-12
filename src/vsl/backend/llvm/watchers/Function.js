@@ -47,6 +47,10 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             if (callee) return callee;
         }
 
+        // Check if function already with name
+        const existingFunc = context.module.getFunction(llvmFuncName);
+        if (existingFunc) return existingFunc;
+
         // This specifies if the function should be compiled publically.
         // This means it will be visible externally. When not the case, it will
         // have a private linkage meaning the function may be optimizedo out.

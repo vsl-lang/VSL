@@ -51,8 +51,11 @@ export default class UnaryOperatorResolver extends TypeResolver {
         // Resolve the expression
         const typeCandidates = this.getChild(this.node.expression).resolve((type) => {
             switch (type) {
-                case ConstraintType.VoidableContext: return false;
-                case ConstraintType.RequestedTypeResolutionConstraint: return null;
+                case ConstraintType.VoidableContext:
+                    return false;
+
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return null;
 
                 case ConstraintType.SimplifyToPrecType:
                     return false;
@@ -95,11 +98,13 @@ export default class UnaryOperatorResolver extends TypeResolver {
                     }
 
                     bestCandidate = possibleOperators[j];
-                } else {
-                    unaryCandidates.push(possibleOperators[j]);
                 }
+
+                unaryCandidates.push(possibleOperators[j]);
             }
         }
+
+        let usedPreferredType = !!bestCandidate;
 
         // Use only unary candidate if only 1 and if no best candidate
         if (!bestCandidate && unaryCandidates.length === 1) {
@@ -107,7 +112,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
         }
 
         // Then if there is a best candidate
-        if (bestCandidate) {
+        if (unaryCandidates.length === 1 || (simplifyToPrecType && bestCandidate)) {
             // Re-resolve expression so it is set with correct info.
             if (typeCandidates.length > 1) {
                 this.getChild(this.node.expression).resolve((type) => {
@@ -120,7 +125,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
             }
 
             this.node.reference = bestCandidate;
-            return [new TypeCandidate(bestCandidate.returnType)]
+            return [new TypeCandidate(bestCandidate.returnType, usedPreferredType)]
         } else if (unaryCandidates.length === 0) {
             if (requireType) {
                 this.emit(

@@ -45,6 +45,12 @@ export default class TransformationContext {
         this.booleanType = null;
 
         /**
+         * If a root manifest has been declared
+         * @type {boolean}
+         */
+        this.hasManifestRoot = false;
+
+        /**
          * Stores the primary enumeration backing instance.
          * @type {?ScopeTypeItem}
          */
