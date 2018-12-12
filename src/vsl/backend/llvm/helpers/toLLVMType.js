@@ -21,6 +21,8 @@ export default function toLLVMType(type, context) {
             case "i1": return llvm.Type.getInt1Ty(context.ctx);
             case "i8":
             case "ui8": return llvm.Type.getInt8Ty(context.ctx);
+            case "i16":
+            case "ui16": return llvm.Type.getInt16Ty(context.ctx);
             case "i32":
             case "ui32": return llvm.Type.getInt32Ty(context.ctx);
             case "i64":

@@ -130,8 +130,7 @@ export default class LiteralResolver extends TypeResolver {
             }
         }
 
-        const shouldResolveToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
-        if (shouldResolveToPrecType) {
+        if (simplifyToPrecType) {
             let precType = null;
 
             for (let i = 0; i < typeCandidates.length; i++) {

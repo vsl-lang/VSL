@@ -222,7 +222,6 @@ export default class CallResolver extends TypeResolver {
                     targetArgType = candidate.args[j].type.contextualType(typeContext),
                     targetArgOptional = candidate.args[j].optional;
 
-
                 // Here things are not so simple. We need to check first of all
                 // if there is even a corresponding argument and if not then
                 // we must figure how much it is offset.
@@ -350,7 +349,6 @@ export default class CallResolver extends TypeResolver {
 
 
         if (bestCandidate === null) {
-
             if (simplifyToPrecType) {
                 this.emit(
                     `Call to function does not match any valid candidates. Valid ` +

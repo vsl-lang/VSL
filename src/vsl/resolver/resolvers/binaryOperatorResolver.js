@@ -55,10 +55,15 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 case ConstraintType.VoidableContext: return false;
 
                 // By default we want all candidates
-                case ConstraintType.RequestedTypeResolutionConstraint: return null;
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return null;
+
+                case ConstraintType.RequireType:
+                    return true;
 
                 // Don't simplify that's what we'll do
-                case ConstraintType.SimplifyToPrecType: return false;
+                case ConstraintType.SimplifyToPrecType:
+                    return false;
 
                 // Propogate negotation as this only handles the one
                 default: return negotiate(type);
@@ -109,7 +114,6 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         continue;
                     }
 
-
                     // Check that they work for RHS since LHS must be type\
                     // anyway. This is ensured by VerifyOperatorOverload
                     for (let k = 0; k < rhsTypes.length; k++) {
@@ -129,15 +133,20 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         // RHS as the format is +(lhs, rhs)
                         const rhsCandidate = rhsTypes[k].candidate.resolved();
                         if (rhsCandidate.castableTo(candidates[j].args[1].type)) {
-                            // Now that we know they work, we'll see if we can set
-                            // the prec candidate.
-                            if (precScore > lastHighestPrec) {
-                                highestPrec = operatorCandidates.length;
-                            } else {
-                                highestPrec = null;
-                            }
+                            // Only resolve prec stuff if we are doing prec
+                            // simplification.
 
-                            lastHighestPrec = precScore;
+                            if (simplifyToPrecType) {
+                                // Now that we know they work, we'll see if we can set
+                                // the prec candidate.
+                                if (precScore > lastHighestPrec) {
+                                    highestPrec = operatorCandidates.length;
+                                } else {
+                                    highestPrec = null;
+                                }
+
+                                lastHighestPrec = precScore;
+                            }
 
                             operatorCandidates.push({
                                 lhsType: lhsTypes[i],

@@ -1,0 +1,14 @@
+func main() {
+    print(UInt8.minValue)
+    print(UInt8.maxValue)
+    print(UInt16.minValue)
+    print(UInt16.maxValue)
+    print(UInt32.minValue)
+    print(UInt32.maxValue)
+    print(Int8.minValue)
+    print(Int8.maxValue)
+    print(Int16.minValue)
+    print(Int16.maxValue)
+    print(Int32.minValue)
+    print(Int32.maxValue)
+}

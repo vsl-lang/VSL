@@ -153,6 +153,9 @@ export default class LLVMLiteral extends BackendWatcher {
             case "i8": return { size: 8, signed: true }
             case "ui8": return { size: 8, signed: false }
 
+            case "i16": return { size: 16, signed: true }
+            case "ui16": return { size: 16, signed: false }
+
             case "i32": return { size: 32, signed: true }
             case "ui32": return { size: 32, signed: false }
 

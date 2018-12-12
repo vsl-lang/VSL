@@ -32,7 +32,7 @@ export default class DescribeClassDeclaration extends Transformation {
         // If this is being 'manifested as root' then we'll handle sepecially
         if (node.annotations.map(_ => _.name).includes('manifestAsRoot')) {
             // If this class is to be manifested as root then OK we'll do that
-            if (ScopeTypeItem.RootClass.owner) {
+            if (tool.context.hasManifestRoot) {
                 throw new TransformError(
                     `Cannot manifest this class as the root class as it already ` +
                     `has an owner.`,
@@ -43,6 +43,7 @@ export default class DescribeClassDeclaration extends Transformation {
             node.reference = ScopeTypeItem.RootClass;
             ScopeTypeItem.RootClass.rootId = className;
             scope.set(node.reference);
+            tool.context.hasManifestRoot = true;
             return;
         }
 

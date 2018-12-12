@@ -4,8 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const child_process = require('child_process');
 
-var libvsl,
-    aTestErrored = false;
+var aTestErrored = false;
 
 async function loadLibvsl() {
     // First get the module
@@ -38,7 +37,7 @@ async function loadLibvsl() {
         errorManager.dynamicHandle(err);
     }
 
-    libvsl = new VSL.CompilationModule(
+    return new VSL.CompilationModule(
         'libvsl',
         VSL.HookType.Strong,
         index
@@ -85,11 +84,9 @@ async function runTestDir(dir) {
     const testName = path.basename(dir);
     group.metadata.name = 'test-' + testName;
 
-    await loadLibvsl();
-
     const index = new VSL.CompilationIndex(
         group,
-        [libvsl]
+        [ await loadLibvsl() ]
     );
 
     const backend = new VSL.LLVM(
