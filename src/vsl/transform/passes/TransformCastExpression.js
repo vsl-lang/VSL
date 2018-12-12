@@ -16,6 +16,10 @@ export default class TransformCastExpression extends Transformation {
             case "::": return tool.replace(
                 new t.BitcastExpression(node.lhs, node.rhs, node.position)
             );
+
+            case "as": return tool.replace(
+                new t.CastExpression(node.lhs, node.rhs, node.position)
+            );
         }
     }
 }

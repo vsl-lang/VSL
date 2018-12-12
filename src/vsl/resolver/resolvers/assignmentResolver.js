@@ -36,7 +36,7 @@ export default class AssignmentResolver extends TypeResolver {
         const value = this.getChild(this.node.value);
 
         // Resolves conditional expressions seperately.
-        const resultType = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
+        const resultType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
         // Get the type that the assignment is.
         const [ targetType ] = target.resolve((type) => {
@@ -47,7 +47,9 @@ export default class AssignmentResolver extends TypeResolver {
             }
         });
 
-        if (resultType && !targetType.castableTo(resultType)) {
+        const targetTy = targetType.candidate;
+
+        if (resultType && !targetTy.castableTo(resultType)) {
             this.emit(
                 `Assignment must resolve to ${resultType} in this context ` +
                 `however is of type ${targetType}.`
@@ -56,21 +58,26 @@ export default class AssignmentResolver extends TypeResolver {
 
         const valueTypes = value.resolve((type) => {
             switch (type) {
-                case ConstraintType.VoidableContext: return false;
-                case ConstraintType.RequestedTypeResolutionConstraint: return targetType;
+                case ConstraintType.RequireType:
+                case ConstraintType.SimplifyToPrecType:
+                    return true;
+                case ConstraintType.VoidableContext:
+                    return false;
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return targetType;
                 default: return negotiate(type);
             }
         });
 
         if (valueTypes.length === 1) {
-            this.node.reference = targetType;
+            this.node.reference = targetTy;
         } else if (rhsTypes.length === 0) {
             this.emit(
-                `Assignment target is of ${targetType} however the value ` +
+                `Assignment target is of ${targetTy} however the value ` +
                 `could not be interpreted as this.`
             );
         }
 
-        return [new TypeCandidate(targetType)];
+        return [new TypeCandidate(targetTy)];
     }
 }

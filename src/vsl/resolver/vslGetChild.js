@@ -14,6 +14,8 @@ export default function vslGetChild(from: Node): TypeResolver {
         case t.AssignmentExpression: return new resolvers.AssignmentResolver(from, vslGetChild);
         case t.OrExpression:
         case t.AndExpression: return new resolvers.ShortCircutResolver(from, vslGetChild);
+        case t.BitcastExpression: return new resolvers.BitcastResolver(from, vslGetChild);
+        case t.CastExpression: return new resolvers.CastResolver(from, vslGetChild);
         case t.BitcastExpression: return new resolvers.CastResolver(from, vslGetChild);
         case t.UnaryExpression: return new resolvers.UnaryOperatorResolver(from, vslGetChild);
         case t.Tuple: return new resolvers.TupleResolver(from, vslGetChild);

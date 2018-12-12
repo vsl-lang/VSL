@@ -6,6 +6,7 @@ import { Key } from '../LLVMContext';
 
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import ScopeMetaClassItem from '../../../scope/items/scopeMetaClassItem';
+import ScopeAliasItem from '../../../scope/items/scopeAliasItem';
 
 import * as llvm from 'llvm-node';
 
@@ -53,13 +54,33 @@ export default class LLVMIdentifier extends BackendWatcher {
                 }
 
                 return void 0;
-            } else {
+            } else if (node.reference instanceof ScopeAliasItem) {
+                const source = node.reference.source;
+
+                if (!node.reference.backendRef) {
+                    if (!source.isGlobal) {
+                        throw new BackendError(
+                            `Used identifier before declaration \`${node.reference}\`.`,
+                            node
+                        );
+                    } else {
+                        // The only reason it wouldn't have already been gen is if it
+                        // is global and seen after so we do that here.
+                        regen(source.relativeName, source.parentNode, context.bare());
+                    }
+                }
+
                 // Otherwise we're referring to local variable
                 if (asLValue) {
                     return node.reference.backendRef;
                 } else {
                     return node.reference.backendRef.generate(context);
                 }
+            } else {
+                throw new BackendError(
+                    `Identifier has unknown compile value of ${node.reference && node.reference.constructor.name}`,
+                    node
+                );
             }
         }
     }

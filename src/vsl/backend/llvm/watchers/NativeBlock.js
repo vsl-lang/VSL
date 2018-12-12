@@ -97,7 +97,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "udiv": return context.builder.createRet(
-                context.builder.createSDiv(
+                context.builder.createUDiv(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )

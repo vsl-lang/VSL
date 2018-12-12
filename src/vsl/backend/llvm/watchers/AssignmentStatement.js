@@ -16,6 +16,8 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
+        if (node.reference.backendRef) return node.reference.backendRef;
+
         // They are three types of AssignmentStatements:
         //  - Global: global variables
         //  - Static: class X { static let ... }
@@ -60,7 +62,7 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                 backend.addInitTask(InitPriority.GLOBAL_VAR, (context) => {
                     let res = regen('value', node, context);
                     context.builder.createStore(res, varRef);
-                })
+                });
 
                 return node.reference.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {

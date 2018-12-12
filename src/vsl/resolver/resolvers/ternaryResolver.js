@@ -133,6 +133,10 @@ export default class TernaryResolver extends TypeResolver {
             );
         }
 
+        if (typesInCommon.length === 1) {
+            this.node.type = typesInCommon[0].candidate;
+        }
+
         return typesInCommon;
     }
 }

@@ -6,7 +6,7 @@ import Node from './node';
  * This matches a ternary.
  */
 export default class Ternary extends Node {
-    
+
     /**
      * Creates a wrapper ExperssionStatement
      *
@@ -17,17 +17,20 @@ export default class Ternary extends Node {
      */
     constructor (condition: Expression, ifTrue: Expression, ifFalse: Expression, position: Object) {
         super(position);
-        
+
         /** @type {Expression} */
         this.condition = condition;
-        
+
         /** @type {Expression} */
         this.ifTrue = ifTrue;
-        
+
         /** @type {Expression} */
         this.ifFalse = ifFalse;
+
+        /** @type {?ScopeTypeItem} */
+        this.type = null;
     }
-    
+
     clone() {
         return new Ternary(
             this.condition.clone(),
@@ -35,7 +38,7 @@ export default class Ternary extends Node {
             this.ifFalse.clone()
         )
     }
-    
+
     /** @override */
     get children() {
         return ['condition', 'ifTrue', 'ifFalse'];

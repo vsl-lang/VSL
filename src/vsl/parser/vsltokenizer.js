@@ -127,6 +127,7 @@ tokenMatchers[VSLScope.Normal] = [
     ['-=', passThrough],
     ['*=', passThrough],
     ['/=', passThrough],
+    ['\\=', passThrough],
     ['%=', passThrough],
     ['&=', passThrough],
     ['|=', passThrough],
@@ -236,6 +237,7 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('else'), passThrough],
     [kw('for'), passThrough],
     [kw('while'), passThrough],
+    [kw('do'), passThrough],
 
     [/[_\p{L}][_\p{L}\d]*/u, passThrough, VSLTokenType.Identifier]
 ];

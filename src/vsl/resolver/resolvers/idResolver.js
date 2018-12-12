@@ -56,12 +56,16 @@ export default class IdResolver extends TypeResolver {
         let results = scope.getAll(rootId);
 
         if (results.length === 0) {
-            this.emit(
-                `Use of undeclared identifier ${rootId}. If you wanted to ` +
-                `reference a function, make sure you specify a function type ` +
-                `somewhere.`,
-                e.UNDECLARED_IDENTIFIER
-            );
+            if (requireType) {
+                this.emit(
+                    `Use of undeclared identifier ${rootId}. If you wanted to ` +
+                    `reference a function, make sure you specify a function type ` +
+                    `somewhere.`,
+                    e.UNDECLARED_IDENTIFIER
+                );
+            } else {
+                return [];
+            }
         }
 
         // If passed callArgs we know it's a fucntion
@@ -95,6 +99,14 @@ export default class IdResolver extends TypeResolver {
         if (result instanceof ScopeTypeItem) {
             // If it's a metaclass.
             resultType = this.wrapType(result);
+        } else if (result instanceof ScopeFuncItem) {
+            if (requireType) {
+                this.emit(
+                    `Referencing function in context of property.`
+                );
+            } else {
+                return [];
+            }
         } else if (result) {
             // This is what all other results SHOULD be. Anything else is an
             // unexpected return for an identifier

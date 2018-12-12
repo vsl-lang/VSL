@@ -1,4 +1,5 @@
 import { getTypeOffset } from './layoutType';
+import * as llvm from 'llvm-node';
 
 // Contains RTTI helper functions
 
@@ -28,6 +29,46 @@ export function getObjectTy(context) {
 }
 
 /**
+ * Creates a wrappee object for a given value and it's VSL type
+ * @param {llvm.Value} value - value in VSL
+ * @param {ScopeTypeItem} valueTy - type in vsl
+ * @param {LLVMContext} context
+ * @return {llvm.Value}
+ */
+export function getObjectForValue(value, valueTy, context) {
+    const ty = getObjectTy(context);
+    const alloc = context.builder.createAlloca(ty);
+
+    context.builder.createStore(
+        getMetaTypeForObject(valueTy, context),
+        context.builder.createInBoundsGEP(alloc, [
+            llvm.ConstantInt.get(context.ctx, 0),
+            llvm.ConstantInt.get(context.ctx, 0)
+        ])
+    );
+
+    let ptrVal = value;
+
+    if (!ptrVal.type.isPointerTy()) {
+        if (ptrVal.type.isIntegerTy()) {
+            ptrVal = context.builder.createIntToPtr(value, llvm.Type.getInt8PtrTy(context.ctx));
+        } else {
+            throw new TypeError(`Do not know how to convert ${valueTy} to Object. Report this.`);
+        }
+    }
+
+    context.builder.createStore(
+        context.builder.createBitCast(ptrVal, llvm.Type.getInt8PtrTy(context.ctx)),
+        context.builder.createInBoundsGEP(alloc, [
+            llvm.ConstantInt.get(context.ctx, 0),
+            llvm.ConstantInt.get(context.ctx, 1)
+        ])
+    );
+
+    return alloc;
+}
+
+/**
  * Generates metatype for a field.
  * @param {LLVMContext} context
  * @return {llvm.StructType}
@@ -54,7 +95,7 @@ export function getFieldTy(context) {
  * @return {llvm.ConstantStruct}
  */
 export function getFieldObjectForField(alias, type, context) {
-    return llvm.ConstantStruct(
+    return llvm.ConstantStruct.get(
         getFieldTy(context),
         [
             // Field name
@@ -83,10 +124,10 @@ export function getMetaTypeTy(context) {
         llvm.Type.getInt8PtrTy(context.ctx),
 
         // Amount of fields
-        llvm.Type.getInt32PtrTy(context.ctx),
+        llvm.Type.getInt32Ty(context.ctx),
 
         // Field (name, offset) tuples.
-        llvm.ArrayType.get(getFieldTy(context), 0)
+        getFieldTy(context).getPointerTo()
     ], false);
 
     return type;
@@ -99,12 +140,30 @@ export function getMetaTypeTy(context) {
  */
 export function getMetaTypeForObject(item, context) {
     const metaTypeName = `${item.uniqueName}.MetaType`;
+    const metaTypeFieldsName = `${metaTypeName}.fields`;
 
     const existingMetaType = context.module.getGlobalVariable(metaTypeName, true);
     if (existingMetaType) return existingMetaType;
 
+    // Global variable with fields;
+    const globalVariableFieldsTy = llvm.ArrayType.get(getFieldTy(context), item.subscope.aliases.length);
+    const globalVariableFields = new llvm.GlobalVariable(
+        context.module,
+        globalVariableFieldsTy,
+        true,
+        llvm.LinkageTypes.LinkOnceODRLinkage,
+        llvm.ConstantArray.get(
+            llvm.ArrayType.get(getFieldTy(context), item.subscope.aliases.length),
+            item.subscope.aliases.map(
+                alias =>
+                    getFieldObjectForField(alias, item, context)
+            )
+        ),
+        metaTypeFieldsName
+    );
+
     const metaTypeTy = getMetaTypeTy(context);
-    const globalVariable = new GlobalVariable(
+    const globalVariable = new llvm.GlobalVariable(
         context.module,
         metaTypeTy,
         true,
@@ -116,18 +175,12 @@ export function getMetaTypeForObject(item, context) {
                 context.builder.createGlobalStringPtr(item.toString()),
 
                 // Field count
-                llvm.ConstantInt.get(context.ctx, item.aliases.length, 32, false),
+                llvm.ConstantInt.get(context.ctx, item.subscope.aliases.length, 32, false),
 
                 // Fields
                 llvm.ConstantExpr.getPointerCast(
-                    llvm.ConstantArray.get(
-                        getFieldTy(context),
-                        item.aliases.map(
-                            alias =>
-                                getFieldObjectForField(alias, item, context)
-                        )
-                    ),
-                    llvm.ArrayType.get(getFieldTy(context), 0)
+                    globalVariableFields,
+                    getFieldTy(context).getPointerTo()
                 )
             ]
         ),
