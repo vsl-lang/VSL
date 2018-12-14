@@ -47,9 +47,12 @@ export default class VSLModule {
 
         /**
          * Linker arguments if provided
-         * @type {string[]}
+         * @type {Object}
+         * @property {string[]} libraries - List of libraries
          */
-        this.linkerArgs = [];
+        this.linker = {
+            libraries: []
+        };
 
         /**
          * Options for doc generator

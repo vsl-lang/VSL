@@ -106,12 +106,18 @@ export default class Module {
         this.module.target = target;
 
         ////////////////////////////////////////////////////////////////////////
-        // .linkerArgs
+        // .LINKER
         ////////////////////////////////////////////////////////////////////////
-        let linkerArgs = yaml.linkerArgs;
-        if (typeof linkerArgs === 'undefined') linkerArgs = [];
+        let linker = yaml.linker;
+        if (typeof linker === 'undefined') linker = {};
 
-        this.module.linkerArgs = linkerArgs;
+        ////////////////////////////////////////////////////////////////////////
+        // .LINKER.LIBRARIES
+        ////////////////////////////////////////////////////////////////////////
+        let linkerLibraries = linker.libraries;
+        if (typeof linkerLibraries === 'undefined') linkerLibraries = [];
+
+        this.module.linker.libraries = linkerLibraries;
 
         ////////////////////////////////////////////////////////////////////////
         // .STDLIB

@@ -29,7 +29,7 @@ export const DEFAULT_STL = "libvsl";
 
 export default class CompilerCLI extends CLIMode {
     fileMap = new Map();
-    linkerArgs = [];
+    libraries = new Set();
 
     /**
      * Loads the STL and returns it as the only item in an array of compilation
@@ -74,6 +74,9 @@ export default class CompilerCLI extends CLIMode {
         }
 
         let module = moduleLoader.module;
+        for (let i = 0; i < module.linker.libraries.length; i++) {
+            this.libraries.add(module.linker.libraries[i]);
+        }
 
         let group = new CompilationGroup();
         for (let file of module.sources) {

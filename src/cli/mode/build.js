@@ -27,8 +27,7 @@ export default class Build extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }],
                 ["--targets"             , "Lists supported compilation targets " +
                                            "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
-                ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.name)); return false } }],
-                ["--default-linker-args" , "Default arguments passed to linker",     { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.defaultArgs.join('\n'))); return false } }],
+                ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.commandName)); return false } }],
                 ["--crt-path"            , "Outputs the CRT path that would " +
                                            "be used with typical linker usage",      { run: _ => { findCRT().then(path => _.printAndDie(path)); return false } }],
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
@@ -44,7 +43,6 @@ export default class Build extends CompilerCLI {
                                            "build. This allows nicer errors.",       { debug: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
                 ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
-                ["--linker"              , "Specifies the linker. ",                 { arg: "linker", linker: true  }],
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
                 ["-Xllc"                 , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
@@ -106,7 +104,6 @@ export default class Build extends CompilerCLI {
         let target = 'native';
         let triple = undefined;
 
-        let linker = null;
         let linkerArgs = [];
         let llcArgs = [];
         let libraries = [];
@@ -140,10 +137,9 @@ export default class Build extends CompilerCLI {
                 if ('verbose' in flagInfo) verbose = flagInfo.verbose;
                 if ('color' in flagInfo) color = flagInfo.color;
                 if ('link' in flagInfo) link = flagInfo.link;
-                if ('linker' in flagInfo) linker = args[++i];
                 if ('nostl' in flagInfo) stl = false;
                 if ('perfBreakdown' in flagInfo) perfBreakdown = true;
-                if ('library' in flagInfo) libraries.push(`-l${args[++i]}`);
+                if ('library' in flagInfo) libraries.push(args[++i]);
                 if ('xllc' in flagInfo) llcArgs.push(args[++i]);
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
                 if ('stl' in flagInfo) stl = args[++i];
@@ -193,8 +189,10 @@ export default class Build extends CompilerCLI {
 
         this.verbose = verbose;
 
-        this.linker = linker;
-        this.libraries = libraries;
+        for (let i = 0; i < libraries.length; i++) {
+            this.libraries.add(libraries[i]);
+        }
+
         this.linkerArgs = linkerArgs;
         this.llcArgs = llcArgs;
 
@@ -464,13 +462,21 @@ export default class Build extends CompilerCLI {
      */
     async ld(sourceFile, outputFile,) {
         return new Promise(async (resolve, reject) => {
-            const linker = this.linker ? new Linker(this.linker) : await findDefaultLinker(this.error);
-            const ldArgs = [
-                sourceFile,
-                '-arch', this.arch,
-                '-lc',
-                '-o', outputFile
-            ].concat(linker.defaultArgs, this.linkerArgs, this.libraries);
+            const linker = await findDefaultLinker(this.error);
+            const ldArgs = await linker.getArgumentsForLinkage({
+                arch: this.arch,
+                files: [
+                    sourceFile,
+                    await findCRT()
+                ],
+                libraries: [
+                    ...this.libraries
+                ],
+                output: outputFile,
+                errorManager: this.error
+            });
+
+            ldArgs.push(...this.linkerArgs);
 
             this.printLog(`$ ${linker.name} ${ldArgs.join(" ")}`);
 

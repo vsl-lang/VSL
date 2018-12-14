@@ -2,11 +2,7 @@ import Linker from './Linker';
 import findCRT from './findCRT';
 import commandExists from 'command-exists';
 
-let search = [
-    { name: 'clang', args: () => [] },
-    { name: 'gcc', args: () => [] },
-    { name: 'ld', args: async (error) => [await findCRT(error)] }
-];
+import * as linkers from './linkers';
 
 /**
  * Gets default linker for system
@@ -14,10 +10,12 @@ let search = [
  * @return {Linker}
  */
 export default async function findDefaultLinker(error) {
-    for (let i = 0; i < search.length; i++) {
-        const cmdName = search[i].name;
+    const linkerList = Object.values(linkers);
+    for (let i = 0; i < linkerList.length; i++) {
+        const linker = new (linkerList[i])();
+        const cmdName = linker.commandName;
         if (await commandExists(cmdName)) {
-            return new Linker(cmdName, await search[i].args(error));
+            return linker;
         }
     }
 
