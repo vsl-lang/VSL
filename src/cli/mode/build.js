@@ -474,28 +474,36 @@ export default class Build extends CompilerCLI {
             let linker, linkerName;
 
             if (this.linker) {
+                console.log('A');
                 const linkerClass = linkers[this.linker];
+                console.log('B');
 
                 if (!linkerClass) {
                     this.error.cli(`VSL has no linker \`${this.linker}\``);
                 }
 
+                console.log('C');
                 linker = new linkerClass();
+                console.log('D');
 
                 linkerName = await linker.getCommandName();
+                console.log('E');
                 if (!linkerName) {
                     this.error.cli(`Linker \`${this.linker}\` is not installed (${this.linker.names.map(item => `\`${item}\``).join(', ')})`);
                 }
 
+                console.log('F');
                 if (!await linker.check()) {
                     this.error.cli(`Linker \`${this.linker}\` is not supported on your environment.`);
                 }
+                console.log('G');
             } else {
                 linker = await findDefaultLinker(this.error);
                 linkerName = await linker.getCommandName();
             }
 
 
+            console.log('H');
             const ldArgs = await linker.getArgumentsForLinkage({
                 triple: new Triple(triple),
                 files: [
@@ -508,6 +516,7 @@ export default class Build extends CompilerCLI {
                 errorManager: this.error
             });
 
+            console.log('I');
             ldArgs.push(...this.linkerArgs);
 
             this.printLog(`$ ${linkerName} ${ldArgs.join(" ")}`);
