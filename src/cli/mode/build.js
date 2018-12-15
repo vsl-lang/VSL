@@ -38,7 +38,7 @@ export default class Build extends CompilerCLI {
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
                 ["--no-color"            , "Disables output colorization",           { color: false }],
             ]],
-            ["Build Options", [
+            ["Build Configuration", [
                 ["-o"                    , "Required. Specifies output file. Use" +
                                            "`-` for STDOUT.",                        { arg: "file", output: true }],
                 ["-O"                    , "Optimization level, default is 2." +
@@ -46,7 +46,7 @@ export default class Build extends CompilerCLI {
                                            "optimized.",                             { arg: "opt", opt: true }],
                 ["-g", "--debug"         , "Performs a 'debug' or development " +
                                            "build. This allows nicer errors.",       { debug: true }],
-                ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
+                ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => { TempFileManager.willCleanup = false; return true } }],
                 ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies a VSL-supported linker to " +
                                            "use",                                    { arg: "linker", linker: true }],
@@ -59,6 +59,10 @@ export default class Build extends CompilerCLI {
                                            "targets, use \`vsl build --targets\`",   { arg: "target", target: true }],
                 ["-T", "--triple"        , "The target triple to use for " +
                                            "compilation. ",                          { arg: "triple", triple: true }]
+            ]],
+            ["Toolchain Options", [
+                ["-fno-lto"              , "Disables using LTO. This may be " +
+                                           "used if LTO may introduce bugs.",        { nolto: true }]
             ]],
             ["Compiler Options", [
                 ["--stl"                 , "Specifies a different standard type " +
@@ -129,6 +133,7 @@ export default class Build extends CompilerCLI {
         let target = 'native';
         let triple = undefined;
         let linker = undefined;
+        let nolto = false;
 
         let linkerArgs = [];
         let llcArgs = [];
@@ -172,6 +177,7 @@ export default class Build extends CompilerCLI {
                 if ('opt' in flagInfo) opt = args[++i];
                 if ('linker' in flagInfo) linker = args[++i];
                 if ('stdout' in flagInfo) outputStream = process.stdout;
+                if ('nolto' in flagInfo) nolto = true;
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
                 if (flagInfo.output) {
@@ -210,8 +216,8 @@ export default class Build extends CompilerCLI {
         this.stl = stl;
         this.link = link;
         this.linker = linker;
+        this.disableLTO = nolto;
         this.perfBreakdown = perfBreakdown;
-        this.triple = triple;
         this.tty = tty.isatty(1);
 
         this.verbose = verbose;
@@ -225,10 +231,6 @@ export default class Build extends CompilerCLI {
 
         this.outputStream = outputStream;
 
-        if (triple) {
-            this.triple = triple;
-        }
-
         if (![0, 1, 2, 3].includes(+opt)) {
             this.error.cli(`invalid optimization level ${opt}`);
         }
@@ -239,13 +241,17 @@ export default class Build extends CompilerCLI {
             this.error.cli(`Provide output location.`);
         }
 
+        // Check if target exists
         this.target = target;
+
+        if (triple) {
+            this.triple = triple;
+        }
 
         let backend = new LLVMBackend(this.createStream(), this.triple);
         if (directory) {
             this.executeModule(directory, backend)
                 .then(({ module }) => {
-                    if (module.target && !this._target) this.target = module.target;
                     this.compileLLVM(backend);
                 });
         } else if (files.length > 0) {
@@ -524,6 +530,7 @@ export default class Build extends CompilerCLI {
                     ...this.libraries
                 ],
                 output: outputFile,
+                disableLTO: this.disableLTO,
                 errorManager: this.error
             });
 

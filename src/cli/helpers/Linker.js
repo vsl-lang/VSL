@@ -7,6 +7,7 @@ import commandExists from './commandExists';
  * @property {string[]} files - Path string array to object files.
  * @property {string[]} libraries - libraries to link
  * @property {string} output - Output path
+ * @property {boolean} disableLTO - If to disable LTO
  * @property {ErrorManager} errorManager - Error manager
  */
 

@@ -220,7 +220,7 @@ export const Targets = new Map([
             "do this. Learn more at (https://git.io/vslerr#crt-not-found)"
     }],
     ["wasm", {
-        "triple": "wasm32-unknown-unknown-elf",
+        "triple": "wasm32-unknown-unknown-wasm",
         "type": "asm",
         "command": "wasm",
         "info": "This compiles to WebAssembly (wasm) \`.wasm\` files. You must " +
