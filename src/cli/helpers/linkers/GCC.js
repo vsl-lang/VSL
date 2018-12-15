@@ -6,7 +6,7 @@ import Linker from '../Linker';
 export default class Gcc extends Linker {
     /** @override */
     constructor() {
-        super("gcc");
+        super(["gcc-8", "gcc"]);
     }
 
     /**
@@ -17,7 +17,7 @@ export default class Gcc extends Linker {
     async getArgumentsForLinkage(options) {
         return [
             ...options.files,
-            '-arch', options.arch,
+            `-march=${options.triple.arch}`,
             ...options.libraries
                 .map(library => `-l${library}`),
             '-o', options.output

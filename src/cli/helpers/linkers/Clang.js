@@ -6,16 +6,7 @@ import Linker from '../Linker';
 export default class Clang extends Linker {
     /** @override */
     constructor() {
-        super("clang");
-    }
-
-    /**
-     * We can only pass `-arch` on darwin
-     * @return {boolean}
-     * @override
-     */
-    async check() {
-        return process.platform === 'darwin';
+        super(["clang"]);
     }
 
     /**
@@ -26,7 +17,7 @@ export default class Clang extends Linker {
     async getArgumentsForLinkage(options) {
         return [
             ...options.files,
-            '-arch', options.arch,
+            `--target=${options.triple.toString()}`,
             ...options.libraries
                 .map(library => `-l${library}`),
             '-o', options.output

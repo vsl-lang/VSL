@@ -21,7 +21,15 @@ function execPromise(command, args) {
 export default class Ld extends Linker {
     /** @override */
     constructor() {
-        super("ld");
+        super(["ld"]);
+    }
+
+    /**
+     * Only support LD if CRT can be found
+     * @return {string}
+     */
+    async check() {
+        return await findCRT() !== null;
     }
 
     /**
@@ -43,10 +51,17 @@ export default class Ld extends Linker {
         return [
             ...options.files,
             await findCRT(options.errorManager),
-            '-arch', options.arch,
+
+            process.platform === 'darwin' ?
+                `-arch` :
+                `--architecture`,
+            options.triple.arch,
+
             ...options.libraries
                 .map(library => `-l${library}`),
+
             '-o', options.output,
+
             ...additionalArgs
         ]
     }

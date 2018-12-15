@@ -10,10 +10,13 @@ import { spawn } from 'child_process';
 
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import WASMIndex from '../../../wasm/index.json';
-import prettyPrintPerformance from '../helpers/prettyPrintPerformance'
+import prettyPrintPerformance from '../helpers/prettyPrintPerformance';
+
 import findDefaultLinker from '../helpers/findDefaultLinker';
 import findCRT from '../helpers/findCRT';
 import Linker from '../helpers/Linker';
+import * as linkers from '../helpers/linkers';
+import Triple from '../helpers/Triple';
 
 const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
 
@@ -27,7 +30,7 @@ export default class Build extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }],
                 ["--targets"             , "Lists supported compilation targets " +
                                            "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
-                ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => _.printAndDie(linker.commandName)); return false } }],
+                ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => linker.getCommandName()).then(name => _.printAndDie(name)); return false } }],
                 ["--crt-path"            , "Outputs the CRT path that would " +
                                            "be used with typical linker usage",      { run: _ => { findCRT().then(path => _.printAndDie(path)); return false } }],
                 ["--color"               , "Colorizes all output where applicable",  { color: true }],
@@ -43,6 +46,8 @@ export default class Build extends CompilerCLI {
                                            "build. This allows nicer errors.",       { debug: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => TempFileManager.willCleanup = false }],
                 ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
+                ["--linker"              , "Specifies a VSL-supported linker to " +
+                                           "use",                                    { arg: "linker", linker: true }],
                 ["-Xl"                   , "Specifies an extra linker argument",     { arg: "arg", xlinker: true }],
                 ["-Xllc"                 , "Specifies an argument to LLC.",          { arg: "arg", xllc: true }],
                 ["-S", "--no-build"      , "Prevents assembly and linkage, " +
@@ -103,6 +108,7 @@ export default class Build extends CompilerCLI {
         let link = true;
         let target = 'native';
         let triple = undefined;
+        let linker = undefined;
 
         let linkerArgs = [];
         let llcArgs = [];
@@ -144,6 +150,7 @@ export default class Build extends CompilerCLI {
                 if ('xlinker' in flagInfo) linkerArgs.push(args[++i]);
                 if ('stl' in flagInfo) stl = args[++i];
                 if ('opt' in flagInfo) opt = args[++i];
+                if ('linker' in flagInfo) linker = args[++i];
                 if ('stdout' in flagInfo) outputStream = process.stdout;
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
@@ -182,9 +189,9 @@ export default class Build extends CompilerCLI {
         this.error.shouldColor = this.color;
         this.stl = stl;
         this.link = link;
+        this.linker = linker;
         this.perfBreakdown = perfBreakdown;
         this.triple = triple;
-        this.arch = this.triple.split('-')[0] || 'UNKNOWN_ARCH';
         this.tty = tty.isatty(1);
 
         this.verbose = verbose;
@@ -329,7 +336,9 @@ export default class Build extends CompilerCLI {
             switch (this.target.command) {
                 case "ld":
                     let outFile = fileManager.tempWithExtension('out');
-                    await this.ld(asmFile, outFile);
+                    await this.ld(asmFile, outFile, {
+                        triple: this.triple
+                    });
                     this._colorCompilationStep(asmFile, outFile);
 
                     let readStream = fs.createReadStream(outFile);
@@ -457,14 +466,38 @@ export default class Build extends CompilerCLI {
      * @param {string} sourceFile the input object file
      * @param {string} outputFile the output binary
      * @param {Object} linkerOptions additional linker options
-     * @param {string[]} outputType default is `-e _main` outputting executable.
+     * @param {string} linkerOptions.triple target triple.
      * @return {Promise} Resolves when finished
      */
-    async ld(sourceFile, outputFile,) {
+    async ld(sourceFile, outputFile, { triple }) {
         return new Promise(async (resolve, reject) => {
-            const linker = await findDefaultLinker(this.error);
+            let linker, linkerName;
+
+            if (this.linker) {
+                const linkerClass = linkers[this.linker];
+
+                if (!linkerClass) {
+                    this.error.cli(`VSL has no linker \`${this.linker}\``);
+                }
+
+                linker = new linkerClass();
+
+                linkerName = await linker.getCommandName();
+                if (!linkerName) {
+                    this.error.cli(`Linker \`${this.linker}\` is not installed (${this.linker.names.map(item => `\`${item}\``).join(', ')})`);
+                }
+
+                if (!await linker.check()) {
+                    this.error.cli(`Linker \`${this.linker}\` is not supported on your environment.`);
+                }
+            } else {
+                linker = await findDefaultLinker(this.error);
+                linkerName = await linker.getCommandName();
+            }
+
+
             const ldArgs = await linker.getArgumentsForLinkage({
-                arch: this.arch,
+                triple: new Triple(triple),
                 files: [
                     sourceFile
                 ],
@@ -477,9 +510,9 @@ export default class Build extends CompilerCLI {
 
             ldArgs.push(...this.linkerArgs);
 
-            this.printLog(`$ ${linker.name} ${ldArgs.join(" ")}`);
+            this.printLog(`$ ${linkerName} ${ldArgs.join(" ")}`);
 
-            let ld = spawn(linker.name, ldArgs, {
+            let ld = spawn(linkerName, ldArgs, {
                 stdio: ['ignore', 'inherit', 'inherit']
             });
 

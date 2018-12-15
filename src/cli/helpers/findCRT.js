@@ -11,7 +11,7 @@ const crtPaths = [
 
 /**
  * Locates the CRT.
- * @param {ErrorManager} error error manager
+ * @param {?ErrorManager} error error manager. If not passed returns null.
  * @return {?string} `null` if could not find
  */
 export default async function findCRT(error) {
@@ -24,5 +24,9 @@ export default async function findCRT(error) {
         return crtPaths[i];
     }
 
-    error.cli(`could not locate crt for linkage. See (https://git.io/vslerr#crt-not-found)`);
+    if (error) {
+        error.cli(`could not locate crt for linkage. See (https://git.io/vslerr#crt-not-found)`);
+    } else {
+        return null;
+    }
 }

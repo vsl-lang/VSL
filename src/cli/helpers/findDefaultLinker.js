@@ -1,6 +1,5 @@
 import Linker from './Linker';
 import findCRT from './findCRT';
-import commandExists from 'command-exists';
 
 import * as linkers from './linkers';
 
@@ -18,8 +17,8 @@ const linkerList = [
 export default async function findDefaultLinker(error) {
     for (let i = 0; i < linkerList.length; i++) {
         const linker = new (linkerList[i])();
-        const cmdName = linker.commandName;
-        if (await commandExists(cmdName) && await linker.check()) {
+        const cmdName = await linker.getCommandName();
+        if (cmdName && await linker.check()) {
             return linker;
         }
     }
