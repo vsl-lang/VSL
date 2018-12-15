@@ -21,6 +21,12 @@ export default class Linker {
     }
 
     /**
+     * Additional checks to see if installation would work
+     * @return {boolean}
+     */
+    async check() { return true; }
+
+    /**
      * Command name for this linker.
      * @return {string}
      */

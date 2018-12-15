@@ -466,8 +466,7 @@ export default class Build extends CompilerCLI {
             const ldArgs = await linker.getArgumentsForLinkage({
                 arch: this.arch,
                 files: [
-                    sourceFile,
-                    await findCRT(this.error)
+                    sourceFile
                 ],
                 libraries: [
                     ...this.libraries

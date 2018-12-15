@@ -1,4 +1,3 @@
-import findCRT from '../findCRT';
 import Linker from '../Linker';
 import commandExists from 'command-exists';
 import { execFile } from 'child_process';
@@ -16,12 +15,12 @@ function execPromise(command, args) {
 }
 
 /**
- * Typical LD linker available on most *nix systems
+ * The GCC compiler.
  */
-export default class Ld extends Linker {
+export default class Gcc extends Linker {
     /** @override */
     constructor() {
-        super("ld");
+        super("gcc");
     }
 
     /**
@@ -30,24 +29,12 @@ export default class Ld extends Linker {
      * @return {Promise}         Resolves to array of options
      */
     async getArgumentsForLinkage(options) {
-
-        const additionalArgs = [];
-
-        // macOS requires the '-macosx_version_min' flag
-        if (await commandExists('sw_vers')) {
-            additionalArgs.push(
-                `-macosx_version_min`, await execPromise('sw_vers', ['-productVersion'])
-            );
-        }
-
         return [
             ...options.files,
-            await findCRT(options.errorManager),
             '-arch', options.arch,
             ...options.libraries
                 .map(library => `-l${library}`),
-            '-o', options.output,
-            ...additionalArgs
+            '-o', options.output
         ]
     }
 }
