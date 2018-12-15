@@ -467,7 +467,7 @@ export default class Build extends CompilerCLI {
                 arch: this.arch,
                 files: [
                     sourceFile,
-                    await findCRT()
+                    await findCRT(this.error)
                 ],
                 libraries: [
                     ...this.libraries
