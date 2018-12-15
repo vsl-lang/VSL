@@ -1,10 +1,12 @@
 // Test runner
 const VSL = require('../lib/vsl');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const child_process = require('child_process');
+const os = require('os');
 
 var aTestErrored = false;
+var aCLITestErrored = false;
 
 async function loadLibvsl() {
     // First get the module
@@ -45,9 +47,74 @@ async function loadLibvsl() {
 }
 
 async function start() {
-    runTests(__dirname)
+    runTests(path.join(__dirname, 'units'))
         .then(() => {
         if (aTestErrored) process.exit(1);
+    });
+
+    runCLITests(path.join(__dirname, 'cli'))
+        .then(() => {
+        if (aCLITestErrored) process.exit(1);
+    });
+}
+
+async function runCLITests(dir) {
+    const files = await fs.readdir(dir);
+    const shFiles = files
+        .map(file => path.join(dir, file))
+        .filter(filePath => filePath.endsWith('.sh'));
+
+    for (let i = 0; i < shFiles.length; i++) {
+        try {
+            const result = await runCLITest(shFiles[i]);
+            console.log(`\u001B[32m✓ Test \u001B[1m${shFiles[i]}\u001B[0;32m correctly executed.\u001B[0m`);
+        } catch(error) {
+            aCLITestErrored = true;
+
+            const errMsg = `\u001B[31m✗ Test \u001B[1m${shFiles[i]}\u001B[0;31m failed.\u001B[0m\n`;
+            if (error.error) {
+                errorManager.rawError(
+                    errMsg,
+                    error.error.message,
+                    error.error.stack
+                );
+            } else {
+                const fmt = s => s.split('\n').map(l => `  ${l}`).join('\n');
+                console.log(
+                    errMsg +
+                    '\u001B[1m  stdout:\u001B[0m\n' + fmt(error.stdout) + '\n' +
+                    '\u001B[1m  stderr:\u001B[0m\n' + fmt(error.stderr) + '\n',
+                );
+            }
+        }
+    }
+}
+
+async function runCLITest(cliTest) {
+    const tmpdir = fs.mkdtempSync(`${os.tmpdir()}${path.sep}`);
+    return new Promise((resolve, reject) => {
+        const result = child_process.spawnSync(cliTest, [], {
+            // cwd: os.tmpdir(),
+            uid: process.getuid(),
+            env: {
+                ...process.env,
+                'VSL': path.join(__dirname, '../lib/cli/vsl.js'),
+                'RUNNER_DIR': path.join(__dirname, 'cli'),
+                'RUNNER_OUT_1': path.join(tmpdir, 'vsl.out.1'),
+                'RUNNER_OUT_2': path.join(tmpdir, 'vsl.out.2')
+            },
+            encoding: 'utf8'
+        });
+
+        if (result.status === 0 && !result.stderr) {
+            resolve();
+        } else {
+            reject({
+                stdout: result.stdout,
+                stderr: result.stderr,
+                error: result.error
+            });
+        }
     });
 }
 

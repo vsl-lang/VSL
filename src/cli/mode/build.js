@@ -218,7 +218,7 @@ export default class Build extends CompilerCLI {
         if (directory) {
             this.executeModule(directory, backend)
                 .then(({ module }) => {
-                    if (module.target) this.setTarget(module.target);
+                    if (module.target && !this._target) this.target = module.target;
                     this.compileLLVM(backend);
                 });
         } else if (files.length > 0) {
