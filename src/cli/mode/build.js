@@ -30,6 +30,8 @@ export default class Build extends CompilerCLI {
                 ["--verbose"             , "Prints a little bit of debug info",      { verbose: true }],
                 ["--targets"             , "Lists supported compilation targets " +
                                            "for more compile to LLVM `.bc`",         { run: _ => _.listTargets() }],
+                ["--linkers"             , "Lists linkers and if they are " +
+                                           "supported on your environment.",         { run: _ => _.getListLinkers().then(text => _.printAndDie(text)) }],
                 ["--default-linker"      , "Returns default linker command used",    { run: _ => { findDefaultLinker().then(linker => linker.getCommandName()).then(name => _.printAndDie(name)); return false } }],
                 ["--crt-path"            , "Outputs the CRT path that would " +
                                            "be used with typical linker usage",      { run: _ => { findCRT().then(path => _.printAndDie(path)); return false } }],
@@ -96,7 +98,25 @@ export default class Build extends CompilerCLI {
         this.printAndDie(targetText);
     }
 
-    run(args) {
+    async getListLinkers() {
+        let targetText = [];
+
+        for (const [name, cls] of Object.entries(linkers)) {
+            const instance = new cls();
+            const isInstalled = await instance.getCommandName()
+            const isSupported = isInstalled && await instance.check();
+            targetText.push(`${name}\t${
+                isSupported ?
+                    '\u001B[32mSupported\u001B[0m' :
+                    isInstalled ?
+                        '\u001B[31mNot Available\u001B[0m' :
+                        '\u001B[31mNot Installed\u001B[0m'}`);
+        }
+
+        return targetText.join('\n');
+    }
+
+    async run(args) {
         if (args[0] === 'info') {
             if (!args[1]) this.error.cli(`provide target to get info on`);
             this.getInfo(args[1]);
@@ -134,7 +154,7 @@ export default class Build extends CompilerCLI {
                 const flagInfo = flagName[3] || flagName[2];
 
                 if (flagInfo.run) {
-                    const runResult = flagInfo.run(this);
+                    const runResult = await flagInfo.run(this);
                     if (runResult === false) {
                         return;
                     }
