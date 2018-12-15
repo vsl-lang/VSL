@@ -41,7 +41,7 @@ export default class Ld extends Linker {
 
         const additionalArgs = [];
 
-        // macOS requires the '-macosx_version_min' flag
+        // macOS requires the '-macosx_version_min' flag else it complains.
         if (await commandExists('sw_vers')) {
             additionalArgs.push(
                 `-macosx_version_min`, await execPromise('sw_vers', ['-productVersion'])
@@ -50,8 +50,12 @@ export default class Ld extends Linker {
 
         return [
             ...options.files,
+
+            // Need to manually link CRT since not using toolchain
             await findCRT(options.errorManager),
 
+            // macOS has its own -arch flag while Ubuntu and maybe others? seem
+            // to use --architecture
             process.platform === 'darwin' ?
                 `-arch` :
                 `--architecture`,

@@ -17,9 +17,12 @@ export default class Clang extends Linker {
     async getArgumentsForLinkage(options) {
         return [
             ...options.files,
+
             `--target=${options.triple.toString()}`,
+
             ...options.libraries
                 .map(library => `-l${library}`),
+
             '-o', options.output
         ]
     }

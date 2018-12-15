@@ -17,9 +17,12 @@ export default class Gcc extends Linker {
     async getArgumentsForLinkage(options) {
         return [
             ...options.files,
+
             `-march=${options.triple.arch}`,
+
             ...options.libraries
                 .map(library => `-l${library}`),
+
             '-o', options.output
         ]
     }
