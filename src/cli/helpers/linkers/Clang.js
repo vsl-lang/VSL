@@ -1,18 +1,4 @@
 import Linker from '../Linker';
-import commandExists from 'command-exists';
-import { execFile } from 'child_process';
-
-function execPromise(command, args) {
-    return new Promise((resolve, reject) => {
-        execFile(command, args, {
-            encoding: 'utf8'
-        }, (error, stdout, stderr) => {
-            if (error) reject(error);
-            if (stderr) reject(stderr);
-            resolve(stdout.trim());
-        })
-    });
-}
 
 /**
  * The Clang compiler toolchain
