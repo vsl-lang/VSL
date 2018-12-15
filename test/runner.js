@@ -94,7 +94,6 @@ async function runCLITest(cliTest) {
     const tmpdir = fs.mkdtempSync(`${os.tmpdir()}${path.sep}`);
     return new Promise((resolve, reject) => {
         const result = child_process.spawnSync(cliTest, [], {
-            // cwd: os.tmpdir(),
             uid: process.getuid(),
             env: {
                 ...process.env,

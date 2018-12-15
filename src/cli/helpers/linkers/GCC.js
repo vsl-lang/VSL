@@ -6,7 +6,7 @@ import Linker from '../Linker';
 export default class Gcc extends Linker {
     /** @override */
     constructor() {
-        super(["gcc-8", "gcc"]);
+        super(["gcc-8", "gcc-7", "gcc"]);
     }
 
     /**
