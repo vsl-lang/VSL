@@ -1,6 +1,6 @@
 import findCRT from '../findCRT';
 import Linker from '../Linker';
-import commandExists from 'command-exists';
+import commandExists from '../commandExists';
 import { execFile } from 'child_process';
 
 function execPromise(command, args) {

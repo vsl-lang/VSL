@@ -1,4 +1,4 @@
-import commandExists from 'command-exists';
+import commandExists from './commandExists';
 
 /**
  * @typedef {Object} LinkageOptions
@@ -34,14 +34,10 @@ export default class Linker {
      * @return {string}
      */
     async getCommandName() {
-        console.log('Z', this.names);
         for (let i = 0; i < this.names.length; i++) {
-            console.log('X', i, this.names[i]);
             if (await commandExists(this.names[i])) {
-                console.log('XZ', i, this.names[i]);
                 return this.names[i];
             }
-            console.log('XE', i, this.names[i]);
         }
 
         return null;
