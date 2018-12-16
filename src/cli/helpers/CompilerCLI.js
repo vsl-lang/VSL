@@ -206,7 +206,6 @@ export default class CompilerCLI extends CLIMode {
      */
     dynamicHandle(error) {
         let stream = null;
-
         if (error.stream) { stream = error.stream }
         else if (error.node) {
             let trackingNode = error.node;

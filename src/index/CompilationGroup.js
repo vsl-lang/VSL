@@ -111,6 +111,9 @@ export default class CompilationGroup {
          * @type {GroupMetadata}
          */
         this.metadata = new GroupMetadata();
+
+        /** @private */
+        this.callback = () => {};
     }
 
     /**
@@ -173,6 +176,15 @@ export default class CompilationGroup {
     }
 
     /**
+     * If a lazy hook is not already binded. You can register a function to be
+     * called which should generate the lazy hook.
+     * @param {function(name: string)} hook
+     */
+    lazyHookCallback(hook) {
+        this.callback = hook;
+    }
+
+    /**
      * Te name of a {@link ComilationHook} which should be binded and hooked to
      * every file rather than on-demand. Examples of this are the standard
      * library.
@@ -215,18 +227,29 @@ export default class CompilationGroup {
 
         // Handle modules, this adds lazyHooks to the scope
         // Each file manages its own imports so we'll check here
-        asts.forEach(file => {
+        for (let i = 0; i < asts.length; i++) {
+            const file = asts[i];
+
             // Also lets setup CodeBlock as a top-level scope
             file.scope.parentScope = block.scope;
 
-            file.lazyHooks.forEach(hookNode => {
-                let hook = this.hooks.get(hookNode.value);
+            for (let j = 0; j < file.lazyHooks.length; j++) {
+                const hookNode = file.lazyHooks[j];
 
-                if (!hook) throw new TransformError(
-                    `Could not find module named ${hookNode.value}`,
-                    hookNode,
-                    e.UNDEFINED_MODULE
-                );
+                hookNode.parentScope = file;
+
+                let hook = this.hooks.get(hookNode.name);
+
+                if (!hook) {
+                    await this.callback(hookNode.name);
+                    hook = this.hooks.get(hookNode.name);
+
+                    throw new TransformError(
+                        `Could not find module named ${hookNode.name}`,
+                        hookNode,
+                        e.UNDEFINED_MODULE
+                    );
+                }
 
                 hook.scope.forEach(scopeItem => {
                     let res =  file.scope.set(scopeItem);
@@ -237,8 +260,8 @@ export default class CompilationGroup {
                         e.DUPLICATE_BY_IMPORT
                     );
                 });
-            });
-        });
+            };
+        };
 
         // === 3: Setup AST ===
         // Setup for processing by setting up and connecting the AST graph

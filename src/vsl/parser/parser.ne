@@ -22,7 +22,6 @@ const NodeTypes = require('./vsltokentype').default,
   comment = freeze({ test: x => x[1] === NodeTypes.Comment }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   any = freeze({ test: () => true }),
-  mark = symbol => (d, p) => ({ type: symbol, value: d[0][0], position: p }),
   unwrap = d => d[0].value,
   rewrap = d => [d[0]],
   mid = d => d[0][0],
@@ -80,6 +79,9 @@ CodeBlock[s]
                     let statements = [];
                     let items = data[0].concat(...(data[1] || []));
                     let lastComments = [];
+
+                    // Go throguh each statement and take the comments and add
+                    // them to the next statement
                     for (let i = 0; i < items.length; i++) {
                         if (items[i] instanceof t.Node) {
                             if (items[i] instanceof t.Comment) {
@@ -89,15 +91,6 @@ CodeBlock[s]
                                 statements.push(items[i]);
                                 lastComments = [];
                             }
-                        } else if (items[i] !== null) {
-                            let name;
-                            if (items[i] && items[i].constructor) {
-                                name = items[i].constructor.name;
-                            } else {
-                                name = items[i];
-                            }
-
-                            throw new TypeError(`unexpected parsing type ${name}`);
                         }
                     }
                     return new t.CodeBlock(statements, location)
@@ -105,10 +98,10 @@ CodeBlock[s]
     %}
 
 main
-   -> CodeBlock[(statement {% id %} | %importStatement {% mark(importMark) %}) {% id %}] {%
+   -> CodeBlock[(statement {% id %} | ImportStatement {% id %}) {% id %}] {%
         data => {
             for (let i = data[0].statements.length - 1; i >= 0; i--) {
-                if (data[0].statements[i].type === importMark) {
+                if (data[0].statements[i] instanceof t.ImportStatement) {
                     data[0].lazyHooks.push(data[0].statements[i]);
                     data[0].statements.splice(i, 1);
                 }
@@ -123,6 +116,9 @@ separator
    -> ";" {% retNull %}
     | "\n" {% retNull %}
     | Comment {% id %}
+
+ImportStatement
+   -> %importStatement {% (d, l) => new t.ImportStatement(d[0][0], l) %}
 
 statement
    -> ClassStatement       {% id %}

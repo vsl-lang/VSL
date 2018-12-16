@@ -15,7 +15,7 @@ export default class CompilationHook {
      * @param {GroupMetadata} info - Information about the hook, generally
      *                             on a {@link CompilationGroup} object so
      *                             you can get this instance from there.
-     * @param {ScopeItem[]} hooks - Array of {@link ScopeItem}s which will
+     * @param {ScopeItem[]} scope - Array of {@link ScopeItem}s which will
      *                            be hooks onto
      * @param {?TransformationContext} context - TransformationContext of the
      *                                        hook or null if there isn't one.
@@ -25,18 +25,18 @@ export default class CompilationHook {
          * @type {string}
          */
         this.name = name;
-        
+
         /**
          * @readonly
          * @type {GroupMetadata}
          */
         this.info = info;
-        
+
         /**
          * @type {ScopeItem[]}
          */
         this.scope = scope;
-        
+
         /**
          * @type {?TransformationContext}
          */
