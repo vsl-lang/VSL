@@ -20,9 +20,9 @@ export default class Clang extends Linker {
 
             `--target=${options.triple.toString()}`,
 
-            ...(options.disableLTO ?
-                [] :
-                [`-flto`]),
+            ...(options.enableLTO ?
+                [`-flto`] :
+                []),
 
             ...options.libraries
                 .map(library => `-l${library}`),

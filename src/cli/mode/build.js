@@ -61,8 +61,10 @@ export default class Build extends CompilerCLI {
                                            "compilation. ",                          { arg: "triple", triple: true }]
             ]],
             ["Toolchain Options", [
-                ["-fno-lto"              , "Disables using LTO. This may be " +
-                                           "used if LTO may introduce bugs.",        { nolto: true }]
+                ["-flto"                 , "Enables link-time optimizations.  " +
+                                           "You usually want to enable this but " +
+                                           "you'd need to have built your " +
+                                           "toolchain/linker to support it",         { lto: true }]
             ]],
             ["Compiler Options", [
                 ["--stl"                 , "Specifies a different standard type " +
@@ -133,7 +135,7 @@ export default class Build extends CompilerCLI {
         let target = 'native';
         let triple = undefined;
         let linker = undefined;
-        let nolto = false;
+        let lto = false;
 
         let linkerArgs = [];
         let llcArgs = [];
@@ -177,7 +179,7 @@ export default class Build extends CompilerCLI {
                 if ('opt' in flagInfo) opt = args[++i];
                 if ('linker' in flagInfo) linker = args[++i];
                 if ('stdout' in flagInfo) outputStream = process.stdout;
-                if ('nolto' in flagInfo) nolto = true;
+                if ('lto' in flagInfo) lto = true;
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
                 if (flagInfo.output) {
@@ -216,7 +218,7 @@ export default class Build extends CompilerCLI {
         this.stl = stl;
         this.link = link;
         this.linker = linker;
-        this.disableLTO = nolto;
+        this.enableLTO = lto;
         this.perfBreakdown = perfBreakdown;
         this.tty = tty.isatty(1);
 
@@ -530,7 +532,7 @@ export default class Build extends CompilerCLI {
                     ...this.libraries
                 ],
                 output: outputFile,
-                disableLTO: this.disableLTO,
+                enableLTO: this.enableLTO,
                 errorManager: this.error
             });
 

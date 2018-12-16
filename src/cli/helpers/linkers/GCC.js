@@ -20,6 +20,10 @@ export default class Gcc extends Linker {
 
             `-march=${options.triple.arch}`,
 
+            ...(options.enableLTO ?
+                [`-flto`] :
+                []),
+
             ...options.libraries
                 .map(library => `-l${library}`),
 
