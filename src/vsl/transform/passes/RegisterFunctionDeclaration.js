@@ -21,7 +21,7 @@ export default class RegisterFunctionDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let scope = node.parentScope.scope;
+        let scope = tool.scope;
         let name = node.name.value;
 
         let accessModifiers = node.access;

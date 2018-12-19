@@ -27,7 +27,8 @@ export default class DescribeClassDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let scope = node.parentScope.scope;
+        let scope = tool.assignmentScope;
+        let semanticSubscope = node.statements.scope;
         let className = node.name.value;
 
         // If this is being 'manifested as root' then we'll handle sepecially
@@ -49,7 +50,7 @@ export default class DescribeClassDeclaration extends Transformation {
         }
 
 
-        let subscope = node.statements.scope;
+        const subscope = new Scope();
         const staticSubscope = new Scope();
 
         // Handles generic classes
@@ -64,7 +65,7 @@ export default class DescribeClassDeclaration extends Transformation {
             const genericParameter = new GenericParameterItem(ScopeForm.definite, genericDeclNode.name.value, {});
 
             genericParameters.push(genericParameter);
-            if (subscope.set(genericParameter) === false) {
+            if (semanticSubscope.set(genericParameter) === false) {
                 throw new TransformError(
                     `Generic parameter ${genericDeclNode.name} for class ` +
                     `${className} already has another item with the name the ` +

@@ -33,9 +33,6 @@ export default class RegisterInitDeclaration extends Transformation {
         // Get th class's name
         const className = classItem.rootId;
 
-        // Get scope inside class
-        const scope = tool.scope;
-
         // Go through params and form ScopeFuncItemArguments
         const initArgs = node.params.map(
             ({
@@ -46,7 +43,7 @@ export default class RegisterInitDeclaration extends Transformation {
                 }
             }, index, all) => {
                 const externalName = externalNameNode?.value || argName;
-                const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(scope),
+                const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(tool.scope),
                     sourceNode = all[index];
                 const isOptional = false;
 
@@ -88,7 +85,7 @@ export default class RegisterInitDeclaration extends Transformation {
         );
 
         // Also register as a class init
-        const res = scope.set(type);
+        const res = tool.assignmentScope.set(type);
         if (res === false) {
             throw new TransformError(
                 "Redeclaration of initializer. This either means you have " +

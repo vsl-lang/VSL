@@ -1,4 +1,5 @@
 import ScopeTraverser from './scopetraverser';
+import t from '../parser/nodes';
 
 /**
  * Passed to Transformations to aid in traversing and modifying the AST
@@ -55,7 +56,7 @@ export default class ASTTool {
     }
 
     /**
-     * Returns the scope the node is in
+     * Returns the NEAREST CODEBLOCK'S scope the node is in
      * @type {?Scope}
      */
     get scope() {
@@ -63,11 +64,11 @@ export default class ASTTool {
     }
 
     /**
-     * Returns the static scope if exists
+     * Returns the static scope of encapsulating declaration if exists
      * @type {?Scope}
      */
     get staticScope() {
-        return this.fragment?.parentScope.parentNode?.reference?.staticScope;
+        return this.declarationNode?.reference?.staticScope;
     }
 
     /**
@@ -75,8 +76,13 @@ export default class ASTTool {
      * @type {?Scope}
      */
     get assignmentScope() {
-        if (this.isStatic) {
-            return this.staticScope;
+        const declNode = this.declarationNode;
+        if (declNode) {
+            if (this.isStatic) {
+                return this.staticScope;
+            } else {
+                return declNode.reference.subscope || this.scope;
+            }
         } else {
             return this.scope;
         }
@@ -96,7 +102,8 @@ export default class ASTTool {
      * @type {DeclarationStatement}
      */
     get declarationNode() {
-        return this.fragment.parentScope.parentNode;
+        const parentNode = this.fragment.parentScope?.parentNode;
+        return parentNode instanceof t.DeclarationStatement ? parentNode : null;
     }
 
     /**

@@ -4,6 +4,7 @@ import TypeCandidate from '../typeCandidate';
 import TypeResolver from '../typeResolver';
 import TypeContext from '../../scope/TypeContext';
 
+import ASTTool from '../../transform/asttool';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
@@ -429,12 +430,13 @@ export default class CallResolver extends TypeResolver {
             }
 
             // We must make sure we can access it
-            if (!this.node.parentScope.scope.canAccess(bestCandidate.candidate)) {
-                this.emit(
-                    `Cannot use private function from this context.`,
-                    e.INVALID_ACCESS
-                );
-            }
+            // TODO: Private functions
+            // if (!this.node.parentScope.scope.canAccess(bestCandidate.candidate)) {
+            //     this.emit(
+            //         `Cannot use private function from this context.`,
+            //         e.INVALID_ACCESS
+            //     );
+            // }
 
             // If we have succesfully found the one correct candidate...
             this.node.reference = bestCandidate.candidate;
