@@ -1,0 +1,11 @@
+class TestClass {
+    const field1: Int = 1
+    const field2: Int = 1
+}
+
+func main() {
+    let testObj = TestClass()
+    let object = testObj as Object
+    let reflection = Reflection(of: object)
+    print(reflection.getTypeName())
+}

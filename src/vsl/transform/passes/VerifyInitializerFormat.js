@@ -39,7 +39,7 @@ export default class VerifyInitializerFormat extends Transformation {
 
         // Check if has super class
         const superclass = reference.initializingType.superclass;
-        const hasSuperClass = !!superclass;
+        const hasSuperClass = reference.initializingType.hasSuperClass;
         if (hasSuperClass && delegationInitalizer === null) {
             // ONLY throw this if there isn't an implicit superclass one we
             // can call.

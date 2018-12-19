@@ -94,19 +94,20 @@ export default class DescribeClassDeclaration extends Transformation {
             }),
             resolver: (self) => {
                 // Resolve superclass if there is one
-                if (self.superclass) {
-                    const superclassName = self.superclass.value;
+                if (self.hasSuperClass) {
+                    const superclassNode = self.superclass;
+                    const superclassName = superclassNode.value;
 
                     // Resolve superclass
                     const scopeItem = scope.getAsDelegate(
                         new ScopeTypeItem(ScopeForm.query, superclassName),
-                        self.superclass
+                        superclassNode
                     );
 
                     if (!scopeItem) {
                         throw new TransformError(
                             `No class with name \`${superclassName}\` in this scope.`,
-                            self.superclass,
+                            superclassNode,
                             e.UNDECLARED_IDENTIFIER
                         );
                     }
@@ -115,7 +116,7 @@ export default class DescribeClassDeclaration extends Transformation {
                     // to interface list.
                     if (scopeItem.isInterface) {
                         self.interfaces.unshift(self.superclass);
-                        self.superclass = null;
+                        self.superclass = ScopeTypeItem.RootClass;
                     } else {
 
                         // Otherwise it is a class see if it can be subclassed.
@@ -123,7 +124,7 @@ export default class DescribeClassDeclaration extends Transformation {
                             throw new TransformError(
                                 `Cannot subclass type with name ` +
                                 `\`${superclassName}\``,
-                                self.superclass,
+                                superclassNode,
                                 e.CANNOT_SUBCLASS_TYPE
                             );
                         }
