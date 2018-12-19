@@ -90,6 +90,49 @@ export default class CallResolver extends TypeResolver {
             .resolve(headNegotiator) // Resolve expression
             .map(item => item.candidate.resolved()); // Resolve types
 
+
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        //                          RESOLVE PARAMS                            //
+        ////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+
+        const paramCandidateTypes = [];
+        for (let i = 0; i < argc; i++) {
+            const argument = args[i].value;
+            const argumentTypes = this.getChild(argument).resolve((type) => {
+                switch (type) {
+                    // The child cannot be voidable
+                    case ConstraintType.VoidableContext:
+                        return false;
+
+                    // At least one candidate
+                    case ConstraintType.RequireType:
+                        return true;
+
+                    // No mandatory type.
+                    case ConstraintType.RequestedTypeResolutionConstraint:
+                        return null;
+
+                    // Give all candidates
+                    case ConstraintType.SimplifyToPrecType:
+                        return false;
+
+                    // Arguments are not function calls
+                    case ConstraintType.BoundedFunctionContext:
+                        return false;
+
+                    // Right no they are no parent constraints. We'll resolve
+                    // that later.
+                    default:
+                        return negotiate(type);
+                }
+            });
+
+            paramCandidateTypes.push(argumentTypes);
+        }
+
+
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
         //                          GET CANDIDATES                            //
@@ -266,26 +309,21 @@ export default class CallResolver extends TypeResolver {
                     }
                 }
 
-                // Will store the candidate arg type for the given arg.
-                let workingArgType = null;
 
-                const argumentTypes = this.getChild(arg.value).resolve((type) => {
-                    switch (type) {
-                        // The child cannot be voidable
-                        case ConstraintType.VoidableContext: return false;
+                // Check if any 'potential arg types' are able to be
+                // go to 'targetArgType'
+                const potentialArgTypes = paramCandidateTypes[k];
 
-                        case ConstraintType.RequestedTypeResolutionConstraint:
-                            return new TypeCandidate(targetArgType);
+                // Types which could work
+                const argumentTypes = [];
 
-                        case ConstraintType.RequireType:
-                        case ConstraintType.SimplifyToPrecType:
-                            return false;
-
-                        // Right no they are no parent constraints. We'll resolve
-                        // that later.
-                        default: return negotiate(type);
+                // Check which one of 'potential arg types' would work.
+                for (let l = 0; l < potentialArgTypes.length; l++) {
+                    // If the candidate is possible then allow is.
+                    if (potentialArgTypes[l].candidate.castableTo(targetArgType)) {
+                        argumentTypes.push(potentialArgTypes[l]);
                     }
-                });
+                }
 
                 // If we couldn't find a matching type, then this overload
                 // doesn't work.
