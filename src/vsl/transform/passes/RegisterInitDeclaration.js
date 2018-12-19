@@ -99,6 +99,10 @@ export default class RegisterInitDeclaration extends Transformation {
             );
         }
 
+        if (initArgs.length === 0) {
+            classItem.implicitInitializer = type;
+        }
+
         node.reference = type;
     }
 }

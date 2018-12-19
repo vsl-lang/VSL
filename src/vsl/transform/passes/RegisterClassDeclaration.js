@@ -21,6 +21,20 @@ export default class RegisterClassDeclaration extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         node.reference.resolve();
+        const reference = node.reference;
+
+        ////////////////////////////////////////////////////////////////////////
+        //                         Setup Inherit                              //
+        ////////////////////////////////////////////////////////////////////////
+        if (reference.superclass) {
+            // Change the subscope's superscope to be the parent class.
+            reference.subscope.superscope = reference.superclass.subscope;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////
+        //                         Default Init                               //
+        ////////////////////////////////////////////////////////////////////////
 
         // Also check if there is an initalizer, if not add the default init.
         let isInitializer = false;

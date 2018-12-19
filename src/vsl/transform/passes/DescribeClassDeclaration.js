@@ -5,6 +5,7 @@ import t from '../../parser/nodes';
 
 import Scope from '../../scope/scope';
 import ScopeForm from '../../scope/scopeForm';
+import ScopeItem from '../../scope/scopeItem';
 import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeTypeAliasItem from '../../scope/items/scopeTypeAliasItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
@@ -53,6 +54,8 @@ export default class DescribeClassDeclaration extends Transformation {
 
         // Handles generic classes
         const genericParameters = [];
+
+        // Process generics
         tool.queueThen('generics', null);
 
         for (let i = 0; i < node.generics.length; i++) {
@@ -72,17 +75,110 @@ export default class DescribeClassDeclaration extends Transformation {
             }
         }
 
+        // Get the superclasses/interfaces
+        const superclass = node.superclasses[0] || null;
+        const interfaces = node.superclasses.slice(1);
+
         let opts = {
             subscope: node.statements.scope,
             isInterface: false,
             mockType: node.mockType,
             subscope: subscope,
             source: node,
+            interfaces: interfaces,
+            superclass: superclass,
             staticScope: staticSubscope,
             isScopeRestricted: tool.isPrivate,
             genericInfo: new GenericInfo({
                 parameters: genericParameters
-            })
+            }),
+            resolver: (self) => {
+                // Resolve superclass if there is one
+                if (self.superclass) {
+                    const superclassName = self.superclass.value;
+
+                    // Resolve superclass
+                    const scopeItem = scope.getAsDelegate(
+                        new ScopeTypeItem(ScopeForm.query, superclassName),
+                        self.superclass
+                    );
+
+                    if (!scopeItem) {
+                        throw new TransformError(
+                            `No class with name \`${superclassName}\` in this scope.`,
+                            self.superclass,
+                            e.UNDECLARED_IDENTIFIER
+                        );
+                    }
+
+                    // If it is interface then we say no subclass and move this
+                    // to interface list.
+                    if (scopeItem.isInterface) {
+                        self.interfaces.unshift(self.superclass);
+                        self.superclass = null;
+                    } else {
+
+                        // Otherwise it is a class see if it can be subclassed.
+                        if (!scopeItem.canSubclass()) {
+                            throw new TransformError(
+                                `Cannot subclass type with name ` +
+                                `\`${superclassName}\``,
+                                self.superclass,
+                                e.CANNOT_SUBCLASS_TYPE
+                            );
+                        }
+
+                        // Otherwise we are then all good
+                        self.superclass = scopeItem;
+                        scopeItem.subclasses.push(self);
+                    }
+                }
+
+                // Resolve all interfaces
+                for (let i = 0; i < self.interfaces.length; i++) {
+                    // If we don't have a ref to the interface yet then we'll
+                    // do that.
+                    const interfaceNode = self.interfaces[i];
+                    const interfaceName = interfaceNode.value;
+
+                    // Resolve superclass
+                    const scopeItem = scope.getAsDelegate(
+                        new ScopeTypeItem(ScopeForm.query, interfaceName),
+                        interfaceNode
+                    );
+
+                    if (!scopeItem) {
+                        throw new TransformError(
+                            `No interface with name \`${interfaceName}\` in this scope.`,
+                            interfaceNode,
+                            e.UNDECLARED_IDENTIFIER
+                        );
+                    }
+
+                    self.interfaces[i] = scopeItem;
+
+                    if (!scopeItem.isInterface) {
+                        if (self.superclass) {
+                            throw new TransformError(
+                                `The type \`${interfaceName}\` is not an ` +
+                                `interface. Multiple inheritance is not ` +
+                                `supported at the moment.`,
+                                interfaceNode,
+                                e.CANNOT_MULTIPLE_INHERIT
+                            );
+                        } else {
+                            throw new TransformError(
+                                `The type \`${interfaceName}\` was not an ` +
+                                `interface. Did you mean to put this as the ` +
+                                `first parameter so it would be treated as a ` +
+                                `superclass?`,
+                                interfaceNode,
+                                e.SUPERCLASS_SHOULD_BE_FIRST_PARAM
+                            );
+                        }
+                    }
+                }
+            }
         };
 
         const type = new ScopeTypeItem(

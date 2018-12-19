@@ -1,0 +1,4 @@
+class A {}
+class B {}
+
+class Z: A, B {}

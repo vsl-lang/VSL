@@ -117,6 +117,11 @@ export default {
     UNDECLARED_IDENTIFIER: {},
     CANNOT_RESOLVE_IDENTIFIER: {},
 
+    // Classes
+    CANNOT_SUBCLASS_TYPE: {},
+    CANNOT_MULTIPLE_INHERIT: {},
+    SUPERCLASS_SHOULD_BE_FIRST_PARAM: {},
+
     // Modules
     UNDEFINED_MODULE: {},
     DUPLICATE_BY_IMPORT: {}

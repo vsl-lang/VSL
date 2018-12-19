@@ -205,6 +205,8 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('lazy'), passThrough],
 
     [kw('return'), passThrough],
+    [kw('yields'), passThrough],
+    [kw('yield'), passThrough],
 
     [kw('public'), passThrough],
     [kw('private'), passThrough],
@@ -219,15 +221,19 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('function'), passThrough],
     [kw('func'), ret('function')],
     [kw('fn'), ret('function')],
+
     [kw('class'), passThrough],
     [kw('struct'), passThrough],
     [kw('interface'), passThrough],
     [kw('enumeration'), ret('enum')],
     [kw('enum'), passThrough],
+
     [kw('switch'), passThrough],
-    [kw('default'), passThrough],
-    [kw('break'), passThrough],
     [kw('case'), passThrough],
+    [kw('default'), passThrough],
+
+    [kw('break'), passThrough],
+
     [kw('typealias'), passThrough],
 
     [kw('init'), passThrough],
@@ -236,6 +242,7 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('if'), passThrough],
     [kw('else'), passThrough],
     [kw('for'), passThrough],
+    [kw('in'), passThrough],
     [kw('while'), passThrough],
     [kw('do'), passThrough],
 

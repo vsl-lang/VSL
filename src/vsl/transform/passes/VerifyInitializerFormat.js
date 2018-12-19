@@ -16,6 +16,8 @@ export default class VerifyInitializerFormat extends Transformation {
         // It doesn't make sense to apply for native inits for example.
         if (!(node.statements instanceof t.CodeBlock)) return;
 
+        const reference = node.reference;
+
         let delegationInitalizer = null;
 
         // Just go through each statement. init delegates cannot be in ifs.
@@ -36,14 +38,20 @@ export default class VerifyInitializerFormat extends Transformation {
         }
 
         // Check if has super class
-        const hasSuperClass = tool.nthParent(3).superclasses.length > 0;
-
+        const superclass = reference.initializingType.superclass;
+        const hasSuperClass = !!superclass;
         if (hasSuperClass && delegationInitalizer === null) {
-            throw new TransformError(
-                `Initializer must call \`super.init\` as it has a superclass ` +
-                `declared.`,
-                node
-            );
+            // ONLY throw this if there isn't an implicit superclass one we
+            // can call.
+            if (!superclass.implicitInitializer) {
+                throw new TransformError(
+                    `Initializer must call \`super.init\` as it has a superclass ` +
+                    `declared.`,
+                    node
+                );
+            } else {
+                reference.implicitSuperclassCall = true;
+            }
         }
     }
 }

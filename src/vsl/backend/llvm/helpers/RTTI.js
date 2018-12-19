@@ -137,6 +137,7 @@ export function getMetaTypeTy(context) {
  * Generates metatype for object
  * @param {ScopeTypeItem} item - The item to get metatype for.
  * @param {LLVMContext} context
+ * @param {llvm.Value} global metaty constant.
  */
 export function getMetaTypeForObject(item, context) {
     const metaTypeName = `${item.uniqueName}.MetaType`;

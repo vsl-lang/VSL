@@ -57,9 +57,7 @@ export default class Scope {
         this.aliases = [];
 
         /**
-         * The scope that is the immediate parent of this.
-         * @protected
-         * @type {?Scope}
+         * @private
          */
         this.parentScope = parentScope;
 
@@ -97,6 +95,30 @@ export default class Scope {
          */
         this.isStaticContext = false;
     }
+
+    /**
+     * The scope that is the immediate parent of this.
+     * @type {?Scope}
+     */
+    get superscope() {
+        return this.parentScope;
+    }
+
+    /**
+     * Readjusts the parent scope of this.
+     * @type {?Scope}
+     */
+    set superscope(newSuperscope) {
+        // Don't care about adjusting old counts yet.
+        const oldScope = this.parentScope;
+
+        this.depth = (newSuperscope?.depth || 0) + 1;
+        this.scopeOffset = newSuperscope?.subscopeCount || 0;
+        newSuperscope.subscopeCount++;
+
+        this.parentScope = newSuperscope;
+    }
+
 
     /**
      * Uniquely ids scope.
