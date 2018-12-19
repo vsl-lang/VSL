@@ -24,7 +24,7 @@ import t from '../parser/nodes';
  * Where \\(P_E\\) defines such a dependency.
  */
 export default class ScopeTraverser extends Traverser {
-    
+
     /**
      * Instantiates a traverser object. Note: This must be subclassed to be
      * used. See {@link Transformer} or {@link ASTGarbageCollector} for more
@@ -36,7 +36,7 @@ export default class ScopeTraverser extends Traverser {
      */
     constructor(shouldProcess: boolean = true) {
         super(shouldProcess);
-        
+
         /**
          * This is basically a stack of the current scope.
          * For a normal app this would look roughy like:
@@ -47,7 +47,7 @@ export default class ScopeTraverser extends Traverser {
          */
         this.scope = [];
     }
-    
+
     /**
      * Handles updating and application of scope
      *
@@ -58,40 +58,43 @@ export default class ScopeTraverser extends Traverser {
      */
     processNode(parent: Node | Node[], name: string) {
         let node = parent[name];
-        
+
         // Ignore empty nodes
         if (node === null) return;
-        
+
         // Store the current scope for brevity
         const currentScope = this.scope[this.scope.length - 1];
-        
+
         // Set parent scope for transformers
         node.parentScope = currentScope || null;
-        
+
         // If the parent is a code block, we want to add it to the scope
         // This builds a stack of the scope tree, so for a typical top-level
         // class this might look like:
         //     libvsl, MyClass.vsl, MyClass
         // Each file would have it's own top-level preqeued block.
         if (node instanceof t.CodeBlock) {
-            
-            // If there is a parent scope, specify it
-            if (this.scope.length > 0) {
-                node.scope.parentScope = this.scope[this.scope.length - 1].scope;
+            if (node.scope.isSemanticScope) {
+                // If there is a parent scope, specify it
+                if (this.scope.length > 0) {
+                    node.scope.parentScope = this.scope[this.scope.length - 1].scope;
+                }
+
+                this.scope.push(node);
             }
-            
-            this.scope.push(node);
         }
-        
+
         super.processNode(parent, name);
     }
-    
+
     /**
      * @override
      */
     finishedNode(parent, name) {
         if (parent[name] instanceof t.CodeBlock) {
-            this.scope.pop();
+            if (parent[name].scope.isSemanticScope) {
+                this.scope.pop();
+            }
         }
     }
 }

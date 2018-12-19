@@ -94,6 +94,8 @@ export default class Scope {
          * @type {boolean}
          */
         this.isStaticContext = false;
+
+        this._isSemanticScope = true;
     }
 
     /**
@@ -114,11 +116,26 @@ export default class Scope {
 
         this.depth = (newSuperscope?.depth || 0) + 1;
         this.scopeOffset = newSuperscope?.subscopeCount || 0;
-        newSuperscope.subscopeCount++;
+        if (newSuperscope) newSuperscope.subscopeCount++;
 
         this.parentScope = newSuperscope;
     }
 
+    /**
+     * If this scope is semantic (delimited by codeblock)
+     * @type {boolean}
+     */
+    get isSemanticScope() {
+        return this._isSemanticScope;
+    }
+
+    /**
+     * If this scope is semantic (delimited by codeblock)
+     * @type {boolean}
+     */
+    set isSemanticScope(newIsSemanticScope) {
+        this._isSemanticScope = newIsSemanticScope;
+    }
 
     /**
      * Uniquely ids scope.
