@@ -83,7 +83,7 @@ export default class ScopeTypeItem extends ScopeItem {
     /** @protected */
     init({
         interfaces = [],
-        superclass = ScopeTypeItem.RootClass,
+        superclass,
         isInterface = false,
         mockType = null,
         staticScope,
@@ -113,7 +113,7 @@ export default class ScopeTypeItem extends ScopeItem {
          * interfaces.
          * @type {ScopeTypeItem}
          */
-        this.superclass = superclass;
+        this.superclass = superclass || ScopeTypeItem.RootClass;
 
         /**
          * Whether the type is an interface. This is used to determine how
@@ -181,6 +181,14 @@ export default class ScopeTypeItem extends ScopeItem {
          * @type {?ScopeInitItem}
          */
         this.implicitInitializer = defaultInitializer;
+    }
+
+    /**
+     * Returns if has a behavior superclass
+     * @return {boolean}
+     */
+    get hasSuperClass() {
+        return this.superclass && this.superclass !== ScopeTypeItem.RootClass;
     }
 
     /**

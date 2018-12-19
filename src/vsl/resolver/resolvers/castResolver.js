@@ -11,7 +11,7 @@ import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
 import e from '../../errors';
 
 /**
- * Resolves a bitcast
+ * Resolves a cast
  */
 export default class CastResolver extends TypeResolver {
 
@@ -55,7 +55,7 @@ export default class CastResolver extends TypeResolver {
         const targetTy = new TypeLookup(this.node.target, vslGetTypeChild).resolve(scope);
         this.node.targetTy = targetTy;
 
-        // Resolve RHS
+        // Resolve LHS
         const typeCandidates = this.getChild(this.node.value).resolve((type) => {
             switch (type) {
                 case ConstraintType.VoidableContext: return false;
