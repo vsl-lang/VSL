@@ -36,4 +36,12 @@ export default class ScopeEnumItem extends ScopeTypeItem {
         this.backingType = backingType;
     }
 
+    /**
+     * Always returns false as you can't subclass enum
+     * @return {boolean}
+     * @override
+     */
+    canSubclass() {
+        return false;
+    }
 }

@@ -143,6 +143,7 @@ export default class PropertyResolver extends TypeResolver {
             }
         }
 
+
         if (candidateList.size > 1) {
             // Since in this case LHS is ambiguous, we'll try to resolve LHS
             // forcing it to deduct and if it fails then we'll throw our fallback

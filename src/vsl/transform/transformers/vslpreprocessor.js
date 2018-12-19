@@ -29,12 +29,6 @@ export default class VSLPreprocessor extends Transformer {
             pass.VerifyFunctionAccessScope,
             pass.VerifyAnnotationSignature,
 
-            // Verify initializer body is correct order
-            pass.VerifyInitializerFormat,
-
-            // Verify initalizers are semantically meaningful
-            pass.VerifyInitDelegationFormat,
-
             // Verify operator overloads are correctly defined
             pass.VerifyOperatorOverload,
 

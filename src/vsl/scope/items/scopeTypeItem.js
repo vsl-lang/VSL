@@ -136,6 +136,12 @@ export default class ScopeTypeItem extends ScopeItem {
         this.subscope = subscope;
 
         /**
+         * List of subclasses.
+         * @type {ScopeTypeItem[]}
+         */
+        this.subclasses = [];
+
+        /**
          * A property for backends if the type needs to act like a native type.
          * ANY fields will likely be ignored.
          * @type {string}
@@ -168,6 +174,13 @@ export default class ScopeTypeItem extends ScopeItem {
          * @type {?ScopeInitItem}
          */
         this.defaultInitializer = defaultInitializer;
+
+        /**
+         * The implicit initializer. This is either equal to default initializer
+         * or is the initializer that takes no args.
+         * @type {?ScopeInitItem}
+         */
+        this.implicitInitializer = defaultInitializer;
     }
 
     /**
@@ -197,6 +210,16 @@ export default class ScopeTypeItem extends ScopeItem {
         }
 
         return 0;
+    }
+
+    /**
+     * Returns if the current type can be **subclassed**.
+     * @return {boolean}
+     */
+    canSubclass() {
+        // By default is true for classes. For interfaces different thing must
+        // be done.
+        return !this.isInterface;
     }
 
     /**

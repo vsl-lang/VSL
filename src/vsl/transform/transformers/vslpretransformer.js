@@ -9,7 +9,13 @@ export default class VSLPretransformer extends Transformer {
     constructor(context: TransformationContext) {
         super([
             pass.TypeDeductField,
-            pass.TypeDeductGlobal
+            pass.TypeDeductGlobal,
+
+            // Verify initializer body is correct order
+            pass.VerifyInitializerFormat,
+
+            // Verify initalizers are semantically meaningful
+            pass.VerifyInitDelegationFormat,
         ], context);
     }
 }

@@ -17,6 +17,7 @@ export default class FunctionStatement extends DeclarationStatement {
      * @param {Identifier} name - The name of the given function
      * @param {FunctionArgument[]} args - The arguments of the function
      * @param {?Type} returnType - The function's returnType.
+     * @param {boolean} isGenerator - If the function yields instead of returning.
      * @param {CodeBlock} statements - The statements in the function body.
      * @param {Object} position - a position from nearley
      */
@@ -26,6 +27,7 @@ export default class FunctionStatement extends DeclarationStatement {
         name: Identifier,
         args: FunctionArgument[],
         returnType: Type,
+        isGenerator: boolean,
         statements: Node[],
         position: Object
     ) {
@@ -42,6 +44,9 @@ export default class FunctionStatement extends DeclarationStatement {
 
         /** @type {?Type} */
         this.returnType = returnType;
+
+        /** @type {?Type} */
+        this.isGenerator = isGenerator;
 
         /** @type {?ScopeTypeItem} */
         this.returnRef = null;

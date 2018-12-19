@@ -125,7 +125,7 @@ statement
     | InterfaceStatement   {% id %}
     | EnumerationStatement {% id %}
     | IfStatement          {% id %}
-    # | ForStatement         {% id %}
+    | ForStatement         {% id %}
     | SwitchStatement      {% id %}
     | WhileStatement       {% id %}
     | DoWhileStatement     {% id %}
@@ -135,6 +135,7 @@ statement
     | TypeAlias            {% id %}
     | InitCallStatement    {% onlyState('inInit', id) %}
     | ReturnStatement      {% onlyState('inFunction', id) %}
+    | YieldStatement      {% onlyState('inFunction', id) %}
 
 # ============================================================================ #
 #                                Control Flow                                  #
@@ -163,10 +164,16 @@ SwitchBody
    -> CodeBlockBody {% id %}
     | ":" _ "break" {% (d, l) => new t.CodeBlock([], l) %}
 
-# ForStatement
-#    -> "for" _ InlineExpression _ CodeBlockBody {%
-#         (d, l) => new t.ForStatement(d[2], d[4], l)
-#     %}
+ForStatement
+   -> "for" _ ForParameters _ "in" _ InlineExpression _ CodeBlockBody {%
+        (d, l) => new t.ForStatement(d[2], d[6], d[8], l)
+    %}
+
+ForParameters
+   -> delimited[ForParameter {% id %}, _ "," _] {% id %}
+
+ForParameter
+   -> Identifier {% id %}
 
 WhileStatement
    -> "while" _ InlineExpression _ CodeBlockBody {%
@@ -182,6 +189,11 @@ ReturnStatement
    -> "return" (_ BlockExpression {% nth(1) %}):? {%
        (data, location) => new t.ReturnStatement(data[1], location)
    %}
+
+YieldStatement
+  -> "yield" _ BlockExpression {%
+      (data, location) => new t.YieldStatement(data[2], location)
+  %}
 
 # ============================================================================ #
 #                                 Enumerations                                 #
@@ -309,9 +321,7 @@ InitializerStatement
 
 DeinitializerStatement
    -> "deinit" _ (
-           ("{" {% setState('inFunction', true) %})
-           (CodeBlock[statement {% id %}] {% id %})
-           ("}" {% setState('inFunction', false) %}) {% nth(1) %}
+        "{" CodeBlock[statement {% id %}] "}" {% nth(1) %}
         | ExternalMarker {% id %}
         | NativeBlock {% id %}
     ) {%
@@ -380,10 +390,11 @@ FunctionStatement
 FunctionHead
    -> Annotations Modifier "function"
         (Identifier {% id %} | OverridableOperator {% id %})
-        ArgumentList (_ "->" _ type {% nth(3) %}):? {%
+        ArgumentList
+        (_ ("->" {% id %} | "yields" {% id %}) _ type {% (data) => [data[1], data[3]] %}):? {%
         (data, location) =>
             new t.FunctionStatement(data[0], data[1], data[3],
-                data[4], data[5], null, location)
+                data[4], data[5]?.[1] || null, data[5]?.[0] === 'yields', null, location)
     %}
 
 OverridableOperator

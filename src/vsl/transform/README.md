@@ -9,8 +9,9 @@ operator overloading, construction, dynamic dispatch, static dispatch, etc. etc.
 
 So transformation works in two primary parts:
 
- - Preprocessing
- - Scope Resolution 
+ - Pre-process
+ - Scope Resolution
+ - Pre-transform
  - Transformation
 
 Each of these are defined in `transformers`. The API docs cover specific details
