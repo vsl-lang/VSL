@@ -62,12 +62,20 @@ export default function layoutType(type, context) {
  * @param {ScopeTypeItem} type  type
  * @param {ScopeAliasItem} field field name
  * @return {number} positive integer 0+ if found. -1 if not
+ * @throws {TypeError} if field is not found.
  */
 export function getTypeOffset(type, field) {
     let rootOffset = 0;
 
     if (type.hasSuperClass)
         rootOffset += 1;
+
+    const index = type.subscope.aliases.indexOf(field);
+    if (index === -1) {
+        throw new TypeError(
+            `Could not find ${field} in type ${type}`
+        );
+    }
 
     return rootOffset + type.subscope.aliases.indexOf(field);
 }

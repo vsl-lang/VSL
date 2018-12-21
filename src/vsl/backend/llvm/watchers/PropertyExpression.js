@@ -3,6 +3,7 @@ import BackendWarning from '../../BackendWarning';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import { getTypeOffset } from '../helpers/layoutType';
 import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
 
@@ -41,7 +42,7 @@ export default class LLVMPropertyExpression extends BackendWatcher {
             }
 
             // Calculate index of prop in layout.
-            const indexOfProp = node.baseRef.subscope.aliases.indexOf(node.propertyRef);
+            const indexOfProp = getTypeOffset(baseRef, node.propertyRef);
             const gep = context.builder.createInBoundsGEP(
                 value,
                 [
