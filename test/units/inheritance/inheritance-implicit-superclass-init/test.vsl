@@ -2,9 +2,11 @@ class A {
     public const x: Int = 1
 }
 
-class B: A {}
+class B: A {
+    public const y: Int = 2
+}
 
 func main() {
     let b: B = B()
-    print(b.x)
+    print(b.y)
 }

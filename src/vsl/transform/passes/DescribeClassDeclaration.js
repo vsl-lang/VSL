@@ -130,6 +130,16 @@ export default class DescribeClassDeclaration extends Transformation {
                             );
                         }
 
+                        // Ensure the superclass is specialized
+                        if (scopeItem.isGeneric) {
+                            throw new TransformError(
+                                `You must specialize generic superclass before ` +
+                                `attempting to inherit it.`,
+                                superclassNode,
+                                e.GENERIC_SPECIALIZATION_REQUIRED
+                            );
+                        }
+
                         // Otherwise we are then all good
                         self.superclass = scopeItem;
                         scopeItem.subclasses.push(self);
@@ -157,7 +167,6 @@ export default class DescribeClassDeclaration extends Transformation {
                         );
                     }
 
-                    self.interfaces[i] = scopeItem;
 
                     if (!scopeItem.isInterface) {
                         if (self.superclass) {
@@ -179,6 +188,18 @@ export default class DescribeClassDeclaration extends Transformation {
                             );
                         }
                     }
+
+                    // Ensure the superclass is specialized
+                    if (scopeItem.isGeneric) {
+                        throw new TransformError(
+                            `You must specialize generic interface before ` +
+                            `attempting to implement it.`,
+                            interfaceNode,
+                            e.GENERIC_SPECIALIZATION_REQUIRED
+                        );
+                    }
+
+                    self.interfaces[i] = scopeItem;
                 }
             }
         };
