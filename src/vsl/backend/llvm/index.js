@@ -92,6 +92,7 @@ export default class LLVMBackend extends Backend {
         yield new w.IfStatement();
         yield new w.Ternary();
         yield new w.WhileStatement();
+        yield new w.InitDelegationCall();
         yield new w.DoWhileStatement();
         yield new w.CodeBlock();
         yield new w.ReturnStatement();
