@@ -1,6 +1,7 @@
 import * as llvm from 'llvm-node';
 import toLLVMType from './toLLVMType';
 import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
+import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -33,12 +34,20 @@ export default function layoutType(type, context) {
         typeName
     );
 
-    const fieldTypes = type.subscope.aliases.map(
-        alias => alias.type.contextualType(typeContext));
+    const fieldTypes = type.subscope.aliases
+        .map(
+            alias => alias.type.contextualType(typeContext))
+        .map(
+            fieldType => toLLVMType(fieldType, context));
+
+
+    const superClassTypes = type.hasSuperClass ? [layoutType(type.superclass, context)] : [];
 
     // Convert all fields to LLVM types.
-    let layout = fieldTypes.map(
-        fieldType => toLLVMType(fieldType, context));
+    let layout = [
+        ...superClassTypes,
+        ...fieldTypes
+    ];
 
     structType.setBody(
         layout,
@@ -55,5 +64,10 @@ export default function layoutType(type, context) {
  * @return {number} positive integer 0+ if found. -1 if not
  */
 export function getTypeOffset(type, field) {
-    return type.subscope.aliases.indexOf(field);
+    let rootOffset = 0;
+
+    if (type.hasSuperClass)
+        rootOffset += 1;
+
+    return rootOffset + type.subscope.aliases.indexOf(field);
 }

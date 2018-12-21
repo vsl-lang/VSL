@@ -4,8 +4,8 @@ func main() {
     let c: Int = 0
     assert(a \ b == c)
 
-    let d: UInt = 1
-    let e: UInt = 2
-    let f: UInt = 0
+    let d: UInt32 = -1
+    let e: UInt32 = 2
+    let f: UInt32 = 2147483647
     assert(d \ e == f)
 }

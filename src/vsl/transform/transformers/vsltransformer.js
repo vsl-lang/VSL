@@ -19,6 +19,7 @@ export default class VSLTransformer extends Transformer {
             pass.TypeDeductAssignment,
             pass.TypeDeductReturnStatement,
             pass.TypeDeductDefaultFunctionArguments,
+            pass.TypeDeductInitDelegation,
 
             pass.VerifyLValueBinding
         ], context);
