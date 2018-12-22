@@ -1,6 +1,7 @@
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import { getObjectForValue } from './RTTI';
-import toLLVMType from './toLLVMType'
+import toLLVMType from './toLLVMType';
+import * as llvm from 'llvm-node';
 
 /**
  * This attempts to generate an UPCAST to a type that is KNOWN to work.
@@ -20,7 +21,10 @@ export default function tryGenerateCast(value, valueTy, targetTy, context) {
         );
     }
 
-    if (valueTy.castableTo(targetTy) === 0) {
+    const castDistance = valueTy.castableTo(targetTy) - 1;
+
+    // If there is no distance between current and target type.
+    if (castDistance === 0) {
         return value;
     }
 
@@ -28,6 +32,28 @@ export default function tryGenerateCast(value, valueTy, targetTy, context) {
         // If its cast to object we'll wrap it in Object.
         return getObjectForValue(value, valueTy, context);
     } else {
-        throw new TypeError('not supported yet.');
+        // Otherwise we'll do an upcast based on if it is interface or a
+        // superclass.
+        if (!targetTy.isInterface) {
+            // Casting to a superclass. Essentially we can dereference the first
+            // part until we reach the class.
+
+            let lastInstance = value;
+            for (let i = 0; i < castDistance; i++) {
+                lastInstance = context.builder.createInBoundsGEP(
+                    lastInstance,
+                    [
+                        llvm.ConstantInt.get(context.ctx, 0),
+                        llvm.ConstantInt.get(context.ctx, 0)
+                    ]
+                );
+            }
+
+            return lastInstance;
+        } else {
+            throw new TypeError(
+                `Cannot cast to interface yet.`
+            );
+        }
     }
 }

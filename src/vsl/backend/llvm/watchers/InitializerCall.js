@@ -97,9 +97,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
         }
 
 
-        return context.builder.createCall(
-            callee,
-            compiledArgs
-        );
+        context.builder.createCall(callee, compiledArgs);
+        return instance;
     }
 }
