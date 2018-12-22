@@ -50,7 +50,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             // Additionally the first argument is the class the initalizer
             // represents along with the return value.
             let functionType = llvm.FunctionType.get(
-                selfType,
+                llvm.Type.getVoidTy(context.ctx),
                 [
                     selfType,
                     ...args.map(
@@ -98,10 +98,6 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             builder.createCall(defaultInit, [self]);
 
             regen('statements', node, newContext);
-
-            // Add return of first arg
-            const selfRef = llvmFuncArgs[0];
-            builder.createRet(selfRef);
 
             return func;
         }
