@@ -1,0 +1,15 @@
+class A {
+    public const x: Int = 1
+}
+
+class B: A {
+    public let y: Int = 2
+}
+
+func f(b: Int = 1, a: A) -> A {
+    return a
+}
+
+func main() {
+    f(a: B())
+}

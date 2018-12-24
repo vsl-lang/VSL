@@ -99,6 +99,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
             regen('statements', node, newContext);
 
+            builder.createRetVoid();
             return func;
         }
     }

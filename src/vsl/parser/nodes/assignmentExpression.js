@@ -23,6 +23,12 @@ export default class AssignmentExpression extends Node {
 
         /** @type {Expression} */
         this.value = value;
+
+        /** @type {?ScopeTypeItem} */
+        this.reference = null;
+
+        /** @type {?ScopeTypeItem} */
+        this.valueReference = null;
     }
 
     /** @override */

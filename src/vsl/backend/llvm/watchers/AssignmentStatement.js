@@ -8,6 +8,8 @@ import InitPriority from '../InitPriority';
 import toLLVMType from '../helpers/toLLVMType';
 import * as llvm from 'llvm-node';
 
+import tryGenerateCast from '../helpers/tryGenerateCast';
+
 export default class LLVMAssignmentStatement extends BackendWatcher {
     match(type) {
         return type instanceof t.AssignmentStatement;
@@ -60,13 +62,28 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
                 );
 
                 backend.addInitTask(InitPriority.GLOBAL_VAR, (context) => {
-                    let res = regen('value', node, context);
+                    const expressionValue = regen('value', node, context);
+
+                    const res = tryGenerateCast(
+                        expressionValue,
+                        node.value.type,
+                        node.reference.type,
+                        context
+                    );
+
                     context.builder.createStore(res, varRef);
                 });
 
                 return node.reference.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {
-                const value = regen('value', node, context);
+                const expressionValue = regen('value', node, context);
+                const value = tryGenerateCast(
+                    expressionValue,
+                    node.value.type,
+                    node.reference.type,
+                    context
+                );
+
                 const alloca = context.builder.createAlloca(value.type);
                 context.builder.createStore(value, alloca);
 

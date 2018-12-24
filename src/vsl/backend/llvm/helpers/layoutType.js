@@ -2,6 +2,7 @@ import * as llvm from 'llvm-node';
 import toLLVMType from './toLLVMType';
 import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+import tryGenerateCast from './tryGenerateCast';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -59,23 +60,29 @@ export default function layoutType(type, context) {
 
 /**
  * Returns the offset of a field in a type
- * @param {ScopeTypeItem} type  type
- * @param {ScopeAliasItem} field field name
- * @return {number} positive integer 0+ if found. -1 if not
+ * @param {llvm.Value} value - Input value
+ * @param {ScopeTypeItem} type - Type of input value
+ * @param {ScopeAliasItem} field - field reference
+ * @param {LLVMContext} context - Same context to build in
+ * @return {llvm.Value} value of field pointer
  * @throws {TypeError} if field is not found.
  */
-export function getTypeOffset(type, field) {
+export function getTypeOffset(value, type, field, context) {
+    // Get field owner
+    const fieldType = field.owner.owner;
+
     let rootOffset = 0;
 
-    if (type.hasSuperClass)
+    if (fieldType.hasSuperClass)
         rootOffset += 1;
 
-    const index = type.subscope.aliases.indexOf(field);
-    if (index === -1) {
-        throw new TypeError(
-            `Could not find ${field} in type ${type}`
-        );
-    }
+    const offset = rootOffset + fieldType.subscope.aliases.indexOf(field);
 
-    return rootOffset + type.subscope.aliases.indexOf(field);
+    return context.builder.createInBoundsGEP(
+        value,
+        [
+            llvm.ConstantInt.get(context.ctx, 0),
+            llvm.ConstantInt.get(context.ctx, offset)
+        ]
+    );
 }

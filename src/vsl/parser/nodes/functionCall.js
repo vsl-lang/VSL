@@ -39,6 +39,12 @@ export default class FunctionCall extends Node {
         this.returnType = null;
 
         /**
+         * Literal argument types.
+         * @type {?(ScopeTypeItem[])}
+         */
+        this.argumentReferences = null;
+
+        /**
          * List of indexes treated as optional.
          * @type {number[]}
          */

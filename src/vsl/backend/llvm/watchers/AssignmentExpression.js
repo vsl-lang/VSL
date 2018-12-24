@@ -7,6 +7,7 @@ import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
 import InitPriority from '../InitPriority';
 import toLLVMType from '../helpers/toLLVMType';
+import tryGenerateCast from '../helpers/tryGenerateCast';
 import * as llvm from 'llvm-node';
 
 export default class LLVMAssignmentExpression extends BackendWatcher {
@@ -27,7 +28,12 @@ export default class LLVMAssignmentExpression extends BackendWatcher {
         lvalueCtx.pushValue(Key.LValueContext, true);
 
         const target = regen('target', node, lvalueCtx)
-        const value = regen('value', node, context);
+        const value = tryGenerateCast(
+            regen('value', node, context),
+            node.valueReference,
+            node.reference,
+            context
+        );
 
         // Just for double-safety
         if (!(target instanceof ValueRef)) {

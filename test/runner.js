@@ -47,15 +47,17 @@ async function loadLibvsl() {
 }
 
 async function start() {
-    runTests(path.join(__dirname, 'units'))
+    runTests(path.join(__dirname, 'units', ...process.argv.slice(2)))
         .then(() => {
         if (aTestErrored) process.exit(1);
     });
 
-    runCLITests(path.join(__dirname, 'cli'))
-        .then(() => {
-        if (aCLITestErrored) process.exit(1);
-    });
+    if (process.argv.length <= 2) {
+        runCLITests(path.join(__dirname, 'cli'))
+            .then(() => {
+            if (aCLITestErrored) process.exit(1);
+        });
+    }
 }
 
 async function runCLITests(dir) {

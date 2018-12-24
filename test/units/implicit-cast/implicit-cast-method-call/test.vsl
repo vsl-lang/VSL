@@ -1,0 +1,16 @@
+class A {
+    public const x: Int = 1
+
+    func getX() -> Int {
+        return self.x
+    }
+}
+
+class B: A {
+    public let y: Int = 2
+}
+
+func main() {
+    let a: A = B()
+    let b = a.getX()
+}

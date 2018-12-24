@@ -240,6 +240,19 @@ export default class ScopeTypeItem extends ScopeItem {
     }
 
     /**
+     * Obtains the common type between current type and other. Common type is
+     * always Object so in that case this still returns null.
+     *
+     * Note that `A.commonType(B)` is same as `B.commonType(A)`
+     *
+     * @param {ScopeTypeItem} otherType
+     * @return {?ScopeTypeItem}
+     */
+    commonType(otherType) {
+        // IDK How to implement!!
+    }
+
+    /**
      * Returns TypeContext for just this specialization.
      * @return {TypeContext}
      */

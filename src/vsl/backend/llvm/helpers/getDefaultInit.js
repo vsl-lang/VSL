@@ -76,23 +76,15 @@ export default function getDefaultInit(ty, context, regen) {
         const fieldNode = defaultField.source;
         if (fieldNode?.value) {
             let fieldValue = regen('value', fieldNode, defaultCtx);
-            let indexOfField = getTypeOffset(ty, defaultField);
 
             let storeInst = defaultBuilder.createStore(
                 fieldValue,
-                defaultBuilder.createInBoundsGEP(
-                    self,
-                    [
-                        // Deref the field itself
-                        llvm.ConstantInt.get(backend.context, 0),
-
-                        // The field we want
-                        llvm.ConstantInt.get(backend.context, indexOfField)
-                    ]
-                )
+                getTypeOffset(self, ty, defaultField, defaultCtx)
             );
         }
     }
+
+    defaultBuilder.createRetVoid();
 
     return init;
 }

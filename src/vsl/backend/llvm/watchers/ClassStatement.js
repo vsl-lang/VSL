@@ -4,6 +4,7 @@ import t from '../../../parser/nodes';
 
 import TypeContext from '../../../scope/TypeContext';
 import toLLVMType from '../helpers/toLLVMType';
+import tryGenerateCast from '../helpers/tryGenerateCast';
 import ValueRef from '../ValueRef';
 import InitPriority from '../InitPriority';
 
@@ -50,7 +51,12 @@ export default class LLVMClassStatement extends BackendWatcher {
                         const newContext = context.clone();
                         newContext.typeContext = newContext.typeContext.merge(typeContext);
                         newContext.builder.createStore(
-                            regen('value', staticItems[i].source, newContext),
+                            tryGenerateCast(
+                                regen('value', staticItems[i].source, newContext),
+                                staticItems[i].source.value.type,
+                                staticItems[i].type,
+                                newContext
+                            ),
                             globalVar
                         );
                     });
