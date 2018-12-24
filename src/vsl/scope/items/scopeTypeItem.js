@@ -184,6 +184,24 @@ export default class ScopeTypeItem extends ScopeItem {
     }
 
     /**
+     * Gets an array of superclass stack. A -> B -> C -> D. Returns empty array
+     * if interface even if interface has a superinterface. Does not include
+     * current node. This is sorted from highest class to lowest class. Object
+     * is not included.
+     * @type {ScopeTypeItem[]}
+     */
+    get superclassStack() {
+        const stack = [this.superclass];
+
+        let nextStackItem;
+        while ((nextStackItem = stack[stack.length - 1]).hasSuperClass) {
+            stack.unshift(nextStackItem.superclass);
+        }
+
+        return stack;
+    }
+
+    /**
      * Returns if has a behavior superclass
      * @return {boolean}
      */
@@ -243,13 +261,37 @@ export default class ScopeTypeItem extends ScopeItem {
      * Obtains the common type between current type and other. Common type is
      * always Object so in that case this still returns null.
      *
-     * Note that `A.commonType(B)` is same as `B.commonType(A)`
+     * Note that `A.commonType(B)` is same as `B.commonType(A)`.
+     *
+     * If we treat the inheritance hierarchy like a polytree then given two nodes
+     * basically find where they are equal. All types inherit object except
+     * interfaces so we use a left-to-right approach.
+     *
+     * This ONLY checks classes because implicit interface casts can be
+     * problematic.
      *
      * @param {ScopeTypeItem} otherType
      * @return {?ScopeTypeItem}
      */
     commonType(otherType) {
-        // IDK How to implement!!
+        // If they are same
+        if (otherType === this) {
+            return this;
+        }
+
+        const selfStack = this.superclassStack;
+        const otherStack = otherType.superclassStack;
+
+        let furthestCommonType = null;
+        for (let i = 0; i < selfStack.length && i < otherStack.length; i++) {
+            if (selfStack[i] === otherStack[i]) {
+                furthestCommonType = selfStack[i];
+            } else {
+                break;
+            }
+        }
+
+        return furthestCommonType;
     }
 
     /**

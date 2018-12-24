@@ -2,6 +2,7 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
+import tryGenerateCast from '../helpers/tryGenerateCast';
 import * as llvm from 'llvm-node';
 
 export default class LLVMReturnStatement extends BackendWatcher {
@@ -16,7 +17,12 @@ export default class LLVMReturnStatement extends BackendWatcher {
             context.builder.createRetVoid();
         } else {
             context.builder.createRet(
-                regen('expression', node, context)
+                tryGenerateCast(
+                    regen('expression', node, context),
+                    node.expression.type,
+                    node.expectedReturnType,
+                    context
+                )
             );
         }
     }
