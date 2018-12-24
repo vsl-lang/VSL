@@ -70,45 +70,48 @@ export default class RootResolver extends TypeResolver {
             // This will pick `Int32` as a default
 
             // If we have 1 result we are good
-            if (result.length === 1) return result;
             if (result.length === 0) {
                 this.emit(
                     `Expression has no valid type.`,
                     e.NO_VALID_TYPE
                 );
-            }
-
-            let precCandidate = null;
-            for (let i = 0; i < result.length; i++) {
-                if (result[i].precType) {
-                    if (precCandidate !== null) {
-                        this.emit(
-                            `Expression is ambiguous. Additionally multiple ` +
-                            `precedence candidates found.`,
-                            e.AMBIGUOUS_EXPRESSION
-                        );
-                    } else {
-                        precCandidate = result[i];
+            } else if (result.length > 1) {
+                let precCandidate = null;
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].precType) {
+                        if (precCandidate !== null) {
+                            this.emit(
+                                `Expression is ambiguous. Additionally multiple ` +
+                                `precedence candidates found.`,
+                                e.AMBIGUOUS_EXPRESSION
+                            );
+                        } else {
+                            precCandidate = result[i];
+                        }
                     }
                 }
-            }
 
-            if (precCandidate === null) {
-                this.emit(
-                    `Expression is ambiguous.`,
-                    e.AMBIGUOUS_EXPRESSION
-                );
-            }
-
-            child.resolve((type) => {
-                switch (type) {
-                    case ConstraintType.RequestedTypeResolutionConstraint:
-                        return precCandidate;
-                    default: return negotiator(type);
+                if (precCandidate === null) {
+                    this.emit(
+                        `Expression is ambiguous.`,
+                        e.AMBIGUOUS_EXPRESSION
+                    );
                 }
-            });
 
-            result = [precCandidate];
+                child.resolve((type) => {
+                    switch (type) {
+                        case ConstraintType.RequestedTypeResolutionConstraint:
+                            return precCandidate;
+                        default: return negotiator(type);
+                    }
+                });
+
+                result = [precCandidate];
+            }
+        }
+
+        if (result.length === 1) {
+            this.node.type = result[0].candidate;
         }
 
         return result;

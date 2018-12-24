@@ -1,0 +1,11 @@
+class A {
+    public const x: Int = 1
+}
+
+class B: A {
+    public let y: Int = 2
+}
+
+const a: A = B()
+
+func main() {}

@@ -90,7 +90,13 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         newCtx.builder = builder;
         newCtx.parentFunc = func;
 
-        let initVal = regen('value', node, newCtx);
+        const expressionValue = regen('value', node, newCtx);
+        let initVal = tryGenerateCast(
+            expressionValue,
+            node.value.type,
+            node.reference.type,
+            context
+        );
 
         builder.createStore(initVal, internalValue);
         builder.createStore(llvm.ConstantInt.getTrue(backend.context), initializationStatus)

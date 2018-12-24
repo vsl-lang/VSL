@@ -41,23 +41,18 @@ export default class LLVMPropertyExpression extends BackendWatcher {
                 );
             }
 
-            // Calculate index of prop in layout.
-            const indexOfProp = getTypeOffset(baseRef, node.propertyRef);
-            const gep = context.builder.createInBoundsGEP(
+            // get prop ptr
+            const propPtr = getTypeOffset(
                 value,
-                [
-                    // Dereference the pointer value itself
-                    llvm.ConstantInt.get(backend.context, 0),
-
-                    // Dereference the field
-                    llvm.ConstantInt.get(backend.context, indexOfProp)
-                ]
+                baseRef.contextualType(context.typeContext),
+                node.propertyRef,
+                context
             );
 
             if (asLValue) {
-                return new ValueRef(gep, { isPtr: true });
+                return new ValueRef(propPtr, { isPtr: true });
             } else {
-                return context.builder.createLoad(gep);
+                return context.builder.createLoad(propPtr);
             }
         }
     }

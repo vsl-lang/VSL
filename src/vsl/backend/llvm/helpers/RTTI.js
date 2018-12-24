@@ -1,4 +1,3 @@
-import { getTypeOffset } from './layoutType';
 import * as llvm from 'llvm-node';
 
 // Contains RTTI helper functions
@@ -78,10 +77,7 @@ export function getFieldTy(context) {
         context.ctx,
         [
             // Field name
-            llvm.Type.getInt8PtrTy(context.ctx),
-
-            // Field offset
-            llvm.Type.getInt64Ty(context.ctx)
+            llvm.Type.getInt8PtrTy(context.ctx)
         ],
         false
     );
@@ -99,10 +95,7 @@ export function getFieldObjectForField(alias, type, context) {
         getFieldTy(context),
         [
             // Field name
-            context.builder.createGlobalStringPtr(alias.rootId),
-
-            // Field offset
-            llvm.ConstantInt.get(context.ctx, getTypeOffset(type, alias), 64, false)
+            context.builder.createGlobalStringPtr(alias.rootId)
         ]
     );
 }

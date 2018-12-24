@@ -5,7 +5,6 @@ import t from '../../../parser/nodes';
 import ScopeInitItem from '../../../scope/items/scopeInitItem';
 import getFunctionInstance from '../helpers/getFunctionInstance';
 import toLLVMType from '../helpers/toLLVMType';
-import { getTypeOffset } from '../helpers/layoutType';
 import getDefaultInit from '../helpers/getDefaultInit';
 
 import { Key } from '../LLVMContext';
@@ -78,7 +77,6 @@ export default class LLVMInitializerCall extends BackendWatcher {
             allocCall,
             classType
         );
-
 
         // Compile the arguments
         let compiledArgs = [instance];

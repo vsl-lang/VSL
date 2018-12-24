@@ -98,7 +98,7 @@ export default class TypeDeductAssignment extends Transformation {
             ScopeForm.definite,
             node.name.identifier.value,
             {
-                type: resolvedType,
+                type: requestedType || resolvedType,
                 source: node,
                 isStatic: tool.isStatic,
                 isScopeRestricted: tool.isPrivate

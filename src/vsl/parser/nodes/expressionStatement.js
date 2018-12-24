@@ -17,7 +17,7 @@ import Node from './node';
  *
  */
 export default class ExpressionStatement extends Node {
-    
+
     /**
      * Creates a wrapper ExpressionStatement
      *
@@ -26,26 +26,29 @@ export default class ExpressionStatement extends Node {
      */
     constructor (expression: any, isClosure: boolean, parenthesized: boolean, position: Object) {
         super(position);
-        
+
         /** @type {Expression} */
         this.expression = expression;
-        
+
         /** @type {boolean} */
         this.isClosure = isClosure;
-        
+
         /** @type {boolean} */
         this.parenthesized = parenthesized;
+
+        /** @type {?ScopeTypeItem} */
+        this.type = null;
     }
-    
+
     clone() {
         return new ExpressionStatement(this.expression.clone(), this.isClosure, this.parenthesized)
     }
-    
+
     /** @override */
     get children() {
         return ['expression'];
     }
-    
+
     /** @override */
     toString() {
         return this.expression.toString();

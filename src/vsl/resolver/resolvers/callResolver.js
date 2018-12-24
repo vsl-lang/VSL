@@ -442,6 +442,7 @@ export default class CallResolver extends TypeResolver {
             this.node.reference = bestCandidate.candidate;
             this.node.returnType = bestCandidate.returnType;
             this.node.argPositionsTreatedOptional = bestCandidate.argPositionsTreatedOptional;
+            this.node.argumentReferences = bestCandidate.argTypes.map(_ => _.candidate);
             this.node.typeContext = typeContext;
             return [new TypeCandidate(bestCandidate.returnType)];
         }

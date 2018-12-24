@@ -5,6 +5,7 @@ import t from '../../../parser/nodes';
 import { Key } from '../LLVMContext';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionInstance from '../helpers/getFunctionInstance';
+import tryGenerateCast from '../helpers/tryGenerateCast';
 
 export default class LLVMFunctionCall extends BackendWatcher {
     match(type) {
@@ -71,7 +72,12 @@ export default class LLVMFunctionCall extends BackendWatcher {
                 value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
                 k--;
             } else {
-                value = regen('value', node.arguments[k], context);
+                value = tryGenerateCast(
+                    regen('value', node.arguments[k], context),
+                    node.argumentReferences[k],
+                    functionRef.args[i].type.contextualType(typeContext),
+                    context
+                );
             }
             compiledArgs.push(value);
         }
