@@ -1,6 +1,5 @@
 import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
-import ScopeTypeItem from './scopeTypeItem';
 
 /**
  * Describes a function declaration. Usually a top, nested, or class-level
@@ -53,6 +52,8 @@ export default class ScopeFuncItem extends ScopeItem {
 
         this._shouldForceInline = false;
 
+        this._virtualParentMethod = null;
+
         /**
          * The relative access modifier of the function. This can be:
          *
@@ -70,6 +71,85 @@ export default class ScopeFuncItem extends ScopeItem {
          * @type {string}
          */
         this.foreignName = null;
+
+        this._overriddenBy = [];
+
+        this._isImplementationDefinite = true;
+    }
+
+    /**
+     * Get all functions which this is overridden by. Only applies to TOP
+     * level function
+     * @type {ScopeFuncItem[]}
+     */
+    get overriddenBy() {
+        return this._overriddenBy;
+    }
+
+    /**
+     * Adds a new function that overrides this
+     * @param {ScopeFuncItem} func - Function that overrides this definite.
+     */
+    addFunctionWhichOverrides(func) {
+        this._isImplementationDefinite = false;
+
+        // If there _this_ overrides _parent_ then _func_ actually overrides
+        // _parent_
+        if (this._virtualParentMethod) {
+            this._virtualParentMethod.addFunctionWhichOverrides(func);
+        } else {
+            // Otherwise it overrides this.
+            this._overriddenBy.push(func);
+
+            // And then _this_ is what _func_ overrides
+            func._virtualParentMethod = this;
+
+            // If there was anything which supposedly overrode 'func' it now
+            // overrides 'this'
+            this._overriddenBy.push(...func._overriddenBy);
+
+            // Set all child virtual parent methods to this.
+            function setVirtualParents(subfunc) {
+                for (let i = 0; i < subfunc._overriddenBy.length; i++) {
+                    subfunc._overriddenBy[i]._virtualParentMethod = this;
+                    setVirtualParents(subfunc._overriddenBy[i]);
+                }
+            }
+
+            setVirtualParents(func);
+
+            func._overriddenBy = [];
+        }
+    }
+
+    /**
+     * Specifies the function which this overrides. Set this using
+     * addFunctionWhichOverrides. This is itself if it doesn't override anything
+     * @type {ScopeFuncItem}
+     */
+    get virtualParentMethod() {
+        return this._virtualParentMethod || this;
+    }
+
+    /**
+     * Specifies if the function does overrides some other function.
+     * @type {boolean}
+     */
+    get isDynamic() {
+        // If this is 1) overriden by something 2) overrides something. then it
+        // is dynamic.
+        return this._overriddenBy.length > 0 || this._virtualParentMethod;
+    }
+
+    /**
+     * Returns if this function is dynamic but does not override anything. This
+     * is significant because this is the original method which is overriden
+     * by its subclasses.
+     * @type {boolean}
+     */
+    get isRootDynamic() {
+        // If there is no parent then it's root
+        return this._overriddenBy.length > 0 && !this._virtualParentMethod;
     }
 
     /**
@@ -79,6 +159,15 @@ export default class ScopeFuncItem extends ScopeItem {
      */
     get shouldForceInline() {
         return this.shouldInline && this._shouldForceInline;
+    }
+
+    /**
+     * If a method is not personally overridden, this will store if so that way
+     * an extra vtable is not needed.
+     * @type {boolean}
+     */
+    get implementationIsDefinite() {
+        return this._isImplementationDefinite;
     }
 
     /**
@@ -144,7 +233,7 @@ export default class ScopeFuncItem extends ScopeItem {
      * @type {boolean}
      */
     get isGeneric() {
-        if (this.owner?.owner instanceof ScopeTypeItem && this.owner.owner.isGeneric) {
+        if (this.owner?.owner?.isGeneric) {
             return true;
         } else {
             return false;

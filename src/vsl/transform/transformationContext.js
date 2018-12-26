@@ -68,6 +68,12 @@ export default class TransformationContext {
         target.primitives.forEach((context, name) => this.primitives.set(name, context));
         this.booleanType = target.booleanType;
         this.staticEnumerationType = target.staticEnumerationType;
+
+        for (const [key, values] of target.benchmarks) {
+            this.benchmarks.set(
+                key, (this.benchmarks.get(key) || []).concat(values)
+            );
+        }
     }
 
     /**

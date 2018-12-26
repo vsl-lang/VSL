@@ -18,6 +18,7 @@ export default class FunctionStatement extends DeclarationStatement {
      * @param {FunctionArgument[]} args - The arguments of the function
      * @param {?Type} returnType - The function's returnType.
      * @param {boolean} isGenerator - If the function yields instead of returning.
+     * @param {boolean} isOverriding - If the function has overriding modifier.
      * @param {CodeBlock} statements - The statements in the function body.
      * @param {Object} position - a position from nearley
      */
@@ -28,6 +29,7 @@ export default class FunctionStatement extends DeclarationStatement {
         args: FunctionArgument[],
         returnType: Type,
         isGenerator: boolean,
+        isOverriding: boolean,
         statements: Node[],
         position: Object
     ) {
@@ -45,8 +47,11 @@ export default class FunctionStatement extends DeclarationStatement {
         /** @type {?Type} */
         this.returnType = returnType;
 
-        /** @type {?Type} */
+        /** @type {boolean} */
         this.isGenerator = isGenerator;
+
+        /** @type {boolean} */
+        this.isOverriding = isOverriding;
 
         /** @type {?ScopeTypeItem} */
         this.returnRef = null;

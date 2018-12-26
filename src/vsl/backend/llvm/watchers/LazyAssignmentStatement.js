@@ -6,6 +6,7 @@ import t from '../../../parser/nodes';
 import ValueRef from '../ValueRef';
 import toLLVMType from '../helpers/toLLVMType';
 import * as llvm from 'llvm-node';
+import tryGenerateCast from '../helpers/tryGenerateCast';
 
 export default class LLVMLazyAssignmentStatement extends BackendWatcher {
     match(type) {

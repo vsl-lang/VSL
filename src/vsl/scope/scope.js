@@ -1,4 +1,5 @@
 import ScopeAliasItem from './items/scopeAliasItem';
+import ScopeFuncItem from './items/scopeFuncItem';
 import ScopeForm from './scopeForm';
 
 // This counts the amount of unique IDs. This is suffixes to always ensure a
@@ -55,6 +56,12 @@ export default class Scope {
          * @type {ScopeAliasItem[]}
          */
         this.aliases = [];
+
+        /**
+         * Gtores immediate functions for layout purposes
+         * @type {ScopeFuncItem[]}
+         */
+        this.functions = [];
 
         /**
          * @private
@@ -257,7 +264,7 @@ export default class Scope {
      * template.
      *
      * @param {ScopeItem} item - The item to check if a candidate exists for it
-     *     remember, this only checks in the current scope!
+     *     remember, this only checks in the current scope! Query type
      * @return {boolean} Whether or not it exists
      */
     has(item: ScopeItem): boolean {
@@ -301,6 +308,8 @@ export default class Scope {
         // Special behavior for fields. Add to list
         if (item instanceof ScopeAliasItem) {
             this.aliases.push(item);
+        } else if (item instanceof ScopeFuncItem) {
+            this.functions.push(item);
         }
 
         return true;

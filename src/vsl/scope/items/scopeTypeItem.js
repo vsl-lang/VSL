@@ -73,11 +73,53 @@ export default class ScopeTypeItem extends ScopeItem {
     /**
      * Obtains the dynamic dispatch state. This is not automatically determined
      * at all. You must set this. This only manages unset values, in which case
-     * the state defaults to `false`.
+     * the state defaults to `false`. This basically specifies if the class
+     * should have vtable.
      * @type {boolean}
      */
     get dynamicDispatch() {
-        return this._dynamicDispatch || false;
+        if (this._dynamicDispatch !== null) {
+            return this._dynamicDispatch;
+        }
+
+        let isDynamic = false;
+        const methods = this.subscope.functions;
+        for (let i = 0; i < methods.length; i++) {
+            if (methods[i].isRootDynamic) {
+                isDynamic = true;
+                break;
+            }
+        }
+
+        return isDynamic;
+    }
+
+    /**
+     * Gets all the functions which are the original dynamic declarations.
+     * @return {ScopeFuncItem}
+     */
+    *rootDynamicMethods() {
+        let methods = this.subscope.functions;
+
+        for (let i = 0; i < methods.length; i++) {
+            if (methods[i].isRootDynamic) {
+                yield methods[i];
+            }
+        }
+    }
+
+    /**
+     * Gets all the functions which are a dynamic declarations.
+     * @return {ScopeFuncItem}
+     */
+    *dynamicMethods() {
+        let methods = this.subscope.functions;
+
+        for (let i = 0; i < methods.length; i++) {
+            if (methods[i].isDynamic) {
+                yield methods[i];
+            }
+        }
     }
 
     /** @protected */
@@ -203,7 +245,7 @@ export default class ScopeTypeItem extends ScopeItem {
 
     /**
      * Returns if has a behavior superclass
-     * @return {boolean}
+     * @type {boolean}
      */
     get hasSuperClass() {
         return this.superclass && this.superclass !== ScopeTypeItem.RootClass;

@@ -1,0 +1,7 @@
+class A {
+    func f() {}
+}
+
+class B: A {
+    func f() {}
+}

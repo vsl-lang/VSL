@@ -1,7 +1,11 @@
 import * as llvm from 'llvm-node';
 import toLLVMType from './toLLVMType';
-import { getTypeOffset } from './layoutType';
 import { Key } from '../LLVMContext'
+import tryGenerateCast from './tryGenerateCast';
+import { getTypeOffset, getVTableOffset } from './layoutType';
+import { getMethodOffsetInVTable } from './VTable';
+import getFunctionType from './getFunctionType';
+import getFunctionInstance from './getFunctionInstance';
 
 /**
  * Obtains the default initializer for a class. This initializer only inits the
@@ -53,6 +57,7 @@ export default function getDefaultInit(ty, context, regen) {
     const defaultCtx = context.bare();
     defaultCtx.builder = defaultBuilder;
     defaultCtx.parentFunc = init;
+    defaultCtx.typeContext = context.typeContext;
 
     if (ty.hasSuperClass) {
         const superclassInit = getDefaultInit(ty.superclass, context, regen);
@@ -82,6 +87,40 @@ export default function getDefaultInit(ty, context, regen) {
                 getTypeOffset(self, ty, defaultField, defaultCtx)
             );
         }
+    }
+
+    // Set vtable items
+    for (const dynMethod of ty.dynamicMethods()) {
+        // Get the vtable this belongs to
+        const virtualMethod = dynMethod.virtualParentMethod;
+        const vtableClass = virtualMethod.owner.owner;
+        const methodVTablePtr = getMethodOffsetInVTable(
+            getVTableOffset(
+                tryGenerateCast(
+                    self,
+                    ty,
+                    vtableClass,
+                    defaultCtx
+                ),
+                vtableClass,
+                defaultCtx
+            ),
+            vtableClass,
+            virtualMethod,
+            defaultCtx
+        );
+
+        const newCtx = context.bare();
+        newCtx.typeContext = context.typeContext;
+
+        const methodImplementation = getFunctionInstance(dynMethod, newCtx, regen);
+        defaultCtx.builder.createStore(
+            defaultCtx.builder.createBitCast(
+                methodImplementation,
+                getFunctionType(virtualMethod, defaultCtx).getPointerTo()
+            ),
+            methodVTablePtr
+        );
     }
 
     defaultBuilder.createRetVoid();

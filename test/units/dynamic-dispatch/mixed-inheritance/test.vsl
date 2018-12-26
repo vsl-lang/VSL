@@ -1,0 +1,33 @@
+class A {
+    func f() {
+        print("A.f")
+    }
+}
+
+class B: A {
+    override func f() {
+        print("B.f")
+    }
+
+    func g() {
+        print("B.g")
+    }
+}
+
+class C: B {
+    override func f() {
+        print("C.f")
+    }
+
+    override func g() {
+        print("C.g")
+    }
+}
+
+func main() {
+    let c: C = C()
+    let b: B = c as B
+    b.g()
+    let a: A = b as A
+    a.f()
+}
