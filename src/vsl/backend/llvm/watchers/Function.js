@@ -12,6 +12,7 @@ import { Key } from '../LLVMContext';
 import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionName from '../helpers/getFunctionName';
+import getFunctionType from '../helpers/getFunctionType';
 import TypeContext from '../../../scope/TypeContext';
 
 import * as llvm from "llvm-node";
@@ -74,40 +75,12 @@ export default class LLVMFunctionStatement extends BackendWatcher {
                 ));
         }
 
-        // Lookup the return type. If there is no return ref that means it is
-        // void so we do not construct.
-        let returnType;
-        if (scopeItem.returnType) {
-            returnType = toLLVMType(scopeItem.returnType.selfType.contextualType(typeContext), context);
-        } else {
-            returnType = llvm.Type.getVoidTy(backend.context);
-        }
-
-        const argTypes = argsRef.map(
-            arg => toLLVMType(arg.type.selfType.contextualType(typeContext), context)
-        );
-
-        // Where the physical args start
-        let argAccessOffset = 0;
-
+        // Lookup the return type.
         const hasSelfParameter = isInstanceCtx(scopeItem);
-
-        // If this _is_ a method (i.e. instance function), we'll want to make
-        //  sure we add `self` as the first argument. Also should not be static
-        if (hasSelfParameter) {
-            argAccessOffset += 1;
-            const selfType = toLLVMType(scopeItem.owner.owner.selfType.contextualType(typeContext), context);
-            argTypes.unshift(
-                selfType
-            );
-        }
+        const argAccessOffset = hasSelfParameter ? 1 : 0;
 
         // Get the function type by mapping each arg ref to a respective type.
-        let functionType = llvm.FunctionType.get(
-            returnType,
-            argTypes,
-            false
-        );
+        let functionType = getFunctionType(scopeItem, context);
 
         // Handles annotations for the function
         const shouldInline = scopeItem.shouldInline;

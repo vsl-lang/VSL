@@ -3,6 +3,7 @@ import toLLVMType from './toLLVMType';
 import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import tryGenerateCast from './tryGenerateCast';
+import { getVTableTy } from './VTable';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -44,9 +45,12 @@ export default function layoutType(type, context) {
 
     const superClassTypes = type.hasSuperClass ? [layoutType(type.superclass, context)] : [];
 
+    const vtableTypes = type.dynamicDispatch ? [getVTableTy(type, context)] : [];
+
     // Convert all fields to LLVM types.
     let layout = [
         ...superClassTypes,
+        ...vtableTypes,
         ...fieldTypes
     ];
 
@@ -56,6 +60,32 @@ export default function layoutType(type, context) {
     );
 
     return structType;
+}
+
+/**
+ * Get the vtable for a type.
+ * @param {llvm.Value} value - LLVM value
+ * @param {ScopeTypeItem} type - the type of input
+ * @param {LLVMContext} context
+ * @return {llvm.Value} value for vtable ptr
+ * @throws {TypeError} if the type doesn't have vtable
+ */
+export function getVTableOffset(value, type, context) {
+    if (!type.dynamicDispatch) {
+        throw new TypeError(
+            `Attempted to get vtable offset for type ${type} which is not ` +
+            `dynamic`
+        );
+    }
+
+    return context.builder.createInBoundsGEP(
+        value,
+        [
+            llvm.ConstantInt.get(context.ctx, 0),
+            llvm.ConstantInt.get(context.ctx, type.hasSuperClass ? 1 : 0)
+        ],
+        'vtable.extract'
+    );
 }
 
 /**
@@ -74,6 +104,9 @@ export function getTypeOffset(value, type, field, context) {
     let rootOffset = 0;
 
     if (fieldType.hasSuperClass)
+        rootOffset += 1;
+
+    if (type.dynamicDispatch)
         rootOffset += 1;
 
     const offset = rootOffset + fieldType.subscope.aliases.indexOf(field);

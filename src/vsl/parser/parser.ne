@@ -388,13 +388,13 @@ FunctionStatement
     %}
 
 FunctionHead
-   -> Annotations Modifier "function"
+   -> Annotations "override":? Modifier "function"
         (Identifier {% id %} | OverridableOperator {% id %})
         ArgumentList
         (_ ("->" {% id %} | "yields" {% id %}) _ type {% (data) => [data[1], data[3]] %}):? {%
         (data, location) =>
-            new t.FunctionStatement(data[0], data[1], data[3],
-                data[4], data[5]?.[1] || null, data[5]?.[0] === 'yields', null, location)
+            new t.FunctionStatement(data[0], data[2], data[4],
+                data[5], data[6]?.[1] || null, data[6]?.[0] === 'yields', !!data[1], null, location)
     %}
 
 OverridableOperator

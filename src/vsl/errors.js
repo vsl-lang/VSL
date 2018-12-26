@@ -100,6 +100,8 @@ export default {
     GENERIC_SPECIALIZATION_REQUIRED: {},
 
     // Functions
+    UNEXPECTED_OVERRIDE: {},
+    EXPECTED_OVERRIDE: {},
     INVALID_FUNCTION_CALL: {},
     SELF_IS_NOT_FUNCTION: {},
 

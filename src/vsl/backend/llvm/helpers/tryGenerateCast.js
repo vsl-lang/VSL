@@ -45,7 +45,8 @@ export default function tryGenerateCast(value, valueTy, targetTy, context) {
                     [
                         llvm.ConstantInt.get(context.ctx, 0),
                         llvm.ConstantInt.get(context.ctx, 0)
-                    ]
+                    ],
+                    'superclass.extract'
                 );
             }
 

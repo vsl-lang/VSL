@@ -6,6 +6,8 @@ import { Key } from '../LLVMContext';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionInstance from '../helpers/getFunctionInstance';
 import tryGenerateCast from '../helpers/tryGenerateCast';
+import { getVTableOffset } from '../helpers/layoutType';
+import { getMethodOffsetInVTable } from '../helpers/VTable';
 
 export default class LLVMFunctionCall extends BackendWatcher {
     match(type) {
@@ -42,25 +44,62 @@ export default class LLVMFunctionCall extends BackendWatcher {
         // Create context to generate function call with
         const ctx = context.bare();
         ctx.typeContext = typeContext;
-        const callee = getFunctionInstance(functionRef, ctx, regen);
 
+        const vtableClass = functionRef.virtualParentMethod.owner.owner;
+        const useVtable = !functionRef.implementationIsDefinite && vtableClass.dynamicDispatch;
 
         // Create argument instruction list
         let compiledArgs = [];
 
-        // If this is an instance we'll pass in self. We'll get this from the
-        // LHS CallRef
-        if (takesSelfParameter) {
-            // Get the value
+        let callee;
+        if (!useVtable) {
+            callee = getFunctionInstance(functionRef, ctx, regen);
+
+            // Compile self if it accepts one.
+            if (takesSelfParameter) {
+                // Get the value
+                if (!(node.head instanceof t.PropertyExpression)) {
+                    throw new BackendError(
+                        `Expected property with instance method.`
+                    );
+                }
+
+                const headValue = regen('head', node.head, context);
+
+                if (!useVtable) {
+                    compiledArgs.push(headValue);
+                }
+            }
+        } else {
             if (!(node.head instanceof t.PropertyExpression)) {
                 throw new BackendError(
-                    `Expected property with instance method.`
+                    `Expected property for dynamic call.`
                 );
             }
 
             const headValue = regen('head', node.head, context);
             compiledArgs.push(headValue);
+
+            // If vtable we'll cast to the vtable class.
+            // Get the self param
+            const selfParameter = tryGenerateCast(
+                headValue,
+                node.head.baseRef,
+                vtableClass,
+                context
+            );
+
+            const vtable = getVTableOffset(selfParameter, vtableClass, context);
+            callee = context.builder.createLoad(
+                getMethodOffsetInVTable(
+                    vtable,
+                    vtableClass,
+                    functionRef,
+                    context
+                )
+            );
         }
+
 
         // Compile arguments
         for (let i = 0, k = 0; i < functionRef.args.length; i++, k++) {
