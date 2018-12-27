@@ -45,7 +45,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
         const ctx = context.bare();
         ctx.typeContext = typeContext;
 
-        const vtableClass = functionRef.virtualParentMethod.owner.owner;
+        let vtableClass = functionRef.virtualParentMethod.owner.owner;
         const useVtable = !functionRef.implementationIsDefinite && vtableClass.dynamicDispatch;
 
         // Create argument instruction list
@@ -77,6 +77,9 @@ export default class LLVMFunctionCall extends BackendWatcher {
                 );
             }
 
+            const headType = node.head.baseRef;
+            vtableClass = vtableClass.selfType.contextualType(headType.getTypeContext());
+
             const headValue = regen('head', node.head, context);
             compiledArgs.push(headValue);
 
@@ -84,7 +87,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
             // Get the self param
             const selfParameter = tryGenerateCast(
                 headValue,
-                node.head.baseRef,
+                headType,
                 vtableClass,
                 context
             );

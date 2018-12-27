@@ -100,10 +100,7 @@ export default class DescribeClassDeclaration extends Transformation {
                     const superclassName = superclassNode.value;
 
                     // Resolve superclass
-                    const scopeItem = scope.getAsDelegate(
-                        new ScopeTypeItem(ScopeForm.query, superclassName),
-                        superclassNode
-                    );
+                    const scopeItem = new TypeLookup(superclassNode, vslGetTypeChild).resolve(semanticSubscope);
 
                     if (!scopeItem) {
                         throw new TransformError(
