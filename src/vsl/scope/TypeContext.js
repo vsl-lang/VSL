@@ -57,7 +57,7 @@ export default class TypeContext {
         } else {
             return `.generic.${
                 [...this.genericParameters]
-                    .map(([_, type]) => type.uniqueName)
+                    .map(([_, type]) => type.uniqueName).join('.')
             }`;
         }
     }
@@ -74,6 +74,11 @@ export default class TypeContext {
     /**
      * Propogates from a passed context to the current context and returns a new
      * context.
+     *
+     * If `this` is: `T => U`
+     * and `parentContext` is: `U => Int32`
+     * this would return: `T => Int32`
+     *
      * @param {TypeContext} parentContext
      * @return {TypeContext}
      */

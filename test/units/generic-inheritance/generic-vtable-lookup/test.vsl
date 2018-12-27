@@ -1,0 +1,14 @@
+class A<V> {
+    func f() -> String { return "A" }
+}
+
+class B<U>: A<U> {}
+
+class C<T>: B<T> {
+    override func f() -> String { return "C" }
+}
+
+func main() {
+    let x = C<Int>() as A<Int>;
+    print(x.f())
+}

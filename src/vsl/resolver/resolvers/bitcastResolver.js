@@ -74,6 +74,7 @@ export default class CastResolver extends TypeResolver {
         }
 
         // If the requested type conflicts
+
         if (requestedType && !targetTy.castableTo(requestedType)) {
             if (requireType) {
                 this.emit(

@@ -1,0 +1,6 @@
+class A<U> {}
+class B<T>: A<T> {}
+
+func main() {
+    let x = B<Int>() as A<Int>
+}

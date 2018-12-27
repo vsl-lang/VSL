@@ -93,7 +93,8 @@ export default function getDefaultInit(ty, context, regen) {
     for (const dynMethod of ty.dynamicMethods()) {
         // Get the vtable this belongs to
         const virtualMethod = dynMethod.virtualParentMethod;
-        const vtableClass = virtualMethod.owner.owner;
+        const vtableClass = virtualMethod.owner.owner.selfType.contextualType(ty.getTypeContext());
+
         const methodVTablePtr = getMethodOffsetInVTable(
             getVTableOffset(
                 tryGenerateCast(
@@ -111,7 +112,7 @@ export default function getDefaultInit(ty, context, regen) {
         );
 
         const newCtx = context.bare();
-        newCtx.typeContext = context.typeContext;
+        newCtx.typeContext = context.typeContext.merge(ty.getTypeContext());
 
         const methodImplementation = getFunctionInstance(dynMethod, newCtx, regen);
         defaultCtx.builder.createStore(

@@ -16,10 +16,13 @@ export function getVTableTy(item, context) {
 
     const struct = llvm.StructType.create(context.ctx, vtableTyName)
 
+    let newCtx = context.bare();
+    newCtx.typeContext = context.typeContext.merge(item.getTypeContext());
+
     struct.setBody(
         vtableMethods.map(
             method =>
-                getFunctionType(method, context).getPointerTo()),
+                getFunctionType(method, newCtx).getPointerTo()),
         /* isPacked: */ false
     );
 

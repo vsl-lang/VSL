@@ -43,7 +43,12 @@ export default function layoutType(type, context) {
             fieldType => toLLVMType(fieldType, context));
 
 
-    const superClassTypes = type.hasSuperClass ? [layoutType(type.superclass, context)] : [];
+    const superClassTypes = type.hasSuperClass ? [
+        layoutType(
+            type.superclass.contextualType(type.getTypeContext()),
+            context
+        )
+    ] : [];
 
     const vtableTypes = type.dynamicDispatch ? [getVTableTy(type, context)] : [];
 

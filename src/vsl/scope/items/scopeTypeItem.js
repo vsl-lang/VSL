@@ -260,13 +260,14 @@ export default class ScopeTypeItem extends ScopeItem {
      *                  this is the distance of the cast (lower = more specific)
      */
     castableTo(type) {
+        this.resolve();
         type = type.resolved();
 
         // Check if cast to the same type
         if (type === this) return 1;
 
         // Check if casting to new type
-        let canCastSuperclass = this.superclass?.castableTo(type);
+        let canCastSuperclass = this.superclass?.resolved().castableTo(type);
         if (canCastSuperclass) return canCastSuperclass + 1;
 
         // Check if any of the interfaces can cast to `type`
@@ -341,7 +342,11 @@ export default class ScopeTypeItem extends ScopeItem {
      * @return {TypeContext}
      */
     getTypeContext() {
-        return TypeContext.empty();
+        if (this.hasSuperClass) {
+            return this.superclass.getTypeContext();
+        } else {
+            return TypeContext.empty();
+        }
     }
 
     /** @override */

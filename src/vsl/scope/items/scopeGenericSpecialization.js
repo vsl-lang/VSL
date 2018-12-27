@@ -80,6 +80,19 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
     /** @protected */
     init({ genericClass, parameters }) {
 
+        /**
+         * This is the source backing class of this.
+         * @type {ScopeTypeItem}
+         */
+        this.genericClass = genericClass;
+
+        /**
+         * These are the generic parameters or the values of the generic
+         * specialization
+         * @type {ScopeTypeItem[]}
+         */
+        this.parameters = parameters;
+
         // We'll pass similar params but do note that not ALL things are
         // propogated. For example `source`.
         super.init({
@@ -103,19 +116,6 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
                 `Attempted to specialize generic \`${this.genericClass}\` with invalid amount of specialization arguments.`
             );
         }
-
-        /**
-         * This is the source backing class of this.
-         * @type {ScopeTypeItem}
-         */
-        this.genericClass = genericClass;
-
-        /**
-         * These are the generic parameters or the values of the generic
-         * specialization
-         * @type {ScopeTypeItem[]}
-         */
-        this.parameters = parameters;
     }
 
     /** @override */
@@ -125,7 +125,7 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
         /** @private */
         this.interfaces = this.genericClass.interfaces;
         /** @private */
-        this.superclass = this.genericClass.superclass;
+        this.superclass = this.genericClass.superclass?.contextualType(this.getTypeContext());
         /** @private */
         this.defaultInitializer = this.genericClass.defaultInitializer;
     }
@@ -160,7 +160,15 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
             specializationMap.set(genericParameters[i], this.parameters[i]);
         }
 
-        return new TypeContext({ genericParameters: specializationMap })
+        let typeContext = new TypeContext({ genericParameters: specializationMap })
+
+        if (this.hasSuperClass) {
+            typeContext = typeContext.merge(
+                this.superclass.getTypeContext().propogateContext(typeContext)
+            );
+        }
+
+        return typeContext;
     }
 
     /**

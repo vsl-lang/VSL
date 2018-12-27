@@ -58,3 +58,18 @@ export default function tryGenerateCast(value, valueTy, targetTy, context) {
         }
     }
 }
+
+/**
+ * This validates a cast. _Always_ call this before actually downcasting unless
+ * you like runtime segfaults. You can also use this to check if an object is
+ * a class at runtime.
+ *
+ * @param {llvm.Value} value - The value
+ * @param {ScopeTypeItem} sourceType - The source type
+ * @param {ScopeTypeItem} targetType - The type to check if compatible.
+ * @param {LLVMContext} context
+ * @return {llvm.Value} value with value.
+ */
+export function validateRuntimeCast(value, sourceType, targetType, context) {
+
+}
