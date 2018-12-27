@@ -42,6 +42,7 @@ export function getVTableTy(item, context) {
 export function getMethodOffsetInVTable(value, item, method, context) {
     const vtableMethods = [...item.rootDynamicMethods()];
     const index = vtableMethods.indexOf(method);
+
     if (index === -1) {
         throw new TypeError(
             `Couldn't find VTable method ${method} in ${item}.`
