@@ -10,7 +10,7 @@ import e from '../../errors';
 /**
  * Resolves `self` in the current context.
  */
-export default class IdResolver extends TypeResolver {
+export default class SelfResolver extends TypeResolver {
 
     /**
      * @param {Node} node - The node to resolve.

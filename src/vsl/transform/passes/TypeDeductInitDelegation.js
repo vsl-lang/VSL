@@ -3,7 +3,7 @@ import TransformError from '../transformError.js';
 import TokenType from '../../parser/vsltokentype';
 import t from '../../parser/nodes';
 
-import { RootResolver } from '../../resolver/resolvers/*';
+import { CallResolver } from '../../resolver/resolvers/*';
 import vslGetChild from '../../resolver/vslGetChild';
 import ConstraintType from '../../resolver/constraintType';
 import TypeCandidate from '../../resolver/typeCandidate';
@@ -17,11 +17,9 @@ export default class TypeDeductInitDelegation extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        new RootResolver(node.condition, vslGetChild, tool.context)
+        new CallResolver(node, vslGetChild, tool.context)
             .resolve((type) => {
             switch (type) {
-                case ConstraintType.RequestedTypeResolutionConstraint:
-                    return new TypeCandidate(tool.context.booleanType);
                 case ConstraintType.RequireType:
                 case ConstraintType.SimplifyToPrecType:
                     return true;
