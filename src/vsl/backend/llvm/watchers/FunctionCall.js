@@ -81,7 +81,6 @@ export default class LLVMFunctionCall extends BackendWatcher {
             vtableClass = vtableClass.selfType.contextualType(headType.getTypeContext());
 
             const headValue = regen('head', node.head, context);
-            compiledArgs.push(headValue);
 
             // If vtable we'll cast to the vtable class.
             // Get the self param
@@ -92,12 +91,14 @@ export default class LLVMFunctionCall extends BackendWatcher {
                 context
             );
 
+            compiledArgs.push(selfParameter);
+
             const vtable = getVTableOffset(selfParameter, vtableClass, context);
             callee = context.builder.createLoad(
                 getMethodOffsetInVTable(
                     vtable,
                     vtableClass,
-                    functionRef,
+                    functionRef.virtualParentMethod,
                     context
                 )
             );
@@ -128,6 +129,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
             callee,
             compiledArgs
         );
+
         return result;
     }
 }
