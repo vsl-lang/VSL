@@ -23,6 +23,6 @@ export default function prettyPrintPerformance(benchmarks) {
         str += ` (\u001B[${highlightTime(timePer, 0.8, 0.3)}m${timePer.toFixed(2)}ms\u001B[0m per)`;
         str += '\n';
     }
-    str += `\u001B[1mTotal Time: \u001B[${highlightTime(time, 50, 20)}m${time.toFixed(2)}ms\u001B[0m\n`;
+    str += `\u001B[1mTotal Time: \u001B[${highlightTime(time, 120, 80)}m${time.toFixed(2)}ms\u001B[0m\n`;
     return str;
 }
