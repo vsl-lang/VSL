@@ -7,14 +7,17 @@ import { Key } from '../LLVMContext';
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import ScopeMetaClassItem from '../../../scope/items/scopeMetaClassItem';
 import ScopeAliasItem from '../../../scope/items/scopeAliasItem';
+import LValueRef from '../LValueRef';
 
 import * as llvm from 'llvm-node';
 
 export default class LLVMIdentifier extends BackendWatcher {
+    /** @override */
     match(type) {
         return type instanceof t.Identifier;
     }
 
+    /** @override */
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
@@ -31,10 +34,13 @@ export default class LLVMIdentifier extends BackendWatcher {
                 // This means we have a static class. We will return the
                 // @static.Goat { field1, field2, field3 } obj which is globally
                 // init'd.
+                // This is encountered in static props e.g. Cls.shared
+                // In this case generate the referenced class
                 const source = node.reference.source;
                 const newCtx = context.bare();
-                return regen(source.relativeName, source.parentNode, newCtx);
+                regen(source.relativeName, source.parentNode, newCtx);
             } else if (node.reference instanceof ScopeMetaClassItem) {
+                // No idea why this would be called TODO: figure this out
                 // Here we're referring to metatype
 
                 // If it exists, we'll generate that class.
@@ -52,12 +58,15 @@ export default class LLVMIdentifier extends BackendWatcher {
                         node
                     );
                 }
-
-                return void 0;
             } else if (node.reference instanceof ScopeAliasItem) {
+                // Typical local variable case
                 const source = node.reference.source;
 
+                // If the identifier doesn't have an LLVM value by the time it
+                // is inspected either 1) it is global var 2) it is used before
+                // decld
                 if (!node.reference.backendRef) {
+                    // If the source doesn't have backend ref
                     if (!source.isGlobal) {
                         throw new BackendError(
                             `Used identifier before declaration \`${node.reference}\`.`,
@@ -72,7 +81,7 @@ export default class LLVMIdentifier extends BackendWatcher {
 
                 // Otherwise we're referring to local variable
                 if (asLValue) {
-                    return node.reference.backendRef;
+                    return new LValueRef({ property: node.reference.backendRef });
                 } else {
                     return node.reference.backendRef.generate(context);
                 }

@@ -215,6 +215,9 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('external'), passThrough],
     [kw('native'), passThrough],
 
+    [kw('get'), passThrough],
+    [kw('set'), passThrough],
+
     [kw('is'), passThrough],
     [kw('as'), passThrough],
 

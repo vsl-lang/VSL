@@ -12,7 +12,7 @@ export default class AssignmentExpression extends Node {
      * @param {Expression} value What you are setting to
      * @param {Object} position a position from nearley
      */
-    constructor(target, value, operator, position) {
+    constructor(target, value, position) {
         super(position);
 
         /**

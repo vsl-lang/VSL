@@ -1,5 +1,6 @@
 import * as llvm from 'llvm-node';
 import getFunctionType from './getFunctionType';
+import * as RTTI from './RTTI';
 
 /**
  * Returns type of the VTable for a class
@@ -20,9 +21,12 @@ export function getVTableTy(item, context) {
     newCtx.typeContext = context.typeContext.merge(item.getTypeContext());
 
     struct.setBody(
-        vtableMethods.map(
-            method =>
-                getFunctionType(method, newCtx).getPointerTo()),
+        [
+            RTTI.getMetaTypeTy(context).getPointerTo(),
+            ...vtableMethods.map(
+                method =>
+                    getFunctionType(method, newCtx).getPointerTo())
+        ],
         /* isPacked: */ false
     );
 
@@ -53,7 +57,7 @@ export function getMethodOffsetInVTable(value, item, method, context) {
         value,
         [
             llvm.ConstantInt.get(context.ctx, 0),
-            llvm.ConstantInt.get(context.ctx, index)
+            llvm.ConstantInt.get(context.ctx, 1 + index)
         ],
         'vtable.method.extract'
     );

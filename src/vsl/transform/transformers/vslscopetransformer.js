@@ -15,12 +15,16 @@ export default class VSLScopeTransformer extends Transformer {
             pass.RegisterClassDeclaration,
             pass.RegisterEnumerationDeclaration,
             pass.RegisterInitDeclaration,
+            pass.RegisterDynamicFieldStatement,
 
             // Ensure function overloading/dynamic dispatch
             pass.VerifyDynamicDispatch,
 
             // Check return statements are correctly formed.
             pass.VerifyReturnStatement,
+
+            // Check return statements are correctly formed.
+            pass.VerifyDynamicFieldStatementReturnStatement,
 
             // Verify operators are declared correctly
             pass.VerifyOperatorOverloadType,

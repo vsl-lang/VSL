@@ -6,6 +6,7 @@ import t from '../../../parser/nodes';
 import { getTypeOffset } from '../helpers/layoutType';
 import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
+import LValueRef from '../LValueRef';
 
 import * as llvm from 'llvm-node';
 
@@ -28,10 +29,10 @@ export default class LLVMPropertyExpression extends BackendWatcher {
         // like computed properties
         if (propRef.backendRef) {
             if (asLValue) {
-                return propRef.backendRef;
+                return new LValueRef({ self: value, property: propRef.backendRef });
             } else {
                 // Then get using backendRef
-                return propRef.backendRef.generate(context);
+                return propRef.backendRef.generate(context, value);
             }
         } else {
             if (!value) {
@@ -50,7 +51,10 @@ export default class LLVMPropertyExpression extends BackendWatcher {
             );
 
             if (asLValue) {
-                return new ValueRef(propPtr, { isPtr: true });
+                return new LValueRef({
+                    self: value,
+                    property: new ValueRef(propPtr, { isPtr: true })
+                });
             } else {
                 return context.builder.createLoad(propPtr);
             }

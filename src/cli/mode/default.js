@@ -68,7 +68,7 @@ export default class Default extends CLIMode {
             ["Options", [
                 ["-v", "--version"       , "Displays the VSL version",               { run: _ => _.printAndDie(_.version()) }],
                 ["-h", "--help"          , "Displays this help message",             { run: _ => _.help() }],
-                ["-p", "--repl"          , "Opens an interactive REPL (uses LLIR)",  { repl: true }],
+                ["-p", "--repl"          , "Opens an interactive REPL (uses LLI)",   { repl: true }],
                 ["-i", "--interactive"   , "Performs interactive compilation",       { interactive: true }],
                 ["-I", "--no-interactive", "Performs interactive compilation",       { interactive: false }],
                 ["--prefix"              , "Outputs the path to the VSL " +
@@ -78,8 +78,6 @@ export default class Default extends CLIMode {
                 ["--no-color"            , "Disables output colorization",           { color: false }],
             ]],
             ["Execution Options", [
-                ["-j", "--jit"           , "Performs JIT execution (always uses " +
-                                           "LLIR). Spawns an `lli` instance",        { jit: true }],
                 ["--stl"                 , "Specifies a different standard type " +
                                            "library. The default " +
                                            "is " + DEFAULT_STL + ". Otherwise " +
@@ -89,7 +87,7 @@ export default class Default extends CLIMode {
                 ["--no-stl"              , "Disables the STL. This can be " +
                                            "overriden with a module.yml",            { nostl: true }],
                 ["--backend"             , "Specifies a different backend. This " +
-                                           "may be a default backend (LLIR, JS) " +
+                                           "may be a default backend (LLVM, JS) " +
                                            "or this maybe a custom backend ref. " +
                                            "Case-sensitivity is based on " +
                                            "file-system.",                           { arg: "name" }],
@@ -120,7 +118,6 @@ export default class Default extends CLIMode {
         let files = [];
         let directory = null;
 
-        let jit         = false;
         let repl        = tty.isatty(0);
         let color       = tty.isatty(1);
         let interactive = tty.isatty(0) && tty.isatty(1);
@@ -143,7 +140,6 @@ export default class Default extends CLIMode {
 
                 if (flagInfo.run) flagInfo.run(this);
 
-                if (flagInfo.jit) jit = flagInfo.jit;
                 if (flagInfo.repl) repl = flagInfo.repl;
                 if (flagInfo.color) color = flagInfo.color;
                 if (flagInfo.interactive) interactive = flagInfo.interactive;
@@ -171,7 +167,6 @@ export default class Default extends CLIMode {
             }
         }
 
-        this.jit = jit;
         this.color = color;
         this.interactive = interactive;
 

@@ -47,12 +47,24 @@ const unlessNodeErr = (message, node, pos = 0) =>
 // State management
 let state = {
     inFunction: false,
-    inInit: false
+    inInit: false,
+    inGetter: false,
 };
 
 const onlyState = (stateName, callback) =>
-    (data, location, reject) =>
-        state[stateName] ? callback(data, location, reject) : reject;
+    (data, location, reject) => {
+        if (stateName instanceof Array) {
+            for (let i = 0; i < stateName.length; i++) {
+                if (state[stateName[i]]) {
+                    return callback(data, location, reject);
+                }
+            }
+
+            return reject;
+        } else {
+            return state[stateName] ? callback(data, location, reject) : reject;
+        }
+    }
 
 const setState = (stateName, value) =>
     (data, location, reject) => {
@@ -134,7 +146,7 @@ statement
     | BlockExpression      {% id %}
     | TypeAlias            {% id %}
     | InitCallStatement    {% onlyState('inInit', id) %}
-    | ReturnStatement      {% onlyState('inFunction', id) %}
+    | ReturnStatement      {% onlyState(['inFunction', 'inGetter'], id) %}
     | YieldStatement      {% onlyState('inFunction', id) %}
 
 # ============================================================================ #
@@ -297,15 +309,54 @@ ClassItems
    -> CodeBlock[ClassItem {% id %}] {% id %}
 
 ClassItem
-   -> InterfaceItem {% id %}
-    | InitializerStatement {% id %}
+   -> InitializerStatement {% id %}
     | DeinitializerStatement {% id %}
+    | FunctionStatement {% id %}
+    | Field {% id %}
+    | DynamicField {% id %}
 
 Field
    -> AssignmentStatement {%
         (data, location) =>
             new t.FieldStatement(data[0].access, data[0].type, data[0].name,
                 data[0].value, data[0].isLazy, location)
+    %}
+
+DynamicField
+   -> Modifier "let" _ TypedIdentifier _ (
+        ("{" {% setState('inGetter', true) %})
+        CodeBlock[statement {% id %}]
+        ("}" {% setState('inGetter', false) %}) {%
+           (data, location, reject) => {
+               if (data[1].statements.length > 0) {
+                   return [new t.Getter(data[1], location)];
+               } else {
+                   return reject;
+               }
+           }
+        %} |
+
+       "{" CodeBlock[GetterSetter {% id %}] "}"  {% (data) => data[1].statements %}
+    ) {%
+        (data, location) => new t.DynamicFieldStatement(data[0], data[3], data[5], location)
+    %}
+
+GetterSetter
+   -> Getter {% id %}
+    | Setter {% id %}
+
+Getter
+   -> "get" _
+        ("{" {% setState('inGetter', true) %})
+        CodeBlock[statement {% id %}]
+        ("}" {% setState('inGetter', false) %})
+        {%
+        (data, location) => new t.Getter(data[3], location)
+   %}
+
+Setter
+  -> "set" _ "(" _ Identifier _ ")" _ "{" CodeBlock[statement {% id %}] "}" {%
+        (data, location) => new t.Setter(data[4], data[9], location)
     %}
 
 InitializerStatement
@@ -334,8 +385,6 @@ InterfaceItems
 
 InterfaceItem
    -> FunctionHead {% id %}
-    | FunctionStatement {% id %}
-    | Field {% id %}
 
 
 # ============================================================================ #
@@ -668,12 +717,10 @@ Set
 # ============================================================================ #
 
 Modifier
-   -> DefinitionModifier:? AccessModifier:? StateModifier:? {%
+   -> AccessModifier:? StateModifier:? {%
         data => data.filter(Boolean).map(i => i.value)
     %}
 
-DefinitionModifier
-   -> "external" {% id %}
 StateModifier
    -> "static" {% id %}
 AccessModifier
