@@ -29,6 +29,9 @@ export default class VSLPreprocessor extends Transformer {
             pass.VerifyFunctionAccessScope,
             pass.VerifyAnnotationSignature,
 
+            // Verify dynamic field statement
+            pass.VerifyDynamicFieldDeclaration,
+
             // Verify operator overloads are correctly defined
             pass.VerifyOperatorOverload,
 

@@ -4,7 +4,7 @@ import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
 import { Key } from '../LLVMContext';
-import ValueRef from '../ValueRef';
+import LValueRef from '../LValueRef';
 import InitPriority from '../InitPriority';
 import toLLVMType from '../helpers/toLLVMType';
 import tryGenerateCast from '../helpers/tryGenerateCast';
@@ -36,14 +36,14 @@ export default class LLVMAssignmentExpression extends BackendWatcher {
         );
 
         // Just for double-safety
-        if (!(target instanceof ValueRef)) {
+        if (!(target instanceof LValueRef)) {
             throw new BackendError(
                 `Internal Error: Left-hand side did not resolve to a value reference.`,
                 node
             );
         }
 
-        target.setValueTo(value, context);
+        target.property.setValueTo(value, context, target.self);
 
         return value;
     }

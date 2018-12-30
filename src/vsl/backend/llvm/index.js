@@ -86,6 +86,7 @@ export default class LLVMBackend extends Backend {
         yield new w.ExpressionStatement();
         yield new w.Tuple();
 
+        yield new w.DynamicFieldStatement(); // before: LazyAssignmentStatement
         yield new w.LazyAssignmentStatement(); // before: AssignmentStatement
         yield new w.AssignmentStatement();
 

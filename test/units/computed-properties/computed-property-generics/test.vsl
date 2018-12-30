@@ -1,0 +1,23 @@
+class A<T> {
+    private let x: T
+    init(x: T) {
+        self.x = x
+    }
+
+    public let value: T {
+        get {
+            return self.x
+        }
+
+        set(x) {
+            self.x = x
+        }
+    }
+}
+
+func main() {
+    let obj = A<Int>(x: 1)
+    print(obj.value)
+    obj.value = 2
+    print(obj.value)
+}

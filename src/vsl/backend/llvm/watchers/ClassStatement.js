@@ -8,6 +8,8 @@ import tryGenerateCast from '../helpers/tryGenerateCast';
 import ValueRef from '../ValueRef';
 import InitPriority from '../InitPriority';
 
+import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
+
 import * as llvm from 'llvm-node';
 
 export default class LLVMClassStatement extends BackendWatcher {
@@ -27,6 +29,11 @@ export default class LLVMClassStatement extends BackendWatcher {
             // Generate all fields into the global object.
             const staticItems = classRef.staticScope.aliases;
 
+            ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
+            ///                     Static Variables                         ///
+            ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
             for (let i = 0 ; i < staticItems.length; i++) {
                 const staticVarType = staticItems[i].type.contextualType(typeContext);
                 const doesNotDependOnGenericTy = staticItems[i].type === staticVarType;
@@ -62,11 +69,29 @@ export default class LLVMClassStatement extends BackendWatcher {
                     });
                 } else {
                     // Regenerate self as an assignment statement. Because this
-                    // branch should only be reached for external assignments,
-                    // this will essentially pass external assignment handling
-                    // to the respective watcher.
+                    // branch should only be reached for **external
+                    // assignment** and **dynamic fields**
                     let externalValue = regen(staticItems[i].source.relativeName, staticItems[i].source.parentNode, context);
-                    staticItems[i].backendRef = new ValueRef(externalValue, { isPtr: true });
+                    staticItems[i].backendRef = externalValue;
+                }
+            }
+
+            ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
+            ///                      Computed Fields                         ///
+            ////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////
+            const fields = classRef.subscope.aliases;
+
+            for (let i = 0; i < fields.length; i++) {
+                const field = fields[i];
+
+                // If it's computed property
+                if (field instanceof ScopeDynFieldItem) {
+                    const fieldContext = context.clone();
+                    fieldContext.typeContext = fieldContext.typeContext.merge(typeContext);
+                    let value = regen(field.source.relativeName, field.source.parentNode, fieldContext);
+                    field.backendRef = value;
                 }
             }
         }
