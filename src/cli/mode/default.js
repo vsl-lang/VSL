@@ -309,7 +309,9 @@ export default class Default extends CLIMode {
                 );
             }
 
-            compilationGroup.createStream().send(data);
+            const stream = compilationGroup.createStream();
+            stream.sourceName = path.resolve(files[i]);
+            stream.send(data);
         }
 
         let index = new CompilationIndex(

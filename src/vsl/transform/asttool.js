@@ -16,6 +16,16 @@ import t from '../parser/nodes';
  * mutations and verify that the AST is indeed being properly traversed.
  */
 export default class ASTTool {
+
+    /**
+     * Creates from pre-transformed node
+     * @param {Node} node - Any node already with metadata
+     * @return {ASTTool}
+     */
+    static getToolFor(node) {
+        return new ASTTool(node.parentNode, node.relativeName);
+    }
+
     /**
      * Creates an ASTTool based on a fragment
      *
@@ -94,6 +104,27 @@ export default class ASTTool {
      */
     get isStatic() {
         return this.fragment.access.includes('static');
+    }
+
+    /**
+     * Returns attached stream
+     * @type {?CompilationStream}
+     */
+    get stream() {
+        let stream = null;
+        let trackingNode = this.parent[this.name];
+
+        do {
+            if (trackingNode.stream) {
+                stream = trackingNode.stream;
+                break;
+            }
+        } while(
+            trackingNode.rootScope !== true &&
+            (trackingNode = trackingNode.parentScope)
+        );
+
+        return stream;
     }
 
     /**

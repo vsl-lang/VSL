@@ -219,6 +219,8 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('set'), passThrough],
 
     [kw('is'), passThrough],
+    [/as!/, passThrough],
+    [/as\?/, passThrough],
     [kw('as'), passThrough],
 
     [kw('override'), passThrough],

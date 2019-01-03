@@ -1,6 +1,7 @@
 import * as llvm from 'llvm-node';
 import toLLVMType from './toLLVMType';
 import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
+import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import tryGenerateCast from './tryGenerateCast';
 import { getVTableTy } from './VTable';
@@ -37,6 +38,7 @@ export default function layoutType(type, context) {
     );
 
     const fieldTypes = type.subscope.aliases
+        .filter(alias => !(alias instanceof ScopeDynFieldItem))
         .map(
             alias => alias.type.contextualType(typeContext))
         .map(
@@ -114,7 +116,10 @@ export function getTypeOffset(value, type, field, context) {
     if (type.dynamicDispatch)
         rootOffset += 1;
 
-    const offset = rootOffset + fieldType.subscope.aliases.indexOf(field);
+    const offset = rootOffset + fieldType.subscope
+        .aliases
+        .filter(alias => !(alias instanceof ScopeDynFieldItem))
+        .indexOf(field);
 
     return context.builder.createInBoundsGEP(
         value,

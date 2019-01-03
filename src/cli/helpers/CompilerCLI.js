@@ -159,6 +159,7 @@ export default class CompilerCLI extends CLIMode {
                     });
                 });
 
+                stream.sourceName = '<stdin>';
                 stream.send(data);
 
             } else {
@@ -174,7 +175,9 @@ export default class CompilerCLI extends CLIMode {
                     );
                 }
 
-                compilationGroup.createStream().send(data);
+                const stream = compilationGroup.createStream();
+                stream.sourceName = path.resolve(files[i]);
+                stream.send(data);
             }
         }
 

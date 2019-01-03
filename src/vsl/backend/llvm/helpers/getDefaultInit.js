@@ -3,7 +3,7 @@ import toLLVMType from './toLLVMType';
 import { Key } from '../LLVMContext'
 import tryGenerateCast from './tryGenerateCast';
 import { getTypeOffset, getVTableOffset } from './layoutType';
-import { getMethodOffsetInVTable } from './VTable';
+import { getMethodOffsetInVTable, getRTTIOffsetInVTable } from './VTable';
 import getFunctionType from './getFunctionType';
 import getFunctionInstance from './getFunctionInstance';
 
@@ -122,6 +122,11 @@ export default function getDefaultInit(ty, context, regen) {
             ),
             methodVTablePtr
         );
+    }
+
+    // Check if type has dynamic superclass to allow subclass.
+    if (ty.hasSuperClass && ty.superclass.dynamicDispatch) {
+
     }
 
     defaultBuilder.createRetVoid();

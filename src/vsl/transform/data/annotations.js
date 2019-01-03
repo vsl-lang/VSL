@@ -16,6 +16,8 @@ const Annotations = new Map([
     ["dynamic", [ [1], t.ClassStatement]],
     ["primitive", [[1, 2], t.ClassStatement]],
     ["booleanProvider", [[0], t.ClassStatement]],
+    ["arrayProvider", [[0], t.ClassStatement]],
+    ["optionalProvider", [[0], t.ClassStatement]],
     ["staticEnumProvider", [[0], t.ClassStatement]],
     ["manifestAsRoot", [[0], t.ClassStatement]],
     ["inline", [[0, 1], t.FunctionStatement]],

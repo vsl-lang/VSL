@@ -68,7 +68,7 @@ export default function tryGenerateCast(value, valueTy, targetTy, context) {
  * @param {ScopeTypeItem} sourceType - The source type
  * @param {ScopeTypeItem} targetType - The type to check if compatible.
  * @param {LLVMContext} context
- * @return {llvm.Value} value with value.
+ * @return {llvm.Value} boolean with if cast is possible.
  */
 export function validateRuntimeCast(value, sourceType, targetType, context) {
 

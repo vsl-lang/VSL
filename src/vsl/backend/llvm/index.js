@@ -12,7 +12,19 @@ llvm.initializeAllAsmParsers();
 llvm.initializeAllAsmPrinters();
 
 /**
- * LLVM backend which directly compiles to LLVM bytecode.
+ * LLVM backend which directly compiles to LLVM bytecode. The LLVM backends
+ * supports customizable targets through modifying the target triple. It
+ * performs rough analysis of code and evaluates the results of the optimization
+ * passes.
+ *
+ * The LLVM backends conservatively generates dynamic instructions and RTTI. By
+ * taking advantage of the dynamic dispatch pass which analyzes and mitigates
+ * excess runtime complexity in cases where the lookup can be statically
+ * determined it uses that.
+ *
+ * Additionally the LLVM backend offers introspection through the
+ * {@link LLVMBackend#callbackSymbolName} which would take a VSL `Object` with
+ * RTTI, downcastable.
  */
 export default class LLVMBackend extends Backend {
     /**
@@ -39,6 +51,21 @@ export default class LLVMBackend extends Backend {
          * @type {Map<string, Function[]>}
          */
         this.initTasks = new Map();
+
+        /**
+         * Set this to the symbol name of a callback function. This will be
+         * called if the final value in main is an expression.
+         *
+         * You can use this to make a REPL. Easiest way is to create a VSL which
+         * exports using `@foreign` a function accepting `Object` parameter and
+         * using Reflection and runtime APIs.
+         *
+         * If this is used however expect a runtime penalty. This means the
+         * objects will be forced to be dynamic and RTTI will be inserted.
+         *
+         * @type {?string}
+         */
+        this.callbackSymbolName = null;
 
         /**
          * Evaluates to the regular expression library being used. If so
@@ -78,8 +105,11 @@ export default class LLVMBackend extends Backend {
         yield new w.EnumerationStatement();
         yield new w.BinaryExpression();
         yield new w.UnaryExpression();
+
         yield new w.BitCastExpression();
+        yield new w.ForcedCastExpression();
         yield new w.CastExpression();
+
         yield new w.OrExpression();
         yield new w.AndExpression();
         yield new w.AssignmentExpression();

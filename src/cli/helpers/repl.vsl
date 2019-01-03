@@ -1,12 +1,7 @@
-public func processVoid() {
-    // Do nothing
-}
-
-public func process() {
-    let evaluationValue: Object = #evaluationValue
-    if let evaluationTypeStringConvertable = evaluationValue as? DebugStringConvertible {
-        print(evaluationTypeStringConvertable.toDebugString())
-    } else {
-
-    }
+@foreign("vsl.repl.inspect")
+public func inspect(object: Object) {
+    const reflectee = Reflection(of: object)
+    const address = UInt32::object
+    const addressString = address.toString(base: 16)
+    // print("\e[35m<\e[1m" + reflectee.getTypeName() + "\e[0;35m at 0x" + address + ">\e[0m")
 }
