@@ -34,6 +34,23 @@ export function getVTableTy(item, context) {
 }
 
 /**
+ * Given a type, returns the value of the RTTI instance.
+ * @param {llvm.Value} value - Pointer to vtable.
+ * @param {LLVMContext} context - The context.
+ * @return {llvm.Value} the pointer to RTTI metatype ptr.
+ */
+export function getRTTIOffsetInVTable(value, context) {
+    return context.builder.createInBoundsGEP(
+        value,
+        [
+            llvm.ConstantInt.get(context.ctx, 0),
+            llvm.ConstantInt.get(context.ctx, 0)
+        ],
+        'vtable.rtti.extract'
+    );
+}
+
+/**
  * Given a type and a method, returns the VTable offset in that type. You will
  * need to manually dereference it.
  * @param {llvm.Value} value - The vtable ptr
@@ -61,35 +78,4 @@ export function getMethodOffsetInVTable(value, item, method, context) {
         ],
         'vtable.method.extract'
     );
-}
-
-/**
- * Generates vtable
- * @param {ScopeTypeItem} item - The class to generate VTable for
- * @param {LLVMContext} context
- * @return {llvm.Value} global vtable const
- */
-export function getVTableForClass(item, context) {
-    const vtableName = `${item.uniqueName}.VTable`;
-
-    const existingVTable = context.module.getGlobalVariable(vtableName, true);
-    if (existingVTable) return existingVTable;
-
-    // Get llvm functions
-
-    // Global variable with fields;
-    const vtableTy = getVTableTy(item, context);
-    const vtable = new llvm.GlobalVariable(
-        context.module,
-        vtableTy,
-        true,
-        llvm.LinkageTypes.LinkOnceODRLinkage,
-        llvm.ConstantArray.get(
-            vtableTy,
-            []
-        ),
-        vtableName
-    );
-
-    return vtable;
 }

@@ -112,7 +112,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
                 const optionalContext = context.clone();
                 const defaultExprArg = functionRef.args[i].node.defaultValue;
                 optionalContext.selfReference = takesSelfParameter ? compiledArgs[0] : null;
-                value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
+                value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, optionalContext);
                 k--;
             } else {
                 value = tryGenerateCast(

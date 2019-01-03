@@ -1,0 +1,11 @@
+class A {
+    func f() {}
+}
+
+class B: A {
+    override func f() {}
+}
+
+func main() {
+    B()
+}

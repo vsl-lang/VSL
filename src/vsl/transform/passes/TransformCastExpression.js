@@ -20,6 +20,14 @@ export default class TransformCastExpression extends Transformation {
             case "as": return tool.replace(
                 new t.CastExpression(node.lhs, node.rhs, node.position)
             );
+
+            case "as!": return tool.replace(
+                new t.ForcedCastExpression(node.lhs, node.rhs, node.position)
+            );
+
+            case "as?": return tool.replace(
+                new t.OptionalCastExpression(node.lhs, node.rhs, node.position)
+            );
         }
     }
 }

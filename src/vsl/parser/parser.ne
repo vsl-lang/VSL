@@ -542,13 +542,11 @@ Bitwise
 Chain
    -> BinaryOp[Chain, ("~>" | ":>"), As] {% id %}
 As
-   -> BinaryOpLeft[As, ("as"), type, Range] {% id %}
+   -> BinaryOpLeft[As, ("as" | "as!" | "as?"), type, Range] {% id %}
 Range
    -> BinaryOp[Range, (".." | "..."), Cast] {% id %}
 Cast
    -> BinaryOp[type, ("::"), Prefix] {% id %}
-AsExpression
-   -> BinaryOpLeft[AsExpression, ("as"), type, Prefix] {% id %}
 Prefix
    -> ("-" | "+" | "*" | "**" | "!" | "~") Prefix {%
         (data, location) =>
