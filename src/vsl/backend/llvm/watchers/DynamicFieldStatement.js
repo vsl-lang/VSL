@@ -47,6 +47,7 @@ export default class LLVMDynamicFieldStatement extends BackendWatcher {
             getterContext.parentFunc = getter;
             getterContext.selfReference = hasSelf ? getter.getArguments()[0] : null;
             getterContext.typeContext = typeContext;
+
             regen('body', node.getter, getterContext);
         }
 

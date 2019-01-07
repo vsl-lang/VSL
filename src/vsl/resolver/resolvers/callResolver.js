@@ -76,6 +76,9 @@ export default class CallResolver extends TypeResolver {
         // Check if voidable here
         const voidableContext = negotiate(ConstraintType.VoidableContext);
 
+        // Check if type required
+        const requireType = negotiate(ConstraintType.RequireType);
+
         // If a definite deduction is expected
         const simplifyToPrecType = negotiate(ConstraintType.SimplifyToPrecType);
 
@@ -388,7 +391,7 @@ export default class CallResolver extends TypeResolver {
 
 
         if (bestCandidate === null) {
-            if (simplifyToPrecType) {
+            if (requireType) {
                 this.emit(
                     `Call to function does not match any valid candidates. Valid ` +
                     `candidates are:\n` +

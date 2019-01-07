@@ -246,10 +246,17 @@ export const Targets = new Map([
     ["obj", {
         "triple": llvm.config.LLVM_DEFAULT_TARGET_TRIPLE,
         "type": "obj",
-        "command": "obj",
+        "command": "nold",
         "info": "Compiles into a raw object file. This by default assumes a " +
             "system default target. The CRT is *not* linked, you must manually " +
             "do this. Learn more at (https://git.io/vslerr#crt-not-found)"
+    }],
+    ["asm", {
+        "triple": llvm.config.LLVM_DEFAULT_TARGET_TRIPLE,
+        "type": "asm",
+        "command": "nold",
+        "info": "Compiles into an assembly file. The CRT is *not* linked, you " +
+            "must manually do this. Learn more at (https://git.io/vslerr#crt-not-found)"
     }],
     ["wasm", {
         "triple": "wasm32-unknown-unknown-wasm",

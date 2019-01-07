@@ -79,6 +79,14 @@ export default class LLVMIdentifier extends BackendWatcher {
                     }
                 }
 
+
+                // Also what we want to do is generate the class of the
+                // identifier
+                const typeSource = node.reference.type.source;
+                if (typeSource) {
+                    regen(typeSource.relativeName, typeSource.parentNode, context.bare());
+                }
+
                 // Otherwise we're referring to local variable
                 if (asLValue) {
                     return new LValueRef({ property: node.reference.backendRef });
