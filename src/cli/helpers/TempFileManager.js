@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs-extra';
 import crypto from 'crypto';
 
 /**
@@ -31,6 +31,24 @@ export default class TempFileManager {
      */
     tempWithExtension(extension) {
         return this.createFile(`${this.id}.${extension}`);
+    }
+
+    /**
+     * Creates temp file with extension and data, binary encoding.
+     * @param {string} extension File extension
+     * @param {Readable} data - stream for data
+     * @return {Promise<string>} file name. Resolves when finished writing
+     * @async
+     */
+    tempWithExtensionAndData(extension, data) {
+        return new Promise((resolve, reject) => {
+            const file = this.tempWithExtension(extension);
+            const output = fs.createWriteStream(file, { flags: 'w' });
+            data.pipe(output);
+            data.on('end', () => {
+                return resolve(file);
+            });
+        });
     }
 
     /**

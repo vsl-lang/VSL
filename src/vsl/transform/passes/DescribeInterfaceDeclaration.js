@@ -17,38 +17,19 @@ import TypeLookup from '../../typeLookup/typeLookup';
 import vslGetTypeChild from '../../typeLookup/vslGetTypeChild';
 
 /**
- * A pre-processing entry for a class declaration. This goes top-down and
+ * A pre-processing entry for an interface declaration. This goes top-down and
  * "registers" or adds the class to a global table of all items for at least
  * that scope.
  */
-export default class DescribeClassDeclaration extends Transformation {
+export default class DescribeInterfaceDeclaration extends Transformation {
     constructor() {
-        super(t.ClassStatement, "Describe::ClassDeclaration");
+        super(t.InterfaceStatement, "Describe::InterfaceDeclaration");
     }
 
     modify(node: Node, tool: ASTTool) {
         let scope = tool.assignmentScope;
         let semanticSubscope = node.statements.scope;
         let className = node.name.value;
-
-        // If this is being 'manifested as root' then we'll handle sepecially
-        if (node.annotations.map(_ => _.name).includes('manifestAsRoot')) {
-            // If this class is to be manifested as root then OK we'll do that
-            if (tool.context.hasManifestRoot) {
-                throw new TransformError(
-                    `Cannot manifest this class as the root class as it already ` +
-                    `has an owner.`,
-                    node
-                );
-            }
-
-            node.reference = ScopeTypeItem.RootClass;
-            ScopeTypeItem.RootClass.rootId = className;
-            scope.set(node.reference);
-            tool.context.hasManifestRoot = true;
-            return;
-        }
-
 
         const subscope = new Scope();
         const staticSubscope = new Scope();
@@ -77,12 +58,10 @@ export default class DescribeClassDeclaration extends Transformation {
         }
 
         // Get the superclasses/interfaces
-        const superclass = node.superclasses[0] || null;
-        const interfaces = node.superclasses.slice(1);
+        const interfaces = node.superclasses;
 
         let opts = {
-            isInterface: false,
-            mockType: node.mockType,
+            isInterface: true,
             subscope: subscope,
             source: node,
             interfaces: interfaces,
@@ -93,55 +72,6 @@ export default class DescribeClassDeclaration extends Transformation {
                 parameters: genericParameters
             }),
             resolver: (self) => {
-                // Resolve superclass if there is one
-                if (self.hasSuperClass) {
-                    const superclassNode = self.superclass;
-                    const superclassName = superclassNode.value;
-
-                    // Resolve superclass
-                    const scopeItem = new TypeLookup(superclassNode, vslGetTypeChild).resolve(semanticSubscope);
-
-                    if (!scopeItem) {
-                        throw new TransformError(
-                            `No class with name \`${superclassName}\` in this scope.`,
-                            superclassNode,
-                            e.UNDECLARED_IDENTIFIER
-                        );
-                    }
-
-                    // If it is interface then we say no subclass and move this
-                    // to interface list.
-                    if (scopeItem.isInterface) {
-                        self.interfaces.unshift(self.superclass);
-                        self.superclass = ScopeTypeItem.RootClass;
-                    } else {
-
-                        // Otherwise it is a class see if it can be subclassed.
-                        if (!scopeItem.canSubclass()) {
-                            throw new TransformError(
-                                `Cannot subclass type with name ` +
-                                `\`${superclassName}\``,
-                                superclassNode,
-                                e.CANNOT_SUBCLASS_TYPE
-                            );
-                        }
-
-                        // Ensure the superclass is specialized
-                        if (scopeItem.isGeneric) {
-                            throw new TransformError(
-                                `You must specialize generic superclass before ` +
-                                `attempting to inherit it.`,
-                                superclassNode,
-                                e.GENERIC_SPECIALIZATION_REQUIRED
-                            );
-                        }
-
-                        // Otherwise we are then all good
-                        self.superclass = scopeItem;
-                        scopeItem.subclasses.push(self);
-                    }
-                }
-
                 // Resolve all interfaces
                 for (let i = 0; i < self.interfaces.length; i++) {
                     // If we don't have a ref to the interface yet then we'll
@@ -165,24 +95,12 @@ export default class DescribeClassDeclaration extends Transformation {
 
 
                     if (!scopeItem.isInterface) {
-                        if (self.superclass) {
-                            throw new TransformError(
-                                `The type \`${interfaceName}\` is not an ` +
-                                `interface. Multiple inheritance is not ` +
-                                `supported at the moment.`,
-                                interfaceNode,
-                                e.CANNOT_MULTIPLE_INHERIT
-                            );
-                        } else {
-                            throw new TransformError(
-                                `The type \`${interfaceName}\` was not an ` +
-                                `interface. Did you mean to put this as the ` +
-                                `first parameter so it would be treated as a ` +
-                                `superclass?`,
-                                interfaceNode,
-                                e.SUPERCLASS_SHOULD_BE_FIRST_PARAM
-                            );
-                        }
+                        throw new TransformError(
+                            `The type \`${interfaceName}\` was not an ` +
+                            `interface. Interfaces cannot extend a superclass.`,
+                            interfaceNode,
+                            e.INTERFACE_CANNOT_INHERIT_CLASS
+                        );
                     }
 
                     // Ensure the superclass is specialized
