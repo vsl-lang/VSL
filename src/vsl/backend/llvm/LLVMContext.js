@@ -15,8 +15,8 @@ export default class LLVMContext {
         /** @type {LLVMContextBackend} */
         this.backend = backend;
 
-        /** @type {?llvm.IRBuilder} */
-        this.builder = null;
+        /** @private */
+        this._builder = null;
 
         /** @type {?llvm.Function} */
         this.parentFunc = null;
@@ -28,6 +28,18 @@ export default class LLVMContext {
 
         this._typeContext = TypeContext.empty();
     }
+
+    /**
+     * Context builder
+     * @type {?llvm.IRBuilder}
+     */
+    get builder() { return this._builder; }
+
+    /**
+     * Context builder
+     * @type {?llvm.IRBuilder}
+     */
+    set builder(newBuilder) { this._builder = newBuilder; }
 
     /**
      * Returns the type context.

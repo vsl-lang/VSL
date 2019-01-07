@@ -88,12 +88,15 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // how many args are prec candidates.
         let operatorCandidates = [];
 
-        // Try all candidates `Class(of: LHS)` has
+        // Stores the highest prec found.
         let lastHighestPrec = 0;
 
-        // This stores the highest prec candidate. If they are multiple
-        // then we'll make this `null`
-        let highestPrec = null;
+        // If multiple candidates have `lastHighestPrec`
+        let highestPrecIsAmbiguous = false;
+
+        // Last candidate with highest prec
+        let highestPrecCandidate = null;
+
         for (let i = 0; i < lhsTypes.length; i++) {
             const lhsType = lhsTypes[i].candidate.resolved();
 
@@ -101,11 +104,6 @@ export default class BinaryOperatorResolver extends TypeResolver {
             const candidates = lhsType.staticScope.getAll(opName);
 
             for (let j = 0; j < candidates.length; j++) {
-                // If we have a dual prec. prec. case and this isn't prec we'll
-                // give up since no prec types here.
-                if (lastHighestPrec > 1 && rhsTypes.precType === false)
-                    continue;
-
                 // Is binary operator so *must* have 2 args
                 if (candidates[j].args.length === 2) {
                     // If provided, check if requestedType matches. If it does
@@ -120,14 +118,6 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         // Get the amount of prec types
                         const precScore = lhsTypes[i].precType + rhsTypes[k].precType;
 
-                        // If prec score is lower don't waste time checking cast.
-                        // If they are the same we will set the `highestPrec`
-                        //  which stores the index of the single highest prec
-                        //  item. This becomes null if multiple.
-                        if (precScore < lastHighestPrec) {
-                            continue;
-                        }
-
                         // Check if the RHS type works for this operator
                         // candidate. The second arg (.args[1]) refers to the
                         // RHS as the format is +(lhs, rhs)
@@ -136,16 +126,14 @@ export default class BinaryOperatorResolver extends TypeResolver {
                             // Only resolve prec stuff if we are doing prec
                             // simplification.
 
-                            if (simplifyToPrecType) {
-                                // Now that we know they work, we'll see if we can set
-                                // the prec candidate.
-                                if (precScore > lastHighestPrec) {
-                                    highestPrec = operatorCandidates.length;
-                                } else {
-                                    highestPrec = null;
-                                }
-
+                            // Now that we know they work, we'll see if we can set
+                            // the prec candidate.
+                            if (precScore > lastHighestPrec) {
                                 lastHighestPrec = precScore;
+                                highestPrecIsAmbiguous = false;
+                                highestPrecCandidate = candidates[j];
+                            } else if (precScore === lastHighestPrec) {
+                                highestPrecIsAmbiguous = true;
                             }
 
                             operatorCandidates.push({
@@ -160,14 +148,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
             }
         }
 
-        // If we have a definite best candidate we'll use it.
-        if (highestPrec) {
-            const finalCandidate = operatorCandidates[highestPrec];
-            lhs.resolve(finalResolver(finalCandidate.lhsType));
-            rhs.resolve(finalResolver(finalCandidate.rhsType));
-            this.node.reference = finalCandidate.candidate;
-            return [new TypeCandidate(finalCandidate.candidate.returnType)];
-        } else if (operatorCandidates.length === 0) {
+        if (operatorCandidates.length === 0) {
             if (requireType) {
                 let overloads = [];
 
@@ -187,24 +168,32 @@ export default class BinaryOperatorResolver extends TypeResolver {
             } else {
                 return [];
             }
-        } else {
-            // Remove which aren't highest prec
-            while (operatorCandidates[0] && operatorCandidates[0].precCount < lastHighestPrec) {
-                operatorCandidates.shift();
-            }
-
-            if (operatorCandidates.length === 1) {
-                const finalCandidate = operatorCandidates[0];
-                lhs.resolve(finalResolver(finalCandidate.lhsType));
-                rhs.resolve(finalResolver(finalCandidate.rhsType));
-                this.node.reference = finalCandidate.candidate;
-                return [new TypeCandidate(finalCandidate.candidate.returnType)];
+        } else if (operatorCandidates.length === 1) {
+            lhs.resolve(finalResolver(operatorCandidates[0].lhsType));
+            rhs.resolve(finalResolver(operatorCandidates[0].rhsType));
+            this.node.reference = operatorCandidates[0].candidate;
+            return [new TypeCandidate(operatorCandidates[0].candidate.returnType)];
+        } else if (simplifyToPrecType) {
+            // If we have a definite best candidate we'll use it.
+            if (lastHighestPrec && !highestPrecIsAmbiguous) {
+                return [new TypeCandidate(highestPrecCandidate.candidate.returnType)];
             } else {
-                return operatorCandidates.map(
-                    operatorCandidate =>
-                        new TypeCandidate(operatorCandidate.candidate.returnType)
+                let overloads = operatorCandidates
+                    .filter(_ => _.precScore === lastHighestPrec)
+                    .map(_ => _.candidate)
+                    .map(candidate => `    • static func ${opName}(${candidate.args[0].type}, ${candidate.args[1].type}) -> ${candidate.returnType}`)
+                    .join('\n');
+
+                this.emit(
+                    `Ambiguous binary expression, could not break tie between:\n${overloads}`,
+                    e.AMBIGUOUS_EXPRESSION
                 );
             }
+        } else {
+            return operatorCandidates.map(
+                operatorCandidate =>
+                    new TypeCandidate(operatorCandidate.candidate.returnType)
+            );
         }
     }
 }

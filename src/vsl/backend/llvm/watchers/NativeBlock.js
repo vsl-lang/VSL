@@ -139,7 +139,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "feq": return context.builder.createRet(
-                context.builder.createFCmpUEQ(
+                context.builder.createFCmpOEQ(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
@@ -153,7 +153,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "fneq": return context.builder.createRet(
-                context.builder.createFCmpUNE(
+                context.builder.createFCmpONE(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
@@ -195,7 +195,21 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "flte": return context.builder.createRet(
-                context.builder.createFCmpULE(
+                context.builder.createFCmpOLE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "fgte": return context.builder.createRet(
+                context.builder.createFCmpOGE(
+                    func.args[0].aliasRef.backendRef.generate(),
+                    func.args[1].aliasRef.backendRef.generate()
+                )
+            );
+
+            case "isnan": return context.builder.createRet(
+                context.builder.createFCmpUNO(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
@@ -216,7 +230,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "fgt": return context.builder.createRet(
-                context.builder.createFCmpUGT(
+                context.builder.createFCmpOGT(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )
@@ -237,7 +251,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "flt": return context.builder.createRet(
-                context.builder.createFCmpULT(
+                context.builder.createFCmpOLT(
                     func.args[0].aliasRef.backendRef.generate(),
                     func.args[1].aliasRef.backendRef.generate()
                 )

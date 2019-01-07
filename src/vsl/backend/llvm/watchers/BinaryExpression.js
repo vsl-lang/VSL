@@ -26,12 +26,17 @@ export default class LLVMBinaryExpression extends BackendWatcher {
         const lhs = regen('lhs', node, context);
         const rhs = regen('rhs', node, context);
 
-        return context.builder.createCall(
-            getFunctionInstance(node.reference, context.bare(), regen),
+        const opCtx = context.bare();
+        const binaryFunction = getFunctionInstance(node.reference, opCtx, regen);
+
+        const result = context.builder.createCall(
+            binaryFunction,
             [
                 lhs,
                 rhs
             ]
         );
+
+        return result;
     }
 }

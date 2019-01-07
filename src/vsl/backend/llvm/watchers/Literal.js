@@ -43,9 +43,12 @@ export default class LLVMLiteral extends BackendWatcher {
                 );
 
             case VSLTokenType.Decimal:
-                return llvm.ConstantFP.get(
-                    context.ctx,
-                    +node.literal
+                return llvm.ConstantExpr.getFPCast(
+                    llvm.ConstantFP.get(
+                        context.ctx,
+                        +node.literal
+                    ),
+                    toLLVMType(type, context)
                 );
 
             case VSLTokenType.String:

@@ -374,7 +374,7 @@ export default class Build extends CompilerCLI {
                     this._colorCompilationStep(outFile, '<<output>>');
 
                     break;
-                case "obj":
+                case "nold":
                     let asmStream = fs.createReadStream(asmFile);
                     asmStream.pipe(this.outputStream);
                     this._colorCompilationStep(asmFile, '<<output>>');
