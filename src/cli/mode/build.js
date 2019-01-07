@@ -344,53 +344,60 @@ export default class Build extends CompilerCLI {
             const fileManager = new TempFileManager();
             const byteCode = backend.getByteCode();
 
-            let asmFile = fileManager.tempWithExtension(this.target.type === 'asm' ? 's' : 'o');
 
             // First optimize using -O
             const opt = await this.opt(byteCode, {
                 triple: this.triple,
                 optLevel: this.optimizationLevel
-            })
+            });
 
             this._colorCompilationStep(`<<input.ll>>`, `$opt`);
 
-            await this.llc(opt, asmFile, {
-                triple: this.triple,
-                type: this.target.type
-            });
-
-            this._colorCompilationStep(`$opt`, asmFile);
-
             switch (this.target.command) {
                 case "ld":
-                    let outFile = fileManager.tempWithExtension('out');
-                    await this.ld(asmFile, outFile, {
-                        triple: this.triple
-                    });
-                    this._colorCompilationStep(asmFile, outFile);
-
-                    let readStream = fs.createReadStream(outFile);
-                    readStream.pipe(this.outputStream);
-                    this._colorCompilationStep(outFile, '<<output>>');
-
-                    break;
                 case "nold":
-                    let asmStream = fs.createReadStream(asmFile);
-                    asmStream.pipe(this.outputStream);
-                    this._colorCompilationStep(asmFile, '<<output>>');
+                    let asmFile = fileManager.tempWithExtension(this.target.type === 'asm' ? 's' : 'o');
+
+                    await this.llc(opt, asmFile, {
+                        triple: this.triple,
+                        type: this.target.type
+                    });
+
+                    this._colorCompilationStep(`$opt`, asmFile);
+
+                    switch (this.target.command) {
+                        case "ld":
+                            let outFile = fileManager.tempWithExtension('out');
+                            await this.ld(asmFile, outFile, {
+                                triple: this.triple
+                            });
+                            this._colorCompilationStep(asmFile, outFile);
+
+                            let readStream = fs.createReadStream(outFile);
+                            readStream.pipe(this.outputStream);
+                            this._colorCompilationStep(outFile, '<<output>>');
+
+                            break;
+
+                        case "nold":
+                            let asmStream = fs.createReadStream(asmFile);
+                            asmStream.pipe(this.outputStream);
+                            this._colorCompilationStep(asmFile, '<<output>>');
+                            break;
+
+                        default: break;
+                    }
+
                     break;
                 case "wasm":
-                    let wastFile = fileManager.tempWithExtension('wast');
-                    await this.s2wasm(asmFile, fs.createWriteStream(wastFile));
-                    this._colorCompilationStep(asmFile, wastFile)
+                    const bcFile = await fileManager.tempWithExtensionAndData('bc', opt);
+                    this._colorCompilationStep('$opt', bcFile);
 
-                    let wasmFile = fileManager.tempWithExtension('wasm');
-                    await this.wasmMerge([
-                        wastFile
-                    ].concat(
-                        WASMIndex.map(file => path.join(WASMIndexRoot, file))
-                    ), wasmFile);
-                    this._colorCompilationStep(wastFile, wasmFile);
+                    const wasmFile = await fileManager.tempWithExtension('wasm');
+
+                    await this.wasmLink([bcFile], wasmFile);
+
+                    this._colorCompilationStep(bcFile, wasmFile);
 
                     let wasmStream = fs.createReadStream(wasmFile);
                     wasmStream.pipe(this.outputStream);
@@ -414,27 +421,28 @@ export default class Build extends CompilerCLI {
     }
 
     /**
-     * Assembles WASM. Converts .WASTs to one .WASM
-     * @param {string[]} file the input file
+     * Compiles and links WASM
+     * @param {string[]} file the input files (LLVM or WASM)
      * @param {string} outfile the output file
      * @return {Promise}
      */
-    async wasmMerge(files, outfile) {
+    async wasmLink(files, outfile) {
         return new Promise((resolve, reject) => {
             const args = files.concat([
-                '-o', outfile
+                '-o', outfile,
+                '--entry', 'main'
             ]);
 
-            this.printLog(`$ wasm-merge ${args.join(" ")}`);
+            this.printLog(`$ wasm-ld ${args.join(" ")}`);
 
-            let wasmMerge = spawn('wasm-merge', args, {
+            let wasmMerge = spawn('wasm-ld', args, {
                 stdio: ['ignore', 'inherit', 'inherit']
             });
 
             wasmMerge.on('error', (error) => {
                 switch (error.code) {
                     case "ENOENT":
-                        this.error.cli(`failed: could not locate wasm-merge binary. Ensure Binaryen (https://git.io/binaryen) is installed.`);
+                        this.error.cli(`failed: could not locate wasm-ld binary. Ensure lld is installed.`);
                     default:
                         this.error.cli(`failed: ${error.message} (${error.code})`);
                 }
@@ -444,50 +452,12 @@ export default class Build extends CompilerCLI {
                 if (errorCode === 0) {
                     resolve();
                 } else {
-                    this.error.cli(`failed: wasm-merge: exited with ${errorCode}`);
+                    this.error.cli(`failed: wasm-ld: exited with ${errorCode}`);
                 }
             })
         });
     }
 
-    /**
-     * Compiles LLVM `.s` files with WASM target to WAST files.
-     * @param {string} file source file input
-     * @param {WritableStream} outstream output stream of wast file
-     * @return {Promise} resolves when finished
-     */
-    async s2wasm(file, outstream) {
-        return new Promise((resolve, reject) => {
-            const args = [ file ];
-
-            this.printLog(`$ s2wasm ${args.join(" ")}`);
-
-            // Spawn LLC compiler. Pass target option
-            let s2wasm = spawn('s2wasm', args, {
-                stdio: ['ignore', 'pipe', 'pipe']
-            });
-
-
-            s2wasm.on('error', (error) => {
-                switch (error.code) {
-                    case "ENOENT":
-                        this.error.cli(`failed: could not locate s2wasm binary. Ensure Binaryen (https://git.io/binaryen) is installed.`);
-                    default:
-                        this.error.cli(`failed: ${error.message} (${error.code})`);
-                }
-            });
-
-            s2wasm.stdout.pipe(outstream);
-
-            s2wasm.on('exit', (errorCode) => {
-                if (errorCode === 0) {
-                    resolve();
-                } else {
-                    this.error.cli(`failed: s2wasm: exited with ${errorCode}`);
-                }
-            })
-        });
-    }
 
     /**
      * Attempts to link source `.o` together with libraries etc.
@@ -570,6 +540,8 @@ export default class Build extends CompilerCLI {
      * @param {string} opts.triple - Triple
      * @param {number} opts.optLevel - optimization type
      * @param {boolean} opts.emitByteCode - If IR should be emitted
+     * @return {Promise<string>} Promise evaluating to string of STDOUT
+     * @async
      */
     opt(byteCode, {
         triple = "",
@@ -617,7 +589,7 @@ export default class Build extends CompilerCLI {
 
     /**
      * Compiles using LLC
-     * @param {string} byteCode byte code from llvm or stream.
+     * @param {stream.Readable|string} byteCode byte code from llvm or stream.
      * @param {string} outputFile output .s file.
      * @param {Object} compilationOptions other compilation options
      * @param {string} compilationOptions.triple Target triple

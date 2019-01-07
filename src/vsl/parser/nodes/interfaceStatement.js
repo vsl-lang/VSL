@@ -35,11 +35,14 @@ export default class InterfaceStatement extends DeclarationStatement {
         this.statements = statements;
 
         /** @type {Annotation[]} */
-        this.annotations = annotations || [];
+        this.annotations = annotations;
+
+        /** @type {?ScopeTypeItem} */
+        this.reference = null;
     }
 
     clone() {
-        return new ClassStatement(
+        return new InterfaceStatement(
             this.access.slice(),
             this.name.clone(),
             this.generics.map(generic => generic.clone()),
@@ -47,6 +50,16 @@ export default class InterfaceStatement extends DeclarationStatement {
             this.statements.clone(),
             this.annotations.map(annotation => annotation.clone())
         )
+    }
+
+    /** @override */
+    toString() {
+        return `${this.annotations.join("\n") + (this.annotations.length?" ":"")}`+
+        `${this.access.join(" ")}${this.access.length ? " " : ""}interface` +
+        ` ${this.name}${
+            this.superclasses.length === 0 ?
+            "" : `: ${this.superclasses.join(", ")}`
+        } ${this.statements}`
     }
 
     /** @override */

@@ -39,7 +39,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
 
         // See if takes self
-        const takesSelfParameter = isInstanceCtx(functionRef)
+        const takesSelfParameter = isInstanceCtx(functionRef);
 
         // Create context to generate function call with
         const ctx = context.bare();
@@ -60,7 +60,8 @@ export default class LLVMFunctionCall extends BackendWatcher {
                 // Get the value
                 if (!(node.head instanceof t.PropertyExpression)) {
                     throw new BackendError(
-                        `Expected property with instance method.`
+                        `Expected property with instance method.`,
+                        node
                     );
                 }
 
@@ -73,7 +74,8 @@ export default class LLVMFunctionCall extends BackendWatcher {
         } else {
             if (!(node.head instanceof t.PropertyExpression)) {
                 throw new BackendError(
-                    `Expected property for dynamic call.`
+                    `Expected property for dynamic call.`,
+                    node
                 );
             }
 

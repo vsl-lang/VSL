@@ -250,14 +250,14 @@ ClassStatement
     %}
 
 InterfaceStatement
-   -> Annotations Modifier "interface" _ Identifier _ genericDeclaration _ (":" _
+   -> Annotations Modifier "interface" _ Identifier (_ genericDeclaration {% nth(1) %}):? _ (":" _
             ExtensionList _ {% nth(2) %}):? "{" InterfaceItems "}" {%
         (d, l) => new t.InterfaceStatement(
             d[1], // access
             d[4], // name
-            d[6], // generics
-            d[8], // superclasses
-            d[10], // statements
+            d[5] || [], // generics
+            d[7], // superclasses
+            d[9], // statements
             d[0], // annotations
             l // location
         )

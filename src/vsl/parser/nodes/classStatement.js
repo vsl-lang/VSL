@@ -37,11 +37,8 @@ export default class ClassStatement extends DeclarationStatement {
         /** @type {Annotation[]} */
         this.annotations = annotations || [];
 
-        /** @type {?ScopeItem} */
-        this.reference = null;
-
         /** @type {?ScopeTypeItem} */
-        this.typeReference = null;
+        this.reference = null;
 
         /**
          * Associated mock type attribute

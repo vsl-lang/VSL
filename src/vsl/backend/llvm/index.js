@@ -11,6 +11,14 @@ llvm.initializeAllTargetInfos();
 llvm.initializeAllAsmParsers();
 llvm.initializeAllAsmPrinters();
 
+// Uncomment following lines to debug bad calls:
+// ((c) => {
+//     llvm.IRBuilder.prototype.createCall = function() {
+//         console.trace();
+//         return c.apply(this, arguments);
+//     };
+// })(llvm.IRBuilder.prototype.createCall);
+
 /**
  * LLVM backend which directly compiles to LLVM bytecode. The LLVM backends
  * supports customizable targets through modifying the target triple. It

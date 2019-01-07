@@ -38,6 +38,8 @@ export default class VerifyDynamicDispatch extends Transformation {
         const parentClass = parentClassNode.reference;
         const hasSuperClass = parentClass.hasSuperClass;
 
+        // Get the context with which the superclass is called
+
         if (!hasSuperClass) {
             if (node.isOverriding) {
                 throw new TransformError(

@@ -21,10 +21,12 @@ export function alloc(size, context) {
         )
     );
 
-    return context.builder.createCall(
+    const memory = context.builder.createCall(
         malloc,
-        [llvm.ConstantInt.get(backend.context, size, intTy.bitWidth)]
-    )
+        [llvm.ConstantInt.get(backend.context, size, intTy.getBitWidth())]
+    );
+
+    return memory;
 }
 
 /**

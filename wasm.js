@@ -16,8 +16,6 @@
         exports() {
             return {
                 env: {
-                    'memoryBase': 0,
-                    'tableBase': 0,
                     'puts': (startIndex) => {
                         let chunk = new Uint8Array(this.instance.exports.memory.buffer);
                         let string = "";
@@ -29,6 +27,11 @@
                     }
                 }
             };
+        }
+
+        lifecycle(dispatchName, event) {
+            const dispatchTarget = this.instance.exports[dispatchName];
+            dispatchTarget();
         }
     }
 
@@ -45,6 +48,15 @@
                 // Start with no arguments
                 instance.exports.main(0, []);
                 global.__VSLLastInstance = instance;
+
+                if (document.readyState === 'interactive') {
+                    libvsl.lifecycle('loaded', null);
+                } else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        libvsl.lifecycle('loaded', null);
+                    });
+                }
+
                 return instance;
             })
     };
