@@ -48,7 +48,7 @@
     "llvm-node": "git+https://github.com/vsl-lang/llvm-node.git#a1ab7ba264dd79b6a1a71782a85834f3c1ed2302",
     "marked": "^0.3.19",
     "mkdirp": "^0.5.1",
-    "node-sass": "^4.10.0",
+    "node-sass": "^4.11.0",
     "pug": "^2.0.3",
     "semver": "^5.6.0",
     "vsl-nearley": "^2.9.5"
