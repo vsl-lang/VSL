@@ -242,6 +242,7 @@ export default class LLVMBackend extends Backend {
     }
 }
 
+export const NATIVE_TRIPLE = llvm.config.LLVM_DEFAULT_TARGET_TRIPLE;
 export const Targets = new Map([
     ["native", {
         "triple": llvm.config.LLVM_DEFAULT_TARGET_TRIPLE,

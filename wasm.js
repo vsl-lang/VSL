@@ -24,6 +24,12 @@
                             startIndex++;
                         }
                         console.log(string);
+                    },
+
+                    'secureRandom': (size) => {
+                        var array = new Uint32Array(2);
+                        window.crypto.getRandomValues(array);
+                        return array;
                     }
                 }
             };

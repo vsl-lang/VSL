@@ -30,6 +30,7 @@ export const DEFAULT_STL = "libvsl";
 export default class CompilerCLI extends CLIMode {
     fileMap = new Map();
     libraries = new Set();
+    filterTarget = {};
 
     /**
      * Loads the STL and returns it as the only item in an array of compilation
@@ -79,7 +80,9 @@ export default class CompilerCLI extends CLIMode {
         }
 
         let group = new CompilationGroup();
-        for (let file of module.sources) {
+        const sourcePaths = module.getSources(this.filterTarget);
+        
+        for (let file of sourcePaths) {
             let fileStream = group.createStream();
             fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));

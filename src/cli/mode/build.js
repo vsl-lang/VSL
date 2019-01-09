@@ -9,6 +9,7 @@ import hrtime from 'browser-process-hrtime';
 import { spawn } from 'child_process';
 
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
+import FilterExpression from '../../modules/FilterExpression';
 import WASMIndex from '../../../wasm/index.json';
 import prettyPrintPerformance from '../helpers/prettyPrintPerformance';
 
@@ -279,7 +280,7 @@ export default class Build extends CompilerCLI {
      * @type {string}
      */
     get triple() {
-        return this._triple || this.target.triple;
+        return this._triple;
     }
 
     _triple = null;
@@ -288,6 +289,7 @@ export default class Build extends CompilerCLI {
      * @type {string}
      */
     set triple(triple) {
+        this.filterTarget = FilterExpression.tripleToTarget(triple);
         this._triple = triple;
     }
 
@@ -304,8 +306,12 @@ export default class Build extends CompilerCLI {
      */
     set target(target) {
         let targetData = Targets.get(target);
-        if (!targetData) this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
-        else this._target = targetData;
+        if (!targetData) {
+            this.error.cli(`unknown target ${target} see \`vsl build --targets\``);
+        } else {
+            this._target = targetData;
+            this.triple = targetData.triple;
+        }
     }
 
     /**
