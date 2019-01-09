@@ -15,6 +15,7 @@ export { default as FixItController } from './fixit/FixItController';
 
 export { default as Module } from './modules/Module';
 export { default as ModuleError } from './modules/ModuleError';
+export { default as FilterExpression } from './modules/FilterExpression';
 export { default as ModuleInterface } from './modules/ModuleInterface';
 
 export { default as CompilationGroup } from './index/CompilationGroup';
@@ -26,4 +27,4 @@ export { default as CompilationModule, HookType } from './index/CompilationModul
 export { default as Backend } from './vsl/backend/Backend';
 export { default as BackendWatcher } from './vsl/backend/BackendWatcher';
 
-export { default as LLVM } from './vsl/backend/llvm';
+export { default as LLVM, NATIVE_TRIPLE } from './vsl/backend/llvm';

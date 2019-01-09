@@ -1,5 +1,6 @@
 import ModuleInterface from './ModuleInterface';
 import ModuleError from './ModuleError';
+import FilterExpression from './FilterExpression';
 import VSLModule from './VSLModule';
 
 import semver from 'semver';
@@ -155,24 +156,68 @@ export default class Module {
         let expandedSources = [];
         for (let i = 0; i < sources.length; i++) {
             let source = sources[i];
-            if (typeof source !== 'string') throw new ModuleError(
-                `Source #${i} should be string but wasn't.`,
-                ModuleError.type.invalidSourceItemType
-            );
+            let sourceGlob = null;
+            let sourceFilterExpression = null;
+
+
+            if (typeof source === 'string') {
+                sourceGlob = source;
+                sourceFilterExpression = FilterExpression.all;
+            } else if (typeof source === 'object') {
+                if (typeof source.path !== 'string') {
+                    throw new ModuleError(
+                        `Source #${i} needs 'path' param to be string.`,
+                        ModuleError.type.invalidSourceItemType
+                    );
+                }
+
+                if ('filters' in source) {
+                    if (!(source.filters instanceof Array)) {
+                        throw new ModuleError(
+                            `Source #${i} needs 'filter' param to be array.`,
+                            ModuleError.type.invalidSourceItemType
+                        );
+                    }
+
+                    sourceFilterExpression = FilterExpression.none;
+
+                    for (const filter of source.filters) {
+                        const params = Object.entries(filter)
+                            .map(([key, value]) => ({
+                                modifier: key.startsWith('not.') ? 'not' : null,
+                                key: key.replace(/^not\./i, ''),
+                                value: value
+                            }));
+
+
+                        const expression = new FilterExpression(params);
+                        sourceFilterExpression.append(expression);
+                    }
+                } else {
+                    sourceFilterExpression = FilterExpression.all;
+                }
+
+                sourceGlob = source.path;
+            } else {
+                throw new ModuleError(
+                    `Source #${i} should be string but wasn't.`,
+                    ModuleError.type.invalidSourceItemType
+                );
+            }
 
             try {
-                let globs = await Module.moduleInterface.glob(
-                    sources[i],
+                let files = await Module.moduleInterface.glob(
+                    sourceGlob,
                     this.rootPath
                 );
 
-                expandedSources.push(...globs);
+                expandedSources.push([files, sourceFilterExpression]);
             } catch(e) {
                 throw e;
             }
         }
 
-        this.module.sources = expandedSources;
+        this.module._sources = expandedSources;
     }
 
     /**

@@ -20,8 +20,9 @@ import CompilationStream from '../../index/CompilationStream';
 
 import Module from '../../modules/Module';
 import ModuleError from '../../modules/ModuleError';
+import FilterExpression from '../../modules/FilterExpression';
 
-import LLVMBackend from '../../vsl/backend/llvm';
+import LLVMBackend, { NATIVE_TRIPLE } from '../../vsl/backend/llvm';
 
 import { spawn } from 'child_process';
 
@@ -254,7 +255,7 @@ export default class Default extends CLIMode {
         let module = moduleLoader.module;
 
         let group = new CompilationGroup();
-        for (let file of module.sources) {
+        for (let file of module.getSources(FilterExpression.tripleToTarget(NATIVE_TRIPLE))) {
             let fileStream = group.createStream();
             fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));

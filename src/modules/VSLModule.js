@@ -37,13 +37,8 @@ export default class VSLModule {
          */
         this.stdlib = true;
 
-        /**
-         * Raw list of all source files. This is a list with all globs and such
-         * expanded. Paths should be absolute
-         *
-         * @type {string[]}
-         */
-        this.sources = [];
+        // List of sources in format [matchingSources, filterExpr]
+        this._sources = [];
 
         /**
          * Linker arguments if provided
@@ -59,5 +54,22 @@ export default class VSLModule {
          * @type {Object}
          */
         this.docopts = {};
+    }
+
+    /**
+     * Returns all sources matching filter
+     * @param {Object} filter
+     * @return {string[]} array of absolute paths.
+     */
+    getSources(filter) {
+        const paths = [];
+
+        for (const [matchingSources, expr] of this._sources) {
+            if (expr.test(filter)) {
+                paths.push(...matchingSources);
+            }
+        }
+
+        return paths;
     }
 }
