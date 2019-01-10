@@ -436,8 +436,12 @@ export default class Build extends CompilerCLI {
         return new Promise((resolve, reject) => {
             const args = files.concat([
                 '-o', outfile,
-                '--entry', 'main'
+                '--entry', 'main',
+                `--export=__wasm_call_ctors`,
+                `--export=__heap_base`
             ]);
+
+            args.push(...this.linkerArgs);
 
             this.printLog(`$ wasm-ld ${args.join(" ")}`);
 

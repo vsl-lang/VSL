@@ -20,6 +20,7 @@ export default class TypeDeductReturnStatement extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
+        if (!node.expression) return;
         new RootResolver(node.expression, vslGetChild, tool.context)
             .resolve((type) => {
             switch (type) {

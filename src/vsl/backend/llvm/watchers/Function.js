@@ -146,7 +146,7 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             }
 
             // Specifies different linkage for private v public
-            let linkage = isPublic || isEntry ?
+            let linkage = isPublic || isEntry || scopeItem.foreignName ?
                 llvm.LinkageTypes.ExternalLinkage:
                 llvm.LinkageTypes.InternalLinkage;
 

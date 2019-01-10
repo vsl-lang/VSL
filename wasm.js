@@ -13,23 +13,43 @@
             this.instance = instance;
         }
 
+        // Bridges VSL string -> JS
+        vslToDOMString(pointer) {
+            let chunk = new Uint8Array(this.instance.exports.memory.buffer);
+            let string = "";
+            while (this.valueAt(pointer) !== 0) {
+                string += String.fromCharCode(this.valueAt(pointer++));
+            }
+            return string;
+        }
+
+        // Dereferences pointer
+        valueAt(pointer) {
+            return new Uint8Array(this.instance.exports.memory.buffer)[pointer];
+        }
+
+        // Obtains heap
+        get heap() {
+            return new Uint8Array(this.instance.exports.memory.buffer, this.instance.exports.__heap_base);
+        }
+
         exports() {
             return {
                 env: {
-                    'puts': (startIndex) => {
-                        let chunk = new Uint8Array(this.instance.exports.memory.buffer);
-                        let string = "";
-                        while (chunk[startIndex] !== 0) {
-                            string += String.fromCharCode(chunk[startIndex]);
-                            startIndex++;
-                        }
-                        console.log(string);
+                    'debug.inspect': console.log,
+                    'meta.__heap_base': () => this.instance.exports.__heap_base,
+
+                    // LLVM math intrinsics
+                    'log': Math.log,
+
+                    'puts': (pointer) => {
+                        console.log(this.vslToDOMString(pointer));
                     },
 
                     'secureRandom': (size) => {
-                        var array = new Uint32Array(2);
+                        var array = new Uint32Array(1);
                         window.crypto.getRandomValues(array);
-                        return array;
+                        return array[0];
                     }
                 }
             };
@@ -51,9 +71,12 @@
             })
             .then(instance => {
                 stl.instance = instance;
+
                 // Start with no arguments
+                global.__VSLLastInstance = stl;
+
+                instance.exports.__wasm_call_ctors();
                 instance.exports.main(0, []);
-                global.__VSLLastInstance = instance;
 
                 if (document.readyState === 'interactive') {
                     libvsl.lifecycle('loaded', null);
@@ -63,7 +86,7 @@
                     });
                 }
 
-                return instance;
+                return stl;
             })
     };
 

@@ -3,6 +3,7 @@ import BackendError from '../../BackendError';
 import layoutType from './layoutType';
 import { layoutTuple } from './TupleHelpers';
 import { getObjectTy } from './RTTI';
+import structInPointerContext from './structInPointerContext';
 
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import ScopeEnumItem from '../../../scope/items/scopeEnumItem';
@@ -15,7 +16,8 @@ import ScopeTupleItem from '../../../scope/items/scopeTupleItem';
  * @param {LLVMContext} context the context
  */
 export default function toLLVMType(type, context) {
-    let mockType = type.resolved().mockType;
+    let ty = type.resolved()
+    let mockType = ty.mockType;
     if (mockType) {
         switch(mockType) {
             case "i1": return llvm.Type.getInt1Ty(context.ctx);
@@ -27,7 +29,20 @@ export default function toLLVMType(type, context) {
             case "ui32": return llvm.Type.getInt32Ty(context.ctx);
             case "i64":
             case "ui64": return llvm.Type.getInt64Ty(context.ctx);
-            case "pointer": return toLLVMType(type.parameters[0], context).getPointerTo();
+            case "pointer":
+                const sourceTy = type.parameters[0];
+                const baseTy = toLLVMType(sourceTy, context);
+
+                // Check if normal type
+                if (!structInPointerContext(sourceTy)) {
+                    return baseTy.getPointerTo();
+                } else {
+                    if (baseTy.isPointerTy()) {
+                        return baseTy;
+                    } else {
+                        return baseTy.getPointerTo();
+                    }
+                }
             case "double": return llvm.Type.getDoubleTy(context.ctx);
             case "float": return llvm.Type.getFloatTy(context.ctx);
             case "opaquepointer":
@@ -38,13 +53,13 @@ export default function toLLVMType(type, context) {
                     null
                 );
         }
-    } else if (type === ScopeTypeItem.RootClass) {
+    } else if (ty === ScopeTypeItem.RootClass) {
         // If we are the root class then we have special things to do
         return getObjectTy(context).getPointerTo();
-    } else if (type instanceof ScopeTupleItem) {
+    } else if (ty instanceof ScopeTupleItem) {
         return layoutTuple(type, context);
-    } else if (type instanceof ScopeEnumItem) {
-        if (!type.backingType) {
+    } else if (ty instanceof ScopeEnumItem) {
+        if (!ty.backingType) {
             throw new BackendError(
                 `No static enumeration backing type. Specify one using ` +
                 `\`@staticEnumProvider\``,
@@ -52,23 +67,23 @@ export default function toLLVMType(type, context) {
             );
         }
 
-        const backingType = toLLVMType(type.backingType, context);
+        const backingType = toLLVMType(ty.backingType, context);
 
         if (!(backingType instanceof llvm.IntegerType)) {
             throw new BackendError(
                 `The \`@staticEnumProvider\` should compile to a primitive ` +
                 `integer type.`,
-                type.backingType.source
+                ty.backingType.source
             );
         }
 
         return backingType;
     } else {
-        return layoutType(type, context).getPointerTo();
+        return layoutType(ty, context).getPointerTo();
 
         throw new BackendError(
             `Not sure how to compile this type.`,
-            type.source
+            ty.source
         );
     }
 }

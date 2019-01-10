@@ -6,6 +6,7 @@ import BackendError from '../../BackendError';
 import toLLVMType from '../helpers/toLLVMType';
 
 import { alloc, free } from '../helpers/MemoryManager';
+import structInPointerContext from '../helpers/structInPointerContext';
 
 import * as llvm from "llvm-node";
 
@@ -336,16 +337,25 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
-            case "sizeof": return context.builder.createRet(
-                llvm.ConstantInt.get(
-                    context.ctx,
-                    backend.module.dataLayout.getTypeAllocSize(
-                        toLLVMType([...context.typeContext.genericParameters][0][1], context)
-                    ),
-                    64,
-                    false
-                )
-            );
+            case "sizeof": {
+                const genericType = [...context.typeContext.genericParameters][0][1];
+                let genericTy = toLLVMType(genericType, context);
+
+                if (structInPointerContext(genericType)) {
+                    genericTy = genericTy.elementType;
+                }
+
+                const size = backend.module.dataLayout.getTypeAllocSize(genericTy);
+
+                return context.builder.createRet(
+                    llvm.ConstantInt.get(
+                        context.ctx,
+                        size,
+                        64,
+                        false
+                    )
+                );
+            }
 
             case "log32": return context.builder.createCall(
                 backend.module.getOrInsertFunction(
