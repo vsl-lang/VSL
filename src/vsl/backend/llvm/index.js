@@ -129,6 +129,7 @@ export default class LLVMBackend extends Backend {
         yield new w.AssignmentStatement();
 
         yield new w.IfStatement();
+        yield new w.Generic();
         yield new w.Ternary();
         yield new w.WhileStatement();
         yield new w.InitDelegationCall();
@@ -158,8 +159,6 @@ export default class LLVMBackend extends Backend {
             ctorFuncType.getPointerTo(),
             llvm.Type.getInt8PtrTy(this.context)
         ])
-
-        const ctorType = llvm.ArrayType.get(ctorTypeInstance, 1);
 
         let inits = [];
         for (let [priority, funcs] of this.initTasks) {
@@ -200,6 +199,8 @@ export default class LLVMBackend extends Backend {
 
             initBuilder.createRetVoid();
         }
+
+        const ctorType = llvm.ArrayType.get(ctorTypeInstance, inits.length);
 
         // Add global var
         new llvm.GlobalVariable(
@@ -268,7 +269,7 @@ export const Targets = new Map([
             "must manually do this. Learn more at (https://git.io/vslerr#crt-not-found)"
     }],
     ["wasm", {
-        "triple": "wasm32-unknown-unknown-wasm",
+        "triple": "wasm32-unknown-unknown",
         "type": "asm",
         "command": "wasm",
         "info": "This compiles to WebAssembly (wasm) \`.wasm\` files. You must " +

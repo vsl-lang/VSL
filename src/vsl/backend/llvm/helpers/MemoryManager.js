@@ -9,21 +9,21 @@ export function alloc(size, context) {
     const backend = context.backend;
 
     // Get canonical `malloc` reference.
-    const intTy = backend.module.dataLayout.getIntPtrType(backend.context, 0);
+    // const intTy = backend.module.dataLayout.getIntPtrType(backend.context, 0);
 
     // Get malloc
     let malloc = backend.module.getOrInsertFunction(
         'malloc',
         llvm.FunctionType.get(
             llvm.Type.getInt8PtrTy(backend.context),
-            [intTy],
+            [llvm.Type.getInt64Ty(backend.context)],
             false
         )
     );
 
     const memory = context.builder.createCall(
         malloc,
-        [llvm.ConstantInt.get(backend.context, size, intTy.getBitWidth())]
+        [llvm.ConstantInt.get(backend.context, size, 64)]
     );
 
     return memory;

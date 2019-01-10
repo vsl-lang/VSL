@@ -176,7 +176,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
         } else if (simplifyToPrecType) {
             // If we have a definite best candidate we'll use it.
             if (lastHighestPrec && !highestPrecIsAmbiguous) {
-                return [new TypeCandidate(highestPrecCandidate.candidate.returnType)];
+                return [new TypeCandidate(highestPrecCandidate.returnType)];
             } else {
                 let overloads = operatorCandidates
                     .filter(_ => _.precScore === lastHighestPrec)
@@ -190,10 +190,11 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 );
             }
         } else {
-            return operatorCandidates.map(
-                operatorCandidate =>
-                    new TypeCandidate(operatorCandidate.candidate.returnType)
-            );
+            return operatorCandidates
+                .map(_ => _.candidate.returnType)
+                .filter((l, i, a) => a.indexOf(l) === i)
+                .map(returnType =>
+                    new TypeCandidate(returnType));
         }
     }
 }

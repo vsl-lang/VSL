@@ -88,6 +88,10 @@ export default class VerifyReturnStatement extends Transformation {
 
                 return true;
 
+            case t.WhileStatement:
+                this.validateReturn(node.body, returnType, tool);
+                return false;
+
             case t.IfStatement:
                 // If two bodies exist, we must ensure both always return.
                 if (node.trueBody && node.falseBody) {
