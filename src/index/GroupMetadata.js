@@ -11,9 +11,22 @@ export default class GroupMetadata {
     /**
      * You can pass no args and configure later if you'd like;
      *
-     * @param {?string} [name=null] - No module name.
+     * @param {?Object} [o={}] options
+     * @param {?string} [o.name=null] - No module name.
+     * @param {?string} [o.cacheDirectory=null] - Cache directory
      */
-    constructor(name = null) {
+    constructor({ name = null, cacheDirectory = null } = {}) {
+        /**
+         * The name of this group. Generally module name
+         * @type {?string}
+         * @readonly
+         */
         this.name = name;
+
+        /**
+         * Set this to specify the name of the cache directory.
+         * @type {?string}
+         */
+        this.cacheDirectory = cacheDirectory;
     }
 }

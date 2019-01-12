@@ -15,6 +15,11 @@ import TransformError from '../vsl/transform/transformError';
 import ScopeTraverser from '../vsl/transform/scopetraverser';
 import { CodeBlock } from '../vsl/parser/nodes/*';
 
+import ASTSerializer from '../vsl/parser/ASTSerializer';
+
+import { createWriteStream } from 'fs-extra';
+import path from 'path';
+
 // import LLIR from '../vsl/backend/llir';
 // import JSBackend from '../vsl/backend/js';
 import LLVMBackend from '../vsl/backend/llvm';
@@ -102,7 +107,7 @@ export default class CompilationGroup {
         this.globalScope = null;
 
         /** @private */
-        this.context = new TransformationContext()
+        this.context = new TransformationContext();
 
         /**
          * An auto-generated list of metadata for this group. It may not be
@@ -156,6 +161,21 @@ export default class CompilationGroup {
                 null,
                 stream
             );
+        }
+
+        // Cache this if there is a dir specified.
+        if (this.metadata.cacheDirectory && stream.sourceName) {
+            const cacheFilename = ASTSerializer.getSerializedFilenameFor(stream.sourceName);
+            const cacheWriteStream = createWriteStream(
+                path.join(this.metadata.cacheDirectory, cacheFilename),
+                { flags: 'w+' }
+            );
+
+            const serializer = new ASTSerializer(ast[0], {
+                sourceFile: path.relative(this.metadata.cacheDirectory, stream.sourceName)
+            });
+
+            await serializer.serializeTo(cacheWriteStream);
         }
 
         ast[0].stream = stream;

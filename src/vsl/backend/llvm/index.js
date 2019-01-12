@@ -61,6 +61,18 @@ export default class LLVMBackend extends Backend {
         this.initTasks = new Map();
 
         /**
+         * List of compiler options.
+         *
+         * @type {Object}
+         * @property {boolean} [trapOnOverflow=false] - Traps on arithmetic overflow
+         * @property {boolean} [disableRTTI=false] - Disables RTTI
+         */
+        this.options = {
+            trapOnOverflow: false,
+            disableRTTI: false
+        };
+
+        /**
          * Set this to the symbol name of a callback function. This will be
          * called if the final value in main is an expression.
          *
