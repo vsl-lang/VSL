@@ -15,8 +15,8 @@ export default class ReturnStatement extends Node {
     constructor (expression, position) {
         super(position);
 
-        /** @type {Expression} */
-        this.expression = expression;
+        /** @type {?Expression} */
+        this.expression = expression || null;
 
         /** @type {?ScopeTypeItem} */
         this.expectedReturnType = null;

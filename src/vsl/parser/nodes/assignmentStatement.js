@@ -29,7 +29,7 @@ export default class AssignmentStatement extends DeclarationStatement {
         this.name = name;
 
         /** @type {?Expression} */
-        this.value = value;
+        this.value = value || null;
 
         /** @type {boolean} */
         this.isLazy = isLazy;

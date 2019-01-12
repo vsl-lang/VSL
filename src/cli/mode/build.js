@@ -265,7 +265,6 @@ export default class Build extends CompilerCLI {
 
         if (cacheDir) {
             this.cacheDirectory = path.resolve(cacheDir);
-            await fs.mkdirs(this.cacheDirectory);
         }
 
         if (![0, 1, 2, 3].includes(+opt)) {
@@ -287,6 +286,8 @@ export default class Build extends CompilerCLI {
 
         let backend = new LLVMBackend(this.createStream(), this.triple);
         Object.assign(backend.options, compilerOptions);
+
+        this.start = hrtime();
         if (directory) {
             this.executeModule(directory, backend)
                 .then(({ module }) => {
@@ -367,7 +368,6 @@ export default class Build extends CompilerCLI {
      * @param {Backend} backend backend
      */
     async compileLLVM(backend) {
-        let start = hrtime();
         if (this.link === false) {
             if (this.optimizationLevel == 0) {
                 this.outputStream.write(backend.getByteCode());
@@ -450,7 +450,7 @@ export default class Build extends CompilerCLI {
             }
         }
 
-        let elapsed = hrtime(start);
+        let elapsed = hrtime(this.start);
         let timeInMs = (elapsed[0] * 1e3 + elapsed[1] / 1e6).toFixed(2);
         if (this.tty) {
             if (this.color) {

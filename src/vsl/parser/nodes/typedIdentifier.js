@@ -10,7 +10,7 @@ import Node from './node';
  *
  */
 export default class TypedIdentifier extends Node {
-    
+
     /**
      * Creates an identifier
      *
@@ -20,19 +20,19 @@ export default class TypedIdentifier extends Node {
      */
     constructor (identifier: string, type: Type, position: Object) {
         super(position);
-        
+
         /** @type {Node} */
         this.identifier = identifier;
-        
+
         /** @type {Type} */
-        this.type = type;
+        this.type = type || null;
     }
-    
+
     /** @override */
     get children() {
         return ['identifier', 'type'];
     }
-    
+
     /** @override */
     toString() {
         return `${this.identifier}${this.type ? ": " + this.type : ""}`;

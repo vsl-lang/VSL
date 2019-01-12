@@ -50,6 +50,12 @@ export default class VSLModule {
         };
 
         /**
+         * Dir for cache
+         * @type {?string}
+         */
+        this.cacheDirectory = null;
+
+        /**
          * Options for doc generator
          * @type {Object}
          */

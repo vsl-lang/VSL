@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import path from 'path';
 import msgpack from 'msgpack-lite';
 import t from './nodes';
 import Scope from '../../vsl/scope/scope';
@@ -12,7 +13,6 @@ export const AST_NODE_EXT = 0x40;
 export const AST_POSITION_EXT = 0x41;
 
 export const AST_DEC_TO_ENC = new Map([
-    ['precedingComments', '_c'],
     ['statements', '_s']
 ]);
 
@@ -63,6 +63,8 @@ function codec(sourceFileString) {
                     };
                 } else if (AST_DEC_TO_ENC.has(propName)) {
                     obj[AST_DEC_TO_ENC.get(propName)] = object[propName];
+                } else if (propName === 'precedingComments') {
+                    // We don't care about comments
                 } else {
                     obj[propName] = object[propName];
                 }
@@ -185,7 +187,7 @@ export default class ASTSerializer {
     /**
      * Deserializes into AST given input stream
      * @param {ReadableSteam} stream - Stream to decode
-     * @param {string} compiledFileName - Serialized source
+     * @param {string} compiledFileName - Serialized source as path
      * @return {ASTSerializer} serializer with the ast.
      * @throws {TypeError} if couldn't be decoded
      * @async
