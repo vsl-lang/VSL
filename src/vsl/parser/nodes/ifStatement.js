@@ -23,7 +23,7 @@ export default class IfStatement extends Node {
         this.trueBody = trueBody;
 
         /** @type {?CodeBlock} */
-        this.falseBody = falseBody;
+        this.falseBody = falseBody || null;
 
         /** @type {?boolean} */
         this.alwaysReturns = null;

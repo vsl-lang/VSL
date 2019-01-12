@@ -17,13 +17,13 @@ export default class FunctionArgument extends Node {
         super(position);
 
         /** @type {?Identifier} */
-        this.externalName = externalName;
+        this.externalName = externalName || null;
 
         /** @type {TypedIdentifier} */
         this.typedId = typedId;
 
         /** @type {?Expression} */
-        this.defaultValue = defaultValue;
+        this.defaultValue = defaultValue || null;
 
         /**
          * Ref to decl in func body.

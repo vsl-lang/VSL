@@ -17,7 +17,7 @@ import { CodeBlock } from '../vsl/parser/nodes/*';
 
 import ASTSerializer from '../vsl/parser/ASTSerializer';
 
-import { createWriteStream } from 'fs-extra';
+import { createWriteStream, createReadStream, mkdirs, pathExists, stat } from 'fs-extra';
 import path from 'path';
 
 // import LLIR from '../vsl/backend/llir';
@@ -137,6 +137,22 @@ export default class CompilationGroup {
      * @private
      */
     async parse(stream) {
+        // Check if we can use cache
+        // Cache this if there is a dir specified.
+        if (this.metadata.cacheDirectory && stream.sourceName) {
+            const cacheFilename = ASTSerializer.getSerializedFilenameFor(stream.sourceName);
+            const cacheFile = path.join(this.metadata.cacheDirectory, cacheFilename);
+
+            if (await pathExists(cacheFile)) {
+                const cacheMadeTime = (await stat(cacheFile)).mtimeMs;
+                const sourceModifiedTime = (await stat(stream.sourceName)).mtimeMs;
+
+                if (cacheMadeTime > sourceModifiedTime) {
+                    return await ASTSerializer.decodeFrom(createReadStream(cacheFile), cacheFile);
+                }
+            }
+        }
+
         let dataBlock, ast;
         let parser = new VSLParser();
 
@@ -226,6 +242,11 @@ export default class CompilationGroup {
      *                             compilation. Do not reuse backends.
      */
     async compile(backend) {
+        // == 0: Check Cache ==
+        if (this.metadata.cacheDirectory) {
+            await mkdirs(this.metadata.cacheDirectory);
+        }
+
         // === 1: Parse ===
         // Parse all ASTs in parallel
         let asts = await Promise.all( this.sources.map(::this.parse) );

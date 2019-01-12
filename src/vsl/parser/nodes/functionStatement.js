@@ -36,7 +36,7 @@ export default class FunctionStatement extends DeclarationStatement {
         super(access, name?.position);
 
         /** @type {Annotation[]} */
-        this.annotations = annotations;
+        this.annotations = annotations || [];
 
         /** @type {Identifier} */
         this.name = name;
@@ -45,7 +45,7 @@ export default class FunctionStatement extends DeclarationStatement {
         this.args = args || [];
 
         /** @type {?Type} */
-        this.returnType = returnType;
+        this.returnType = returnType || null;
 
         /** @type {boolean} */
         this.isGenerator = isGenerator;
