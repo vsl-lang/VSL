@@ -8,6 +8,7 @@ export { default as Error } from './vsl/errors';
 export { default as ErrorManager } from './cli/ErrorManager';
 
 export { default as Nodes } from './vsl/parser/nodes';
+export { default as ASTSerializer } from './vsl/parser/ASTSerializer';
 export { default as TokenType } from './vsl/parser/vsltokentype';
 
 export { default as FixIt } from './fixit/FixIt';

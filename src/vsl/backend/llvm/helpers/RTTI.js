@@ -133,6 +133,11 @@ export function getMetaTypeTy(context) {
  * @param {llvm.Value} global metaty constant.
  */
 export function getMetaTypeForObject(item, context) {
+    const metaTypeTy = getMetaTypeTy(context);
+    if (context.backend.options.disableRTTI) {
+        return llvm.ConstantPointerNull.get(metaTypeTy.getPointerTo());
+    }
+
     const metaTypeName = `${item.uniqueName}.MetaType`;
     const metaTypeFieldsName = `${metaTypeName}.fields`;
 
@@ -156,7 +161,6 @@ export function getMetaTypeForObject(item, context) {
         metaTypeFieldsName
     );
 
-    const metaTypeTy = getMetaTypeTy(context);
     const globalVariable = new llvm.GlobalVariable(
         context.module,
         metaTypeTy,

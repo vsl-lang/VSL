@@ -52,32 +52,32 @@ export default class Tokenizer {
                 if (object[0] instanceof RegExp) {
                     object[0] = new RegExp(object[0], 'gu');
                 }
-                
+
                 return object;
             })
         );
-        
+
         /** @private */
         this.tokenMatcher = this.tokenMatchers[scope];
-        
+
         /**
          * An object you can use to store data
          * @type {Object}
          */
         this.variables = {};
-        
+
         /** @private */
         this.code = '';
-        
+
         /** @private */
         this.originalCode = '';
-        
+
         /**
          * List of all token positions
          * @type {TokenizerState[]}
          */
         this.positions = [];
-        
+
         /** @private */
         this.index = 0;
         /** @private */
@@ -85,7 +85,7 @@ export default class Tokenizer {
         /** @private */
         this.column = 0;
     }
-    
+
     save() {
         return {
             index: this.index,
@@ -93,11 +93,11 @@ export default class Tokenizer {
             column: this.column
         }
     }
-    
+
     latest() {
         return this.positions[this.positions.length - 1];
     }
-    
+
     /**
      * @param {string} code New code.
      * @param {TokenizerState} info Position info for
@@ -108,10 +108,10 @@ export default class Tokenizer {
         this.line = line;
         this.column = column;
     }
-    
+
     /** @private */
     _positionFor(match, addToList) {
-        
+
         if (addToList) {
             this.positions.push({
                 value: match,
@@ -121,13 +121,13 @@ export default class Tokenizer {
                 length: match.length
             })
         }
-        
+
         this.index += match.length;
-        
+
         let lines = match.split(/[\r\n]/);
         let numLines = lines.length - 1;
         this.line += numLines;
-        
+
         // Calculate column
         // If there is no newline then we merely added to last column
         // Otherwise length of last column
@@ -137,18 +137,18 @@ export default class Tokenizer {
             this.column = lines[lines.length - 1].length;
         }
     }
-    
+
     /**
      * @return {TokenizerState} Next token, or undefined if there are no more tokens.
      */
     next() {
         if (this.index >= this.code.length) return;
-        
+
         for (let i = 0; i < this.tokenMatcher.length; i++) {
             let [ matcher, onSuccess, type ] = this.tokenMatcher[i];
-            
+
             var value;
-            
+
             if (typeof matcher === 'string') {
                 if (this.code.substr(this.index, matcher.length) === matcher) {
                     value = onSuccess(this, matcher);
@@ -160,38 +160,38 @@ export default class Tokenizer {
                 // matcher is regex
                 matcher.lastIndex = this.index;
                 let match = matcher.exec(this.code);
-                
+
                 if (match && match.index === this.index) {
                     let literalMatch = match[0];
                     if (literalMatch.length === 0) continue;
-                    
+
                     value = onSuccess(this, literalMatch, match);
                     this._positionFor(literalMatch, typeof value !== 'undefined');
                 } else {
                     continue;
                 }
             }
-            
+
             // If there was no value, don't include it in the token list.
             // in that case get the next value.
             if (typeof value !== 'undefined') {
                 return typeof type === 'undefined' ? { value } : [value, type];
             } else {
                 i = 0; // When we rerun we want to try from beginning
-                
+
                 // Since no value returned, run again
                 continue;
             }
         }
-        
+
         if (this.index >= this.code.length) return;
-            
+
         // Not succesful, so just tokenizer next char
         let char = this.code[this.index];
         this._positionFor(char, true);
         return { value: char };
     }
-    
+
     /**
      * Tokenizes a given sequence of code
      * @param {string} code - The desired code chunk or string to tokenize
@@ -201,18 +201,18 @@ export default class Tokenizer {
      */
     tokenize(code) {
         this.reset(code);
-        
+
         let result = [],
             next = null;
-            
+
         while (this.index < this.code.length) {
             next = this.next();
             if (next) result.push(next);
         }
-            
+
         return result;
     }
-    
+
     /**
      * Returns a formatted error message given a token.
      *
@@ -221,11 +221,11 @@ export default class Tokenizer {
     formatError(token: Object) {
         return token;
     }
-    
+
     has(tokenType) {
         return true;
     }
-    
+
     begin(scope) {
         this.tokenMatcher = this.tokenMatchers[scope];
     }

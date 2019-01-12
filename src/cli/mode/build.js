@@ -48,6 +48,10 @@ export default class Build extends CompilerCLI {
                 ["-g", "--debug"         , "Performs a 'debug' or development " +
                                            "build. This allows nicer errors.",       { debug: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => { TempFileManager.willCleanup = false; return true } }],
+                ["-c", "--cache"         , "Enables build cache from a given dir " +
+                                           "this generates artifacts which prevent " +
+                                           "extra builds. See the `cache.directory` " +
+                                           "option for modules.",                    { arg: "cacheDir", cache: true }],
                 ["-l", "--library"       , "Specifies a C library to link with",     { arg: "library", library: true }],
                 ["--linker"              , "Specifies a VSL-supported linker to " +
                                            "use",                                    { arg: "linker", linker: true }],
@@ -62,7 +66,7 @@ export default class Build extends CompilerCLI {
                                            "compilation. ",                          { arg: "triple", triple: true }]
             ]],
             ["Toolchain Options", [
-                ["-flto"                 , "Enables link-time optimizations.  " +
+                ["-flto"                 , "Enables link-time optimizations. " +
                                            "You usually want to enable this but " +
                                            "you'd need to have built your " +
                                            "toolchain/linker to support it",         { lto: true }]
@@ -78,7 +82,26 @@ export default class Build extends CompilerCLI {
                                            "overriden with a module.yml",            { nostl: true }],
                 ["-Wno"                  , "Disables all warnings, also prevents " +
                                            "relevent FIX-ITs from activating",       { warn: false }],
-                ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }]
+                ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }],
+                ["-ftrapv"               , "Traps on overflow. Induces a fixed " +
+                                           "overhead on all integer operations",     { compilerOption: "trapOnOverflow", value: true }],
+                ["-ftrap-lossy-bitcast"  , "Traps if a bitcast were to result in " +
+                                           "information being lost.",                { compilerOption: "trapLossyButcast", value: true }],
+                ["-fno-trap-memop"       , "Does not verify if heap allocations, " +
+                                           "were successful. This is a very unsafe " +
+                                           "option to enable and is never " +
+                                           "recommended.",                           { compilerOption: "disableAllocCheck", value: true }],
+                ["-fno-free-memop"       , "Prevents the memory optimizer from " +
+                                           "inserting free() operations. This should " +
+                                           "only be used to identify issues caused" +
+                                           "by the allocator as this means no heap " +
+                                           "allocated memory will be cleaned. Allocations operations " +
+                                           "moved to stack may still take place.",   { compilerOption: "disableMemopFree", value: true }],
+                ["-fno-dynamic"          , "Disabled dynamic dispatch, runtime casts, " +
+                                           "and other dynamic features. Applicable in " +
+                                           "application with specific ABI.",         { compilerOption: "disableDynamic", value: true }],
+                ["-fno-rtti"             , "Disables RTTI. Any reflection operations " +
+                                           "will segfault",                          { compilerOption: "disableRTTI", value: true }]
             ]],
             ["Debugging Options", [
                 ["--perf-breakdown"      , "Offers performance breakdown on what " +
@@ -137,6 +160,7 @@ export default class Build extends CompilerCLI {
         let triple = undefined;
         let linker = undefined;
         let lto = false;
+        let cacheDir = null;
 
         let linkerArgs = [];
         let llcArgs = [];
@@ -146,6 +170,7 @@ export default class Build extends CompilerCLI {
 
         let verbose = false;
 
+        let compilerOptions = {};
         let directory = null;
         let files = [];
         let outputStream = null;
@@ -181,8 +206,12 @@ export default class Build extends CompilerCLI {
                 if ('linker' in flagInfo) linker = args[++i];
                 if ('stdout' in flagInfo) outputStream = process.stdout;
                 if ('lto' in flagInfo) lto = true;
+                if ('cache' in flagInfo) cacheDir = args[++i];
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
+                if ('compilerOption' in flagInfo) {
+                    compilerOptions[flagInfo['compilerOption']] = flagInfo['value'];
+                }
                 if (flagInfo.output) {
                     let path = args[++i];
                     if (outputStream) {
@@ -234,6 +263,11 @@ export default class Build extends CompilerCLI {
 
         this.outputStream = outputStream;
 
+        if (cacheDir) {
+            this.cacheDirectory = path.resolve(cacheDir);
+            await fs.mkdirs(this.cacheDirectory);
+        }
+
         if (![0, 1, 2, 3].includes(+opt)) {
             this.error.cli(`invalid optimization level ${opt}`);
         }
@@ -252,6 +286,7 @@ export default class Build extends CompilerCLI {
         }
 
         let backend = new LLVMBackend(this.createStream(), this.triple);
+        Object.assign(backend.options, compilerOptions);
         if (directory) {
             this.executeModule(directory, backend)
                 .then(({ module }) => {

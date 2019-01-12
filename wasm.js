@@ -23,6 +23,19 @@
             return string;
         }
 
+        // Loads a VSL function and automatically performs bridging from JS to
+        // VSL types
+        loadFunction(name) {
+            const method = this.instance.exports[name];
+            if (typeof method !== 'function') {
+                throw new TypeError(`no function named ${name} in VSL WASM instance.`);
+            }
+            return (...args) => {
+                const encodedArgs = args;
+                method(...encodedArgs);
+            };
+        }
+
         // Dereferences pointer
         valueAt(pointer) {
             return new Uint8Array(this.instance.exports.memory.buffer)[pointer];

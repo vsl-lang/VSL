@@ -33,7 +33,7 @@ export default class FunctionStatement extends DeclarationStatement {
         statements: Node[],
         position: Object
     ) {
-        super(access, name.position);
+        super(access, name?.position);
 
         /** @type {Annotation[]} */
         this.annotations = annotations;

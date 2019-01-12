@@ -20,3 +20,4 @@ vsl-*
 package-lock.json
 /LLIR
 .headers
+/cache

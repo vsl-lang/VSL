@@ -12,7 +12,7 @@ export default class LLVMContext {
      * @param {LLVMContext} backend LLVM backend.
      */
     constructor(backend) {
-        /** @type {LLVMContextBackend} */
+        /** @type {LLVMBackend} */
         this.backend = backend;
 
         /** @private */

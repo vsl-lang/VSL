@@ -28,9 +28,17 @@ export const LIBRARY_PATH = path.join(INSTALLATION_PATH, './libraries/');
 export const DEFAULT_STL = "libvsl";
 
 export default class CompilerCLI extends CLIMode {
+    // Map of module => compiled compilation index
     fileMap = new Map();
+
+    // Libraries used
     libraries = new Set();
+
+    // Object to use to filter the target filer expressions
     filterTarget = {};
+
+    // Should be ABSOLUTE path
+    cacheDirectory = null;
 
     /**
      * Loads the STL and returns it as the only item in an array of compilation
@@ -81,14 +89,14 @@ export default class CompilerCLI extends CLIMode {
 
         let group = new CompilationGroup();
         const sourcePaths = module.getSources(this.filterTarget);
-        
+
+        group.metadata.name = module.name;
+
         for (let file of sourcePaths) {
             let fileStream = group.createStream();
             fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));
         }
-
-        group.metadata.name = module.name;
 
         let modules = [];
 
@@ -134,6 +142,7 @@ export default class CompilerCLI extends CLIMode {
      */
     async fromFiles(files, backend) {
         let compilationGroup = new CompilationGroup();
+        compilationGroup.metadata.cacheDirectory = this.cacheDirectory;
 
         // TODO: Don't make data global and use stream to get data.
         let data;
