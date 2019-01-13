@@ -1,11 +1,16 @@
-class A {
-    func f() {}
+class Adder {
+    let value: Int
+    init(withValue value: Int) {
+        self.value = value
+    }
+
+    func add(value: Int, to otherValue: Int = self.value) -> Int {
+        return value + otherValue
+    }
 }
 
-class B: A {
-    override func f() {}
-}
 
 func main() {
-    B()
+    let addTwo = Adder(withValue: 1)
+    assert(addTwo.add(value: 5) == 7)
 }
