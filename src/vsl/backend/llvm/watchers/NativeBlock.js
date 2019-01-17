@@ -7,6 +7,7 @@ import toLLVMType from '../helpers/toLLVMType';
 
 import { alloc, free } from '../helpers/MemoryManager';
 import structInPointerContext from '../helpers/structInPointerContext';
+import generateTrap from '../helpers/generateTrap';
 
 import * as llvm from "llvm-node";
 

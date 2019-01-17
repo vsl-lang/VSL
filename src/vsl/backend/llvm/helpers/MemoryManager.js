@@ -1,15 +1,17 @@
 import * as llvm from 'llvm-node';
+import generateTrap from './generateTrap';
 
 /**
  * Tool for memory managing LLVM stuff. Abstraction point for alloc/dealloc.
- * @param {number} size - Size in bytes of memory to alloc
+ * `size` should be from `backend.module.dataLayout.getTypeStoreSize(type.elementType)``
+ *
+ * @param {number} size - Size in bytes of memory to alloc.
+ * @param {llvm.Type} type - The type that allocation should return.
+ * @param {Node} node - The node causing error.
  * @param {LLVMContext} context
  */
-export function alloc(size, context) {
+export function alloc(size, type, node, context) {
     const backend = context.backend;
-
-    // Get canonical `malloc` reference.
-    // const intTy = backend.module.dataLayout.getIntPtrType(backend.context, 0);
 
     // Get malloc
     let malloc = backend.module.getOrInsertFunction(
@@ -21,10 +23,33 @@ export function alloc(size, context) {
         )
     );
 
-    const memory = context.builder.createCall(
-        malloc,
-        [llvm.ConstantInt.get(backend.context, size, 64)]
+    const memory = context.builder.createBitCast(
+        context.builder.createCall(
+            malloc,
+            [llvm.ConstantInt.get(backend.context, size, 64)]
+        ),
+        type
     );
+
+    if (!context.backend.options.disableAllocCheck) {
+        const outOfMemory = llvm.BasicBlock.create(context.ctx, 'alloc.nomem', context.parentFunc);
+        const done = llvm.BasicBlock.create(context.ctx, 'alloc.done', context.parentFunc);
+
+        context.builder.createCondBr(
+            context.builder.createICmpNE(
+                memory,
+                llvm.ConstantPointerNull.get(type)
+            ),
+            done,
+            outOfMemory
+        );
+
+        context.builder.setInsertionPoint(outOfMemory);
+        generateTrap('internal allocation out of memory.', null, node, context);
+        context.builder.createBr(done);
+
+        context.builder.setInsertionPoint(done);
+    }
 
     return memory;
 }

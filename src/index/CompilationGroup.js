@@ -148,7 +148,9 @@ export default class CompilationGroup {
                 const sourceModifiedTime = (await stat(stream.sourceName)).mtimeMs;
 
                 if (cacheMadeTime > sourceModifiedTime) {
-                    return await ASTSerializer.decodeFrom(createReadStream(cacheFile), cacheFile);
+                    const deserializedAst = await ASTSerializer.decodeFrom(createReadStream(cacheFile), cacheFile);
+                    deserializedAst.stream = stream
+                    return deserializedAst;
                 }
             }
         }

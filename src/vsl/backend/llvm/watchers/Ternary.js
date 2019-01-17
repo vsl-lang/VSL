@@ -24,10 +24,12 @@ export default class LLVMTernaryExpression extends BackendWatcher {
 
         context.builder.setInsertionPoint(trueBlock);
         const trueValue = regen('ifTrue', node, context);
+        const outputTrueBlock = context.builder.getInsertBlock();
         context.builder.createBr(exit);
 
         context.builder.setInsertionPoint(falseBlock);
         const falseValue = regen('ifFalse', node, context);
+        const outputFalseBlock = context.builder.getInsertBlock();
         context.builder.createBr(exit);
 
         context.builder.setInsertionPoint(exit);
@@ -44,8 +46,8 @@ export default class LLVMTernaryExpression extends BackendWatcher {
             2
         );
 
-        phi.addIncoming(trueValue, trueBlock);
-        phi.addIncoming(falseValue, falseBlock);
+        phi.addIncoming(trueValue, outputTrueBlock);
+        phi.addIncoming(falseValue, outputFalseBlock);
 
         return phi;
     }

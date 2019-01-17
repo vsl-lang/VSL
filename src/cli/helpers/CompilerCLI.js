@@ -91,7 +91,7 @@ export default class CompilerCLI extends CLIMode {
         const sourcePaths = module.getSources(this.filterTarget);
 
         group.metadata.name = module.name;
-        group.metadata.cacheDirectory = module.cacheDirectory;
+        group.metadata.cacheDirectory = path.join(directory, module.cacheDirectory);
 
         for (let file of sourcePaths) {
             let fileStream = group.createStream();

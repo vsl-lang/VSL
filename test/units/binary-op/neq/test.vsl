@@ -6,4 +6,7 @@ func main() {
     let a: UInt = 1
     let b: UInt = 2
     assert(a != b)
+
+    assert(true != false)
+    assert(false != true)
 }
