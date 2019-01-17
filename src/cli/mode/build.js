@@ -88,9 +88,9 @@ export default class Build extends CompilerCLI {
                 ["-ftrap-lossy-bitcast"  , "Traps if a bitcast were to result in " +
                                            "information being lost.",                { compilerOption: "trapLossyButcast", value: true }],
                 ["-fno-trap-memop"       , "Does not verify if heap allocations, " +
-                                           "were successful. This is a very unsafe " +
-                                           "option to enable and is never " +
-                                           "recommended.",                           { compilerOption: "disableAllocCheck", value: true }],
+                                           "were successful. This can result in a " +
+                                           "segfault at best and a major security " +
+                                           "vulnerability at worst.",                { compilerOption: "disableAllocCheck", value: true }],
                 ["-fno-free-memop"       , "Prevents the memory optimizer from " +
                                            "inserting free() operations. This should " +
                                            "only be used to identify issues caused" +

@@ -70,13 +70,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
 
 
         // Allocate space for struct
-        // malloc() returns a void* (i8*) so lets also convert that to the
-        //  pointer of correct type.
-        const allocCall = alloc(sizeOfClass, context);
-        const instance = context.builder.createBitCast(
-            allocCall,
-            classType
-        );
+        const instance = alloc(sizeOfClass, classType, node, context);
 
         // Compile the arguments
         let compiledArgs = [instance];

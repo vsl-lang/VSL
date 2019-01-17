@@ -5,7 +5,9 @@ import ASTTool from '../../../transform/asttool';
 /**
  * Generates a critical trap.
  * @param {string} string - Trap message to display
- * @param {llvm.Type} returnTy - LLVM type to generate garbage return of.
+ * @param {?llvm.Type} returnTy - LLVM type to generate garbage return of. If
+ *                              null then nothing is returned and unreachable is
+ *                              created.
  * @param {Node} node - Near by node generating this trap
  * @param {LLVMContext} context - LLVM context
  */
@@ -36,5 +38,8 @@ export default function generateTrap(string, returnTy, node, context) {
     context.builder.createCall(puts, [ llvmStr ]);
 
     context.builder.createCall(trap, []);
-    return context.builder.createLoad(context.builder.createAlloca(returnTy));
+
+    if (returnTy) {
+        return context.builder.createLoad(context.builder.createAlloca(returnTy));
+    }
 }

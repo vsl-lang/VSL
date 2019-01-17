@@ -65,10 +65,12 @@ export default class LLVMBackend extends Backend {
          *
          * @type {Object}
          * @property {boolean} [trapOnOverflow=false] - Traps on arithmetic overflow
+         * @property {boolean} [disableAllocCheck=false] - Enabling prevents traps on out of memory cases
          * @property {boolean} [disableRTTI=false] - Disables RTTI
          */
         this.options = {
             trapOnOverflow: false,
+            disableAllocCheck: false,
             disableRTTI: false
         };
 

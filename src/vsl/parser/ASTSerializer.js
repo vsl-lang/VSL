@@ -7,13 +7,27 @@ import Scope from '../../vsl/scope/scope';
 import { createHash } from 'crypto';
 import * as Nodes from './nodes';
 
+// Signature for VSLC file
 export const VSLC_SIGNATURE = new Uint8Array([48, 86, 83, 76, 10]);
+
+// VSL data signature for a source file path
 export const VSLC_DS_SOURCEFILE = new Uint8Array([ 0xFF, 0xA0 ]);
+
+// Bytes which indicate an AST node
 export const AST_NODE_EXT = 0x40;
+// Bytes which indicate a position
 export const AST_POSITION_EXT = 0x41;
 
 export const AST_DEC_TO_ENC = new Map([
-    ['statements', '_s']
+    // ['isGenerator', '?G'],
+    // ['isOverriding', '?O'],
+    ['statements', '_s'],
+    ['identifier', '_i'],
+    ['expression', '_e'],
+    ['original', '_o'],
+    ['typedId', '_T'],
+    ['literal', '_l'],
+    ['value', '_v'],
 ]);
 
 export const AST_ENC_TO_DEC = new Map([...AST_DEC_TO_ENC].map(([key, value]) => [value, key]));
@@ -43,8 +57,10 @@ function codec(sourceFileString) {
     }
 
     function serializeNode(object) {
+        const nodeName = object.constructor.name;
+        const serializedName = nodeName.replace(/Expression/g, '$');
         const obj = {
-            "_t": object.constructor.name,
+            "_t": serializedName,
         };
 
         // Get all properties
@@ -53,7 +69,10 @@ function codec(sourceFileString) {
                 // Exclude key if 1) `== null` 2) `is Scope`
                 object[key] == null ||
                 object[key] instanceof Scope ||
-                ['lazyHooks', 'parentNode', 'relativeName'].includes(key)
+                [
+                    'lazyHooks', 'parentNode', 'relativeName',
+                    'argPositionsTreatedOptional'
+                ].includes(key)
             ))
             .forEach(propName => {
                 if (propName === 'position') {
@@ -77,7 +96,8 @@ function codec(sourceFileString) {
 
     function unserializeNode(buffer) {
         const node = msgpack.decode(buffer, { codec });
-        const newNode = new t[node._t];
+        const nodeType = node._t.replace(/\$/g, 'Expression');
+        const newNode = new t[nodeType];
 
         for (const [key, value] of Object.entries(node)) {
             if (key.indexOf('_') !== 0) {

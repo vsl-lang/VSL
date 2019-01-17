@@ -512,7 +512,7 @@ BlockExpression
    | Closure {% id %}
 InlineExpression
    -> Ternary {%
-        (data, location) => new t.ExpressionStatement(data[0], false, false, location)
+        (data, location) => new t.ExpressionStatement(data[0], location)
     %}
 Ternary
    -> Assign _ "?" _ Ternary _ ":" _ Ternary {%
@@ -604,7 +604,7 @@ Property
 propertyHead
    -> Identifier             {% id %}
     | SelfOrSuper            {% id %}
-    | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], false, true, l) %}
+    | "(" _ InlineExpression _ ")" {% (d, l) => new t.ExpressionStatement(d[2], l) %}
     | FunctionizedOperator   {% id %}
     | Literal                {% id %}
 
