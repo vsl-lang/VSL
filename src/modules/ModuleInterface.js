@@ -17,6 +17,8 @@ const globSearch = (source, options) => new Promise(
  * interface.
  */
 export default class ModuleInterface {
+    static shared = new ModuleInterface();
+
     /**
      * Checks if a path is a directory and exists.
      *
@@ -31,7 +33,7 @@ export default class ModuleInterface {
             return false;
         }
     }
-    
+
     /**
      * Reads a file given a path
      *
@@ -49,7 +51,7 @@ export default class ModuleInterface {
             throw e;
         }
     }
-    
+
     /**
      * Expands a glob to an array of the files.
      *

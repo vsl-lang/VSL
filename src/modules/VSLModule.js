@@ -1,3 +1,5 @@
+import ModuleInterface from './ModuleInterface';
+
 /**
  * Represents the actual module and the values. DO NOT directly modify ANY value
  */
@@ -37,7 +39,13 @@ export default class VSLModule {
          */
         this.stdlib = true;
 
-        // List of sources in format [matchingSources, filterExpr]
+        /**
+         * Root path of module
+         * @type {string}
+         */
+        this.rootPath = "";
+
+        // List of sources in format [glob, filterExpr]
         this._sources = [];
 
         /**
@@ -48,6 +56,12 @@ export default class VSLModule {
         this.linker = {
             libraries: []
         };
+
+        /**
+         * Bindgens
+         * @type {Bindgen[]}
+         */
+        this.bindgens = [];
 
         /**
          * Dir for cache
@@ -67,12 +81,17 @@ export default class VSLModule {
      * @param {Object} filter
      * @return {string[]} array of absolute paths.
      */
-    getSources(filter) {
+    async getSources(filter) {
         const paths = [];
 
-        for (const [matchingSources, expr] of this._sources) {
+        for (const [sourcesGlob, expr] of this._sources) {
             if (expr.test(filter)) {
-                paths.push(...matchingSources);
+                let files = await ModuleInterface.shared.glob(
+                    sourcesGlob,
+                    this.rootPath
+                );
+
+                paths.push(...files);
             }
         }
 

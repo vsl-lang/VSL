@@ -255,7 +255,7 @@ export default class Default extends CLIMode {
         let module = moduleLoader.module;
 
         let group = new CompilationGroup();
-        for (let file of module.getSources(FilterExpression.tripleToTarget(NATIVE_TRIPLE))) {
+        for (let file of await module.getSources(FilterExpression.tripleToTarget(NATIVE_TRIPLE))) {
             let fileStream = group.createStream();
             fileStream.sourceName = file;
             fileStream.send(await fs.readFile(file));

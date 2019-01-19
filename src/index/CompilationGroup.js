@@ -35,7 +35,7 @@ export const PROPAGATION_CONFIG = {
 
 /**
  * Represents the compilation of a single module. This doesn't actually have any
- * knoledge of a {@link VSLModule} or native modules, rather this represents a
+ * knowledge of a {@link VSLModule} or native modules, rather this represents a
  * group of 'streams' and handled their accesss scopes through the
  * {@link PropogateModifierTraverser}. This specifically uses:
  *
