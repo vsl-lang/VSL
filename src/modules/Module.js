@@ -3,6 +3,8 @@ import ModuleError from './ModuleError';
 import FilterExpression from './FilterExpression';
 import VSLModule from './VSLModule';
 
+import locateBindgen from '../bindgen/locateBindgen';
+
 import semver from 'semver';
 import yaml from 'js-yaml';
 import path from 'path';
@@ -23,7 +25,7 @@ export default class Module {
      * @throws {ModuleError} thrown if the module does not exist.
      */
     constructor(path) {
-        if (!Module.moduleInterface.isDirectory(path)) {
+        if (!ModuleInterface.shared.isDirectory(path)) {
             throw new ModuleError(
                 `Could not find module, \`${path}\` does not exist or is not ` +
                 `a directory.`,
@@ -153,6 +155,72 @@ export default class Module {
         };
 
         ////////////////////////////////////////////////////////////////////////
+        // .BINDGEN
+        ////////////////////////////////////////////////////////////////////////
+        let bindgens = yaml.bindgen || [];
+        if (!(bindgens instanceof Array)) throw new ModuleError(
+            `Bindgen should be array list`,
+            ModuleError.type.invalidSourceType
+        );
+
+        for (let i = 0; i < bindgens.length; i++) {
+            const bindgen = bindgens[i];
+
+            if (typeof bindgen.language !== 'string') throw new ModuleError(
+                `Bindgen at index ${i} must have \`language\` parameter of type string`
+            );
+
+            if (!(bindgen.sources instanceof Array)) throw new ModuleError(
+                `Bindgen at index ${i} must have array of \`sources\``
+            );
+
+
+            const bindgenSources = [];
+            for (let j = 0; j < bindgen.sources.length; j++) {
+                if (typeof bindgen.sources[j] !== 'string') throw new ModuleError(
+                    `Bindgen at index ${i} and source at index ${j} must be a ` +
+                    `glob of type string.`
+                );
+
+                const files = await ModuleInterface.shared.glob(
+                    bindgen.sources[j],
+                    this.rootPath
+                );
+
+                bindgenSources.push(...files);
+            }
+
+            if (typeof bindgen.output !== 'object') throw new ModuleError(
+                `Bindgen at index ${i} must have \`output\` object.`
+            );
+
+            if (typeof bindgen.output.name !== 'string') throw new ModuleError(
+                `Bindgen at index ${i} must have \`output.name\` string.`
+            );
+
+            if (typeof bindgen.output.directory !== 'string') throw new ModuleError(
+                `Bindgen at index ${i} must have \`output.directory\` string.`
+            );
+
+            const bindgenInstance = locateBindgen(
+                bindgen.language,
+                bindgenSources,
+                {
+                    outputDirectory: path.join(this.rootPath, bindgen.output.directory),
+                    outputName: bindgen.output.name
+                }
+            );
+
+            if (!bindgenInstance) {
+                throw new ModuleError(
+                    `No bindgen named ${bindgen.name}.`
+                );
+            }
+
+            this.module.bindgens.push(bindgenInstance);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
         // .SOURCES
         ////////////////////////////////////////////////////////////////////////
         let sources = yaml.sources || [];
@@ -213,16 +281,7 @@ export default class Module {
                 );
             }
 
-            try {
-                let files = await Module.moduleInterface.glob(
-                    sourceGlob,
-                    this.rootPath
-                );
-
-                expandedSources.push([files, sourceFilterExpression]);
-            } catch(e) {
-                throw e;
-            }
+            expandedSources.push([sourceGlob, sourceFilterExpression]);
         }
 
         this.module._sources = expandedSources;
@@ -264,10 +323,11 @@ export default class Module {
         // Path to module.yml
         let requestPath = path.join(this.rootPath, 'module.yml');
         this.ymlPath = requestPath;
+        this.module.rootPath = this.rootPath;
 
         let ymlString;
         try {
-            ymlString = await Module.moduleInterface.readFile(requestPath);
+            ymlString = await ModuleInterface.shared.readFile(requestPath);
         } catch(error) {
             throw new ModuleError(
                 `${this.rootPath} is not a VSL module, could not locate a ` +
@@ -286,6 +346,4 @@ export default class Module {
             })
         )
     }
-
-    static moduleInterface = new ModuleInterface();
 }

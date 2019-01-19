@@ -83,12 +83,20 @@ export default class CompilerCLI extends CLIMode {
         }
 
         let module = moduleLoader.module;
+
+        // Send the C-libraries this module depends on to linker
         for (let i = 0; i < module.linker.libraries.length; i++) {
             this.libraries.add(module.linker.libraries[i]);
         }
 
+        // Run bindgens
+        for (let i = 0; i < module.bindgens.length; i++) {
+            const bindgen = module.bindgens[i];
+            await bindgen.dispatch();
+        }
+
         let group = new CompilationGroup();
-        const sourcePaths = module.getSources(this.filterTarget);
+        const sourcePaths = await module.getSources(this.filterTarget);
 
         group.metadata.name = module.name;
         group.metadata.cacheDirectory = path.join(directory, module.cacheDirectory);
