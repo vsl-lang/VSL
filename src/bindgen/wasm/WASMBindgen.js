@@ -108,7 +108,9 @@ export default class WASMBindgen extends Bindgen {
     async generate(sourceFile) {
         // Parses a given source path
         const source = await fs.readFile(sourceFile, { encoding: 'utf8' });
+        const sourceModifiedTime = (await fs.stat(sourceFile)).mtime;
         const ast = WebIDL2.parse(source);
+
 
         const inputName = path.basename(sourceFile, path.extname(sourceFile));
         const output = path.join(this.outputDirectory, `${this.outputName}.${inputName}.vsl`);
@@ -196,6 +198,7 @@ export default class WASMBindgen extends Bindgen {
 
         outputStream.end();
         await streamFinished(outputStream);
+        await fs.utimes(output, sourceModifiedTime, sourceModifiedTime);
     }
 
     /** @override */

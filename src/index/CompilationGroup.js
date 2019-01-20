@@ -148,10 +148,12 @@ export default class CompilationGroup {
                 const cacheMadeTime = (await stat(cacheFile)).mtimeMs;
                 const sourceModifiedTime = (await stat(stream.sourceName)).mtimeMs;
 
-                if (cacheMadeTime > sourceModifiedTime) {
+                if (cacheMadeTime >= sourceModifiedTime) {
                     const deserializedAst = await ASTSerializer.decodeFrom(createReadStream(cacheFile), cacheFile);
                     deserializedAst.stream = stream
                     return deserializedAst;
+                } else {
+                    // console.log(`rebuilding ${stream.sourceName} ${cacheMadeTime} < ${sourceModifiedTime}`);
                 }
             }
         }
@@ -362,7 +364,6 @@ export default class CompilationGroup {
         if (backend) {
             backend.run(block.statements);
         }
-
         return;
     }
 }

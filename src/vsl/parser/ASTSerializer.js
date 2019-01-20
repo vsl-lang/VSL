@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import msgpack from 'msgpack-lite';
+import lz4 from 'lz4';
 import t from './nodes';
 import Scope from '../../vsl/scope/scope';
 
@@ -60,7 +61,9 @@ function codec(sourceFileString) {
 
     function serializeNode(object) {
         const nodeName = object.constructor.name;
-        const serializedName = nodeName.replace(/Expression/g, '$');
+        const serializedName = nodeName
+            .replace(/Expression/g, '$')
+            .replace(/Statement/g, '@');
         const obj = {
             "_t": serializedName,
         };
@@ -99,7 +102,9 @@ function codec(sourceFileString) {
 
     function unserializeNode(buffer) {
         const node = msgpack.decode(buffer, { codec });
-        const nodeType = node._t.replace(/\$/g, 'Expression');
+        const nodeType = node._t
+            .replace(/\$/g, 'Expression')
+            .replace(/@/g, 'Statement');
         const newNode = new t[nodeType];
 
         for (const [key, value] of Object.entries(node)) {
@@ -233,24 +238,24 @@ export default class ASTSerializer {
         return new Promise((resolve) => {
 
             const encoder = msgpack.createEncodeStream({ codec: codec() });
-            encoder.pipe(stream);
-
+            const compressor = lz4.createEncoderStream();
+            encoder.pipe(compressor).pipe(stream);
 
             // Write signature '0VSL\n'
-            stream.write(VSLC_SIGNATURE);
+            compressor.write(VSLC_SIGNATURE);
 
             // Indicates a source file follows
             if (this._sourceFile) {
-                stream.write(VSLC_DS_SOURCEFILE);
-                stream.write(this._sourceFile + '\n');
+                compressor.write(VSLC_DS_SOURCEFILE);
+                compressor.write(this._sourceFile + '\n');
             }
 
             encoder.write(this._ast);
 
             encoder.encoder.flush();
 
-            stream.end();
-            stream.on('finish', () => {
+            compressor.end();
+            compressor.on('finish', () => {
                 resolve();
             });
         });
@@ -281,6 +286,8 @@ export default class ASTSerializer {
                 if (!data) {
                     throw new TypeError('no vslc data');
                 }
+
+                data = lz4.decode(data);
 
                 let i = 0;
 
