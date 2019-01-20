@@ -17,6 +17,8 @@ export const VSLC_DS_SOURCEFILE = new Uint8Array([ 0xFF, 0xA0 ]);
 export const AST_NODE_EXT = 0x40;
 // Bytes which indicate a scope
 export const AST_SCOPE_EXT = 0x41;
+// Bytes which indicate an Identifier
+export const AST_IDENTIFIER_EXT = 0x42;
 
 export const AST_DEC_TO_ENC = new Map([
     // ['isGenerator', '?G'],
@@ -149,8 +151,49 @@ function codec(sourceFileString) {
         return new Scope();
     });
 
+    codec.addExtPacker(AST_IDENTIFIER_EXT, t.Identifier, (id) => {
+        return msgpack.encode([id.value, id.position.index, id.position.length], { codec });
+    });
+
+    codec.addExtUnpacker(AST_IDENTIFIER_EXT, (buffer) => {
+        const [value, index, length] = msgpack.decode(buffer, { codec });
+        const newNode = new t.Identifier(value);
+
+        if (sourceFileString) {
+            let line = 0;
+            let lineIndex = 0;
+
+            for (let i = 0; i < newlineIndices.length; i++) {
+                if (newlineIndices[i] > index) {
+                    break;
+                } else {
+                    lineIndex = newlineIndices[i];
+                    line = i;
+                }
+            }
+
+            newNode.position = {
+                line: line + 1,
+                column: index - lineIndex,
+                index: index,
+                length: length,
+                value: sourceFileString.substr(index, length)
+            };
+        } else {
+            newNode.position = {
+                line: 0,
+                column: 0,
+                index: index,
+                length: length,
+                value: ""
+            };
+        }
+
+        return newNode;
+    });
+
     for (const cls of Object.values(t)) {
-        if (cls instanceof Function) {
+        if (cls instanceof Function && cls !== t.Identifier) {
             codec.addExtPacker(AST_NODE_EXT, cls, serializeNode);
             codec.addExtUnpacker(AST_NODE_EXT, unserializeNode);
         }

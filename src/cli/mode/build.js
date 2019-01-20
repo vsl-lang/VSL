@@ -10,7 +10,6 @@ import { spawn } from 'child_process';
 
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import FilterExpression from '../../modules/FilterExpression';
-import WASMIndex from '../../../wasm/index.json';
 import prettyPrintPerformance from '../helpers/prettyPrintPerformance';
 
 import findDefaultLinker from '../helpers/findDefaultLinker';
@@ -18,8 +17,6 @@ import findCRT from '../helpers/findCRT';
 import Linker from '../helpers/Linker';
 import * as linkers from '../helpers/linkers';
 import Triple from '../helpers/Triple';
-
-const WASMIndexRoot = path.relative(process.cwd(), path.join(__dirname, '../../../wasm'));
 
 export default class Build extends CompilerCLI {
     usage = "vsl build [options] <module | files> -o <out file>\nvsl build info <target>"

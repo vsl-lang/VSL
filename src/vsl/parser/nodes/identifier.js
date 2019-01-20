@@ -22,9 +22,6 @@ export default class Identifier extends Node {
         /** @type {string} */
         this.value = identifier;
 
-        /** @type {string} */
-        this.original = identifier;
-
         /** @type {?ScopeItem} */
         this.reference = null;
     }
