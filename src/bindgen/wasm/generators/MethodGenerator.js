@@ -11,7 +11,14 @@ export default function MethodGenerator(node, bindgen) {
     const returnType = bindgen.formatType(node.body.idlType);
 
     const args = node.body.arguments
-        .map(({ name, idlType: type }) => `${bindgen.formatIdentifier(name)}: ${bindgen.formatType(type)}`)
+        .map(({ name, idlType: type, optional }) => {
+            const argName = bindgen.formatIdentifier(name);
+            const argType = bindgen.formatType(type);
+
+            const optionalString = optional ? ` = ${argType}::JS_UNDEFINED` : ``;
+
+            return `${argName}: ${argType}${optionalString}`
+        })
         .join(", ");
 
     const argCount = node.body.arguments.length;

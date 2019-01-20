@@ -63,8 +63,6 @@ export default function InterfaceGenerator(node, bindgen) {
     return `@mock(ui32)
 @dynamic(false)
 public class ${className}: ${inheritance} {
-    private init() { super.init() }
-
 ${bindgen.indent(items.join("\n"))}
 }
 
