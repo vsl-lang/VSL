@@ -28,7 +28,7 @@ export default class Identifier extends Node {
 
     clone() {
         return new Identifier(
-            this.original
+            this.value
         );
     }
 
