@@ -1,5 +1,4 @@
 import Node from './node';
-import Scope from '../../scope/scope';
 
 /**
  * Contains a series of statements.
@@ -28,9 +27,9 @@ export default class CodeBlock extends Node {
          * `ScopeTransformer`, and all information in custom transformations
          * should be accessable through an `ASTTool`
          *
-         * @type {Scope}
+         * @type {?Scope}
          */
-        this.scope = new Scope();
+        this.scope = null;
 
         /**
          * True if this is the top-level main scope of a file. Note: a global or

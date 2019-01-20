@@ -9,7 +9,9 @@ export default function AttributeGenerator(node, bindgen) {
     const type = node.idlType;
     const typeName = bindgen.formatType(type);
 
-    const variableType = node.readonly ? 'const' : 'let';
+    const isConstant = node.readonly;
 
-    return `public ${variableType} ${attributeName}: ${typeName}`;
+    return `public let ${attributeName}: ${typeName} {
+    return ${typeName}::self.dispatchAccess(target: "${attributeName}")
+}`;
 }

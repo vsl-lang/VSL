@@ -38,19 +38,6 @@ export default class Node {
          * @type {Comment[]}
          */
         this.precedingComments = [];
-
-        /**
-         * An integer representing the position within a queue to qualify the
-         * node for a GC pass when requested by a parent.
-         *
-         * A {@link Transformer} will automatically do this.
-         *
-         * If you set this, the ASTTool for the node should process with a
-         * transformer.
-         *
-         * @type {?number}
-         */
-        this.queueQualifier = null;
     }
 
     /**
@@ -62,11 +49,11 @@ export default class Node {
      * @abstract
      * @param {Generator} generator the target generator
      **/
-     generate(generator: Generator) {
-         throw new TypeError(
-             `${this.constructor.name}#generate(generator:) must be overriden`
-         );
-     }
+    generate(generator: Generator) {
+        throw new TypeError(
+            `${this.constructor.name}#generate(generator:) must be overriden`
+        );
+    }
 
     /**
      * Returns all the children of a node. The order must be consistent

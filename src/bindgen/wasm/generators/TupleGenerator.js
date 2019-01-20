@@ -9,10 +9,18 @@ export default function TupleGenerator(node, bindgen) {
 
     const args = node.members
         .filter(member => member.type === 'field')
-        .map(member => `${bindgen.formatIdentifier(member.name)}: ${bindgen.formatType(member.idlType)}`);
+        .map(member => {
+            const memberName = bindgen.formatIdentifier(member.name);
+            const memberType = bindgen.formatType(member.idlType);
+
+            const memberDefaultValueComment = member.default ? ` /* = ${member.default.value} */` : ``;
+
+            return `${memberName}: ${memberType}${memberDefaultValueComment}`
+        })
+        .join(",\n");
 
     return `public typealias ${tupleName} = {
-${args.map(arg => `    ${arg}`).join("\n")}
+${bindgen.indent(args)}
 }
 
 `

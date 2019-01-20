@@ -15,8 +15,8 @@ export const VSLC_DS_SOURCEFILE = new Uint8Array([ 0xFF, 0xA0 ]);
 
 // Bytes which indicate an AST node
 export const AST_NODE_EXT = 0x40;
-// Bytes which indicate a position
-export const AST_POSITION_EXT = 0x41;
+// Bytes which indicate a scope
+export const AST_SCOPE_EXT = 0x41;
 
 export const AST_DEC_TO_ENC = new Map([
     // ['isGenerator', '?G'],
@@ -68,14 +68,15 @@ function codec(sourceFileString) {
             .filter(key => !(
                 // Exclude key if 1) `== null` 2) `is Scope`
                 object[key] == null ||
-                object[key] instanceof Scope ||
                 [
                     'lazyHooks', 'parentNode', 'relativeName',
                     'argPositionsTreatedOptional'
                 ].includes(key)
             ))
             .forEach(propName => {
-                if (propName === 'position') {
+                if (object[propName] instanceof Scope) {
+                    obj[propName] = object[propName];
+                } else if (propName === 'position') {
                     obj._p = {
                         i: object.position.index,
                         l: object.position.length
@@ -140,10 +141,18 @@ function codec(sourceFileString) {
         return newNode;
     }
 
+    codec.addExtPacker(AST_SCOPE_EXT, Scope, () => {
+        return msgpack.encode({}, { codec });
+    });
+
+    codec.addExtUnpacker(AST_SCOPE_EXT, () => {
+        return new Scope();
+    });
+
     for (const cls of Object.values(t)) {
         if (cls instanceof Function) {
             codec.addExtPacker(AST_NODE_EXT, cls, serializeNode);
-            codec.addExtUnpacker(AST_NODE_EXT, unserializeNode)
+            codec.addExtUnpacker(AST_NODE_EXT, unserializeNode);
         }
     }
 

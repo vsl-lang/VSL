@@ -37,6 +37,9 @@ export default class ScopeTupleItem extends ScopeTypeItem {
         const subscope = new Scope();
         const staticScope = new Scope();
 
+        subscope.owner = this;
+        staticScope.owner = this;
+
         for (let i = 0; i < parameters.length; i++) {
             const aliasItem = new ScopeAliasItem(
                 ScopeForm.definite,

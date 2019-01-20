@@ -27,9 +27,12 @@ export default function InterfaceGenerator(node, bindgen) {
     const isPublicItf = isPublic(node);
     if (!isPublicItf) return "";
 
+    const mixinProps = bindgen.mixinMap.get(node.name) || [];
+    const allMembers = node.members.concat(...mixinProps.map(mixin => mixin.value))
+
     const items = [];
-    for (let i = 0; i < node.members.length; i++) {
-        const member = node.members[i];
+    for (let i = 0; i < allMembers.length; i++) {
+        const member = allMembers[i];
         switch (member.type) {
             case "attribute":
                 items.push(AttributeGenerator(member, bindgen));
@@ -62,7 +65,7 @@ export default function InterfaceGenerator(node, bindgen) {
 public class ${className}: ${inheritance} {
     private init() { super.init() }
 
-${items.map(item => `    ${item}\n`).join("")}
+${bindgen.indent(items.join("\n"))}
 }
 
 `

@@ -8,7 +8,8 @@ export default class LLVMNoOp extends BackendWatcher {
     match(type) {
         return (
             type instanceof t.TypeAlias ||
-            type instanceof t.FunctionArgument
+            type instanceof t.FunctionArgument ||
+            type instanceof t.TupleType
         );
     }
 
