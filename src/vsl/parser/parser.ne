@@ -590,12 +590,12 @@ Closure
 # is same wait wat
 # yeah crazyguys one just merged lexemes #2 and #3 + restrict a bit
 Property
-   -> propertyHead (_ propertyTail {% nth(1) %}):* {%
+   -> propertyHead (propertyTail {% id %}):* {%
         (data, location) => (data[1].length === 0 ?
             data[0] :
             (data = recursiveProperty(data[0], data[1])))
         %}
-    | "?" _ nullableProperty (_ propertyTail {% nth(1) %}):* {%
+    | "?" _ nullableProperty (propertyTail {% nth(1) %}):* {%
         (data, location) =>
             recursiveProperty(new t.Whatever(location), [data[2]].concat(data[3]))
         %}
@@ -621,7 +621,7 @@ FunctionizedOperator
     ) ")" {% (d, l) => new t.FunctionizedOperator(d[1][0].value, l) %}
 
 propertyTail
-   -> "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[2], false, l) %}
+   -> _ "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], false, l) %}
     | Array {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
     | nullableProperty {% id %}
 

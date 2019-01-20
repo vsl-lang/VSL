@@ -46,6 +46,7 @@ export default class WASMBindgen extends Bindgen {
         switch (identifier) {
             case 'interface': return '_interface';
             case 'init': return '_init';
+            case 'is': return '_is';
 
             default: return identifier;
         }
@@ -57,14 +58,23 @@ export default class WASMBindgen extends Bindgen {
      * @return {string}
      */
     formatType(type) {
-        if (type.generic) {
+        if (type.union) {
+            const unionTypes = type.idlType.map(type => this.formatType(type));
+            return `${this.convertType('any')} /* ${unionTypes.join(" | ")} */`;
+        } else if (type.generic) {
             const args = type.idlType
                 .map(type => this.formatType(type))
                 .join(", ");
 
             return `${this.convertType(type.baseName)}<${args}>`;
         } else {
-            return this.convertType(type.baseName);
+            const name = type.baseName
+            if (this.enumerations.has(name)) {
+                const values = this.enumerations.get(name);
+                return `String /* ${values.join(", ")} */`;
+            } else {
+                return this.convertType(name);
+            }
         }
     }
 
@@ -82,6 +92,7 @@ export default class WASMBindgen extends Bindgen {
             case 'boolean': return 'Bool';
 
 
+            case 'USVString':
             case 'DOMString': return 'String';
 
             case 'sequence': return 'Array';
@@ -107,14 +118,22 @@ export default class WASMBindgen extends Bindgen {
             flags: 'w',
         });
 
+        outputStream.write(`// automatically-generated using the VSL WASMBindgen.\n`);
+
         // Run first layer of process including resolving mixins
         const mixinNameMap = new Map();
         const mixinMap = new Map();
+
+        const enumerations = new Map();
+
         for (let i = 0; i < ast.length; i++) {
             const item = ast[i];
             const itemType = item.type;
 
             switch (itemType) {
+                case 'enum':
+                    enumerations.set(item.name, item.values.map(entry => entry.value));
+                    break;
                 case 'includes':
                     const targetName = item.target;
                     const mixinName = item.includes;
@@ -153,11 +172,18 @@ export default class WASMBindgen extends Bindgen {
          */
         this.mixinMap = mixinMap;
 
+        /**
+         * Enumeration name set to value strings
+         * @type {Map<string, string[]>}
+         */
+        this.enumerations = enumerations;
+
         for (let i = 0; i < ast.length; i++) {
             const item = ast[i];
             const itemType = item.type;
 
             switch (itemType) {
+                case 'callback interface':
                 case 'interface':
                     outputStream.write(generators.InterfaceGenerator(item, this));
                     break;
