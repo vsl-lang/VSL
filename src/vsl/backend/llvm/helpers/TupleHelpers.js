@@ -7,14 +7,14 @@ import toLLVMType from './toLLVMType';
  * @param {LLVMContext} context
  * @return {llvm.Type}
  */
-export function layoutTuple(tuple, backend) {
+export function layoutTuple(tuple, context) {
     const typeName = tuple.uniqueName;
 
-    const existingType = backend.module.getTypeByName(typeName);
+    const existingType = context.module.getTypeByName(typeName);
     if (existingType) return existingType.getPointerTo();
 
     const structType = llvm.StructType.create(
-        backend.context,
+        context.ctx,
         typeName
     );
 

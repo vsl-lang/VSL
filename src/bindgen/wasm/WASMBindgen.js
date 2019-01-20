@@ -28,6 +28,15 @@ export default class WASMBindgen extends Bindgen {
     }
 
     /**
+     * Indents a string
+     * @param {string} string
+     * @return {string}
+     */
+    indent(string) {
+        return string.split("\n").map(i => `    ${i}`).join("\n");
+    }
+
+    /**
      * Formats a TYPE identifier. Adds things like prefixes and prevents
      * conflicts with keywords
      * @param {string} identifier
@@ -98,6 +107,52 @@ export default class WASMBindgen extends Bindgen {
             flags: 'w',
         });
 
+        // Run first layer of process including resolving mixins
+        const mixinNameMap = new Map();
+        const mixinMap = new Map();
+        for (let i = 0; i < ast.length; i++) {
+            const item = ast[i];
+            const itemType = item.type;
+
+            switch (itemType) {
+                case 'includes':
+                    const targetName = item.target;
+                    const mixinName = item.includes;
+
+                    let mixin;
+                    if (mixinNameMap.has(mixinName)) {
+                        mixin = mixinNameMap.get(mixinName);
+                    } else {
+                        mixin = { name: mixinName };
+                        mixinNameMap.set(name, mixin);
+                    }
+
+                    if (mixinMap.has(targetName)) {
+                        mixinMap.get(targetName).push(mixin);
+                    } else {
+                        mixinMap.set(targetName, [mixin])
+                    }
+
+                    break;
+
+                case 'interface mixin':
+                    const name = item.name;
+                    if (mixinNameMap.has(name)) {
+                        mixinNameMap.get(name).value = item.members;
+                    } else {
+                        mixinNameMap.set(name, { name: name, value: item.members });
+                    }
+
+                    break;
+            }
+        }
+
+        /**
+         * Matches itf to references of their properties.
+         * @type {Map<string, Object>}
+         */
+        this.mixinMap = mixinMap;
+
         for (let i = 0; i < ast.length; i++) {
             const item = ast[i];
             const itemType = item.type;
@@ -109,7 +164,7 @@ export default class WASMBindgen extends Bindgen {
 
                 case 'dictionary':
                     outputStream.write(generators.TupleGenerator(item, this));
-                    break; 
+                    break;
             }
         }
 

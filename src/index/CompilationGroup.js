@@ -14,6 +14,7 @@ import VSLTransformer from '../vsl/transform/transformers/vsltransformer';
 import TransformError from '../vsl/transform/transformError';
 import ScopeTraverser from '../vsl/transform/scopetraverser';
 import { CodeBlock } from '../vsl/parser/nodes/*';
+import Scope from '../vsl/scope/scope';
 
 import ASTSerializer from '../vsl/parser/ASTSerializer';
 
@@ -257,6 +258,8 @@ export default class CompilationGroup {
         // This will be our new AST of the entire module with a global shared
         // scope
         let block = new CodeBlock(asts, null);
+        block.scope = new Scope();
+
         this.globalScope = block;
 
         // Go through each import statement that each file specifies

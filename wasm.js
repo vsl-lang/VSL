@@ -29,6 +29,13 @@
             this.objectHeapNextFreeSlot = 0;
 
             this.__objectheap_global = this.storeValue(window);
+            this.__objectheap_undefined = this.storeValue(undefined);
+            this.__objectheap_null = this.storeValue(null);
+        }
+
+        // Returns the global object.
+        get globalObject() {
+            return this.objectHeap[this.__objectheap_global];
         }
 
         // Bridges VSL string -> JS
@@ -67,6 +74,17 @@
             this.objectHeapNextFreeSlot = index;
         }
 
+        // Wraps value if applicable
+        wrapValue(value) {
+            if (typeof value === 'number' || typeof value === 'boolean') {
+                return value;
+            } else if (value) {
+                return this.storeValue(value);
+            } else {
+                return value;
+            }
+        }
+
         // Dereferences pointer
         valueAt8Bit(pointer) { return new Uint8Array(this.instance.exports.memory.buffer, pointer, 1)[0] }
         valueAt32Bit(pointer) { return new Uint32Array(this.instance.exports.memory.buffer, pointer, 1)[0] }
@@ -84,6 +102,8 @@
                     ////////////////////////////////////////////////////////////
                     'meta.__heap_base': () => this.instance.exports.__heap_base,
                     'meta.__objectheap_global': () => this.__objectheap_global,
+                    'meta.__objectheap_undefined': () => this.__objectheap_undefined,
+                    'meta.__objectheap_null': () => this.__objectheap_null,
 
 
                     ////////////////////////////////////////////////////////////
@@ -91,6 +111,17 @@
                     ////////////////////////////////////////////////////////////
                     'dispatch.freeReference': (index) => {
                         this.freeValue(index);
+                    },
+
+                    // Performs a single access of <base>.<target> where
+                    // <target> is a JS string and <base> references a JS heap
+                    // object instance.
+                    'dispatch.access': (base, target) => {
+                        const baseObject = this.objectHeap[base];
+                        const dispatchTarget = this.vslToDOMString(target);
+
+                        const result = baseObject[dispatchTarget];
+                        return this.wrapValue(result);
                     },
 
                     // Allows wasm to dispatch a call. Executes in a form of
@@ -101,12 +132,12 @@
                         const dispatchee = base[dispatchTarget];
 
                         // Inspect call stack to identify to call with what.
-                        const argCount = this.valueAt32Bit(callStack);
+                        const argCount = this.valueAt8Bit(callStack);
                         const args = [];
 
                         // VSL/WASM interop supports a 8-bit flag specifying
                         // dispatch argument type.
-                        let callStackOffset = callStack + 4; // 4 = 32-bit stack size
+                        let callStackOffset = callStack + 1;
                         for (let i = 0; i < argCount.length; i++) {
                             // 1 = 8-bit type size
                             const type = this.valueAt8Bit(callStackOffset);
@@ -114,19 +145,38 @@
 
                             switch (type) {
                                 case 0x00:
-                                    // JS object
+                                    // JS heap object reference.
 
-                                    // 4 = 32-bit index size
                                     const objectIndex = this.valueAt32Bit(callStackOffset);
-                                    callStackOffset += 4;
+                                    callStackOffset += 4; // 4 = 32-bit index size
                                     args.push(this.objectHeap[objectIndex]);
                                     break;
 
                                 case 0x01:
+                                    // JS marshaled object reference.
+                                    // Supports top level objects
+                                    const object = {};
+
+                                    args.push(object);
+                                    break;
+
+                                case 0x0F:
+                                    // JS lambda
+                                    args.push(() => {});
+                                    break;
+
+                                case 0xA0:
                                     // VSL String
                                     const objectIndex = this.valueAt32Bit(callStackOffset);
-                                    callStackOffset += 4;
+                                    callStackOffset += 4; // 4 = 32-bit index size
                                     args.push(this.vslToDOMString(objectIndex));
+                                    break;
+
+                                case 0xA1:
+                                    // VSL Integer (32-bit)
+                                    const int = this.valueAt32Bit();
+                                    callStackOffset += 4; // 4 = 32-bit index size
+                                    args.push(int);
                                     break;
 
                                 default:
@@ -134,7 +184,10 @@
                             }
                         }
 
-                        return dispatchee.apply(base, ...args);
+                        this['dispatch.freeReference'](callStack);
+
+                        const result = dispatchee.apply(base, ...args);
+                        return this.wrapValue(result);
                     },
 
 

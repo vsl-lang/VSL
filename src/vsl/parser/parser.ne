@@ -5,6 +5,7 @@ let util = require('util');
 let t = require('./nodes').default;
 let VSLTokenizer = require('./vsltokenizer').default;
 let ParserError = require('./parserError').default;
+let Scope = require('../scope/scope').default;
 let lexer = new VSLTokenizer();
 
 const NodeTypes = require('./vsltokentype').default,
@@ -120,6 +121,8 @@ main
             }
 
             data[0].rootScope = true;
+            data[0].scope = new Scope();
+
             return data[0];
         }
     %}
@@ -585,7 +588,7 @@ Closure
 
 # above is old property head, below is new, idk how to unwat-ify
 # is same wait wat
-# yeah crazyguy's one just merged lexemes #2 and #3 + restrict a bit
+# yeah crazyguys one just merged lexemes #2 and #3 + restrict a bit
 Property
    -> propertyHead (_ propertyTail {% nth(1) %}):* {%
         (data, location) => (data[1].length === 0 ?
@@ -664,7 +667,7 @@ Literal
     | %boolean      {% literal %}
     | Array         {% id %}
     | Dictionary    {% id %}
-    # | Tuple         {% id %}
+    | Tuple         {% id %}
     # | Set           {% id %}
 
 Array
@@ -686,9 +689,9 @@ Dictionary
     %}
 
 Tuple
-   -> "("  _ TupleParameter (
+   -> "{"  _ TupleParameter (
         _ "," _ TupleParameter {% nth(3) %}
-    ):+ _ ")" {%
+    ):* _ "}" {%
         (data, location) => {
             const tuple = data[3].concat(data[2]);
             return new t.Tuple(tuple, location);
@@ -752,12 +755,12 @@ type
     | TupleType {% id %}
 
 TupleType
-   -> "(" TupleTypeParameter (_ "," _ TupleTypeParameter {% nth(3) %}):+ ")" {%
-       (data, location) => new t.TupleType(data[2].concat(data[1]), location)
+   -> "{" _ TupleTypeParameter (_ "," _ TupleTypeParameter {% nth(3) %}):* _ "}" {%
+       (data, location) => new t.TupleType(data[3].concat(data[2]), location)
     %}
 
 TupleTypeParameter
-   -> Identifier ":" type {% (d, l) => new t.TupleTypeParameter(d[0], d[2], l) %}
+   -> Identifier _ ":" _ type {% (d, l) => new t.TupleTypeParameter(d[0], d[4], l) %}
 
 className
    -> Identifier {% id %}

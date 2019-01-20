@@ -1,5 +1,6 @@
 import Traverser from './traverser';
 import t from '../parser/nodes';
+import Scope from '../scope/scope';
 
 /**
  * A traverser which pre-populates a hosited scope pass through node processing.
@@ -74,6 +75,10 @@ export default class ScopeTraverser extends Traverser {
         //     libvsl, MyClass.vsl, MyClass
         // Each file would have it's own top-level preqeued block.
         if (node instanceof t.CodeBlock) {
+            if (!node.scope) {
+                node.scope = new Scope();
+            }
+
             if (node.scope.isSemanticScope) {
                 // If there is a parent scope, specify it
                 if (this.scope.length > 0) {
