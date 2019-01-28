@@ -1,13 +1,20 @@
+import { Readable } from 'stream';
+
 /**
  * An abstraction for any input to the compiler. Call `.data(data)` to signal
  * that data has arrived. Override `this.ready` to recieve
  */
-export default class CompilationStream {
+export default class CompilationStream extends Readable {
     /**
      * Create a compilation stream. You can use the methods to send/recieve
-     * data.
+     * data. UTF8
+     * @param {Object} options - nodejs readable stream options
      */
-    constructor() {
+    constructor(options) {
+        super(options);
+
+        this.setEncoding('utf8');
+
         /** @private */
         this.dataBuffer = [];
 
@@ -39,6 +46,14 @@ export default class CompilationStream {
     }
 
     /**
+     * Reads data to comply with readable API.
+     * @override
+     */
+    _read() {
+        this.receive();
+    }
+
+    /**
      * Listens for data finishes evaluating when data is obtained. Call this in
      * a loop checking for `null`.
      *
@@ -52,7 +67,8 @@ export default class CompilationStream {
     async receive() {
         return new Promise((resolve, reject) => {
             const res = (data) => {
-                this.data += data;
+                if (data) { this.data += data }
+                this.push(data);
                 resolve(data);
             }
 

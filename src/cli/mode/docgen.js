@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 
 import DocGen from '../../docgen/DocGen';
 
-export default class Doxgen extends CompilerCLI {
+export default class Docgen extends CompilerCLI {
     usage = "vsl docgen [options] <module> -o <out dir>"
 
     constructor() {

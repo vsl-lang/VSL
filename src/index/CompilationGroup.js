@@ -118,6 +118,12 @@ export default class CompilationGroup {
          */
         this.metadata = new GroupMetadata();
 
+        /**
+         * Compilation server to use if applicable
+         * @type {?CompilationServerClient}
+         */
+        this.compilationServer = null;
+
         /** @private */
         this.callback = () => {};
     }
@@ -149,8 +155,10 @@ export default class CompilationGroup {
                 const sourceModifiedTime = (await stat(stream.sourceName)).mtimeMs;
 
                 if (cacheMadeTime >= sourceModifiedTime) {
-                    const deserializedAst = await ASTSerializer.decodeFrom(createReadStream(cacheFile), cacheFile);
-                    deserializedAst.stream = stream
+                    const deserializedAst = await ASTSerializer.decodeFrom(createReadStream(cacheFile), {
+                        compiledFileName: cacheFile,
+                        overrideSourceStream: stream
+                    });
                     return deserializedAst;
                 } else {
                     // console.log(`rebuilding ${stream.sourceName} ${cacheMadeTime} < ${sourceModifiedTime}`);
@@ -158,30 +166,49 @@ export default class CompilationGroup {
             }
         }
 
-        let dataBlock, ast;
-        let parser = new VSLParser();
+        let parserResult;
 
-        while (null !== (dataBlock = await stream.receive())) {
-            try {
-                ast = parser.feed(dataBlock);
-            } catch(error) {
-                // Re-add sourceName if applicable
-                if (error instanceof ParserError)
-                    error.stream = stream;
-
-                // Rethrow error
-                throw error;
+        if (this.compilationServer) {
+            while (null !== await stream.receive()) {
+                // Keep obtaining data
             }
-            if (ast.length > 0) break;
-        }
 
-        if (ast.length === 0) {
-            // TODO: expand error handling here
-            throw new ParserError(
-                `Unexpected token EOF`,
-                null,
-                stream
-            );
+            // Now that all the stream data is loaded we'll compile it on the
+            // server
+            const result = await this.compilationServer.parse(stream, {
+                overrideSourceData: stream.data, // Used to reannotate AST
+                overrideSourceStream: stream
+            });
+
+            parserResult = result;
+        } else {
+            let dataBlock, ast;
+            let parser = new VSLParser();
+
+            while (null !== (dataBlock = await stream.receive())) {
+                try {
+                    ast = parser.feed(dataBlock);
+                } catch(error) {
+                    // Re-add sourceName if applicable
+                    if (error instanceof ParserError)
+                        error.stream = stream;
+
+                    // Rethrow error
+                    throw error;
+                }
+                if (ast.length > 0) break;
+            }
+
+            if (ast.length === 0) {
+                // TODO: expand error handling here
+                throw new ParserError(
+                    `Unexpected token EOF`,
+                    null,
+                    stream
+                );
+            }
+
+            parserResult = ast[0];
         }
 
         // Cache this if there is a dir specified.
@@ -192,16 +219,16 @@ export default class CompilationGroup {
                 { flags: 'w+' }
             );
 
-            const serializer = new ASTSerializer(ast[0], {
+            const serializer = new ASTSerializer(parserResult, {
                 sourceFile: path.relative(this.metadata.cacheDirectory, stream.sourceName)
             });
 
             await serializer.serializeTo(cacheWriteStream);
         }
 
-        ast[0].stream = stream;
+        parserResult.stream = stream;
 
-        return ast[0];
+        return parserResult;
     }
 
     /**

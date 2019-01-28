@@ -17,6 +17,7 @@ import CompilationIndex from '../../index/CompilationIndex';
 import CompilationModule, { HookType } from '../../index/CompilationModule';
 import CompilationGroup from '../../index/CompilationGroup';
 import CompilationStream from '../../index/CompilationStream';
+import CompilationServerClient from '../../index/CompilationServerClient';
 
 import Module from '../../modules/Module';
 import ModuleError from '../../modules/ModuleError';
@@ -39,6 +40,9 @@ export default class CompilerCLI extends CLIMode {
 
     // Should be ABSOLUTE path
     cacheDirectory = null;
+
+    // parser server location expression object
+    parserServer = null;
 
     /**
      * Loads the STL and returns it as the only item in an array of compilation
@@ -98,6 +102,10 @@ export default class CompilerCLI extends CLIMode {
         let group = new CompilationGroup();
         const sourcePaths = await module.getSources(this.filterTarget);
 
+        if (this.parserServer) {
+            group.compilationServer = new CompilationServerClient(this.parserServer);
+        }
+
         group.metadata.name = module.name;
         group.metadata.cacheDirectory = path.join(directory, module.cacheDirectory);
 
@@ -151,6 +159,9 @@ export default class CompilerCLI extends CLIMode {
      */
     async fromFiles(files, backend) {
         let compilationGroup = new CompilationGroup();
+        if (this.parserServer) {
+            compilationGroup.compilationServer = new CompilationServerClient(this.parserServer);
+        }
         compilationGroup.metadata.cacheDirectory = this.cacheDirectory;
 
         // TODO: Don't make data global and use stream to get data.

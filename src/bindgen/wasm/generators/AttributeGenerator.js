@@ -11,7 +11,6 @@ export default function AttributeGenerator(node, bindgen) {
 
     const isConstant = node.readonly;
 
-    return `public let ${attributeName}: ${typeName} {
-    return ${typeName}::self.dispatchAccess(target: "${attributeName}")
-}`;
+    const body = `return ${typeName}::self.dispatchAccess(target: "${attributeName}")`;
+    return `public let ${attributeName}: ${typeName} { ${body} }`;
 }

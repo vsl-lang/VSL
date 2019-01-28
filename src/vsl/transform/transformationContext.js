@@ -45,6 +45,12 @@ export default class TransformationContext {
         this.booleanType = null;
 
         /**
+         * Stores the primary optional type
+         * @type {?ScopeTypeItem}
+         */
+        this.optionalType = null;
+
+        /**
          * If a root manifest has been declared
          * @type {boolean}
          */

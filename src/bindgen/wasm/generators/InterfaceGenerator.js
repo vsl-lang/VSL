@@ -23,6 +23,8 @@ function isPublic(node) {
 export default function InterfaceGenerator(node, bindgen) {
     const className = bindgen.formatIdentifier(node.name);
 
+    const isAllStatic = node.type === 'namespace';
+
     // If it is even a publically exposed interface.
     const isPublicItf = isPublic(node);
     if (!isPublicItf) return "";
@@ -43,7 +45,10 @@ export default function InterfaceGenerator(node, bindgen) {
                 break;
 
             case "operation":
-                items.push(MethodGenerator(member, bindgen));
+                items.push(MethodGenerator(member, bindgen, {
+                    isStatic: isAllStatic,
+                    parentClassName: className
+                }));
                 break;
 
             case "iterable":
@@ -63,6 +68,7 @@ export default function InterfaceGenerator(node, bindgen) {
     return `@mock(ui32)
 @dynamic(false)
 public class ${className}: ${inheritance} {
+    public static func toJSValue() -> JSValue { return JS_GLOBAL.dispatchAccess("${className}") }
 ${bindgen.indent(items.join("\n"))}
 }
 

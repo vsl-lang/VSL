@@ -1,9 +1,0 @@
-// Test function
-func hello() {
-
-}
-
-// Test this returns
-func echo(name: String) -> String {
-    return name
-}

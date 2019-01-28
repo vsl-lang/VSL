@@ -42,28 +42,8 @@ export default class Bindgen {
      * @param {Object} [options={}]
      * @param {boolean} [options.force=false] - If to force build even if
      *                                        already built.
-     */
-    async dispatch({ force = false } = {}) {
-        if (await this.alreadyBuilt() && !force) {
-            return;
-        }
-
-        await this.run();
-    }
-
-    /**
-     * Determines if output files are already prepared.
-     * @return {boolean}
-     * @abstract
-     * @async
-     */
-    async alreadyBuilt() { return false; }
-
-    /**
-     * Runs bindgen unconditionally. It is recommended to use
-     * {@link Bindgen#dispatch}
      * @async
      * @abstract
      */
-    async run() {}
+    async dispatch({ force = false } = {}) {}
 }

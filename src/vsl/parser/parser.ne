@@ -440,13 +440,17 @@ FunctionStatement
     %}
 
 FunctionHead
-   -> Annotations "override":? Modifier "function"
-        (Identifier {% id %} | OverridableOperator {% id %})
+   -> Annotations "override":? Modifier
+        (
+            "function" Identifier {% nth(1) %} |
+            "function" OverridableOperator {% nth(1) %} |
+            SubscriptToken {% id %}
+        )
         ArgumentList
         (_ ("->" {% id %} | "yields" {% id %}) _ type {% (data) => [data[1], data[3]] %}):? {%
         (data, location) =>
-            new t.FunctionStatement(data[0], data[2], data[4],
-                data[5], data[6]?.[1] || null, data[6]?.[0] === 'yields', !!data[1], null, location)
+            new t.FunctionStatement(data[0], data[2], data[3],
+                data[4], data[5]?.[1] || null, data[5]?.[0] === 'yields', !!data[1], null, location)
     %}
 
 OverridableOperator
@@ -622,13 +626,20 @@ FunctionizedOperator
 
 propertyTail
    -> _ "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], false, l) %}
-    | Array {% (d, l) => new t.Subscript(null, d[0].array, false, l) %}
+    | Subscript {% id %}
     | nullableProperty {% id %}
+
+Subscript
+   -> "[" _ delimited[SubscriptItem {% id %}, _ "," _] _ "]" {% (d, l) => new t.Subscript(null, d[2], false, l) %}
+
+SubscriptItem
+   -> Identifier ":" InlineExpression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}
+    | InlineExpression {% (d, l) => new t.ArgumentCall(d[0].expression, null, l) %}
 
 # TODO: undeclared struct (uses syntax meant for named tuple) will make this a pain but still need to change
 nullableProperty
    -> "?" "." _ Identifier {% (d, l) => new t.PropertyExpression(null, d[3], true, l) %}
-    | "?" Array            {% (d, l) => new t.Subscript(null, d[0].array, true, l) %}
+    | "?" Subscript        {% nth(1) %}
     | "<" delimited[type {% id %}, _ "," _] ">" {% (d, l) => new t.Generic(null, d[1], l) %}
     | "(" _ (delimited[ArgumentCall {% id %}, _ "," _] _ {% id %}):? ")" {%
             (d, l) => new t.FunctionCall(null, d[2] || [], l)
@@ -808,6 +819,9 @@ Identifier
    -> %identifier {%
         (data, location) => new t.Identifier(data[0][0], location)
     %}
+
+SubscriptToken
+   -> "subscript" {% (data, location) => new t.SubscriptToken(location) %}
 
 _
    -> ("\n" | Comment {% id %}):* {%

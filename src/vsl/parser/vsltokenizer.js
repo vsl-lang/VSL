@@ -229,6 +229,8 @@ tokenMatchers[VSLScope.Normal] = [
     [kw('func'), ret('function')],
     [kw('fn'), ret('function')],
 
+    [kw('subscript'), passThrough],
+
     [kw('class'), passThrough],
     [kw('struct'), passThrough],
     [kw('interface'), passThrough],

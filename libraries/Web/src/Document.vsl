@@ -1,6 +1,0 @@
-@mock(opaquepointer)
-public class Document {
-    func elementWith(id: String) -> HTMLElement external(getElementById)
-}
-
-public static external const document: Document

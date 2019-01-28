@@ -37,6 +37,22 @@ export default class WASMBindgen extends Bindgen {
     }
 
     /**
+     * Converts value to type
+     * @param {string} value - The value
+     * @param {string} type - The type of the value as VSL type string
+     * @return {string}
+     */
+    transformValue(value, type) {
+        switch (type) {
+            case 'String':
+                return `${value}.toString(free: true)`
+
+            default:
+                return value;
+        }
+    }
+
+    /**
      * Formats a TYPE identifier. Adds things like prefixes and prevents
      * conflicts with keywords
      * @param {string} identifier
@@ -97,23 +113,34 @@ export default class WASMBindgen extends Bindgen {
 
             case 'sequence': return 'Array';
 
+            case 'object':
             case 'any': return 'JSValue';
+
             case 'void': return 'Void';
 
             default: return this.formatIdentifier(name);
         }
     }
 
+    /**
+     * Gets output name for source file
+     * @param {string} sourcePath
+     * @return {string}
+     */
+    getOutputPath(sourcePath) {
+        const inputName = path.basename(sourcePath, path.extname(sourcePath));
+        const output = path.join(this.outputDirectory, `${this.outputName}.${inputName}.vsl`);
+        return output;
+    }
+
     /** @private */
     async generate(sourceFile) {
         // Parses a given source path
         const source = await fs.readFile(sourceFile, { encoding: 'utf8' });
-        const sourceModifiedTime = (await fs.stat(sourceFile)).mtime;
         const ast = WebIDL2.parse(source);
 
 
-        const inputName = path.basename(sourceFile, path.extname(sourceFile));
-        const output = path.join(this.outputDirectory, `${this.outputName}.${inputName}.vsl`);
+        const output = this.getOutputPath(sourceFile);
 
         const outputStream = fs.createWriteStream(output, {
             encoding: 'utf8',
@@ -187,6 +214,7 @@ export default class WASMBindgen extends Bindgen {
             switch (itemType) {
                 case 'callback interface':
                 case 'interface':
+                case 'namespace':
                     outputStream.write(generators.InterfaceGenerator(item, this));
                     break;
 
@@ -198,17 +226,27 @@ export default class WASMBindgen extends Bindgen {
 
         outputStream.end();
         await streamFinished(outputStream);
-        await fs.utimes(output, sourceModifiedTime, sourceModifiedTime);
     }
 
     /** @override */
-    async run() {
+    async dispatch(options) {
         await fs.ensureDir(this.outputDirectory);
 
-        await Promise.all(
-            this.sources
-                .map(
-                    sourceFile => this.generate(sourceFile)));
+        await Promise.all(this.sources.map(async sourceFile => {
+            const outputFile = this.getOutputPath(sourceFile);
+
+            let outputModTime;
+            try {
+                outputModTime = (await fs.stat(outputFile)).mtimeMs;
+            } catch(e) { outputModTime = 0 }
+
+            const sourceModTime = (await fs.stat(sourceFile)).mtimeMs;
+
+            // If source is newer than output
+            if (sourceModTime > outputModTime) {
+                await this.generate(sourceFile);
+            }
+        }));
     }
 
 }
