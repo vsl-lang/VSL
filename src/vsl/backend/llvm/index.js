@@ -207,6 +207,7 @@ export default class LLVMBackend extends Backend {
             context.builder = initBuilder;
             context.parentFunc = initFunc;
 
+            // Go backwards
             for (let i = 0; i < funcs.length; i++) {
                 funcs[i](context);
             }

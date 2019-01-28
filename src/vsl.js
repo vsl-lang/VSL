@@ -23,6 +23,7 @@ export { default as CompilationGroup } from './index/CompilationGroup';
 export { default as CompilationStream } from './index/CompilationStream';
 export { default as CompilationIndex } from './index/CompilationIndex';
 export { default as CompilationHook } from './index/CompilationHook';
+export { default as CompilationServerClient } from './index/CompilationServerClient';
 export { default as CompilationModule, HookType } from './index/CompilationModule';
 
 export { default as Backend } from './vsl/backend/Backend';

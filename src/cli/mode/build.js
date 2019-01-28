@@ -7,6 +7,7 @@ import tty from 'tty';
 import hrtime from 'browser-process-hrtime';
 
 import { spawn } from 'child_process';
+import { parse as urlParse } from 'url';
 
 import LLVMBackend, { Targets } from '../../vsl/backend/llvm';
 import FilterExpression from '../../modules/FilterExpression';
@@ -45,6 +46,10 @@ export default class Build extends CompilerCLI {
                 ["-g", "--debug"         , "Performs a 'debug' or development " +
                                            "build. This allows nicer errors.",       { debug: true }],
                 ["--artifacts"           , "Leaves compilation artifacts",           { run: _ => { TempFileManager.willCleanup = false; return true } }],
+                ["-P", "--parser-server" , "Specifies the address of the VSL parser " +
+                                           "server to connect to. You can start a " +
+                                           "server using the `vsl parser-server` " +
+                                           "command.",                               { arg: "address", parserServer: true }],
                 ["-c", "--cache"         , "Enables build cache from a given dir " +
                                            "this generates artifacts which prevent " +
                                            "extra builds. See the `cache.directory` " +
@@ -158,6 +163,7 @@ export default class Build extends CompilerCLI {
         let linker = undefined;
         let lto = false;
         let cacheDir = null;
+        let parserServer = null;
 
         let linkerArgs = [];
         let llcArgs = [];
@@ -203,6 +209,7 @@ export default class Build extends CompilerCLI {
                 if ('linker' in flagInfo) linker = args[++i];
                 if ('stdout' in flagInfo) outputStream = process.stdout;
                 if ('lto' in flagInfo) lto = true;
+                if ('parserServer' in flagInfo) parserServer = args[++i];
                 if ('cache' in flagInfo) cacheDir = args[++i];
                 if ('target' in flagInfo) target = args[++i];
                 if ('triple' in flagInfo) triple = args[++i];
@@ -262,6 +269,15 @@ export default class Build extends CompilerCLI {
 
         if (cacheDir) {
             this.cacheDirectory = path.resolve(cacheDir);
+        }
+
+        if (parserServer) {
+            const parts = urlParse(`vslc://${parserServer}`);
+            if (!parts.port) {
+                this.error.cli(`could not find port in server expression \`${parserServer}\``);
+            }
+            const parserServerExpression = { host: parts.hostname, port: parts.port };
+            this.parserServer = parserServerExpression;
         }
 
         if (![0, 1, 2, 3].includes(+opt)) {

@@ -75,7 +75,7 @@ function codec(sourceFileString) {
                 object[key] == null ||
                 [
                     'lazyHooks', 'parentNode', 'relativeName',
-                    'argPositionsTreatedOptional'
+                    'argPositionsTreatedOptional', 'stream'
                 ].includes(key)
             ))
             .forEach(propName => {
@@ -254,22 +254,27 @@ export default class ASTSerializer {
 
             encoder.encoder.flush();
 
-            compressor.end();
             compressor.on('finish', () => {
                 resolve();
             });
+
+            compressor.end();
         });
     }
 
     /**
      * Deserializes into AST given input stream
      * @param {ReadableSteam} stream - Stream to decode
-     * @param {string} compiledFileName - Serialized source as path
+     * @param {Object} [o={}] - additional options
+     * @param {?string} [o.compiledFileName=null] - Serialized source as path (if exists).
+     * @param {string} [o.overrideSourcePath=null] - When decoding use a custom source path for data
+     * @param {string} [o.overrideSourceData=null] - Custom source data string. Used to reannotate AST
+     * @param {CompilationStream} [o.overrideCompilationStream=null] - Custom stream to use. Does not use for data instead attached to AST
      * @return {ASTSerializer} serializer with the ast.
      * @throws {TypeError} if couldn't be decoded
      * @async
      */
-    static decodeFrom(stream, compiledFileName) {
+    static decodeFrom(stream, { compiledFileName, overrideSourcePath, overrideSourceData, overrideSourceStream } = {}) {
         return new Promise((resolve) => {
             stream.setEncoding('binary');
 
@@ -301,10 +306,10 @@ export default class ASTSerializer {
 
                 // Check the info line for source exists
                 let isSourceFile = compare(data.slice(i), VSLC_DS_SOURCEFILE);
-                i += VSLC_DS_SOURCEFILE.length;
                 let sourceName = null;
 
                 if (isSourceFile) {
+                    i += VSLC_DS_SOURCEFILE.length;
                     let start = i,
                         char;
 
@@ -320,10 +325,23 @@ export default class ASTSerializer {
 
                 resolve((async () => {
                     let source = null;
-                    if (await fs.pathExists(sourceName)) {
-                        source = await fs.readFile(sourceName, 'utf8');
+
+                    if (overrideSourceData) {
+                        source = overrideSourceData;
+                    } else {
+                        const sourceNameToUse = overrideSourcePath || sourceName;
+                        if (sourceNameToUse && await fs.pathExists(sourceNameToUse)) {
+                            source = await fs.readFile(sourceNameToUse, 'utf8');
+                        }
                     }
-                    return msgpack.decode(data.slice(i), { codec: codec(source) })
+
+                    let result = msgpack.decode(data.slice(i), { codec: codec(source) })
+
+                    if (overrideSourceStream) {
+                        result.stream = result;
+                    }
+
+                    return result;
                 })());
             });
         });
