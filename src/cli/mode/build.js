@@ -273,10 +273,16 @@ export default class Build extends CompilerCLI {
 
         if (parserServer) {
             const parts = urlParse(`vslc://${parserServer}`);
-            if (!parts.port) {
+            let parserServerExpression;
+
+            if (parts.port) {
+                parserServerExpression = { host: parts.hostname, port: parts.port };
+            } else if (parts.path) {
+                parserServerExpression = { path: parts.path }
+            } else {
                 this.error.cli(`could not find port in server expression \`${parserServer}\``);
             }
-            const parserServerExpression = { host: parts.hostname, port: parts.port };
+
             this.parserServer = parserServerExpression;
         }
 
