@@ -107,7 +107,7 @@ export default class Default extends CLIMode {
     }
 
     appInfo() {
-        return `Subcommands: ${this.subcommands.join(", ")}\n` +
+        return `Subcommands: ${this.subcommands.join(", ")} .\n` +
             `Performs JIT execution, use \`vsl build\` to get compiled files.`;
     }
 
