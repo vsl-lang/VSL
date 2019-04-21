@@ -13,12 +13,12 @@ export default class DescribeOptionalProvider extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         // Check that it's the correct type
-        if (node.name !== "optionalProvider") return;
+        if (node.name !== "optionalType") return;
 
         if (tool.context.optionalType !== null) {
             new TransformError(
-                `A optional provider already exists as ${tool.context.optionalType}. ` +
-                `only one optional provider can exist per compilation instance.`,
+                `A optional type already exists as ${tool.context.optionalType}. ` +
+                `only one optional type can exist per compilation instance.`,
                 node
             );
         } else {

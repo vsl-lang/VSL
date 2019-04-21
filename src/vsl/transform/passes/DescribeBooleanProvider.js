@@ -13,12 +13,12 @@ export default class DescribeBooleanProvider extends Transformation {
 
     modify(node: Node, tool: ASTTool) {
         // Check that it's the correct type
-        if (node.name !== "booleanProvider") return;
+        if (node.name !== "booleanType") return;
 
         if (tool.context.booleanType !== null) {
             new TransformError(
-                `A boolean provider already exists as ${tool.context.booleanType}. ` +
-                `only one boolean provider can exist per compilation instance.`,
+                `A boolean type already exists as ${tool.context.booleanType}. ` +
+                `only one boolean type can exist per compilation instance.`,
                 node
             );
         } else {

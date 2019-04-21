@@ -19,7 +19,7 @@ export default class LLVMLiteral extends BackendWatcher {
 
     receive(node, tool, regen, context) {
         const backend = context.backend;
-        const type = node.typeRef;
+        const type = node.reference;
 
         if (type === null) {
             throw new BackendError(

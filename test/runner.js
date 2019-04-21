@@ -23,7 +23,7 @@ async function loadLibvsl() {
 
     const module = moduleLoader.module;
     const group = new VSL.CompilationGroup();
-    for (const file of module.getSources(VSL.FilterExpression.tripleToTarget(VSL.NATIVE_TRIPLE))) {
+    for (const file of await module.getSources(VSL.FilterExpression.tripleToTarget(VSL.NATIVE_TRIPLE))) {
         const fileStream = group.createStream();
         fileStream.sourceName = file;
         fileStream.send(fs.readFileSync(file, 'utf8'));

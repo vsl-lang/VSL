@@ -10,7 +10,8 @@ const VSLTokenType = Object.freeze({
     Comment: 7,
     ImportStatement: 9,
     ByteSequence: 10,
-    Boolean: 11
+    Boolean: 11,
+    Nil: 12
 });
 
 export default VSLTokenType;

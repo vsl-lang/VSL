@@ -32,6 +32,9 @@
             this.objectHeapNextFreeSlot = 0;
 
             // Store null ptr value in first slot.
+            // We use -2 beacuse:
+            //  1. numbers are not stored in object heap
+            //  2. -1 is already used for the heap full indicator
             this.storeValue(-2);
 
             this.__objectheap_global = this.storeValue(window);
