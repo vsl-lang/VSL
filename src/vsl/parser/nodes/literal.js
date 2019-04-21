@@ -31,7 +31,7 @@ export default class Literal extends Node {
         this.type = type;
 
         /** @type {?ScopeTypeItem} */
-        this.typeRef = null;
+        this.reference = null;
     }
 
     clone() {

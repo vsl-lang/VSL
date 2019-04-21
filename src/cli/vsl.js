@@ -13,8 +13,9 @@ subcommands["parser-server"] = modes.ParserServer;
 
 let args = process.argv.slice(2);
 let cmd = subcommands[args[0]];
-if (cmd === 'debugsrc') {
+if (args[0] === 'debugsrc') {
     cmd = modes.Debugsrc;
+    args.shift();
 } else if (!cmd) {
     cmd = modes.Default;
 } else {

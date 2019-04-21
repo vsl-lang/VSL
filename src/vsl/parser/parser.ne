@@ -20,6 +20,7 @@ const NodeTypes = require('./vsltokentype').default,
   importStatement = freeze({ test: x => x[1] === NodeTypes.ImportStatement }),
   byteSequence = freeze({ test: x => x[1] === NodeTypes.ByteSequence }),
   boolean = freeze({ test: x => x[1] === NodeTypes.Boolean }),
+  nil = freeze({ test: x => x[1] === NodeTypes.Nil }),
   comment = freeze({ test: x => x[1] === NodeTypes.Comment }),
   not_paren = freeze({ test: x => !/^[()]$/.test(x.value || "") }),
   any = freeze({ test: () => true }),
@@ -676,6 +677,7 @@ Literal
     | %byteSequence {% literal %}
     | %regex        {% literal %}
     | %boolean      {% literal %}
+    | %nil          {% literal %}
     | Array         {% id %}
     | Dictionary    {% id %}
     | Tuple         {% id %}

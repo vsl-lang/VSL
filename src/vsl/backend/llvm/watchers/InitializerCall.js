@@ -6,6 +6,7 @@ import ScopeInitItem from '../../../scope/items/scopeInitItem';
 import getFunctionInstance from '../helpers/getFunctionInstance';
 import toLLVMType from '../helpers/toLLVMType';
 import getDefaultInit from '../helpers/getDefaultInit';
+import tryGenerateCast from '../helpers/tryGenerateCast';
 
 import { Key } from '../LLVMContext';
 import { alloc } from '../helpers/MemoryManager';
@@ -83,7 +84,12 @@ export default class LLVMInitializerCall extends BackendWatcher {
                 value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
                 k--;
             } else {
-                value = regen('value', node.arguments[k], context);
+                value = tryGenerateCast(
+                    regen('value', node.arguments[k], context),
+                    node.argumentReferences[k],
+                    initRef.args[i].type.contextualType(typeContext),
+                    context
+                );
             }
             compiledArgs.push(value);
         }

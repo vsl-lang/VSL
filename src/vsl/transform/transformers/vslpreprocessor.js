@@ -51,6 +51,9 @@ export default class VSLPreprocessor extends Transformer {
             // Registers @booleanProvider
             pass.DescribeBooleanProvider,
 
+            // Registers @optionalType
+            pass.DescribeOptionalProvider,
+
             // Registers @staticEnumProvider
             pass.DescribeStaticEnumProvider,
 

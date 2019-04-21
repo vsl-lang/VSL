@@ -10,7 +10,7 @@ export default class DynamicFieldStatement extends DeclarationStatement {
      *
      * @param {string[]} access A list of access modifiers for the statement
      * @param {TypedIdentifier} name Name of dyn field
-     * @param {(Getter|Setter)[]} items The item decls.
+     * @param {Array<Getter|Setter>} items The item decls.
      * @param {Object} position a position from nearley
      */
     constructor(access, name, items, position) {
@@ -19,7 +19,7 @@ export default class DynamicFieldStatement extends DeclarationStatement {
         /** @type {TypedIdentifier} */
         this.name = name;
 
-        /** @type {(Getter|Setter)[]} */
+        /** @type {Array<Getter|Setter>} */
         this.items = items;
 
         /**

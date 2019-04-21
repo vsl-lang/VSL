@@ -149,7 +149,7 @@ export default class LiteralResolver extends TypeResolver {
         // console.log(this.node.parentScope.toString());
         // console.log(typeCandidates.length, response);
         if (typeCandidates.length === 1) {
-            this.node.typeRef = typeCandidates[0].candidate;
+            this.node.reference = typeCandidates[0].candidate;
         }
 
         return typeCandidates;

@@ -193,6 +193,8 @@ tokenMatchers[VSLScope.Normal] = [
     ['[', passThrough],
     [']', passThrough],
 
+    [kw('nil'), passThrough, VSLTokenType.Nil],
+
     [kw('self'), passThrough],
     [kw('super'), passThrough],
 
