@@ -12,5 +12,5 @@ class Adder {
 
 func main() {
     let addTwo = Adder(withValue: 1)
-    assert(addTwo.add(value: 5) == 7)
+    assert(addTwo.add(value: 5) == 6)
 }

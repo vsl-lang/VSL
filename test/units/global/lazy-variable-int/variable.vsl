@@ -1,14 +1,16 @@
 lazy let global: String = f()
 
 func f() -> String {
-    print("A")
-    return "B"
+    print("B")
+    return "C"
 }
 
 func main() {
+    print("A")
+
     print(global)
     print(global)
 
-    global = "C"
+    global = "D"
     print(global)
 }

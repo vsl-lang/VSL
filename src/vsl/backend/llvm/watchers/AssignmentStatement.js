@@ -76,6 +76,8 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
 
                 return node.reference.backendRef = new ValueRef(varRef, { isPtr: true });
             } else {
+                // A simple, local assignment expression
+
                 const expressionValue = regen('value', node, context);
                 const value = tryGenerateCast(
                     expressionValue,

@@ -86,7 +86,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
             } else {
                 value = tryGenerateCast(
                     regen('value', node.arguments[k], context),
-                    node.argumentReferences[k],
+                    node.argumentReferences[k].contextualType(parentTypeContext),
                     initRef.args[i].type.contextualType(typeContext),
                     context
                 );
