@@ -242,11 +242,11 @@ export default class ASTSerializer {
             encoder.pipe(compressor).pipe(stream);
 
             // Write signature '0VSL\n'
-            compressor.write(VSLC_SIGNATURE);
+            compressor.write(Buffer.from(VSLC_SIGNATURE));
 
             // Indicates a source file follows
             if (this._sourceFile) {
-                compressor.write(VSLC_DS_SOURCEFILE);
+                compressor.write(Buffer.from(VSLC_DS_SOURCEFILE));
                 compressor.write(this._sourceFile + '\n');
             }
 
