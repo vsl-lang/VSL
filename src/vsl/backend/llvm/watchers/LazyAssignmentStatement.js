@@ -32,7 +32,12 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         const globalVar = backend.module.getGlobalVariable(backingValueName, true);
         if (globalVar) return;
 
+        // Get the type which the variable is
         const varType = toLLVMType(aliasItem.type, context);
+
+        // The backing type is in the form:
+        // { bool isInitialized, T value }
+        // if isInitialized is false then the value will be initialized.
         const backingType = llvm.StructType.get(backend.context, [
             llvm.Type.getInt1Ty(backend.context),
             varType
@@ -53,6 +58,7 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
             backingValueName
         );
 
+        // Create a function to access variable value
         const funcType = llvm.FunctionType.get(varType, [], false);
         const func = llvm.Function.create(
             funcType,
@@ -61,8 +67,8 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
             backend.module
         );
 
-        const block = llvm.BasicBlock.create(backend.context, 'entry', func);
-        const builder = new llvm.IRBuilder(block);
+        const entryBlock = llvm.BasicBlock.create(backend.context, 'entry', func);
+        const builder = new llvm.IRBuilder(entryBlock);
 
         const initializationStatus = builder.createInBoundsGEP(
             backingValue,
@@ -80,10 +86,12 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
             ]
         );
 
+        // Case: already initialized
         const doReturn = llvm.BasicBlock.create(backend.context, 'value', func);
         builder.setInsertionPoint(doReturn);
         builder.createRet(builder.createLoad(internalValue));
 
+        // Case: needs to be initialized
         const doInitialize = llvm.BasicBlock.create(backend.context, 'noinit', func);
         builder.setInsertionPoint(doInitialize);
 
@@ -91,6 +99,7 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
         newCtx.builder = builder;
         newCtx.parentFunc = func;
 
+        // Initialize the value
         const expressionValue = regen('value', node, newCtx);
         let initVal = tryGenerateCast(
             expressionValue,
@@ -104,7 +113,8 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
 
         builder.createRet(initVal);
 
-        builder.setInsertionPoint(block);
+        // Check which case to run
+        builder.setInsertionPoint(entryBlock);
         const condBr = builder.createCondBr(
             builder.createICmpEQ(
                 builder.createLoad(initializationStatus),
@@ -114,11 +124,12 @@ export default class LLVMLazyAssignmentStatement extends BackendWatcher {
             doInitialize
         );
 
+        // Handle setting the lazy variable
         aliasItem.backendRef = new ValueRef(func, {
             isDyn: true,
             didSet: (value, context) => {
                 const ptr = context.builder.createInBoundsGEP(
-                    this.backingValue,
+                    backingValue,
                     [
                         llvm.ConstantInt.get(context.backend.context, 0),
                         llvm.ConstantInt.get(context.backend.context, 1)
