@@ -44,12 +44,14 @@ export default class ParserServer extends CompilerCLI {
     }
 
     /**
+     * Prints a log messsage based on level. use `*[text]*` in string for bold.
      * @param {string} message - message
-     * @param {string} type - 'status', 'error', 'warn'
+     * @param {string} type - 'status', 'error', 'warn', 'conf', 'info'
      */
     printLog(message, type) {
         const colorValue = {
             'status': 32,
+            'info': 34,
             'warn': 33,
             'error': 31,
             'conf': 36
@@ -59,7 +61,11 @@ export default class ParserServer extends CompilerCLI {
         const time = new Date().toISOString();
         const header = `${color}vsl (${time}):${endColor} `;
 
-        process.stdout.write(`${header}${message}\n`);
+        const adjustedMessage = this.color ? message
+            .replace(/\*\[/g, '\u001B[1;4m')
+            .replace(/\]\*/g, `\u001B[0;${colorValue}m`) : message;
+
+        process.stdout.write(`${header}${adjustedMessage}\n`);
     }
 
     run(args) {
@@ -121,7 +127,6 @@ export default class ParserServer extends CompilerCLI {
     startWorker(port) {
         const clusterId = cluster.worker.id;
         const timeout = +process.env[SERVER_TIMEOUT_KEY];
-        this.printLog(`Starting worker ${clusterId}`, 'status');
 
         let connectionCounter = 0;
 
@@ -212,8 +217,13 @@ export default class ParserServer extends CompilerCLI {
 
         server.listen(port, () => {
             const address = server.address();
-            const location = typeof address === 'string' ? `ICP ${address}` : `TCP [${address.address}]:${address.port} over ${address.family}`;
-            this.printLog(`Worker ${cluster.worker.id} at ${location}`, 'conf');
+            const connectionPath = typeof address === 'string' ? address : `[${address.address}]:${address.port}`;
+            const location = typeof address === 'string' ? `ICP` : `TCP`;
+            this.printLog(`Worker ${cluster.worker.id} listening on ${location}`, 'conf');
+
+            if (cluster.worker.id === 1) {
+                this.printLog(`Connect using *[-P '${connectionPath}']*`, 'info');
+            }
         });
 
         server.on('close', () => {
