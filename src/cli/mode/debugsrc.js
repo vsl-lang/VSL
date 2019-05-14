@@ -7,7 +7,6 @@ import FixItController from '../../fixit/FixItController';
 import CLIMode from '../CLIMode';
 
 import readline from 'readline';
-import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
 
@@ -207,10 +206,10 @@ export default class Debug extends CLIMode {
         // Fix ANSI color bug
         REPL._setPrompt = REPL.setPrompt;
         REPL.setPrompt = (prompt, length) =>
-            REPL._setPrompt(prompt, length ? length : prompt.split(/[\r\n]/).pop().stripColors.length);
+            REPL._setPrompt(prompt, length ? length : prompt.split(/[\r\n]/).pop().replace(/\u001b\[.*?m/g, '').length);
 
         let rawPrompt = `vsl${this.mode ? `::${this.mode}` : ""}> `
-        let prompt = this.color ? rawPrompt.red.bold : rawPrompt;
+        let prompt = this.color ? `\u001B[1;31m${rawPrompt}\u001B[0m` : rawPrompt;
         let unfinishedPrompt = ">".repeat(rawPrompt.length - 1) + " ";
         REPL.setPrompt(prompt);
 
