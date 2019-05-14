@@ -1,7 +1,6 @@
 import CLIMode from '../CLIMode';
 
 import readline from 'readline';
-import colors from 'colors';
 import util from 'util';
 import tty from 'tty';
 
