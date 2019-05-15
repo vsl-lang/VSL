@@ -366,7 +366,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         [llvm.Type.getFloatTy(backend.context)],
                         false
                     )
-                ),
+                ).callee,
                 [
                     context.parentFunc.getArguments()[0]
                 ]
@@ -380,7 +380,7 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         [llvm.Type.getDoubleTy(backend.context)],
                         false
                     )
-                ),
+                ).callee,
                 [
                     context.parentFunc.getArguments()[0]
                 ]
