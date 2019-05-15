@@ -631,7 +631,7 @@ propertyTail
     | nullableProperty {% id %}
 
 Subscript
-   -> "[" _ delimited[SubscriptItem {% id %}, _ "," _] _ "]" {% (d, l) => new t.Subscript(null, d[2], false, l) %}
+   -> "[" _ delimited[SubscriptItem {% id %}, _ "," _] _ "]" {% (d, l) => new t.Subscript(null, d[2], l) %}
 
 SubscriptItem
    -> Identifier ":" InlineExpression {% (d, l) => new t.ArgumentCall(d[2].expression, d[0], l) %}

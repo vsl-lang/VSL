@@ -24,13 +24,13 @@ export default class InitializerStatement extends DeclarationStatement {
         position: Object
     ) {
         super(access, position);
-        
+
         /** @type {boolean} */
         this.optional = optional;
-        
+
         /** @type {FunctionArgument[]} */
         this.params = params;
-        
+
         /** @type {CodeBlock} */
         this.statements = statements;
     }
