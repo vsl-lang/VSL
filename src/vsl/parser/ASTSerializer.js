@@ -8,11 +8,23 @@ import Scope from '../../vsl/scope/scope';
 import { createHash } from 'crypto';
 import * as Nodes from './nodes';
 
-// Signature for VSLC file
-export const VSLC_SIGNATURE = new Uint8Array([48, 86, 83, 76, 10]);
+// Signature for VSLC file (0VSL\n)
+export const VSLC_SIGNATURE = new Uint8Array([0x30, 0x56, 0x53, 0x4C, 0x0A]);
 
-// VSL data signature for a source file path
-export const VSLC_DS_SOURCEFILE = new Uint8Array([ 0xFF, 0xA0 ]);
+// VSL data signature for version (one byte).
+export const VSLC_DS_VERSION = Buffer.from([0xFF, 0xFF]);
+
+// VSL data signature for a source file path (null string).
+export const VSLC_DS_SOURCEFILE = Buffer.from([0xFF, 0xA0]);
+
+// VSL data signature for primary data block (remainder of file).
+export const VSLC_DS_PRIMARYDATA = Buffer.from([0xFF, 0xF0]);
+
+
+// Current supported version
+export const VSLC_CURRENT_VERSION = 2;
+
+
 
 // Bytes which indicate an AST node
 export const AST_NODE_EXT = 0x40;
@@ -239,17 +251,22 @@ export default class ASTSerializer {
 
             const encoder = msgpack.createEncodeStream({ codec: codec() });
             const compressor = lz4.createEncoderStream();
-            encoder.pipe(compressor).pipe(stream);
 
             // Write signature '0VSL\n'
-            compressor.write(Buffer.from(VSLC_SIGNATURE));
+            stream.write(Buffer.from(VSLC_SIGNATURE));
+
+            stream.write(VSLC_DS_VERSION);
+            stream.write(Buffer.from([VSLC_CURRENT_VERSION]));
 
             // Indicates a source file follows
             if (this._sourceFile) {
-                compressor.write(Buffer.from(VSLC_DS_SOURCEFILE));
-                compressor.write(this._sourceFile + '\n');
+                stream.write(VSLC_DS_SOURCEFILE);
+                stream.write(this._sourceFile + '\n');
             }
 
+            stream.write(VSLC_DS_PRIMARYDATA);
+
+            encoder.pipe(compressor).pipe(stream);
             encoder.write(this._ast);
 
             encoder.encoder.flush();
@@ -292,57 +309,81 @@ export default class ASTSerializer {
                     throw new TypeError(`no vslc data for ${compiledFileName} (${(overrideSourceStream && overrideSourceStream.sourceName) || overrideSourceStream || 'n/a'})`);
                 }
 
-                data = lz4.decode(data);
-
                 let i = 0;
 
                 // Check magic bytes
                 const signature = compare(data, VSLC_SIGNATURE);
                 i += VSLC_SIGNATURE.length;
                 if (!signature) {
-                    throw new TypeError('malformed vslc file');
+                    throw new TypeError('not a vslc file');
                 }
 
-
-                // Check the info line for source exists
-                let isSourceFile = compare(data.slice(i), VSLC_DS_SOURCEFILE);
                 let sourceName = null;
 
-                if (isSourceFile) {
-                    i += VSLC_DS_SOURCEFILE.length;
-                    let start = i,
-                        char;
+                // Add three because we read three extra bytes for the full
+                // block identifier.
+                parser:
+                while (i + 1 < data.length) {
+                    const blockType = data.readUInt16BE(i);
+                    i += 2;
 
-                    while ((char = data[i++]) && char !== 0x0A);
-
-                    const sourceFileName = data.slice(start, i - 1).toString();
-
-                    sourceName = path.join(
-                        path.dirname(compiledFileName),
-                        sourceFileName
-                    );
-                }
-
-                resolve((async () => {
-                    let source = null;
-
-                    if (overrideSourceData) {
-                        source = overrideSourceData;
-                    } else {
-                        const sourceNameToUse = overrideSourcePath || sourceName;
-                        if (sourceNameToUse && await fs.pathExists(sourceNameToUse)) {
-                            source = await fs.readFile(sourceNameToUse, 'utf8');
+                    switch(blockType) {
+                        case VSLC_DS_VERSION.readUInt16BE(): {
+                            const version = data.readUInt8(i++);
+                            if (version !== VSLC_CURRENT_VERSION) {
+                                throw new TypeError(
+                                    `Version mismatch vslc type ${version} ` +
+                                    `current is ${VSLC_CURRENT_VERSION}`
+                                );
+                            }
+                            break;
                         }
+
+                        case VSLC_DS_SOURCEFILE.readUInt16BE(): {
+                            let start = i,
+                                char;
+
+                            while ((char = data[i++]) && char !== 0x0A);
+                            const sourceFileName = data.slice(start, i - 1).toString();
+                            sourceName = path.join(
+                                path.dirname(compiledFileName),
+                                sourceFileName
+                            );
+                            break;
+                        }
+
+                        case VSLC_DS_PRIMARYDATA.readUInt16BE():
+                            (async () => {
+                                let source = null;
+
+                                if (overrideSourceData) {
+                                    source = overrideSourceData;
+                                } else {
+                                    const sourceNameToUse = overrideSourcePath || sourceName;
+                                    if (sourceNameToUse && await fs.pathExists(sourceNameToUse)) {
+                                        source = await fs.readFile(sourceNameToUse, 'utf8');
+                                    }
+                                }
+
+                                const decompressor = lz4.createDecoderStream();
+                                decompressor.write(data.slice(i));
+
+                                const decoder = msgpack.createDecodeStream({ codec: codec(source) })
+                                decompressor.pipe(decoder).on("data", (result) => {
+                                    if (overrideSourceStream) {
+                                        result.stream = result;
+                                    }
+
+                                    resolve(result);
+                                });
+                            })();
+
+                            break parser;
+
+                        default:
+                            throw new TypeError(`Unknown vslc block type ${blockType.toString(16)}`);
                     }
-
-                    let result = msgpack.decode(data.slice(i), { codec: codec(source) })
-
-                    if (overrideSourceStream) {
-                        result.stream = result;
-                    }
-
-                    return result;
-                })());
+                }
             });
         });
     }
