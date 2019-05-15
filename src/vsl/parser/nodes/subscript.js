@@ -12,41 +12,33 @@ export default class Subscript extends Node {
      * Creates a subscript
      *
      * @param {Expression} head the object to subscript
-     * @param {Expression} expression the provided expression
+     * @param {ArgumentCall[]} expression the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor (head: Expression, expression: Expression, nullable: boolean, isClosure: boolean, position: Object) {
+    constructor (head: Expression, expression: Expression, position: Object) {
         super(position);
 
         /** @type {Expression} */
         this.head = head;
-        
-        /** @type {Expression} */
+
+        /** @type {ArgumentCall[]} */
         this.expression = expression;
-        
-        /** @type {boolean} */
-        this.nullable = nullable;
-        
-        /** @type {boolean} */
-        this.isClosure = isClosure;
     }
-    
+
     clone() {
         return new Subscript(
             this.head.clone(),
-            this.expression.clone(),
-            this.nullable,
-            this.isClosure
+            this.expression.clone()
         )
     }
-    
+
     /** @override */
     get children () {
-        return ['expression', 'nullable'];
+        return ['expression'];
     }
-    
+
     /** @override */
     toString() {
-        return `${this.nullable?'?':''}[${this.expression}]`;
+        return `[${this.expression}]`;
     }
 }

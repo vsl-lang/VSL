@@ -289,7 +289,7 @@ export default class ASTSerializer {
 
             stream.on("end", () => {
                 if (!data) {
-                    throw new TypeError('no vslc data');
+                    throw new TypeError(`no vslc data for ${compiledFileName} (${(overrideSourceStream && overrideSourceStream.sourceName) || overrideSourceStream || 'n/a'})`);
                 }
 
                 data = lz4.decode(data);

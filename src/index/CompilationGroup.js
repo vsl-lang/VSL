@@ -151,10 +151,12 @@ export default class CompilationGroup {
             const cacheFile = path.join(this.metadata.cacheDirectory, cacheFilename);
 
             if (await pathExists(cacheFile)) {
-                const cacheMadeTime = (await stat(cacheFile)).mtimeMs;
+                const cacheData = await stat(cacheFile);
+                const cacheMadeTime = cacheData.mtimeMs;
+                const cacheHasData = cacheData.size > 0;
                 const sourceModifiedTime = (await stat(stream.sourceName)).mtimeMs;
 
-                if (cacheMadeTime >= sourceModifiedTime) {
+                if (cacheMadeTime >= sourceModifiedTime && cacheHasData) {
                     const deserializedAst = await ASTSerializer.decodeFrom(createReadStream(cacheFile), {
                         compiledFileName: cacheFile,
                         overrideSourceStream: stream
