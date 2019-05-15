@@ -40,12 +40,13 @@ export default class RegisterInitDeclaration extends Transformation {
                 typedId: {
                     identifier: { value: argName },
                     type: argTypeNode
-                }
+                },
+                defaultValue: argDefaultValue
             }, index, all) => {
                 const externalName = externalNameNode?.value || argName;
                 const argType = new TypeLookup(argTypeNode, vslGetTypeChild).resolve(tool.scope),
                     sourceNode = all[index];
-                const isOptional = false;
+                const isOptional = !!argDefaultValue;
 
                 // If this is a statement function, we'll add the arg to
                 // subscope.
