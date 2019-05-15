@@ -25,7 +25,7 @@ export function alloc(size, type, node, context) {
 
     const memory = context.builder.createBitCast(
         context.builder.createCall(
-            malloc,
+            malloc.callee,
             [llvm.ConstantInt.get(backend.context, size, 64)]
         ),
         type
@@ -74,7 +74,7 @@ export function free(obj, context) {
     );
 
     return context.builder.createCall(
-        free,
+        free.callee,
         [obj]
     );
 }
