@@ -1,3 +1,52 @@
-extends root.pug
-block body
-    hi
+extends Item.pug
+block content
+    h2.item-content__title= name
+    section.user-text.item-content__description!= description
+    
+    if inits.length > 0
+        section.overview-box
+            h3.overview-box__title Initializers
+            ul.overview-box__elements
+                each method in inits
+                    li.overview-box__element
+                        a(href=`#method-${method.mangling}`): code.overview-box__element__signature
+                            | public init(
+                            each arg, index in method.args
+                                span.overview-box__element__signature__highlight= arg.publicName
+                                | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
+                            | )
+                        div.overview-box__element__description.user-text!= method.description
+    
+    if methods.length > 0
+        section.overview-box
+            h3.overview-box__title Methods
+            ul.overview-box__elements
+                each method in methods
+                    li.overview-box__element
+                        a(href=`#method-${method.mangling}`): code.overview-box__element__signature
+                            | public func
+                            |
+                            span.overview-box__element__signature__highlight #{method.name}
+                            |(
+                            each arg, index in method.args
+                                span.overview-box__element__signature__highlight= arg.publicName
+                                | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
+                            | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
+                        div.overview-box__element__description.user-text!= method.description
+    
+    if staticMethods.length > 0
+        section.overview-box
+            h3.overview-box__title Static Methods
+            ul.overview-box__elements
+                each method in staticMethods
+                    li.overview-box__element
+                        a(href=`#method-${method.mangling}`): code.overview-box__element__signature
+                            | public static func
+                            |
+                            span.overview-box__element__signature__highlight #{method.name}
+                            |(
+                            each arg, index in method.args
+                                span.overview-box__element__signature__highlight= arg.publicName
+                                | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
+                            | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
+                        div.overview-box__element__description.user-text!= method.description

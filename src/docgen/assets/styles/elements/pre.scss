@@ -1,0 +1,19 @@
+pre {
+  font-family: $font-monospace;
+
+  border: 1px solid $neutral-2;
+
+  padding: 0.5em 1.5em;
+  margin: 0 -0.2rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+
+  code {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+}

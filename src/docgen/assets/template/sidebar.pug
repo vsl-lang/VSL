@@ -1,6 +1,9 @@
 .sidebar
-    each items, sectionName in docGen.sections
-        h2.sidebar__sectionheader= sectionName
+    each section, sectionType in docGen.sections
+        h2.sidebar__sectionheader= sectionType
         ul.sidebar__section
-            each scopeItems, name in items
-                li.sidebar__section__item: a(href='')= name
+            each item, itemURL in section.items
+                li.sidebar__section__item(
+                    class=item.instances == currentInstances && "sidebar__section__item--current"
+                )
+                    a(href=pathFor(itemURL))= item.name

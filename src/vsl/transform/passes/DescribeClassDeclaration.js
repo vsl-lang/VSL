@@ -44,6 +44,7 @@ export default class DescribeClassDeclaration extends Transformation {
 
             node.reference = ScopeTypeItem.RootClass;
             ScopeTypeItem.RootClass.rootId = className;
+            ScopeTypeItem.RootClass.source = node;
             scope.set(node.reference);
             tool.context.hasManifestRoot = true;
             return;

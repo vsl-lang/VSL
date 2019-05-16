@@ -1,0 +1,7 @@
+.overview-box {
+  margin-top: 3rem;
+
+  @import "overview-box__title.scss";
+  @import "overview-box__elements.scss";
+  @import "overview-box__element.scss";
+}

@@ -1,10 +1,10 @@
 @import "functions.scss";
 
+// Fonts
+$font-monospace: Menlo, DejaVu Sans Mono, monospace;
+
 // For the theme color
 $contrast-color: white;
-
-// Colors
-$version-tag-background: rgba(0, 0, 0, 0.4);
 
 // Neutral colors
 $neutral-7: #212932; // Text, headers
@@ -14,6 +14,9 @@ $neutral-4: #BAC4CC; // Light titles
 $neutral-3: #CFD6DD; // Borders
 $neutral-2: #E1E7EC; // Darker backgroungs
 $neutral-1: #FFF; // Background
+
+// For active link color
+$active-color: #09f;
 
 // For padding
 $body-padding: 2rem;
