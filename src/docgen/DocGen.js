@@ -147,9 +147,7 @@ $theme-color: ${this.module.docopts.themeColor};
             });
         });
 
-        this.queueTask(
-            this.writeAsset(STYLESHEET_PATH, rendered.css.toString('utf8'))
-        );
+        await this.writeAsset(STYLESHEET_PATH, rendered.css.toString('utf8'))
     }
 
     /**
