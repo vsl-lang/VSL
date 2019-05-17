@@ -100,8 +100,8 @@ function codec(sourceFileString) {
                     };
                 } else if (AST_DEC_TO_ENC.has(propName)) {
                     obj[AST_DEC_TO_ENC.get(propName)] = object[propName];
-                } else if (propName === 'precedingComments') {
-                    // We don't care about comments
+                // } else if (propName === 'precedingComments') {
+                //     // We don't care about comments
                 } else {
                     obj[propName] = object[propName];
                 }

@@ -6,14 +6,20 @@ html
         title= title
         meta(name='title', content=title)
         
-        meta(name='description', content=description)
-        link(rel='stylesheet', href=STYLESHEET_PATH)
+        meta(name='description', content=striptags(description))
+        meta(name='theme-color', content=module.docopts.themeColor)
+            
+        meta(property='og:type', content='article')
+        meta(property='og:title', content=title)
+        meta(property='og:description', content=striptags(description))
+            
+        link(rel='stylesheet', href=pathFor(STYLESHEET_PATH))
     body.body-split
         header.header
-            h1.header__component.header__title= module.name
+            a.header__component.header__title(href=pathFor('index.html'))
+                h1= module.docopts.title
             span.header__component.header__versiontag
-                | v
-                span.header__versiontag__version= module.version
+                span.header__versiontag__version= `v${module.version}`
         div.body-split__split
             include sidebar.pug
             main.body-split__split__wide

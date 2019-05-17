@@ -1,4 +1,5 @@
 .body-split {
+  height: 100%;
 
   .body-split__split {
     display: flex;
@@ -8,5 +9,4 @@
       flex: 1;
     }
   }
-
 }

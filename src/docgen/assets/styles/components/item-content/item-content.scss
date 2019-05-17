@@ -1,0 +1,10 @@
+.item-content {
+  margin-left: 10%;
+  padding: 3rem 1rem;
+  box-sizing: border-box;
+
+  margin: 0 10%;
+
+  @import "item-content__title.scss";
+  @import "item-content__description.scss";
+}

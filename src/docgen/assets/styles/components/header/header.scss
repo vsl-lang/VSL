@@ -1,36 +1,35 @@
 .header {
-  height: 3rem;
   width: 100%;
 
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
+
+  box-sizing: border-box;
+
+  box-shadow: 0 2px 8px -1px rgba(0,0,0,.3);
+
+  z-index: 1;
 
   background: $theme-color;
 
   padding: 0 $body-padding;
 
+  // For header components that are also links
+  a.header__component {
+    transition: background .1s ease-in;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
   .header__title {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 1.2rem;
-    margin: 0;
+    padding: 1rem;
     color: $contrast-color;
   }
 
-  .header__versiontag {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: $theme-color;
-    background: $version-tag-background;
-
-    border-radius: 4px;
-    padding: 3px 8px;
-    margin: 0 16px;
-
-    box-sizing: border-box;
-
-    .header__versiontag__version {
-      // text-transform: uppercase;
-    }
-  }
+  @import "versiontag.scss";
 }

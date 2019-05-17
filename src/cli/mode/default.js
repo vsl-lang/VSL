@@ -508,7 +508,5 @@ process.on('unhandledRejection', (reason) => {
 process.on('beforeExit', () => {
     if (interrupt) {
         interrupt();
-    } else {
-        process.exit(1)
-    };
+    }
 });

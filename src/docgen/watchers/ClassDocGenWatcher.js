@@ -1,6 +1,7 @@
 import DocGenWatcher from '../DocGenWatcher';
 import ScopeTypeItem from '../../vsl/scope/items/scopeTypeItem';
-import parseComment from '../helpers/parseComment';
+import getMethodsFor from '../helpers/getMethodsFor';
+import getMethodMetadata from '../helpers/getMethodMetadata';
 
 export default class ClassDocGenWatcher extends DocGenWatcher {
 
@@ -24,13 +25,20 @@ export default class ClassDocGenWatcher extends DocGenWatcher {
 
     /** @override */
     async generate([ scopeItem ], docGen) {
-        const { content } = parseComment(scopeItem.source.precedingComments);
+        const description = await docGen.render(scopeItem.source.precedingComments);
+
+        // Get methods
+        const { inits, methods, staticMethods } = getMethodsFor(scopeItem);
 
         return {
             path: 'template/Class.pug',
             opts: {
                 name: scopeItem.rootId,
-                description: content,
+                description: description,
+
+                inits: await Promise.all(inits.map(getMethodMetadata(docGen))),
+                methods: await Promise.all(methods.map(getMethodMetadata(docGen))),
+                staticMethods: await Promise.all(staticMethods.map(getMethodMetadata(docGen)))
             }
         }
     }
