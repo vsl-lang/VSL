@@ -17,6 +17,10 @@ $neutral-1: #FFF; // Background
 
 // For active link color
 $active-color: #09f;
+$link-color: $active-color;
 
 // For padding
 $body-padding: 2rem;
+
+// Responsive
+$sidebar-collapse-width: 1170px;

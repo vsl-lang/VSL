@@ -43,10 +43,33 @@ export default class DocGen {
          */
         this.outputDirectory = outputDirectory;
 
+        const id = String.raw`(?:[a-z][_a-z\d]*)`;
+        const ref = String.raw`(^|[^\\])\[((${id})(?:([#.])(${id})(\((?:${id}:)*\))?)?)\]`;
+
         /** @private */
         this.markdownRenderer = new showdown.Converter({
             prefixHeaderId: 'section',
-            openLinksInNewWindow: true
+            openLinksInNewWindow: true,
+            literalMidWordUnderscores: true,
+            extensions: [
+                // Plugin to lookup in a section
+                () => [{
+                    type: 'lang',
+                    regex: new RegExp(ref, 'gi'),
+                    replace: (...args) => {
+                        const [_, previousText, innerText, itemName, accessType, subitemName, parameters] = args;
+
+                        let url = '';
+                        const mainItem = this.lookupItemByName(itemName);
+                        if (mainItem) {
+                            const { url: baseURL, instances } = mainItem;
+                            url += baseURL;
+                        }
+
+                        return previousText + `<a href="${url || 'javascript:void(0);'}">${innerText}</a>`;
+                    }
+                }]
+            ]
         });
 
         /** @private */
@@ -54,6 +77,28 @@ export default class DocGen {
 
         /** @private */
         this.taskQueue = [];
+    }
+
+    /**
+     * Looks up item name in sections and returns the first one it finds
+     * @param {string} itemName - The name of the item
+     * @return {?Object} `null` if none.
+     * @property {string} url - The url of the item
+     * @property {ScopeItem[]} instances - Matching instances
+     */
+    lookupItemByName(itemName) {
+        for (const section of Object.values(this.sections)) {
+            for (const [url, itemGroup] of Object.entries(section.items)) {
+                if (itemGroup.name === itemName) {
+                    return {
+                        url: url,
+                        instances: itemGroup.instances
+                    };
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -112,42 +157,54 @@ export default class DocGen {
             for (const [itemURL, { name, instances }] of Object.entries(section.items)) {
                 // This only obtains the information about the item we'll create
                 // the actual HTML later
-                const page = await section.watcher.generate(instances, this);
-
-                await this.writeAsset(
-                    itemURL,
-                    await this.generateHTML(
-                        itemURL,
-                        page.path,
-                        page.opts,
-                        {
-                            currentItem: instances
-                        }
-                    )
+                this.queueTask(
+                    section.watcher
+                        .generate(instances, this)
+                        .then(page => this.generateHTML(
+                            itemURL,
+                            page.path,
+                            page.opts,
+                            {
+                                currentItem: instances
+                            }
+                        ))
+                        .then(pageContent =>this.writeAsset(
+                            itemURL,
+                            pageContent
+                        ))
                 );
             }
         }
 
         // Compile pages
-        await this.compilePage('pages/index.pug', 'index.html', {
-            name: "Home",
-            description: this.module.description
-        });
+        this.queueTask(
+            this.compilePage('pages/index.pug', 'index.html', {
+                name: "Home",
+                description: this.module.description
+            })
+        );
 
         // Compile the sass and copy it
-        const rendered = await new Promise((resolve, reject) => {
-            sass.render({
-                data: `
-$theme-color: ${this.module.docopts.themeColor};
-@import "main.scss";`,
-                includePaths: [path.join(__dirname, 'assets', STYLESHEET_SOURCE_PATH)],
-            }, function(err, result) {
-                if (err) return reject(err);
-                return resolve(result);
-            });
-        });
+        this.queueTask(
+            new Promise((resolve, reject) => {
+                sass.render({
+                    data: `
+    $theme-color: ${this.module.docopts.themeColor};
+    @import "main.scss";`,
+                    includePaths: [path.join(__dirname, 'assets', STYLESHEET_SOURCE_PATH)],
+                }, function(err, result) {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(result);
+                    }
+                });
+            }).then(rendered => {
+                return this.writeAsset(STYLESHEET_PATH, rendered.css.toString('utf8'))
+            })
+        );
 
-        await this.writeAsset(STYLESHEET_PATH, rendered.css.toString('utf8'))
+        await this.waitUntilDone();
     }
 
     /**
@@ -202,7 +259,7 @@ $theme-color: ${this.module.docopts.themeColor};
      * @param {Comment[]} comments
      * @return {string} HTML string
      */
-    async render(comments) {
+    render(comments) {
         const data = comments.map(comment => comment.content).join("\n");
         return this.markdownRenderer.makeHtml(data);
     }
