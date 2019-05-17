@@ -1,7 +1,7 @@
 extends Item.pug
 block content
     h2.item-content__title= name
-    section.user-text.item-content__description!= description
+    section.user-text.item-content__description!= docGen.render(description)
     
     if inits.length > 0
         section.overview-box
@@ -15,7 +15,7 @@ block content
                                 span.overview-box__element__signature__highlight= arg.publicName
                                 | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
                             | )
-                        div.overview-box__element__description.user-text!= method.description
+                        div.overview-box__element__description.user-text!= docGen.render(method.description)
     
     if methods.length > 0
         section.overview-box
@@ -32,7 +32,7 @@ block content
                                 span.overview-box__element__signature__highlight= arg.publicName
                                 | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
                             | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
-                        div.overview-box__element__description.user-text!= method.description
+                        div.overview-box__element__description.user-text!= docGen.render(method.description)
     
     if staticMethods.length > 0
         section.overview-box
@@ -49,4 +49,4 @@ block content
                                 span.overview-box__element__signature__highlight= arg.publicName
                                 | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
                             | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
-                        div.overview-box__element__description.user-text!= method.description
+                        div.overview-box__element__description.user-text!= docGen.render(method.description)

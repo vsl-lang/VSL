@@ -25,7 +25,7 @@ export default class ClassDocGenWatcher extends DocGenWatcher {
 
     /** @override */
     async generate([ scopeItem ], docGen) {
-        const description = await docGen.render(scopeItem.source.precedingComments);
+        const description = scopeItem.source.precedingComments;
 
         // Get methods
         const { inits, methods, staticMethods } = getMethodsFor(scopeItem);
@@ -36,9 +36,9 @@ export default class ClassDocGenWatcher extends DocGenWatcher {
                 name: scopeItem.rootId,
                 description: description,
 
-                inits: await Promise.all(inits.map(getMethodMetadata(docGen))),
-                methods: await Promise.all(methods.map(getMethodMetadata(docGen))),
-                staticMethods: await Promise.all(staticMethods.map(getMethodMetadata(docGen)))
+                inits: inits.map(getMethodMetadata),
+                methods: methods.map(getMethodMetadata),
+                staticMethods: staticMethods.map(getMethodMetadata)
             }
         }
     }

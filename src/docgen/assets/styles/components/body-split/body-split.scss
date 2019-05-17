@@ -1,7 +1,12 @@
 .body-split {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   .body-split__split {
+    flex: 1;
+    overflow: auto;
+
     display: flex;
     flex-direction: row;
 
