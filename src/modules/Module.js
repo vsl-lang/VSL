@@ -151,6 +151,7 @@ export default class Module {
         let docgenOptions = yaml.docgen ? this.validateDocgen(yaml.docgen) : {};
         this.module.docopts = {
             themeColor: '#09F',
+            title: this.module.name,
             ...docgenOptions
         };
 

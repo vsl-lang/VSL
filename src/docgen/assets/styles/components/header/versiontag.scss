@@ -1,0 +1,35 @@
+// Colors
+$version-tag-background: rgba(255, 255, 255, 1.0);
+$version-tag-text: mix(rgb(0, 0, 0), $theme-color, 5%);
+
+$version-tag-text-size: 0.7rem;
+$version-tag-vertical-padding: 0.1rem;
+$version-tag-height: $version-tag-text-size + $version-tag-vertical-padding * 2;
+
+.header__versiontag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  padding: 0 1rem;
+
+  .header__versiontag__version {
+    display: block;
+    margin: 0 auto;
+
+    background: $version-tag-background;
+    color: $version-tag-text;
+
+    height: $version-tag-height;
+    font-size: $version-tag-text-size;
+    padding: $version-tag-vertical-padding 8px;
+    border-radius: $version-tag-height / 4;
+
+    font-weight: 500;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+
+    line-height: $version-tag-height;
+    vertical-align: middle;
+  }
+}

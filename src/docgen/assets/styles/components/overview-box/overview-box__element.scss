@@ -1,0 +1,26 @@
+.overview-box__element {
+  margin-bottom: 2rem;
+
+  .overview-box__element__signature {
+    color: $neutral-6;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    font-size: 1.15rem;
+
+    &:hover {
+      border-bottom: 1px solid $active-color;
+    }
+
+    .overview-box__element__signature__highlight {
+      color: $active-color;
+    }
+  }
+
+  .overview-box__element__description {
+    margin-left: 2rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+}
