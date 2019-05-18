@@ -7,8 +7,6 @@ apt:
     packages:
         - llvm-toolchain-trusty-7
         - clang-7.0
-install:
-    - npm install
-script:
+
+before_script:
     - npm run build
-    - npm test
