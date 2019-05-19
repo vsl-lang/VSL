@@ -83,12 +83,6 @@ export default class ScopeItem {
         this.id = mangleId++;
 
         /**
-         * Associate a value (for backends) with the scope item.
-         * @type {Object}
-         */
-        this.backendRef = null;
-
-        /**
          * Indicates if the item is private (only access from parent scope)
          * @type {boolean}
          */
@@ -111,6 +105,12 @@ export default class ScopeItem {
          * @type {Node}
          */
         this.source = source;
+
+        /**
+         * Associate a value (for backends) with the scope item.
+         * @type {Object}
+         */
+        this.backendRef = null;
     }
 
     /**

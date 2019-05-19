@@ -24,6 +24,8 @@ export default class LLVMBitcastExpression extends BackendWatcher {
         const sourceTy = value.type;
         const targetTy = toLLVMType(endTy, context);
 
+        // console.log(String(node), String(endTy), String(valueTy))
+
         // Generate correct cast. Here's what we are doing:
         //
         //    Ptr -> Ptr

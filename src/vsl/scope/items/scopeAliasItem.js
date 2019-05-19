@@ -84,6 +84,12 @@ export default class ScopeAliasItem extends ScopeItem {
          * @type {ScopeTypeItem}
          */
         this.type = type;
+
+        /**
+         * Backend references
+         * @type {Object}
+         */
+        this.backendRef = null;
     }
 
     /**

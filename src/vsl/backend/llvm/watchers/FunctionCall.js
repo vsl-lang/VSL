@@ -119,7 +119,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
             } else {
                 value = tryGenerateCast(
                     regen('value', node.arguments[k], context),
-                    node.argumentReferences[k],
+                    node.argumentReferences[k].contextualType(parentTypeContext),
                     functionRef.args[i].type.contextualType(typeContext),
                     context
                 );

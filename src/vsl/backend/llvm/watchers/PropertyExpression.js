@@ -8,6 +8,9 @@ import { Key } from '../LLVMContext';
 import ValueRef from '../ValueRef';
 import LValueRef from '../LValueRef';
 
+import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
+import ScopeAliasItem from '../../../scope/items/scopeAliasItem';
+
 import * as llvm from 'llvm-node';
 
 export default class LLVMPropertyExpression extends BackendWatcher {
@@ -22,23 +25,54 @@ export default class LLVMPropertyExpression extends BackendWatcher {
         const propRef = node.propertyRef;
 
         const asLValue = context.popValue(Key.LValueContext);
+        const typeContext = baseRef.getTypeContext().propogateContext(context.typeContext);
 
         const value = regen('head', node, context);
 
+        // If 'propRef' isn't an alias then something is wrong
+        if (!(propRef instanceof ScopeAliasItem)) {
+            this.emit(
+                `Expected access in tail of property access expression to ` +
+                `evaluate to a field or property.`,
+                node.tail
+            )
+        }
+
+        // We might be accessing a static or dynamic field. For this purpose we
+        // will want to 'regen' the type that the LHS is.
+        // MyClass.foo => generate 'class MyClass'
+        // myClass.foo => generate 'class MyClass'
+        const headTypeSource = propRef.owner.owner.source;
+        regen(headTypeSource.relativeName, headTypeSource.parentNode, context.bare());
+
+        const customBehavior = propRef.backendRef?.get(typeContext);
+
+        console.log(String(node));
+        console.log(propRef.backendRef?.toString());
+        console.log(context.typeContext.toString());
+        console.log(typeContext.toString());
+
         // If RHS has special behavior then we'll use that. This includes things
         // like computed properties
-        if (propRef.backendRef) {
+        if (customBehavior) {
             if (asLValue) {
-                return new LValueRef({ self: value, property: propRef.backendRef });
+                return new LValueRef({ self: value, property: customBehavior });
             } else {
                 // Then get using backendRef
-                return propRef.backendRef.generate(context, value);
+                return customBehavior.generate(context, value);
             }
         } else {
+            if (propRef instanceof ScopeDynFieldItem) {
+                throw new BackendError(
+                    `Tail of property is dynamic field but it was never compiled.`,
+                    node.tail
+                );
+            }
+
             if (!value) {
                 throw new BackendError(
-                    `Head of property expression did not compile to a value.`,
-                    node.head
+                    `Tail of property expression did not compile to a value.`,
+                    node.tail
                 );
             }
 

@@ -13,11 +13,11 @@ llvm.initializeAllAsmPrinters();
 
 // Uncomment following lines to debug bad calls:
 // ((c) => {
-//     llvm.IRBuilder.prototype.createCall = function() {
+//     llvm.IRBuilder.prototype.createInBoundsGEP = function() {
 //         console.trace();
 //         return c.apply(this, arguments);
 //     };
-// })(llvm.IRBuilder.prototype.createCall);
+// })(llvm.IRBuilder.prototype.createInBoundsGEP);
 
 /**
  * LLVM backend which directly compiles to LLVM bytecode. The LLVM backends

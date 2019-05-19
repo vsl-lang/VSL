@@ -121,11 +121,13 @@ export function getTypeOffset(value, type, field, context) {
         .filter(alias => !(alias instanceof ScopeDynFieldItem))
         .indexOf(field);
 
-    return context.builder.createInBoundsGEP(
+    const fieldPtr = context.builder.createInBoundsGEP(
         value,
         [
             llvm.ConstantInt.get(context.ctx, 0),
             llvm.ConstantInt.get(context.ctx, offset)
         ]
     );
+
+    return fieldPtr;
 }

@@ -13,7 +13,9 @@ import { isValidEntryName, isValidEntryTy } from '../helpers/EntryPoint';
 import isInstanceCtx from '../helpers/isInstanceCtx';
 import getFunctionName from '../helpers/getFunctionName';
 import getFunctionType from '../helpers/getFunctionType';
+
 import TypeContext from '../../../scope/TypeContext';
+import TypeContextConnector from '../../../scope/TypeContextConnector';
 
 import * as llvm from "llvm-node";
 
@@ -41,10 +43,25 @@ export default class LLVMFunctionStatement extends BackendWatcher {
         // Check if this has already been generated
         // We'll store a Map with the type context.
         if (scopeItem.isGeneric) {
+            // Try to get the generic params
+            const parentClass = scopeItem.owner.owner;
+            if (!(parentClass instanceof ScopeTypeItem)) {
+                throw new TransformError(
+                    `Function is generic but doesn't have an identifiable ` +
+                    `parent class which is invalid.`,
+                    node
+                );
+            }
+
+            if (!scopeItem.backendRef) {
+                scopeItem.backendRef = new TypeContextConnector(parentClass.genericInfo.parameters);
+            }
+
             const callee = scopeItem.backendRef.get(typeContext);
             if (callee) return callee;
+            else console.log(`Recompiling ${scopeItem} for ${typeContext}`);
         } else {
-            const callee = scopeItem.backendRef.get(TypeContext.empty());
+            const callee = scopeItem.backendRef;
             if (callee) return callee;
         }
 
@@ -208,8 +225,11 @@ export default class LLVMFunctionStatement extends BackendWatcher {
             }
         }
 
-
-        scopeItem.backendRef.set(scopeItem.isGeneric ? typeContext : TypeContext.empty(), func);
+        if (scopeItem.isGeneric) {
+            scopeItem.backendRef.set(typeContext, func);
+        } else {
+            scopeItem.backendRef = func;
+        }
         return func;
     }
 }

@@ -79,6 +79,7 @@ export default function getDefaultInit(ty, context, regen) {
     for (let i = 0; i < ty.subscope.aliases.length; i++) {
         const defaultField = ty.subscope.aliases[i];
         const fieldNode = defaultField.source;
+
         if (fieldNode?.value) {
             let fieldValue = regen('value', fieldNode, defaultCtx);
 
