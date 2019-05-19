@@ -14,8 +14,8 @@ export default class LLVMBitcastExpression extends BackendWatcher {
         const backend = context.backend;
         const typeContext = context.typeContext;
 
-        const endTy = node.targetTy.contextualType(typeContext);
         const valueTy = node.valueTy.contextualType(typeContext);
+        const endTy = node.targetTy.contextualType(typeContext);
 
         const valueIsUnsignedInt = valueTy.mockType?.indexOf('ui') === 0;
         const targetIsUnsignedInt = endTy.mockType?.indexOf('ui') === 0;
@@ -23,12 +23,6 @@ export default class LLVMBitcastExpression extends BackendWatcher {
         const value = regen('value', node, context);
         const sourceTy = value.type;
         const targetTy = toLLVMType(endTy, context);
-
-        console.log(String(node));
-        console.log(valueTy.toString());
-        console.log(endTy.toString());
-
-        // console.log(String(node), String(endTy), String(valueTy))
 
         // Generate correct cast. Here's what we are doing:
         //

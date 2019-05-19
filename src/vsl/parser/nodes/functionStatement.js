@@ -14,7 +14,7 @@ export default class FunctionStatement extends DeclarationStatement {
      *
      * @param {Annotation[]} annotations - The annotations of the function
      * @param {string[]} access - The access modifiers of the node
-     * @param {Identifier} name - The name of the given function
+     * @param {Identifier|SubscriptToken} name - The name of the given function
      * @param {FunctionArgument[]} args - The arguments of the function
      * @param {?Type} returnType - The function's returnType.
      * @param {boolean} isGenerator - If the function yields instead of returning.

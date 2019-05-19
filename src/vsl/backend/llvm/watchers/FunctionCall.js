@@ -48,6 +48,28 @@ export default class LLVMFunctionCall extends BackendWatcher {
         let vtableClass = functionRef.virtualParentMethod.owner.owner;
         const useVtable = !functionRef.implementationIsDefinite && vtableClass.dynamicDispatch;
 
+        // Obtain the self parameter
+        let headValue;
+        if (takesSelfParameter) {
+            if (node.implicitMethodReference) {
+                headValue = regen('head', node, context);
+            } else {
+                if (!(node.head instanceof t.PropertyExpression)) {
+                    throw new BackendError(
+                        `Expected property with instance method.`,
+                        node
+                    );
+                }
+
+                headValue = regen('head', node.head, context);
+            }
+        }
+
+
+        // Uncomment to debug function call types
+        // console.log(`Calling ${functionRef} with ${typeContext}`)
+        // console.log(`Caller ${node}`)
+
         // Create argument instruction list
         let compiledArgs = [];
 
@@ -58,31 +80,11 @@ export default class LLVMFunctionCall extends BackendWatcher {
             // Compile self if it accepts one.
             if (takesSelfParameter) {
                 // Get the value
-                if (!(node.head instanceof t.PropertyExpression)) {
-                    throw new BackendError(
-                        `Expected property with instance method.`,
-                        node
-                    );
-                }
-
-                const headValue = regen('head', node.head, context);
-
-                if (!useVtable) {
-                    compiledArgs.push(headValue);
-                }
+                compiledArgs.push(headValue);
             }
         } else {
-            if (!(node.head instanceof t.PropertyExpression)) {
-                throw new BackendError(
-                    `Expected property for dynamic call.`,
-                    node
-                );
-            }
-
             const headType = node.head.baseRef;
             vtableClass = vtableClass.selfType.contextualType(headType.getTypeContext());
-
-            const headValue = regen('head', node.head, context);
 
             // If vtable we'll cast to the vtable class.
             // Get the self param
@@ -95,6 +97,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
             compiledArgs.push(selfParameter);
 
+            // Extract the function from the VTable and set that as the callee
             const vtable = getVTableOffset(selfParameter, vtableClass, context);
             callee = context.builder.createLoad(
                 getMethodOffsetInVTable(
@@ -111,27 +114,53 @@ export default class LLVMFunctionCall extends BackendWatcher {
         for (let i = 0, k = 0; i < functionRef.args.length; i++, k++) {
             let value;
             if (argPositionsTreatedOptional.includes(i)) {
+                // If the argument is optional...
                 const optionalContext = context.clone();
+
+                // Locate the default expression
                 const defaultExprArg = functionRef.args[i].node.defaultValue;
+
+                // Give it the self parameter is appropriate
                 optionalContext.selfReference = takesSelfParameter ? compiledArgs[0] : null;
+
+                // And generate the argument
                 value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, optionalContext);
                 k--;
             } else {
+                const calleeArgType = node.argumentReferences[k].contextualType(parentTypeContext);
+                const callerArgType = functionRef.args[i].type.contextualType(typeContext);
+
                 value = tryGenerateCast(
+                    // Generate the argument
                     regen('value', node.arguments[k], context),
-                    node.argumentReferences[k].contextualType(parentTypeContext),
-                    functionRef.args[i].type.contextualType(typeContext),
+                    // Perform implicit casts to function param type
+                    calleeArgType,
+                    callerArgType,
                     context
                 );
             }
             compiledArgs.push(value);
         }
 
-        console.log(functionRef.toString())
+        // Uncomment to debug function calls
+
+        // console.log(`Calling ${functionRef.toString()}`)
         // console.log(node.argumentReferences.map(a=>a.contextualType(parentTypeContext).toString()));
         // console.log(functionRef.args.map(a=>a.type.contextualType(typeContext).toString()));
-        console.log(compiledArgs.map(x=>x.type.toString()));
-        console.log(callee.type.elementType.getParams().map(String));
+        // console.log(compiledArgs.map(x=>x.type.toString()));
+        // console.log(callee.type.elementType.getParams().map(String));
+        // console.log(parentTypeContext.toString());
+        // console.log(node.typeContext.toString());
+
+        // Do a check that the types are equal
+        // if (callee.getParameters().length !== compiledArgs.length) {
+        //     throw new TypeError(`attempted to create call with mismatch arg counts`);
+        // }
+        //
+        // if (compiledArgs.some((arg, index) =>
+        //     !callee.type.elementType.getParamType(index).equals(arg.type))) {
+        //         throw new TypeError('attempted to create call with mismatch types');
+        // }
 
         let result = context.builder.createCall(
             callee,

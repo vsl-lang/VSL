@@ -195,6 +195,15 @@ export default class PropertyResolver extends TypeResolver {
             } else {
                 this.negotiateUpward(ConstraintType.TypeContext, headType.getTypeContext());
             }
+        } else {
+            // If not callee. Example is `myPtr[val][foo]`. The second [foo]
+            // will need the type that [val] returns. So we must identify what
+            // the type is that `val` returns and then combine.
+            if (tailTypes.length === 1) {
+                const tailType = tailTypes[0].tailType.candidate;
+                // console.log(headType.getTypeContext().toString(), tailType.getTypeContext().toString());
+                this.negotiateUpward(ConstraintType.TypeContext, tailType.getTypeContext());
+            }
         }
 
         this.node.baseRef = headType;
@@ -211,7 +220,8 @@ export default class PropertyResolver extends TypeResolver {
                 // If we are here then we'll just return all and the parent should specialize.
             }
         } else if (tailTypes.length === 1) {
-            this.node.propertyRef = tailTypes[0].tailReference;
+            const rhsRef = tailTypes[0].tailReference;
+            this.node.propertyRef = rhsRef;
         } else {
             // This should never be reached because we ensure no length < 1 is
             // passed.

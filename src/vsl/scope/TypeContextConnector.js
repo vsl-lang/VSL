@@ -42,6 +42,15 @@ export default class TypeContextConnector {
     }
 
     /**
+     * Has implementation for a given context
+     * @param {TypeContext} context
+     * @return {boolean}
+     */
+    has(context) {
+        return this.get(context) !== null;
+    }
+
+    /**
      * Obtains a value for a type context
      * @param {TypeContext} context
      * @return {?Object} null if not found

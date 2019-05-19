@@ -88,6 +88,8 @@ export default class ForcedCastResolver extends TypeResolver {
             }
         }
 
+        this.negotiateUpward(ConstraintType.TypeContext, targetTy.getTypeContext());
+
         return [new TypeCandidate(targetTy)];
     }
 }

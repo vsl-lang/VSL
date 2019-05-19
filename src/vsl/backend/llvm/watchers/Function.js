@@ -57,9 +57,12 @@ export default class LLVMFunctionStatement extends BackendWatcher {
                 scopeItem.backendRef = new TypeContextConnector(parentClass.genericInfo.parameters);
             }
 
+            // console.log(`Receieved ${scopeItem} for ${typeContext}`);
+            // console.log(`Already implemented: ${scopeItem.backendRef.has(typeContext)}`);
+
             const callee = scopeItem.backendRef.get(typeContext);
             if (callee) return callee;
-            else console.log(`Recompiling ${scopeItem} for ${typeContext}`);
+            // else console.log(`Recompiling ${scopeItem} for ${typeContext}`);
         } else {
             const callee = scopeItem.backendRef;
             if (callee) return callee;

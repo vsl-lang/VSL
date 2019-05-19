@@ -1,4 +1,4 @@
-import Node from './node';
+import FunctionCall from './functionCall';
 
 /**
  * Matches a subscript expression inside a PropertyExpression
@@ -7,38 +7,38 @@ import Node from './node';
  * head[tail]
  */
 
-export default class Subscript extends Node {
+export default class Subscript extends FunctionCall {
     /**
      * Creates a subscript
      *
      * @param {Expression} head the object to subscript
-     * @param {ArgumentCall[]} expression the provided expression
+     * @param {ArgumentCall[]} args the provided expression
      * @param {Object} position a position from nearley
      */
-    constructor (head: Expression, expression: Expression, position: Object) {
-        super(position);
+    constructor(head, args, position) {
+        super(head, args, position);
 
-        /** @type {Expression} */
-        this.head = head;
-
-        /** @type {ArgumentCall[]} */
-        this.expression = expression;
+        /**
+         * Always true because subscript relationships are implicit.
+         * @type {bool}
+         */
+        this.implicitMethodReference = true;
     }
 
     clone() {
         return new Subscript(
             this.head.clone(),
-            this.expression.clone()
+            this.arguments.clone()
         )
     }
 
     /** @override */
     get children () {
-        return ['expression'];
+        return ['head', 'arguments'];
     }
 
     /** @override */
     toString() {
-        return `[${this.expression}]`;
+        return `${this.head}[${this.arguments.join(", ")}]`;
     }
 }

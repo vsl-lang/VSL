@@ -9,6 +9,12 @@ export default class SubscriptToken extends Node {
      */
     constructor(position) {
         super(position);
+
+        /**
+         * Always equal to 'subscript'
+         * @type {string}
+         */
+        this.value = 'subscript';
     }
 
     /** @override */

@@ -28,7 +28,7 @@ export default class LLVMIdentifier extends BackendWatcher {
 
         if (node.reference === null) {
             throw new BackendError(
-                `Item ${node.value} has ambigious reference in this context.`,
+                `Identifier \`${node.value}\` has ambiguous reference in this context.`,
                 node
             );
         } else {

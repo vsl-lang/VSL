@@ -79,6 +79,8 @@ export default class AssignmentResolver extends TypeResolver {
             );
         }
 
+        this.negotiateUpward(ConstraintType.TypeContext, targetTy.getTypeContext());
+
         return [new TypeCandidate(targetTy)];
     }
 }

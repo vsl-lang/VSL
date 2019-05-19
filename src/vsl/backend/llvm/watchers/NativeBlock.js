@@ -325,11 +325,13 @@ export default class LLVMNativeBlock extends BackendWatcher {
                 )
             );
 
-            case "store": context.builder.createStore(
+            case "store":
+                context.builder.createStore(
                     context.parentFunc.getArguments()[1],
                     context.parentFunc.getArguments()[0]
-            );
-            return context.builder.createRetVoid();
+                );
+
+                return context.builder.createRetVoid();
 
             case "offset": return context.builder.createRet(
                 context.builder.createInBoundsGEP(
@@ -339,6 +341,22 @@ export default class LLVMNativeBlock extends BackendWatcher {
             );
 
             case "sizeof": {
+                const genericType = [...context.typeContext.genericParameters][0][1];
+                let genericTy = toLLVMType(genericType, context);
+
+                const size = backend.module.dataLayout.getTypeAllocSize(genericTy);
+
+                return context.builder.createRet(
+                    llvm.ConstantInt.get(
+                        context.ctx,
+                        size,
+                        64,
+                        false
+                    )
+                );
+            }
+
+            case "sizeofUnderlying":
                 const genericType = [...context.typeContext.genericParameters][0][1];
                 let genericTy = toLLVMType(genericType, context);
 
@@ -356,7 +374,6 @@ export default class LLVMNativeBlock extends BackendWatcher {
                         false
                     )
                 );
-            }
 
             case "log32": return context.builder.createCall(
                 backend.module.getOrInsertFunction(

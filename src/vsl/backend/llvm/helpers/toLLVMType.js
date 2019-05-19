@@ -34,15 +34,16 @@ export default function toLLVMType(type, context) {
                 const baseTy = toLLVMType(sourceTy, context);
 
                 // Check if normal type
-                if (!structInPointerContext(sourceTy)) {
-                    return baseTy.getPointerTo();
-                } else {
-                    if (baseTy.isPointerTy()) {
-                        return baseTy;
-                    } else {
-                        return baseTy.getPointerTo();
-                    }
-                }
+                return baseTy.getPointerTo();
+                // if (!structInPointerContext(sourceTy)) {
+                //     return baseTy.getPointerTo();
+                // } else {
+                //     if (baseTy.isPointerTy()) {
+                //         return baseTy;
+                //     } else {
+                //         return baseTy.getPointerTo();
+                //     }
+                // }
             case "double": return llvm.Type.getDoubleTy(context.ctx);
             case "float": return llvm.Type.getFloatTy(context.ctx);
             case "opaquepointer":

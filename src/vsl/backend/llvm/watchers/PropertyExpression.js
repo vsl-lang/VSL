@@ -47,10 +47,13 @@ export default class LLVMPropertyExpression extends BackendWatcher {
 
         const customBehavior = propRef.backendRef?.get(typeContext);
 
-        // console.log(String(node));
-        // console.log(propRef.backendRef?.toString());
-        // console.log(context.typeContext.toString());
-        // console.log(typeContext.toString());
+        // Uncomment to debug Property Expressions
+
+        // console.log(`Accessing: ${node}`);
+        // console.log(propRef.backendRef?.toString()); // The generics for which RHS is compiled
+        // console.log(baseRef.getTypeContext().toString()); // Generics for LHS
+        // console.log(context.typeContext.toString()); // The overall generics found
+        // console.log(typeContext.toString()); // Again more generics
 
         // If RHS has special behavior then we'll use that. This includes things
         // like computed properties

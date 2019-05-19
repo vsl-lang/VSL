@@ -50,3 +50,17 @@ block content
                                 | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
                             | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
                         div.overview-box__element__description.user-text!= docGen.render(method.description)
+
+    if subscripts.length > 0
+        section.overview-box
+            h3.overview-box__title Subscripts
+            ul.overview-box__elements
+                each method in subscripts
+                    li.overview-box__element
+                        a(href=`#method-${method.mangling}`): code.overview-box__element__signature
+                            | public subscript(
+                            each arg, index in method.args
+                                span.overview-box__element__signature__highlight= arg.publicName
+                                | : #{arg.type}#{index < method.args.length - 1 ? ", " : ""}
+                            | ) -> #{method.returnType ? method.returnType.rootId : "Void"}
+                        div.overview-box__element__description.user-text!= docGen.render(method.description)
