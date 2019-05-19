@@ -20,8 +20,6 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
     receive(node, tool, regen, context) {
         const backend = context.backend;
 
-        if (node.reference.backendRef) return node.reference.backendRef;
-
         // They are three types of AssignmentStatements:
         //  - Global: global variables
         //  - Static: class X { static let ... }
@@ -32,6 +30,10 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
 
         // If we are an external() function we will handle seperately.
         if (node.value instanceof t.ExternalMarker) {
+            // Don't compile external variables multiple times
+
+            if (node.reference.backendRef) return node.reference.backendRef;
+
             const nodeName = node.value.rootId;
 
             // Return if already constructed
@@ -53,6 +55,9 @@ export default class LLVMAssignmentStatement extends BackendWatcher {
             return variableReference;
         } else if (node.value instanceof t.ExpressionStatement) {
             if (node.isGlobal) {
+                // Don't compile global variables multiple times
+                if (node.reference.backendRef) return node.reference.backendRef;
+
                 const name = node.reference.uniqueName;
                 const type = toLLVMType(node.reference.type, context);
 

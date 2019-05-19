@@ -127,6 +127,12 @@ export default class LLVMFunctionCall extends BackendWatcher {
             compiledArgs.push(value);
         }
 
+        console.log(functionRef.toString())
+        // console.log(node.argumentReferences.map(a=>a.contextualType(parentTypeContext).toString()));
+        // console.log(functionRef.args.map(a=>a.type.contextualType(typeContext).toString()));
+        console.log(compiledArgs.map(x=>x.type.toString()));
+        console.log(callee.type.elementType.getParams().map(String));
+
         let result = context.builder.createCall(
             callee,
             compiledArgs
