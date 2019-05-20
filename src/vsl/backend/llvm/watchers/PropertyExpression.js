@@ -11,6 +11,8 @@ import LValueRef from '../LValueRef';
 import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
 import ScopeAliasItem from '../../../scope/items/scopeAliasItem';
 
+import TypeContextConnector from '../../../scope/TypeContextConnector';
+
 import * as llvm from 'llvm-node';
 
 export default class LLVMPropertyExpression extends BackendWatcher {
@@ -45,7 +47,11 @@ export default class LLVMPropertyExpression extends BackendWatcher {
         const headTypeSource = propRef.owner.owner.source;
         regen(headTypeSource.relativeName, headTypeSource.parentNode, context.bare());
 
-        const customBehavior = propRef.backendRef?.get(typeContext);
+        const customBehavior = propRef.backendRef ?
+            propRef.backendRef instanceof TypeContextConnector ?
+                propRef.backendRef.get(typeContext) :
+                propRef.backendRef
+             : null;
 
         // Uncomment to debug Property Expressions
 
