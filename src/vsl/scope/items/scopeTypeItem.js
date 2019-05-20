@@ -2,6 +2,8 @@ import ScopeForm from '../scopeForm';
 import ScopeItem from '../scopeItem';
 import TypeContext from '../TypeContext';
 
+import GenericInfo from './genericInfo';
+
 import Scope from '../scope';
 
 /**
@@ -67,7 +69,7 @@ export default class ScopeTypeItem extends ScopeItem {
      * @type {boolean}
      */
     get isGeneric() {
-        return this.genericInfo && this.genericInfo.parameters.length > 0;
+        return this.genericInfo.isGeneric;
     }
 
     /**
@@ -202,7 +204,9 @@ export default class ScopeTypeItem extends ScopeItem {
          * The generic info
          * @type {GenericInfo}
          */
-        this.genericInfo = genericInfo;
+        this.genericInfo = genericInfo || new GenericInfo({
+            parameters: []
+        });
 
         /**
          * Refers to the type of a `self`. This may differ from the current

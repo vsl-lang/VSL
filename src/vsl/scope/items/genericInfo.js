@@ -17,4 +17,12 @@ export default class GenericInfo {
          */
         this.existingSpecializations = [];
     }
+
+    /**
+     * Specifies if this generic info describes a type that is generic
+     * @type {boolean}
+     */
+    get isGeneric() {
+        return this.parameters.length > 0;
+    }
 }
