@@ -89,10 +89,13 @@ export default class Build extends CompilerCLI {
                                            "overhead on all integer operations",     { compilerOption: "trapOnOverflow", value: true }],
                 ["-ftrap-lossy-bitcast"  , "Traps if a bitcast were to result in " +
                                            "information being lost.",                { compilerOption: "trapLossyButcast", value: true }],
-                ["-fno-trap-memop"       , "Does not verify if heap allocations, " +
-                                           "were successful. This can result in a " +
-                                           "segfault at best and a major security " +
-                                           "vulnerability at worst.",                { compilerOption: "disableAllocCheck", value: true }],
+                ["-ftrap-memop"          , "Manually verifies if heap allocations, " +
+                                           "were successful. Some OSes such as linux " +
+                                           "will rarely concede that they are out of " +
+                                           "memory so this is not needed. Additionally, " +
+                                           "sometimes 0x00 might be a valid address. " +
+                                           "Check with your OS to see if seeting " +
+                                           "this option would make sense.",          { compilerOption: "disableAllocCheck", value: false }],
                 ["-fno-free-memop"       , "Prevents the memory optimizer from " +
                                            "inserting free() operations. This should " +
                                            "only be used to identify issues caused" +

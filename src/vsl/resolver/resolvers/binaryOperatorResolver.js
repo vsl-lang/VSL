@@ -172,11 +172,33 @@ export default class BinaryOperatorResolver extends TypeResolver {
             lhs.resolve(finalResolver(operatorCandidates[0].lhsType));
             rhs.resolve(finalResolver(operatorCandidates[0].rhsType));
             this.node.reference = operatorCandidates[0].candidate;
-            return [new TypeCandidate(operatorCandidates[0].candidate.returnType)];
+
+            const returnType = operatorCandidates[0].candidate.returnType;
+            if (returnType) {
+                this.negotiateUpward(ConstraintType.TypeContext, returnType.getTypeContext());
+            } else {
+                this.emit(
+                    `Binary operator doesn't have a return value. An operator ` +
+                    `should always have a return value.`
+                );
+            }
+
+            return [new TypeCandidate(returnType)];
         } else if (simplifyToPrecType) {
             // If we have a definite best candidate we'll use it.
             if (lastHighestPrec && !highestPrecIsAmbiguous) {
-                return [new TypeCandidate(highestPrecCandidate.returnType)];
+
+                const returnType = highestPrecCandidate.returnType;
+                if (returnType) {
+                    this.negotiateUpward(ConstraintType.TypeContext, returnType.getTypeContext());
+                } else {
+                    this.emit(
+                        `Binary operator doesn't have a return value. An operator ` +
+                        `should always have a return value.`
+                    );
+                }
+
+                return [new TypeCandidate(returnType)];
             } else {
                 let overloads = operatorCandidates
                     .filter(_ => _.precScore === lastHighestPrec)

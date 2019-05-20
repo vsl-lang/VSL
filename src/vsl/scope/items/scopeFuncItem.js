@@ -1,6 +1,8 @@
 import ScopeItem from '../scopeItem';
 import ScopeForm from '../scopeForm';
 
+import TypeContextConnector from '../TypeContextConnector';
+
 /**
  * Describes a function declaration. Usually a top, nested, or class-level
  * declaration.
@@ -20,12 +22,6 @@ export default class ScopeFuncItem extends ScopeItem {
      */
     constructor(form, rootId, data) {
         super(form, rootId, data);
-
-        /**
-         * The backend ref is map
-         * @type {Map<TypeContext, Object>}
-         */
-        this.backendRef = new Map();
     }
 
     /** @override */

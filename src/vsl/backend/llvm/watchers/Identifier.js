@@ -8,6 +8,9 @@ import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
 import ScopeMetaClassItem from '../../../scope/items/scopeMetaClassItem';
 import ScopeAliasItem from '../../../scope/items/scopeAliasItem';
 import LValueRef from '../LValueRef';
+import ValueRef from '../ValueRef';
+
+import TypeContext from '../../../scope/TypeContext';
 
 import * as llvm from 'llvm-node';
 
@@ -25,7 +28,7 @@ export default class LLVMIdentifier extends BackendWatcher {
 
         if (node.reference === null) {
             throw new BackendError(
-                `Item ${node.value} has ambigious reference in this context.`,
+                `Identifier \`${node.value}\` has ambiguous reference in this context.`,
                 node
             );
         } else {
@@ -34,11 +37,11 @@ export default class LLVMIdentifier extends BackendWatcher {
                 // This means we have a static class. We will return the
                 // @static.Goat { field1, field2, field3 } obj which is globally
                 // init'd.
-                // This is encountered in static props e.g. Cls.shared
-                // In this case generate the referenced class
-                const source = node.reference.source;
-                const newCtx = context.bare();
-                regen(source.relativeName, source.parentNode, newCtx);
+                //
+                // Don't really need to do much here since property expression
+                // will generate static fields if needed.
+
+                return;
             } else if (node.reference instanceof ScopeMetaClassItem) {
                 // No idea why this would be called TODO: figure this out
                 // Here we're referring to metatype
@@ -81,17 +84,32 @@ export default class LLVMIdentifier extends BackendWatcher {
 
 
                 // Also what we want to do is generate the class of the
-                // identifier
-                const typeSource = node.reference.type.source;
-                if (typeSource) {
-                    regen(typeSource.relativeName, typeSource.parentNode, context.bare());
+                // identifier.
+                //
+                // GLOABL_VAR => Compile 'GLOBAL_VAR'
+                // const typeSource = node.reference.source;
+                // if (typeSource) {
+                //     regen(typeSource.relativeName, typeSource.parentNode, context.bare());
+                // }
+
+                // global vars can't have generics
+                // console.log(node.reference.type.toString());
+                const variableReference = node.reference.backendRef;
+
+                if (!(variableReference instanceof ValueRef)) {
+                    const isGeneric = variableReference instanceof Map ? " (was generic)" : "";
+
+                    throw new BackendError(
+                        `Global variable was not compiled${isGeneric}.`,
+                        node
+                    );
                 }
 
                 // Otherwise we're referring to local variable
                 if (asLValue) {
-                    return new LValueRef({ property: node.reference.backendRef });
+                    return new LValueRef({ property: variableReference });
                 } else {
-                    return node.reference.backendRef.generate(context);
+                    return variableReference.generate(context);
                 }
             } else {
                 throw new BackendError(

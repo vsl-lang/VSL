@@ -2,13 +2,15 @@ import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
 import t from '../../../parser/nodes';
 
-import TypeContext from '../../../scope/TypeContext';
 import toLLVMType from '../helpers/toLLVMType';
 import tryGenerateCast from '../helpers/tryGenerateCast';
 import ValueRef from '../ValueRef';
 import InitPriority from '../InitPriority';
 
 import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
+
+import TypeContext from '../../../scope/TypeContext';
+import TypeContextConnector from '../../../scope/TypeContextConnector';
 
 import * as llvm from 'llvm-node';
 
@@ -24,6 +26,8 @@ export default class LLVMClassStatement extends BackendWatcher {
         if (classRef.backendRef?.isCompiled) {
             return;
         }
+
+        const genericParameters = classRef.genericInfo.parameters;
 
         function generateWithTypeContext(typeContext) {
             // Generate all fields into the global object.
@@ -41,6 +45,11 @@ export default class LLVMClassStatement extends BackendWatcher {
                 const staticVarName = `${classRef.uniqueName}.${staticItems[i].uniqueName}${doesNotDependOnGenericTy ? "" : typeContext.getMangling()}`;
                 if (backend.module.getGlobalVariable(staticVarName, true)) continue;
 
+                // Setup type context connector if not already
+                if (!staticItems[i].backendRef) {
+                    staticItems[i].backendRef = new TypeContextConnector(genericParameters);
+                }
+
                 if (staticItems[i].source.value instanceof t.ExpressionStatement) {
                     let type = toLLVMType(staticVarType, context);
                     let globalVar = new llvm.GlobalVariable(
@@ -52,7 +61,10 @@ export default class LLVMClassStatement extends BackendWatcher {
                         staticVarName
                     );
 
-                    staticItems[i].backendRef = new ValueRef(globalVar, { isPtr: true });
+                    staticItems[i].backendRef.set(
+                        typeContext,
+                        new ValueRef(globalVar, { isPtr: true })
+                    );
 
                     backend.addInitTask(InitPriority.STATIC_VAR, (context) => {
                         const newContext = context.clone();
@@ -72,7 +84,7 @@ export default class LLVMClassStatement extends BackendWatcher {
                     // branch should only be reached for **external
                     // assignment** and **dynamic fields**
                     let externalValue = regen(staticItems[i].source.relativeName, staticItems[i].source.parentNode, context);
-                    staticItems[i].backendRef = externalValue;
+                    staticItems[i].backendRef.set(typeContext, externalValue);
                 }
             }
 
@@ -88,10 +100,15 @@ export default class LLVMClassStatement extends BackendWatcher {
 
                 // If it's computed property
                 if (field instanceof ScopeDynFieldItem) {
+                    if (!field.backendRef) {
+                        field.backendRef = new TypeContextConnector(genericParameters);
+                    }
+
                     const fieldContext = context.clone();
                     fieldContext.typeContext = fieldContext.typeContext.merge(typeContext);
+
                     let value = regen(field.source.relativeName, field.source.parentNode, fieldContext);
-                    field.backendRef = value;
+                    field.backendRef.set(typeContext, value);
                 }
             }
         }

@@ -114,6 +114,11 @@ export default class RootResolver extends TypeResolver {
             this.node.type = result[0].candidate;
         }
 
+        const typeContext = child.getNegotiatationProposal(ConstraintType.TypeContext)
+        if (typeContext) {
+            this.negotiateUpward(ConstraintType.TypeContext, typeContext);
+        }
+
         return result;
     }
 }

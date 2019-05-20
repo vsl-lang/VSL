@@ -5,10 +5,12 @@ import TypeResolver from '../typeResolver';
 import TypeContext from '../../scope/TypeContext';
 
 import ASTTool from '../../transform/asttool';
+import ScopeTypeItem from '../../scope/items/scopeTypeItem';
 import ScopeMetaClassItem from '../../scope/items/scopeMetaClassItem';
 import ScopeGenericSpecialization from '../../scope/items/scopeGenericSpecialization';
 import ScopeFuncItem from '../../scope/items/scopeFuncItem';
 
+import t from '../../parser/nodes';
 import e from '../../errors';
 
 /**
@@ -54,7 +56,11 @@ export default class CallResolver extends TypeResolver {
                 // This basically says we want a function in return
                 // This will return ALL of the function with the rootId
                 // So we'll filter candidates here.
-                case ConstraintType.BoundedFunctionContext: return true;
+                case ConstraintType.BoundedFunctionContext: return !this.node.implicitMethodReference;
+
+                // Resolve to whatever
+                case ConstraintType.RequestedTypeResolutionConstraint:
+                    return null;
 
                 // The child (function head) cannot be void
                 case ConstraintType.VoidableContext: return false;
@@ -150,36 +156,52 @@ export default class CallResolver extends TypeResolver {
         let items = [];
 
         // Error message to use if they are no functions with the name
-        let errorMessage = `Use of undeclared function \`${functionName}\``;
+        let errorMessage = `No valid overload of function \`${functionName}\``;
 
         // Type context we'll use when resolving return and parameter types.
         let typeContext = headResolver.getNegotiatationProposal(ConstraintType.TypeContext) || TypeContext.empty();
 
         for (let i = 0; i < headValues.length; i++) {
-            if (headValues[i] instanceof ScopeMetaClassItem) {
-                // ===== CONSTRUCTORS =====
-                // Support initializers, if we call type we'll interpret it as
-                // an init call.
+            // Handle subscripts specially
+            if (this.node instanceof t.Subscript) {
+                if (headValues[i] instanceof ScopeTypeItem) {
+                    // Consider all 'subscript' methods as candidates.
+                    const subscripts = headValues[i].subscope.getAll('subscript');
 
-                const classToConstruct = headValues[i].referencingClass;
-                items.push(...classToConstruct.subscope.getAll('init'));
-
-                typeContext = typeContext.merge(classToConstruct.getTypeContext());
-
-                errorMessage = `Class \`${functionName}\` has no intializers.`;
-            } else if (headValues[i] instanceof ScopeFuncItem) {
-                // ===== FUNCTIONS =====
-                // These are regular ol' functions
-                items.push(headValues[i]);
+                    items.push(...subscripts);
+                    errorMessage = `Type ${headValues[i]} has no applicable subscripts.`;
+                } else {
+                    const item = headValues[i].typeDescription.toLowerCase();
+                    errorMessage = `Cannot subscript type of ${item}.`;
+                }
             } else {
-                this.emit(
-                    `Cannot call a non-function type`
-                );
+                if (headValues[i] instanceof ScopeMetaClassItem) {
+                    // ===== CONSTRUCTORS =====
+                    // Support initializers, if we call type we'll interpret it as
+                    // an init call.
+
+                    const classToConstruct = headValues[i].referencingClass;
+                    items.push(...classToConstruct.subscope.getAll('init'));
+
+                    typeContext = typeContext.merge(classToConstruct.getTypeContext());
+
+                    errorMessage = `Class \`${functionName}\` has no applicable intializers.`;
+                } else if (headValues[i] instanceof ScopeFuncItem) {
+                    // ===== FUNCTIONS =====
+                    // These are regular ol' functions
+                    items.push(headValues[i]);
+                } else {
+                    this.emit(
+                        `Cannot call a non-function type`
+                    );
+                }
             }
         }
 
         // Filter the valid function types
         let candidates = items.filter(item => {
+            // Simple filters we can do are only considering candidates that are
+            // functions. Candidates that take less args than given are invalid
             return item instanceof ScopeFuncItem && item.args.length >= argc;
         });
 
@@ -365,6 +387,7 @@ export default class CallResolver extends TypeResolver {
             });
         }
 
+
         let topTiebreakerBonus = Math.max(...workingCandidates.map(_ => _.tiebreakerBonus));
         let bestCandidate = null;
 
@@ -389,7 +412,6 @@ export default class CallResolver extends TypeResolver {
             }
         }
 
-
         if (bestCandidate === null) {
             if (requireType) {
                 this.emit(
@@ -407,14 +429,13 @@ export default class CallResolver extends TypeResolver {
             }
 
         } else {
-            // Re-resolve subtypes to ensure unambiguous refs.
+            // Re-resolve arguments to ensure unambiguous refs.
             for (let i = 0, j = 0; i < bestCandidate.candidate.args.length; i++, j++) {
                 if (bestCandidate.argPositionsTreatedOptional.includes(i)) {
                     j--;
                     continue;
                 }
 
-                // console.log(String(args[j]), String(bestCandidate.argTypes))
                 this.getChild(args[j].value).resolve((type) => {
                     switch (type) {
                         case ConstraintType.RequireType:
@@ -431,6 +452,12 @@ export default class CallResolver extends TypeResolver {
                     }
                 });
             }
+
+            // Propogate types from best candidate upward.
+            if (bestCandidate.returnType) {
+                this.negotiateUpward(ConstraintType.TypeContext, bestCandidate.returnType.getTypeContext());
+            }
+
 
             // We must make sure we can access it
             // TODO: Private functions

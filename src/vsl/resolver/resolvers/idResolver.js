@@ -72,6 +72,7 @@ export default class IdResolver extends TypeResolver {
         // that is the number of args so we can use this as a basic filter to
         // narrow down candidates
         const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
+
         if (callArgs) {
             // Return candidates for parent function to handle.
             return results
@@ -145,6 +146,8 @@ export default class IdResolver extends TypeResolver {
         }
 
         this.node.reference = result;
+
+        this.negotiateUpward(ConstraintType.TypeContext, resultType.getTypeContext());
 
         return [new TypeCandidate(resultType)];
     }

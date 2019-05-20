@@ -18,11 +18,13 @@ export function getMethodsInScope(scope) {
 export default function getMethodsFor(item) {
     const allMethods = getMethodsInScope(item.subscope);
     const inits = allMethods.filter(method => method.rootId === 'init' && !method.isDefaultInit);
-    const methods = allMethods.filter(method => method.rootId !== 'init');
+    const subscripts = allMethods.filter(method => method.rootId === 'subscript');
+    const methods = allMethods.filter(method => method.rootId !== 'init' && method.rootId !== 'subscript');
 
     return {
         inits: inits,
         methods: methods,
+        subscripts: subscripts,
         staticMethods: getMethodsInScope(item.staticScope)
     }
 }

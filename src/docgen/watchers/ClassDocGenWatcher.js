@@ -28,7 +28,7 @@ export default class ClassDocGenWatcher extends DocGenWatcher {
         const description = scopeItem.source.precedingComments;
 
         // Get methods
-        const { inits, methods, staticMethods } = getMethodsFor(scopeItem);
+        const { inits, methods, staticMethods, subscripts } = getMethodsFor(scopeItem);
 
         return {
             path: 'template/Class.pug',
@@ -38,7 +38,8 @@ export default class ClassDocGenWatcher extends DocGenWatcher {
 
                 inits: inits.map(getMethodMetadata),
                 methods: methods.map(getMethodMetadata),
-                staticMethods: staticMethods.map(getMethodMetadata)
+                staticMethods: staticMethods.map(getMethodMetadata),
+                subscripts: subscripts.map(getMethodMetadata),
             }
         }
     }

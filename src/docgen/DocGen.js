@@ -64,9 +64,11 @@ export default class DocGen {
                         if (mainItem) {
                             const { url: baseURL, instances } = mainItem;
                             url += baseURL;
+                        } else {
+                            return _;
                         }
 
-                        return previousText + `<a href="${url || 'javascript:void(0);'}">${innerText}</a>`;
+                        return previousText + `<a href="${url}">${innerText}</a>`;
                     }
                 }]
             ]

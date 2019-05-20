@@ -12,6 +12,7 @@ export default function vslGetChild(from: Node): TypeResolver {
                 return new resolvers.NilResolver(from, vslGetChild);
             else
                 return new resolvers.LiteralResolver(from, vslGetChild);
+        case t.Subscript: return new resolvers.CallResolver(from, vslGetChild);
         case t.FunctionCall: return new resolvers.CallResolver(from, vslGetChild);
         case t.PropertyExpression: return new resolvers.PropertyResolver(from, vslGetChild);
         case t.Self: return new resolvers.SelfResolver(from, vslGetChild);

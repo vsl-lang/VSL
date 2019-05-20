@@ -1,0 +1,5 @@
+func main() {
+    const array: String[] = Array<String>(initialCapacity: 1)
+    array.append("Hello")
+    print(array[from: 0, to: 1][0])
+}

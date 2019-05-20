@@ -125,6 +125,17 @@ export default class UnaryOperatorResolver extends TypeResolver {
             }
 
             this.node.reference = bestCandidate;
+
+            // Should always be true but just defensive coding
+            if (bestCandidate.returnType) {
+                this.negotiateUpward(ConstraintType.TypeContext, bestCandidate.returnType.getTypeContext());
+            } else {
+                this.emit(
+                    `Unary operator doesn't return anything. Unary operators ` +
+                    `should always have a return value.`
+                );
+            }
+
             return [new TypeCandidate(bestCandidate.returnType, usedPreferredType)]
         } else if (unaryCandidates.length === 0) {
             if (requireType) {

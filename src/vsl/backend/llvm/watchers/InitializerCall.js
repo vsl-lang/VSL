@@ -80,7 +80,7 @@ export default class LLVMInitializerCall extends BackendWatcher {
             if (argPositionsTreatedOptional.includes(i)) {
                 const optionalContext = context.clone();
                 const defaultExprArg = initRef.args[i].node.defaultValue;
-                optionalContext.selfReference = takesSelfParameter ? compiledArgs[0] : null;
+                optionalContext.selfReference = compiledArgs[0];
                 value = regen(defaultExprArg.relativeName, defaultExprArg.parentNode, context);
                 k--;
             } else {

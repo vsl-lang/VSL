@@ -61,10 +61,7 @@ export default class SelfResolver extends TypeResolver {
         // Handle calling context
         const callArgs = negotiate(ConstraintType.BoundedFunctionContext);
         if (callArgs) {
-            this.emit(
-                `Cannot call \`self\``,
-                e.SELF_IS_NOT_FUNCTION
-            );
+            return [new TypeCandidate(parentClass.resolved())];
         }
 
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate;
@@ -79,6 +76,8 @@ export default class SelfResolver extends TypeResolver {
                 return [];
             }
         }
+
+        this.negotiateUpward(ConstraintType.TypeContext, parentClass.getTypeContext());
 
         this.node.reference = parentClass;
         return [new TypeCandidate(parentClass)]

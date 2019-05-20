@@ -227,7 +227,7 @@ export default class TupleResolver extends TypeResolver {
                 }
             );
 
-            return this.node.reference;
+            return [new TypeCandidate(this.node.reference)];
         }
     }
 }

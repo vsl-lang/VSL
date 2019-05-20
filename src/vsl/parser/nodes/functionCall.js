@@ -30,6 +30,14 @@ export default class FunctionCall extends Node {
         this.reference = null;
 
         /**
+         * If the head of the function relation to this function call is
+         * implicit and therefore the head is the self parameter. Generally
+         * always false
+         * @type {bool}
+         */
+        this.implicitMethodReference = false;
+
+        /**
          * Resolved return type. Different than `this.reference.returnType` in
          * the case of generics. This is the same as
          * `this.reference.returnType.selfType.contextualType(this.typeContext)`
