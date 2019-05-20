@@ -10,7 +10,7 @@ import TypeContext from '../../../scope/TypeContext';
  * @return {llvm.Function}
  */
 export function generateEnumerationComparator(comparator, context) {
-    const existingComparator = comparator.backendRef.get(TypeContext.empty());
+    const existingComparator = comparator.backendRef;
     if (existingComparator) return existingComparator;
 
     const typeContext = context.typeContext;
@@ -27,7 +27,7 @@ export function generateEnumerationComparator(comparator, context) {
 
     comparatorFunction.addFnAttr(llvm.Attribute.AttrKind.AlwaysInline);
 
-    comparator.backendRef.set(TypeContext.empty(), comparatorFunction);
+    comparator.backendRef = comparatorFunction;
 
     const comparatorArgs = comparatorFunction.getArguments();
 
