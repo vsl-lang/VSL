@@ -1,3 +1,5 @@
+import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
+
 /**
  * Validates entry name
  * @return {Boolean} if valid
@@ -19,6 +21,8 @@ export function isValidEntryTy(scopeItem, context) {
             scopeItem.args[0].type.mockType === "i32" &&
             scopeItem.args[1].type.mockType === "pointer8" :
         scopeItem.args.length === 1 ?
+            // scopeItem.args[0].type instanceof ScopeGenericSpecialization ?
+            //     scopeItem.args[0].type.parameters[0].isLocalString === '' *
             false :
         scopeItem.args.length === 0
     );

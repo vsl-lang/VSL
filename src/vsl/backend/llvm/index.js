@@ -1,6 +1,8 @@
 import Backend from '../Backend';
 import * as w from './watchers';
 
+import generatePriorityMap from './helpers/generatePriorityMap';
+
 import LLVMContext from './LLVMContext';
 
 import * as llvm from "llvm-node";
@@ -61,6 +63,12 @@ export default class LLVMBackend extends Backend {
         this.initTasks = new Map();
 
         /**
+         * Init tasks
+         * @type {Map<string, Function[]>}
+         */
+        this.deinitTasks = new Map();
+
+        /**
          * List of compiler options.
          *
          * @type {Object}
@@ -106,6 +114,19 @@ export default class LLVMBackend extends Backend {
             this.initTasks.get(priority).push(func);
         } else {
             this.initTasks.set(priority, [func])
+        }
+    }
+
+    /**
+     * Adds an deinit task with priority.
+     * @param {number} priority - 0 is highest.
+     * @param {Function} func - What to call to gen task. Takes a context.
+     */
+    addDeinitTask(priority, func) {
+        if (this.deinitTasks.has(priority)) {
+            this.deinitTasks.get(priority).push(func);
+        } else {
+            this.deinitTasks.set(priority, [func])
         }
     }
 
@@ -161,71 +182,8 @@ export default class LLVMBackend extends Backend {
      * Add init code
      */
     postgen() {
-        const ctorFuncType = llvm.FunctionType.get(
-            llvm.Type.getVoidTy(this.context),
-            [],
-            false
-        );
-
-        const ctorTypeInstance = llvm.StructType.create(this.context);
-        ctorTypeInstance.setBody([
-            llvm.Type.getInt32Ty(this.context),
-            ctorFuncType.getPointerTo(),
-            llvm.Type.getInt8PtrTy(this.context)
-        ])
-
-        let inits = [];
-        for (let [priority, funcs] of this.initTasks) {
-            const initFunc = llvm.Function.create(
-                ctorFuncType,
-                llvm.LinkageTypes.InternalLinkage,
-                `vsl.init.${priority}`,
-                this.module
-            );
-
-            inits.push(
-                llvm.ConstantStruct.get(
-                    ctorTypeInstance,
-                    [
-                        llvm.ConstantInt.get(this.context, 65535 - priority, 32),
-                        initFunc,
-                        llvm.ConstantPointerNull.get(llvm.Type.getInt8PtrTy(this.context))
-                    ]
-                )
-            );
-
-            const initBlock = llvm.BasicBlock.create(
-                this.context,
-                'entry',
-                initFunc
-            );
-
-            const initBuilder = new llvm.IRBuilder(initBlock);
-
-            // Create init
-            const context = new LLVMContext(this);
-            context.builder = initBuilder;
-            context.parentFunc = initFunc;
-
-            // Go backwards
-            for (let i = 0; i < funcs.length; i++) {
-                funcs[i](context);
-            }
-
-            initBuilder.createRetVoid();
-        }
-
-        const ctorType = llvm.ArrayType.get(ctorTypeInstance, inits.length);
-
-        // Add global var
-        new llvm.GlobalVariable(
-            this.module,
-            ctorType,
-            false,
-            llvm.LinkageTypes.AppendingLinkage,
-            llvm.ConstantArray.get(ctorType, inits),
-            'llvm.global_ctors'
-        );
+        generatePriorityMap(this.initTasks, this, 'llvm.global_ctors', 'init');
+        generatePriorityMap(this.deinitTasks, this, 'llvm.global_dtors', 'deinit');
     }
 
     /**
