@@ -5,6 +5,11 @@ import showdown from 'showdown';
 import sass from 'node-sass';
 import striptags from 'striptags';
 
+import { AllHtmlEntities as Entities } from 'html-entities';
+
+import Prism from 'prismjs';
+import 'prismjs-language-vsl';
+
 import * as w from './watchers';
 
 
@@ -46,6 +51,8 @@ export default class DocGen {
         const id = String.raw`(?:[a-z][_a-z\d]*)`;
         const ref = String.raw`(^|[^\\])\[((${id})(?:([#.])(${id})(\((?:${id}:)*\))?)?)\]`;
 
+        const entities = new Entities();
+
         /** @private */
         this.markdownRenderer = new showdown.Converter({
             prefixHeaderId: 'section',
@@ -70,6 +77,19 @@ export default class DocGen {
 
                         return previousText + `<a href="${url}">${innerText}</a>`;
                     }
+                }],
+                () => [{
+                    type: 'output',
+                    filter: (text) => showdown.helper.replaceRecursiveRegExp(
+                        text,
+                        (_, match, left, right) => {
+                            match = entities.decode(match);
+                            return left + Prism.highlight(match, Prism.languages.vsl, 'vsl') + right;
+                        },
+                        "<pre><code\\b[^>]*>",
+                        "</code></pre>",
+                        'g'
+                    )
                 }]
             ]
         });
@@ -189,11 +209,15 @@ export default class DocGen {
         // Compile the sass and copy it
         this.queueTask(
             new Promise((resolve, reject) => {
+                const stylesheetPath = path.join(__dirname, 'assets', STYLESHEET_SOURCE_PATH)
+                const themePath = path.relative(__dirname, require.resolve('prismjs/themes/prism-tomorrow.css'));
+
                 sass.render({
                     data: `
     $theme-color: ${this.module.docopts.themeColor};
+    @import "${themePath}";
     @import "main.scss";`,
-                    includePaths: [path.join(__dirname, 'assets', STYLESHEET_SOURCE_PATH)],
+                    includePaths: [stylesheetPath],
                 }, function(err, result) {
                     if (err) {
                         return reject(err);
