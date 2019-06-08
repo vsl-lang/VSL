@@ -85,6 +85,26 @@ export default class Build extends CompilerCLI {
                 ["-Wno"                  , "Disables all warnings, also prevents " +
                                            "relevent FIX-ITs from activating",       { warn: false }],
                 ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }],
+                ["-fno-dynamic"          , "Disabled dynamic dispatch, runtime casts, " +
+                                           "and other dynamic features. Applicable in " +
+                                           "application with specific ABI.",         { compilerOption: "disableDynamic", value: true }],
+                ["-fno-free-memop"       , "Prevents the memory optimizer from " +
+                                           "inserting free() operations. This should " +
+                                           "only be used to identify issues caused" +
+                                           "by the allocator as this means no heap " +
+                                           "allocated memory will be cleaned. Allocations operations " +
+                                           "moved to stack may still take place.",   { compilerOption: "disableMemopFree", value: true }],
+                ["-fno-rtti"             , "Disables RTTI. Any reflection operations " +
+                                           "will segfault",                          { compilerOption: "disableRTTI", value: true }],
+                ["-fparallel"            , "Enables support for parallelism and " +
+                                           "thread-safe code within the compiler. This " +
+                                           "means synthesized code will use the " +
+                                           "appropriate intrinsics and the compiler " +
+                                           "will ensure thread conflicts don't occur. " +
+                                           "This does not ensure logical errors such as " +
+                                           "invalid values occuring but it does prevent " +
+                                           "VSL internally entering an undefined state " +
+                                           "such as data races.",                    { compilerOption: "isParallel", value: true }]
                 ["-ftrapv"               , "Traps on overflow. Induces a fixed " +
                                            "overhead on all integer operations",     { compilerOption: "trapOnOverflow", value: true }],
                 ["-ftrap-lossy-bitcast"  , "Traps if a bitcast were to result in " +
@@ -95,18 +115,7 @@ export default class Build extends CompilerCLI {
                                            "memory so this is not needed. Additionally, " +
                                            "sometimes 0x00 might be a valid address. " +
                                            "Check with your OS to see if seeting " +
-                                           "this option would make sense.",          { compilerOption: "disableAllocCheck", value: false }],
-                ["-fno-free-memop"       , "Prevents the memory optimizer from " +
-                                           "inserting free() operations. This should " +
-                                           "only be used to identify issues caused" +
-                                           "by the allocator as this means no heap " +
-                                           "allocated memory will be cleaned. Allocations operations " +
-                                           "moved to stack may still take place.",   { compilerOption: "disableMemopFree", value: true }],
-                ["-fno-dynamic"          , "Disabled dynamic dispatch, runtime casts, " +
-                                           "and other dynamic features. Applicable in " +
-                                           "application with specific ABI.",         { compilerOption: "disableDynamic", value: true }],
-                ["-fno-rtti"             , "Disables RTTI. Any reflection operations " +
-                                           "will segfault",                          { compilerOption: "disableRTTI", value: true }]
+                                           "this option would make sense.",          { compilerOption: "disableAllocCheck", value: false }]
             ]],
             ["Debugging Options", [
                 ["--perf-breakdown"      , "Offers performance breakdown on what " +
