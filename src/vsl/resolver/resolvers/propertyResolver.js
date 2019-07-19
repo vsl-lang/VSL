@@ -133,6 +133,8 @@ export default class PropertyResolver extends TypeResolver {
                             return headCandidate;
                         case ConstraintType.SimplifyToPrecType:
                             return true;
+                        case ConstraintType.RequireType:
+                            return true;
                         case ConstraintType.BoundedFunctionContext:
                             return false;
                         case ConstraintType.VoidableContext:

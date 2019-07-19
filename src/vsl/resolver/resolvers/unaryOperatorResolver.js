@@ -74,11 +74,19 @@ export default class UnaryOperatorResolver extends TypeResolver {
         for (let i = 0; i < typeCandidates.length; i++) {
             const type = typeCandidates[i].candidate;
             const possibleOperators = type.staticScope.getAll(opName);
+
+            // Check if the parameter is a prec type
             const isPrecType = typeCandidates[i].precType;
 
+            // Check possible operator overloads.
             for (let j = 0; j < possibleOperators.length; j++) {
                 const returnType = possibleOperators[j].returnType;
                 const argCount = possibleOperators[j].args.length;
+
+                const overloadCandidate = {
+                    candidateOverload: possibleOperators[j],
+                    precScore: +isPrecType
+                };
 
                 if (argCount !== 1) continue;
 
@@ -86,32 +94,36 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 if (requestedType && !returnType.castableTo(requestedType)) continue;
 
                 if (isPrecType) {
-                    // If there is another preferred candidate then we have
-                    // ambiguity.
-                    if (bestCandidate) {
-                        this.emit(
-                            `Ambiguous unary expression. Possible candidates include:\n` +
-                            `    • ${bestCandidate}\n` +
-                            `    • ${possibleOperators[j]}`,
-                            e.AMBIGUOUS_EXPRESSION
-                        );
+                    if (simplifyToPrecType) {
+                        // If there is another preferred candidate then we have
+                        // ambiguity.
+                        if (bestCandidate) {
+                            this.emit(
+                                `Ambiguous unary expression. Possible candidates include:\n` +
+                                `    • ${bestCandidate}\n` +
+                                `    • ${possibleOperators[j]}`,
+                                e.AMBIGUOUS_EXPRESSION
+                            );
+                        }
                     }
 
                     bestCandidate = possibleOperators[j];
                 }
 
-                unaryCandidates.push(possibleOperators[j]);
+                unaryCandidates.push(overloadCandidate);
             }
         }
 
+        // Check if there was an overload using a prec type.
         let usedPreferredType = !!bestCandidate;
 
         // Use only unary candidate if only 1 and if no best candidate
         if (!bestCandidate && unaryCandidates.length === 1) {
-            bestCandidate = unaryCandidates[0];
+            bestCandidate = unaryCandidates[0].candidateOverload;
         }
 
-        // Then if there is a best candidate
+        // Then if there is ONLY ONE candidate then avoid any complexity just do
+        // this simple.
         if (unaryCandidates.length === 1 || (simplifyToPrecType && bestCandidate)) {
             // Re-resolve expression so it is set with correct info.
             if (typeCandidates.length > 1) {
@@ -136,7 +148,7 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 );
             }
 
-            return [new TypeCandidate(bestCandidate.returnType, usedPreferredType)]
+            return [new TypeCandidate(bestCandidate.returnType, +usedPreferredType)]
         } else if (unaryCandidates.length === 0) {
             if (requireType) {
                 this.emit(
@@ -155,10 +167,17 @@ export default class UnaryOperatorResolver extends TypeResolver {
                 this.emit(
                     `Ambiguous deduction for unary statement. Found multiple ` +
                     `working candidates: \n` +
-                    unaryCandidates.map(candidate => `    • ${candidate}`).join('\n')
+                    unaryCandidates.map(
+                        candidate => `    • ${candidate.candidateOverload}`
+                    ).join('\n')
                 );
             } else {
-                return unaryCandidates.map(candidate => new TypeCandidate(candidate.returnType));
+                return unaryCandidates.map(candidate =>
+                    new TypeCandidate(
+                        candidate.candidateOverload.returnType,
+                        candidate.precScore
+                    )
+                );
             }
         } else {
             // This state should never be reached.

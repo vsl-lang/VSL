@@ -110,6 +110,7 @@ export default class CallResolver extends TypeResolver {
         const paramCandidateTypes = [];
         for (let i = 0; i < argc; i++) {
             const argument = args[i].value;
+
             const argumentTypes = this.getChild(argument).resolve((type) => {
                 switch (type) {
                     // The child cannot be voidable
@@ -117,8 +118,8 @@ export default class CallResolver extends TypeResolver {
                         return false;
 
                     // At least one candidate
-                    case ConstraintType.RequireType:
-                        return true;
+                    // case ConstraintType.RequireType:
+                    //     return true;
 
                     // No mandatory type.
                     case ConstraintType.RequestedTypeResolutionConstraint:
@@ -164,6 +165,11 @@ export default class CallResolver extends TypeResolver {
         for (let i = 0; i < headValues.length; i++) {
             // Handle subscripts specially
             if (this.node instanceof t.Subscript) {
+                // ===== SUBSCRIPTS =====
+                //
+                // subscript[param: value]
+                //
+
                 if (headValues[i] instanceof ScopeTypeItem) {
                     // Consider all 'subscript' methods as candidates.
                     const subscripts = headValues[i].subscope.getAll('subscript');
@@ -177,6 +183,9 @@ export default class CallResolver extends TypeResolver {
             } else {
                 if (headValues[i] instanceof ScopeMetaClassItem) {
                     // ===== CONSTRUCTORS =====
+                    //
+                    // Class.init(param: value)
+                    //
                     // Support initializers, if we call type we'll interpret it as
                     // an init call.
 
@@ -232,6 +241,9 @@ export default class CallResolver extends TypeResolver {
         // List of working candidates
         let workingCandidates = [];
 
+        // Map of returnTys => precScore
+        let returnTyScores = new Map();
+
         // This array is the types which we should set as the
         // RequestedTypeResolutionConstraints
         main: for (let i = 0; i < candidates.length; i++) {
@@ -272,6 +284,7 @@ export default class CallResolver extends TypeResolver {
                 }
             }
 
+
             ////////////////////////////////////////////////////////////////////////
             ////////////////////////////////////////////////////////////////////////
             //                         CHECK ARGUMENTS                            //
@@ -305,7 +318,6 @@ export default class CallResolver extends TypeResolver {
                         continue main;
                     }
                 }
-
 
                 // If there is an arg name, but they don't match then continue.
                 // UNLESS it is optional in which we'll see if it matches.
@@ -345,6 +357,7 @@ export default class CallResolver extends TypeResolver {
 
                 // Check which one of 'potential arg types' would work.
                 for (let l = 0; l < potentialArgTypes.length; l++) {
+
                     // If the candidate is possible then allow is.
                     if (potentialArgTypes[l].candidate.castableTo(targetArgType)) {
                         argumentTypes.push(potentialArgTypes[l]);
@@ -369,9 +382,7 @@ export default class CallResolver extends TypeResolver {
 
                 // If it was a prec type we will specify that we are using a
                 // prec type in this case.
-                if (argumentType.precType === true) {
-                    tiebreakerBonus += 1;
-                }
+                tiebreakerBonus += argumentType.precType;
 
                 k++;
                 candidateArgTypes.push(argumentType);
@@ -385,35 +396,41 @@ export default class CallResolver extends TypeResolver {
                 tiebreakerBonus: tiebreakerBonus,
                 argPositionsTreatedOptional: argPositionsTreatedOptional
             });
+
+            if (!returnTyScores.has(candidateReturnType) || returnTyScores.get(candidateReturnType) < tiebreakerBonus) {
+                returnTyScores.set(candidateReturnType, tiebreakerBonus);
+            }
         }
 
+        let highestPrecCandidate = null;
+        if (simplifyToPrecType) {
+            let topTiebreakerBonus = Math.max(...workingCandidates.map(_ => _.tiebreakerBonus));
 
-        let topTiebreakerBonus = Math.max(...workingCandidates.map(_ => _.tiebreakerBonus));
-        let bestCandidate = null;
+            for (let i = 0; i < workingCandidates.length; i++) {
+                const currentCandidate = workingCandidates[i];
 
-        for (let i = 0; i < workingCandidates.length; i++) {
-            const currentCandidate = workingCandidates[i];
-
-            // If current function is best candidate and another is also best
-            // candidate then we must throw error.
-            if (currentCandidate.tiebreakerBonus === topTiebreakerBonus) {
-                if (bestCandidate !== null) {
-                    this.emit(
-                        `Ambiguous use of function. Could not break tie between:\n${
-                            [bestCandidate, currentCandidate]
-                                .map(candidate => `    • ${candidate.candidate} (score: ${topTiebreakerBonus})`)
-                                .join('\n')
-                        }\n`,
-                        e.AMBIGUOUS_CALL
-                    );
-                } else {
-                    bestCandidate = currentCandidate;
+                // If current function is best candidate and another is also best
+                // candidate then we must throw error.
+                if (currentCandidate.tiebreakerBonus === topTiebreakerBonus) {
+                    if (highestPrecCandidate !== null) {
+                        this.emit(
+                            `Ambiguous use of function. Could not break tie between:\n${
+                                [highestPrecCandidate, currentCandidate]
+                                    .map(candidate => `    • ${candidate.candidate} (score: ${topTiebreakerBonus})`)
+                                    .join('\n')
+                            }\n`,
+                            e.AMBIGUOUS_CALL
+                        );
+                    } else {
+                        highestPrecCandidate = currentCandidate;
+                    }
                 }
             }
         }
 
-        if (bestCandidate === null) {
+        if (workingCandidates.length === 0) {
             if (requireType) {
+                debugger;
                 this.emit(
                     `Call to function does not match any valid candidates. Valid ` +
                     `candidates are:\n` +
@@ -427,8 +444,9 @@ export default class CallResolver extends TypeResolver {
             } else {
                 return [];
             }
+        } else if (workingCandidates.length === 1 || highestPrecCandidate) {
+            const bestCandidate = highestPrecCandidate || workingCandidates[0];
 
-        } else {
             // Re-resolve arguments to ensure unambiguous refs.
             for (let i = 0, j = 0; i < bestCandidate.candidate.args.length; i++, j++) {
                 if (bestCandidate.argPositionsTreatedOptional.includes(i)) {
@@ -474,7 +492,16 @@ export default class CallResolver extends TypeResolver {
             this.node.argPositionsTreatedOptional = bestCandidate.argPositionsTreatedOptional;
             this.node.argumentReferences = bestCandidate.argTypes.map(_ => _.candidate);
             this.node.typeContext = typeContext;
-            return [new TypeCandidate(bestCandidate.returnType)];
+            return [new TypeCandidate(bestCandidate.returnType, bestCandidate.tiebreakerBonus)];
+        } else {
+            // > 1 candidates. NOTE: this is very breakable.
+            return workingCandidates
+                .map(candidate => candidate.returnType)
+                .filter((returnTy, index, all) => all.indexOf(returnTy) === index)
+                .map(returnTy => new TypeCandidate(
+                    returnTy,
+                    returnTyScores.get(returnTy)
+                ));
         }
     }
 }

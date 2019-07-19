@@ -64,6 +64,12 @@ export default class ScopeItem {
          */
         this.query = null;
 
+        /**
+         * If the item is deprecated, this should exist.
+         * @type {?string}
+         */
+        this.deprecationStatus = null;
+
         if (form === ScopeForm.query) {
             this.query = data;
         } else {
@@ -87,6 +93,14 @@ export default class ScopeItem {
          * @type {boolean}
          */
         this.isScopeRestricted;
+    }
+
+    /**
+     * Determines if item is deprecated
+     * @type {bool}
+     */
+    get isDeprecated() {
+        return this.deprecationStatus !== null;
     }
 
     /**

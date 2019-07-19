@@ -27,7 +27,16 @@ export default class LLVMBinaryExpression extends BackendWatcher {
         const rhs = regen('rhs', node, context);
 
         const opCtx = context.bare();
-        const binaryFunction = getFunctionInstance(node.reference, opCtx, regen);
+        const opFunction = node.reference;
+
+        if (opFunction.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                opFunction.deprecationStatus,
+                node
+            ));
+        }
+
+        const binaryFunction = getFunctionInstance(opFunction, opCtx, regen);
 
         const result = context.builder.createCall(
             binaryFunction,

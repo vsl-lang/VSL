@@ -44,6 +44,18 @@ export default class LLVMInitializerCall extends BackendWatcher {
             );
         }
 
+        if (initRef.initializingType.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                initRef.initializingType.deprecationStatus,
+                node
+            ));
+        } else if (initRef.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                initRef.deprecationStatus,
+                node
+            ));
+        }
+
         // Type of the class in LLVM.
         const classType = toLLVMType(classRef, context);
 

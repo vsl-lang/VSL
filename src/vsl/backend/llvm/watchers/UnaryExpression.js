@@ -24,9 +24,17 @@ export default class LLVMUnaryExpression extends BackendWatcher {
         }
 
         const expression = regen('expression', node, context);
+        const opFunction = node.reference;
+
+        if (opFunction.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                opFunction.deprecationStatus,
+                node
+            ));
+        }
 
         return context.builder.createCall(
-            getFunctionInstance(node.reference, context.bare(), regen),
+            getFunctionInstance(opFunction, context.bare(), regen),
             [
                 expression
             ]

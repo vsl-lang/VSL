@@ -18,7 +18,9 @@ export default class VerifyOperatorOverloadType extends Transformation {
         if (!(node.name instanceof t.OperatorName)) return;
 
         const functionRef = node.reference;
-        if (functionRef.owner.owner !== functionRef.args[0].type) {
+        const parentClass = functionRef.owner.owner;
+
+        if (parentClass.selfType !== functionRef.args[0].type) {
             throw new TransformError(
                 `Operator overload's first argument type must be same as the ` +
                 `class it is in.`,

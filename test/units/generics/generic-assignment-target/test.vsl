@@ -1,0 +1,35 @@
+class Wrapper<T> {
+    private let internalValue: T
+
+    public let value: T {
+        get {
+            return self.internalValue
+        }
+
+        set(newValue) {
+            self.internalValue = newValue
+        }
+    }
+
+    init(value: T) {
+        self.internalValue = value
+    }
+}
+
+class Animal {
+    let name: String
+    init(name: String) {
+        self.name = name
+    }
+}
+
+func main() {
+    let otto = Animal(name: "Otto")
+    let austin = Animal(name: "Austin")
+
+    let animalWrapper = Wrapper<Animal>(value: otto)
+
+    print(animalWrapper.value.name) // Otto
+    print((animalWrapper.value = austin).name) // Austin
+    print(animalWrapper.value.name) // Austin
+}

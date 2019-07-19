@@ -45,7 +45,8 @@ export default class TransformationContext {
         this.booleanType = null;
 
         /**
-         * Stores the primary optional type
+         * Stores the primary optional type. Should be the backing type NOT the
+         * self type. i.e. `Optional` not `Optional<T>`.
          * @type {?ScopeTypeItem}
          */
         this.optionalType = null;
@@ -81,6 +82,46 @@ export default class TransformationContext {
                 key, (this.benchmarks.get(key) || []).concat(values)
             );
         }
+    }
+
+    /**
+     * Checks if first param is castable to the second param. This is different
+     * from {@link ScopeTypeItem#castableTo} as it handles other type of
+     * implicit casts such as value -> optional for example:
+     *
+     *      let a: Int? = 1
+     *
+     * has 1 being implicitly cast to optional
+     *
+     * Assuming:
+     *
+     *     let value: T = // ...
+     *     let target: U = value
+     *
+     * @param {ScopeTypeItem} valueType
+     * @param {ScopeTypeItem} targetType
+     * @return {boolean} if the cast would be valid.
+     */
+    contextuallyCastable(valueType, targetType) {
+        // Check if directly castable
+        if (valueType.castableTo(targetType)) {
+            return true;
+        }
+
+        // Otherwise check if `Optional<T>(value) is U`
+        // #defined(Optional)
+        // Optional is #contextType(optional)
+        // T is #parameter(U, 0)
+        if (this.optionalType &&
+            targetType.genericClass === this.optionalType &&
+            valueType.castableTo(targetType.parameters[0])) {
+            return true;
+        }
+
+        // If other contextual casts need to be supported they would go here.
+        // The castableTo only checks for an valid OO cast.
+
+        return false;
     }
 
     /**

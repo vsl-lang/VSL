@@ -51,13 +51,17 @@ export default class RootResolver extends TypeResolver {
         // `b` is an ExpressionStatement, `T` is what this would give
         const negotiator = (type) => {
             switch (type) {
-                case ConstraintType.TypeScope: return this.node.parentScope.scope;
-                case ConstraintType.TransformationContext: return this.context || negotiate(type);
-                case ConstraintType.TypeContext: return TypeContext.empty();
+                case ConstraintType.TypeScope:
+                    return this.node.parentScope.scope;
+                case ConstraintType.TransformationContext:
+                    return this.context || negotiate(type);
+                case ConstraintType.TypeContext:
+                    return TypeContext.empty();
 
                 case ConstraintType.RequireType:
                 case ConstraintType.SimplifyToPrecType:
-                default: return negotiate(type);
+                default:
+                    return negotiate(type);
             }
         };
 

@@ -8,6 +8,8 @@ import * as pass from '../passes/';
 export default class VSLPretransformer extends Transformer {
     constructor(context: TransformationContext) {
         super([
+            pass.DescribeDeprecatedAnnotation,
+
             pass.TypeDeductField,
             pass.TypeDeductGlobal,
 

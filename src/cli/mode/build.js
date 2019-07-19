@@ -104,7 +104,7 @@ export default class Build extends CompilerCLI {
                                            "This does not ensure logical errors such as " +
                                            "invalid values occuring but it does prevent " +
                                            "VSL internally entering an undefined state " +
-                                           "such as data races.",                    { compilerOption: "isParallel", value: true }]
+                                           "such as data races.",                    { compilerOption: "isParallel", value: true }],
                 ["-ftrapv"               , "Traps on overflow. Induces a fixed " +
                                            "overhead on all integer operations",     { compilerOption: "trapOnOverflow", value: true }],
                 ["-ftrap-lossy-bitcast"  , "Traps if a bitcast were to result in " +

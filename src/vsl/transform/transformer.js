@@ -206,7 +206,7 @@ ng to the setup transformer. This is recursively
                 passes[i]
             );
 
-            if (result === false) {
+            if (result === true) {
                 let newInstance = parent[name];
 
                 if (newInstance) {
@@ -260,6 +260,6 @@ ng to the setup transformer. This is recursively
 
         // Get new node
         let result = parent[name];
-        return ast === result;
+        return ast !== result;
     }
 }

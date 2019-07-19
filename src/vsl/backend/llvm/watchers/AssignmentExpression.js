@@ -28,6 +28,7 @@ export default class LLVMAssignmentExpression extends BackendWatcher {
         lvalueCtx.pushValue(Key.LValueContext, true);
 
         const target = regen('target', node, lvalueCtx)
+
         const value = tryGenerateCast(
             regen('value', node, context),
             node.valueReference,

@@ -11,9 +11,10 @@ import t from '../../parser/nodes';
  * where it must have at least `a` args and at most `b` args.
  */
 const Annotations = new Map([
-    ["backend", [ [1] ]],
-    ["mock", [ [1], t.ClassStatement]],
-    ["dynamic", [ [1], t.ClassStatement]],
+    ["backend", [[1]]],
+    ["mock", [[1], t.ClassStatement]],
+    ["dynamic", [[1], t.ClassStatement]],
+    ["deprecated", [[0, 1]]],
     ["primitive", [[1, 2], t.ClassStatement]],
     ["booleanType", [[0], t.ClassStatement]],
     ["arrayProvider", [[0], t.ClassStatement]],

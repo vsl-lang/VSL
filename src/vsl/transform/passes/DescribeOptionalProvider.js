@@ -16,13 +16,23 @@ export default class DescribeOptionalProvider extends Transformation {
         if (node.name !== "optionalType") return;
 
         if (tool.context.optionalType !== null) {
-            new TransformError(
+            throw new TransformError(
                 `A optional type already exists as ${tool.context.optionalType}. ` +
                 `only one optional type can exist per compilation instance.`,
                 node
             );
         } else {
-            tool.context.optionalType = tool.nthParent(2).reference;
+            const optionalType = tool.nthParent(2).reference;
+
+            if (optionalType.genericInfo.parameters.length !== 1) {
+                throw new TransformError(
+                    `The optional type ${optionalType} should be in the form of ` +
+                    `a generic with a single parameter.`,
+                    node
+                );
+            }
+
+            tool.context.optionalType = optionalType;
         }
     }
 }

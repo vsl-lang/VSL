@@ -88,6 +88,9 @@ export default class BinaryOperatorResolver extends TypeResolver {
         // how many args are prec candidates.
         let operatorCandidates = [];
 
+        // Map of returnTy => highestPrecCount
+        let returnTyPrecMap = new Map();
+
         // Stores the highest prec found.
         let lastHighestPrec = 0;
 
@@ -134,6 +137,11 @@ export default class BinaryOperatorResolver extends TypeResolver {
                                 highestPrecCandidate = candidates[j];
                             } else if (precScore === lastHighestPrec) {
                                 highestPrecIsAmbiguous = true;
+                            }
+
+                            const returnTy = candidates[j].returnType;
+                            if (!returnTyPrecMap.has(returnTy) || returnTyPrecMap.get(returnTy) < precScore) {
+                                returnTyPrecMap.set(returnTy, precScore);
                             }
 
                             operatorCandidates.push({
@@ -183,7 +191,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 );
             }
 
-            return [new TypeCandidate(returnType)];
+            return [new TypeCandidate(returnType, operatorCandidates[0].precCount)];
         } else if (simplifyToPrecType) {
             // If we have a definite best candidate we'll use it.
             if (lastHighestPrec && !highestPrecIsAmbiguous) {
@@ -198,7 +206,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                     );
                 }
 
-                return [new TypeCandidate(returnType)];
+                return [new TypeCandidate(returnType, lastHighestPrec)];
             } else {
                 let overloads = operatorCandidates
                     .filter(_ => _.precScore === lastHighestPrec)
@@ -216,7 +224,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 .map(_ => _.candidate.returnType)
                 .filter((l, i, a) => a.indexOf(l) === i)
                 .map(returnType =>
-                    new TypeCandidate(returnType));
+                    new TypeCandidate(returnType, returnTyPrecMap.get(returnType)));
         }
     }
 }

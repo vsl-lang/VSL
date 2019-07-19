@@ -1,0 +1,36 @@
+class IndexedValue<U> {
+    let value: U
+    let index: Int
+
+    init(value: U, index: Int) {
+        self.value = value
+        self.index = index
+    }
+}
+
+class Wrapper<T> {
+    private let internalValue: T
+
+    init(value: T) {
+        self.internalValue = value
+    }
+
+    subscript(index: Int) -> IndexedValue<T> {
+        return IndexedValue<T>(value: self.internalValue, index: index)
+    }
+}
+
+class Animal {
+    let name: String
+    init(name: String) {
+        self.name = name
+    }
+}
+
+func main() {
+    let otto = Animal(name: "Otto")
+    let wrapper = Wrapper<Animal>(value: otto)
+    let indexedOtto = wrapper[index: 0]
+    print(indexedOtto.index) // 0
+    print(indexedOtto.value.name) // Otto
+}

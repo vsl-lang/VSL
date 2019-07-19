@@ -39,8 +39,24 @@ export default class ScopeInitItem extends ScopeFuncItem {
         // We can set the name to `init` because that's a keyword anyway. You
         // can't have a function named init.
         super.init({ ...opts });
+
+        /**
+         * The type being init'd might be same as `self.owner.owner`
+         * @type {ScopeTypeItem}
+         */
         this.initializingType = initializingType;
+
+        /**
+         * If is a VSL-sourced implicit init. If this is true,
+         * `implicitSuperclassCall` is always true
+         * @type {Boolean}
+         */
         this.isDefaultInit = isDefaultInit;
+
+        /**
+         * If superclass init() is implicit called.
+         * @type {Boolean}
+         */
         this.implicitSuperclassCall = isDefaultInit || implicitSuperclassCall;
     }
 

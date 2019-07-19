@@ -256,7 +256,10 @@ export default class ScopeTypeItem extends ScopeItem {
     }
 
     /**
-     * Determines if the current type can be cast to `type` is castable.
+     * Determines if the current type can be cast to `type` is castable. This
+     * checks for a valid OO cast which may or may not be a valid expression
+     * cast. Use {@link TransformationContext#contextuallyCastable} if
+     * applicable.
      *
      * @param {ScopeTypeItem} type - If the current type can be cast to this
      *                             type.

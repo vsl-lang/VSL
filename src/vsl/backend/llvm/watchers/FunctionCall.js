@@ -1,5 +1,6 @@
 import BackendWatcher from '../../BackendWatcher';
 import BackendError from '../../BackendError';
+import BackendWarning from '../../BackendWarning';
 import t from '../../../parser/nodes';
 
 import { Key } from '../LLVMContext';
@@ -37,6 +38,13 @@ export default class LLVMFunctionCall extends BackendWatcher {
             );
         }
 
+        // See if the function is deprecated
+        if (functionRef.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                functionRef.deprecationStatus,
+                node
+            ));
+        }
 
         // See if takes self
         const takesSelfParameter = isInstanceCtx(functionRef);

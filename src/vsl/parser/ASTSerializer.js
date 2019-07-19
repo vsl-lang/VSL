@@ -394,7 +394,8 @@ export default class ASTSerializer {
      * @return {string} filename for serialized file
      */
     static getSerializedFilenameFor(fileName) {
-        return `${createHash('sha1').update(fileName).digest('hex')}.vslc`;
+        const name = path.basename(fileName, path.extname(fileName));
+        return `${name}.${createHash('sha1').update(fileName).digest('hex').substring(0, 7)}.vslc`;
     }
 
 }

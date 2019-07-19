@@ -40,6 +40,13 @@ export default class LLVMPropertyExpression extends BackendWatcher {
             )
         }
 
+        if (propRef.isDeprecated) {
+            context.backend.warn(new BackendWarning(
+                propRef.deprecationStatus,
+                node
+            ));
+        }
+
         // We might be accessing a static or dynamic field. For this purpose we
         // will want to 'regen' the type that the LHS is.
         // MyClass.foo => generate 'class MyClass'
