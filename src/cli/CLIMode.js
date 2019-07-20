@@ -1,5 +1,5 @@
 import pjson from '../../package.json';
-import ErrorManager from './ErrorManager.js';
+import ErrorManager from './ErrorManager';
 
 export default class CLIMode {
     usage = "vsl ..."

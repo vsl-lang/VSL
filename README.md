@@ -141,3 +141,39 @@ fizzbuzz(i where i % 3) -> "Fizz"
 fizzbuzz(i where i % 5) -> "Buzz"
 fizzbuzz(i) -> String(for: i)
 ```
+
+## Using the JS interface
+To interface with the compiler the easiest way is to use the `VSLToolchain`
+class. For more specific behavior you'd need to interact directly with the
+`CompilationIndex` and `CompilationGroup`s. See the documentation for information
+on that:
+
+```js
+import { Toolchain } from 'vsl';
+
+const toolchain = new Toolchain.VSLToolchain();
+
+const file = {
+    type: Toolchain.VSLToolchainDataSourceType.file,
+    data: './main.vsl'
+};
+
+const result = await toolchain.executeFiles([ file ]);
+const compiledInstance = await result.compile();
+const bytecode = await compiledInstance.emitRaw(result);
+
+// To obtain an executable
+await compiledInstance.emitExecutable('main.out', { /* See object options below */ });
+
+// To obtain a shared object
+await compiledInstance.emitSharedObject('main.dylib', { /* See object options below */ });
+
+// To obtain a linked object file
+await compiledInstance.emitObject('main.o', { optimizationLevel: 3, objects: [...], libraries: [...] })
+
+// Otherwise to optimize and get bytecode
+await compiledInstance.emitBitcode('main.bc', { optimizationLevel: 3 });
+
+// To obtain assembly
+await compiledInstance.emitAsm('main.s', { optimizationLevel: 3 });
+```

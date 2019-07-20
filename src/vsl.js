@@ -1,3 +1,5 @@
+import * as ToolchainModules from './toolchain';
+
 export { default as Parser } from './vsl/parser/vslparser';
 
 export { default as TransformationContext } from './vsl/transform/transformationContext';
@@ -25,6 +27,8 @@ export { default as CompilationIndex } from './index/CompilationIndex';
 export { default as CompilationHook } from './index/CompilationHook';
 export { default as CompilationServerClient } from './index/CompilationServerClient';
 export { default as CompilationModule, HookType } from './index/CompilationModule';
+
+export const Toolchain = ToolchainModules
 
 export { default as Backend } from './vsl/backend/Backend';
 export { default as BackendWatcher } from './vsl/backend/BackendWatcher';
