@@ -12,5 +12,8 @@ export default class BackendWarning {
 
         /** @type {Node} */
         this.node = node;
+
+        /** @type {CompilationStream} */
+        this.stream = null;
     }
 }

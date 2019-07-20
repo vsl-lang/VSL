@@ -1,3 +1,6 @@
+import { spawn } from 'child_process';
+import { Readable } from 'stream';
+
 /**
  * This class represents a backend-compiled VSL instance and has a series of
  * methods which let you output and link the code where applicable.
@@ -19,6 +22,20 @@ export default class EmissionInstance {
     }
 
     /**
+     * Resolves to the IR bytecode as a stream.
+     * @return {ReadableStream}
+     */
+    async emitRawStream() {
+        const stream = new Readable();
+        stream._read = () => {};
+
+        stream.push(await this.emitRaw());
+        stream.push(null)
+
+        return stream;
+    }
+
+    /**
      * Emits bitcode to a path. If the optimization level is zero then no
      * optimizations are performed however by default the optimization level is
      * one.
@@ -31,5 +48,24 @@ export default class EmissionInstance {
         if (optimizationLevel === 0) {
             this.backend.writeBitCodeTo(path);
         }
+    }
+
+    /**
+     * Interprets using the `lli` executable the VSL code. Resolves when
+     * execution is finished
+     * @async
+     */
+    async interpret() {
+        const byteCode = await this.emitRawStream();
+        await new Promise((resolve, reject) => {
+            let lli = spawn('lli', [], {
+                stdio: ['pipe', 'inherit', 'inherit']
+            });
+
+            byteCode.pipe(lli.stdin);
+
+            lli.on('error', reject);
+            lli.on('exit', resolve);
+        });
     }
 }

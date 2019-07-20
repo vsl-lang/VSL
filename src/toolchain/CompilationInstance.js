@@ -1,5 +1,6 @@
 import LLVMBackend from '../vsl/backend/llvm';
-import EmissionInstance from './EmissionInstances';
+import EmissionInstance from './EmissionInstance';
+import CompilationStream from '../index/CompilationStream';
 
 /**
  * This represents the execution of a VSL program.  To obtain an execution index
@@ -9,7 +10,7 @@ export default class CompilationInstance {
     /**
      * @private
      */
-    constructor(module, index) {
+    constructor(module, index, triple) {
         /**
          * The execution as a module if applicable.
          * @type {?Module}
@@ -22,10 +23,14 @@ export default class CompilationInstance {
          */
         this.index = index;
 
+        /** @private */
+        this.stream = new CompilationStream();
+
         /**
          * This is the backend which can be used to configure its options.
+         * @type {LLVMBackend}
          */
-        this.backend = new LLVMBackend();
+        this.backend = new LLVMBackend(this.stream, triple);
 
         /** @private */
         this._isCompiled = false;
@@ -42,13 +47,20 @@ export default class CompilationInstance {
     /**
      * This **compiles** to bytecode the instance. Does not recompile if already
      * compiled.
+     * @param {Object} [options={}] - Compilation options
+     * @param {func(warning: BackendWarning): void} options.emitWarning - A
+     *                  callback passed with a warning object.
      * @returns {EmissionInstance}
      * @throws {TypeError} if already compiled.
      * @async
      */
-    async compile() {
+    async compile({ emitWarning } = {}) {
         if (this.isCompiled) {
             throw new TypeError('Attempted to compile already compiled instance.');
+        }
+
+        if (emitWarning) {
+            this.stream.registerWarningListener(emitWarning);
         }
 
         this.backend.run(this.index.root.globalScope.statements);

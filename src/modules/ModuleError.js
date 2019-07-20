@@ -5,12 +5,14 @@
 export default class ModuleError {
     /**
      * @param {string} message - A human readable error message
+     * @param {Module} module - The module throwing the error
      * @param {number} type - something of `ModuleError.Type` representing the
      *                      type of the error
      * @param {Object} data - Data representing the error
      */
-    constructor(message, type, data = {}) {
+    constructor(message, module, type, data = {}) {
         this.message = message;
+        this.module = module;
         this.type = type;
         this.data = data;
     }

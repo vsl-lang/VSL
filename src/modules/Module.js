@@ -29,6 +29,7 @@ export default class Module {
             throw new ModuleError(
                 `Could not find module, \`${path}\` does not exist or is not ` +
                 `a directory.`,
+                this,
                 ModuleError.type.modulePathNotFound,
                 { path }
             );
@@ -70,6 +71,7 @@ export default class Module {
         ////////////////////////////////////////////////////////////////////////
         if (typeof yaml.name !== 'string') throw new ModuleError(
             `All modules must have a name, no name provided`,
+            this,
             ModuleError.type.moduleNoName
         );
 
@@ -77,6 +79,7 @@ export default class Module {
             throw new ModuleError(
                 `Modules can only have names with letters, dashes, and ` +
                 `underscores; numbers for following characters`,
+                this,
                 ModuleError.type.moduleInvalidName,
                 { name: yaml.name }
             )
@@ -95,6 +98,7 @@ export default class Module {
         if (!semver.valid(yaml.version)) throw new ModuleError(
             `No or invalid version number provided. Reference ` +
             `https://semver.org for more information`,
+            this,
             ModuleError.type.invalidVersion,
             { version: yaml.version }
         );
@@ -139,6 +143,7 @@ export default class Module {
             throw new ModuleError(
                 `STDLIB must be a boolean (if enabled) or a string ` +
                 `representing the name of a custom stdlib`,
+                this,
                 ModuleError.type.invalidStdlibSpec,
                 { type: stdlib }
             )
@@ -161,6 +166,7 @@ export default class Module {
         let bindgens = yaml.bindgen || [];
         if (!(bindgens instanceof Array)) throw new ModuleError(
             `Bindgen should be array list`,
+            this,
             ModuleError.type.invalidSourceType
         );
 
@@ -168,11 +174,13 @@ export default class Module {
             const bindgen = bindgens[i];
 
             if (typeof bindgen.language !== 'string') throw new ModuleError(
-                `Bindgen at index ${i} must have \`language\` parameter of type string`
+                `Bindgen at index ${i} must have \`language\` parameter of type string`,
+                this
             );
 
             if (!(bindgen.sources instanceof Array)) throw new ModuleError(
-                `Bindgen at index ${i} must have array of \`sources\``
+                `Bindgen at index ${i} must have array of \`sources\``,
+                this
             );
 
 
@@ -180,7 +188,8 @@ export default class Module {
             for (let j = 0; j < bindgen.sources.length; j++) {
                 if (typeof bindgen.sources[j] !== 'string') throw new ModuleError(
                     `Bindgen at index ${i} and source at index ${j} must be a ` +
-                    `glob of type string.`
+                    `glob of type string.`,
+                    this
                 );
 
                 const files = await ModuleInterface.shared.glob(
@@ -192,15 +201,18 @@ export default class Module {
             }
 
             if (typeof bindgen.output !== 'object') throw new ModuleError(
-                `Bindgen at index ${i} must have \`output\` object.`
+                `Bindgen at index ${i} must have \`output\` object.`,
+                this
             );
 
             if (typeof bindgen.output.name !== 'string') throw new ModuleError(
-                `Bindgen at index ${i} must have \`output.name\` string.`
+                `Bindgen at index ${i} must have \`output.name\` string.`,
+                this
             );
 
             if (typeof bindgen.output.directory !== 'string') throw new ModuleError(
-                `Bindgen at index ${i} must have \`output.directory\` string.`
+                `Bindgen at index ${i} must have \`output.directory\` string.`,
+                this
             );
 
             const bindgenInstance = locateBindgen(
@@ -214,7 +226,8 @@ export default class Module {
 
             if (!bindgenInstance) {
                 throw new ModuleError(
-                    `No bindgen named ${bindgen.name}.`
+                    `No bindgen named ${bindgen.name}.`,
+                    this
                 );
             }
 
@@ -227,6 +240,7 @@ export default class Module {
         let sources = yaml.sources || [];
         if (!(yaml.sources instanceof Array)) throw new ModuleError(
             `Sources list should be array`,
+            this,
             ModuleError.type.invalidSourceType
         );
 
@@ -244,6 +258,7 @@ export default class Module {
                 if (typeof source.path !== 'string') {
                     throw new ModuleError(
                         `Source #${i} needs 'path' param to be string.`,
+                        this,
                         ModuleError.type.invalidSourceItemType
                     );
                 }
@@ -252,6 +267,7 @@ export default class Module {
                     if (!(source.filters instanceof Array)) {
                         throw new ModuleError(
                             `Source #${i} needs 'filter' param to be array.`,
+                            this,
                             ModuleError.type.invalidSourceItemType
                         );
                     }
@@ -278,6 +294,7 @@ export default class Module {
             } else {
                 throw new ModuleError(
                     `Source #${i} should be string but wasn't.`,
+                    this,
                     ModuleError.type.invalidSourceItemType
                 );
             }
@@ -298,6 +315,7 @@ export default class Module {
         if (options.themeColor && !this.validateColor(options.themeColor)) {
             throw new ModuleError(
                 `Module theme color must be a valid color (6-digit hex code.)`,
+                this,
                 ModuleError.type.invalidDocgenConfig
             );
         }
@@ -333,6 +351,7 @@ export default class Module {
             throw new ModuleError(
                 `${this.rootPath} is not a VSL module, could not locate a ` +
                 `\`module.yml\``,
+                this,
                 ModuleError.type.moduleNoYml,
                 { error }
             )

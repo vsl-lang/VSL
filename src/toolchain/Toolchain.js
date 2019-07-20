@@ -21,12 +21,16 @@ import Module from '../modules/Module';
  *                      information on how this parameter's object is formatted.
  * @property {?string} [cacheDirectory=null] - Cache directory. Not valid for
  *                      module executions.
+ * @property {?string} triple - Target triple to use, otherwise uses the default
+ *                      for the current system.
  */
 
 /**
  * @typedef {Object} VSLToolchainDataSource
  * @property {DataSourceType} type - The type of the source
  * @property {string} data - Filename, or string data, whatever it may be.
+ * @property {?string} sourceName - For non-file sources you can provide a custom
+ *                                name.
  */
 
 /**
@@ -67,9 +71,7 @@ export default class VSLToolchain {
      * Provide a library in the **standard library path** which should be used
      * as the pre-imported standard library.
      *
-     * @param {string} libraryName
-     * @return {CompilationModule}
-     * @async
+     * @type {string}
      */
     set standardLibraryName(stlName) {
         this.targetSTLName = stlName;
@@ -91,7 +93,7 @@ export default class VSLToolchain {
      * @return {CompilationModule}
      * @async
      */
-    async executeSTL(stl) {
+    async compileSTL(stl) {
         let stlName = typeof stl === 'string' ? stl : this.targetSTLName;
         let stdlibPath = path.join(__dirname, '../../libraries/', stlName);
 
@@ -158,7 +160,7 @@ export default class VSLToolchain {
         // there is a cyclic dependency we'll end up with an infinite
         // loop. We stop this so the stdlib doesn't load the stdlib.
         if (module.stdlib !== false) {
-            modules.push(await this.executeSTL(module.stdlib));
+            modules.push(await this.compileSTL(module.stdlib));
         }
 
         let index = new CompilationIndex(
@@ -169,7 +171,7 @@ export default class VSLToolchain {
         await index.compile();
         this.directoryModuleAssociations.set(absoluteModulePath, index);
 
-        return new CompilationInstance(module, index);
+        return new CompilationInstance(module, index, options.triple);
     }
 
     /**
@@ -203,13 +205,13 @@ export default class VSLToolchain {
 
                     const stream = compilationGroup.createStream();
                     stream.sourceName = path.resolve(filePath);
-                    stream.send(data);
+                    stream.send(fileData);
                     break;
                 }
 
                 case DataSourceType.data: {
                     const stream = compilationGroup.createStream();
-                    stream.sourceName = '<buffer>';
+                    stream.sourceName = dataItem.sourceName || '<buffer>';
                     stream.send(dataItem.data);
                     break;
                 }
@@ -221,11 +223,11 @@ export default class VSLToolchain {
 
         const index = new CompilationIndex(
             compilationGroup,
-            [await this.executeSTL()]
+            [await this.compileSTL()]
         );
 
         await index.compile();
 
-        return new CompilationInstance(null, index);
+        return new CompilationInstance(null, index, options.triple);
     }
 }

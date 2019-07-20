@@ -1,4 +1,5 @@
 import ParserError from '../vsl/parser/parserError';
+import ModuleError from '../modules/ModuleError';
 import BackendWarning from '../vsl/backend/BackendWarning';
 import c from './colorSupport';
 
@@ -39,8 +40,10 @@ export default class ErrorManager {
      * @param {Module} obj - Module object (before run)
      * @param {ModuleError} error - Error object.
      */
-    module(obj, error) {
-        let moduleDescribedName = obj.module.name ? " " + obj.module.name : "";
+    module(error) {
+        const mod = error.module;
+
+        let moduleDescribedName = mod.module.name ? " " + mod.module.name : "";
         let moduleDescribedNameColored = this.shouldColor ?
             `\u001B[1m${moduleDescribedName}\u001B[0m` :
             moduleDescribedName;
@@ -51,7 +54,7 @@ export default class ErrorManager {
 
         let modulePrefix = modulePrefixColor + moduleDescribedNameColored + ": ";
         console.warn(this.setRed(this.prefix) + modulePrefix + error.message);
-        console.warn(`  module @ ${obj.rootPath}`);
+        console.warn(`  module @ ${mod.rootPath}`);
         process.exit(1);
     }
 
@@ -107,10 +110,19 @@ export default class ErrorManager {
     }
 
     /**
-     * Dynamically handles err
+     * Dynamically handles any error or warning. This is the recommended error
+     * handling function to call as this will locate sources and generate
+     * detailed errors.
+     *
      * @param {Error} error
      */
     dynamicHandle(error) {
+        if (error instanceof ModuleError) {
+            this.module(error);
+        }
+
+        // VSL Compilation Errors
+
         let stream = null;
 
         if (error.stream) { stream = error.stream }

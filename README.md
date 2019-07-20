@@ -158,9 +158,11 @@ const file = {
     data: './main.vsl'
 };
 
-const result = await toolchain.executeFiles([ file ]);
-const compiledInstance = await result.compile();
-const bytecode = await compiledInstance.emitRaw(result);
+const compilationInstance = await toolchain.executeFiles([ file ]);
+const emissionInstance = await result.compile();
+
+// Get byte-code
+const byteCode = await emissionInstance.emitRaw(result);
 
 // To obtain an executable
 await compiledInstance.emitExecutable('main.out', { /* See object options below */ });

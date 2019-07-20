@@ -79,7 +79,7 @@ export default class CompilerCLI extends CLIMode {
             await moduleLoader.load();
         } catch(error) {
             if (error instanceof ModuleError) {
-                this.error.module(moduleLoader, error);
+                this.error.module(error);
             } else {
                 throw error;
             }
