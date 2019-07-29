@@ -7,6 +7,9 @@ export default class ValueRef {
     /**
      * @param {llvm.Value} value The LLVM value object
      * @param {Object} data - describes value
+     * @param {?number}  [data.aggrIdx=null] If the value is tied to an
+     *                                       aggregate type this points to
+     *                                       offset of the value
      * @param {Boolean} [data.isPtr=false] If the value is a pointer to the
      *                                     actual value.
      * @param {Boolean} [data.isDyn=false] If the value is dynamic. Provide
@@ -19,9 +22,12 @@ export default class ValueRef {
      * @param {Boolean} [data.instance=false] If the value takes an instance
      *                                        parameter. (i.e. self param)
      */
-    constructor(value, { isPtr = false, isDyn = false, didSet = null, instance = false } = {}) {
+    constructor(value, { isPtr = false, aggrIdx = null, isDyn = false, didSet = null, instance = false } = {}) {
         /** @type {llvm.Value} */
         this.value = value;
+
+        /** @type {?number} */
+        this.aggrIdx = aggrIdx;
 
         /** @type {Boolean} */
         this.isPtr = isPtr;
@@ -43,7 +49,9 @@ export default class ValueRef {
      * @param {?llvm.Value} self - The self value if applicable.
      */
     setValueTo(value, context, self) {
-        if (this.isPtr) {
+        if (this.aggrIdx !== null) {
+            return context.builder.createInsertValue(this.value, value, [this.aggrIdx]);
+        } else if (this.isPtr) {
             return context.builder.createStore(value, this.value);
         } else if (this.isDyn) {
             return this.didSet(value, context, self);
@@ -68,7 +76,9 @@ export default class ValueRef {
 
         // If it ptr then deref ptr. Examples are global vars which are always
         // ptrs
-        if (this.isPtr) {
+        if (this.aggrIdx !== null) {
+            return context.builder.createExtractValue(value, [this.aggrIdx]);
+        } else if (this.isPtr) {
             return context.builder.createLoad(value);
         } else {
             return value;

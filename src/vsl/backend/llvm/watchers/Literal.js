@@ -6,6 +6,7 @@ import InitPriority from '../InitPriority';
 import { getPcreType } from '../helpers/pcreHelpers';
 import getOrInsertFunction from '../helpers/getOrInsertFunction';
 import toLLVMType from '../helpers/toLLVMType';
+import { nilForType } from '../helpers/OptionalHelpers';
 
 import * as llvm from 'llvm-node';
 
@@ -91,6 +92,9 @@ export default class LLVMLiteral extends BackendWatcher {
 
             case VSLTokenType.ByteSequence:
                 return context.builder.createGlobalStringPtr(node.literal);
+
+            case VSLTokenType.Nil:
+                return nilForType(node.reference.parameters[0], context);
 
             case VSLTokenType.Regex:
                 const [, regex, flags = ""] = node.literal.split('/');

@@ -41,7 +41,9 @@ export default class Backend {
 
     /**
      * Run before generation begins
+     * @param {Object} context
      * @abstract
+     * @protected
      */
     pregen() { return }
 
@@ -91,16 +93,20 @@ export default class Backend {
 
     /**
      * Run after generation finishes
+     * @param {Object} context
      * @abstract
+     * @protected
      */
     postgen() { return }
 
     /**
-     * Begins generation.
-     * @param {CodeBlock} input
+     * Creates initial context object
+     * @param {TransformationContext} transformationContext
+     * @return {Object} anything
+     * @protected
      * @abstract
      */
-    start(input) {}
+    createInitialContext(transformationContext) {}
 
     /**
      * Runs a list of ASTs through this backend. MAKE SURE you have ran through
@@ -110,15 +116,20 @@ export default class Backend {
      * Do NOT provide a global AST, please provide file-specific ASTs otherwise
      * expect wack generation.
      *
-     * @param  {CodeBlock[]} input Code-block to start as 'entry' point.
+     * @param {CodeBlock[]} input Code-block to start as 'entry' point.
+     * @param {TransformationContext} transformationContext
      */
-    run(inputs) {
+    run(inputs, transformationContext) {
         this.pregen();
 
         for (let i = 0; i < inputs.length; i++) {
-            this.start(inputs[i]);
+            for (let j = 0; j < inputs[i].statements.length; j++) {
+                const initialCtx = this.createInitialContext(transformationContext);
+                this.generate(j, inputs[i].statements, initialCtx);
+            }
         }
 
-        this.postgen();
+        const postgenContext = this.createInitialContext(transformationContext);
+        this.postgen(postgenContext);
     }
 }

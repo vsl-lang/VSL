@@ -49,8 +49,8 @@ export default class NilResolver extends TypeResolver {
         if (!response) {
             if (requireType) {
                 this.emit(
-                    `In this context, no contextual type exists to which \`nil\`` +
-                    `could be resolved to.`
+                    `In this context, no contextual type found to which \`nil\`` +
+                    `should be resolved to.`
                 );
             } else {
                 return [];

@@ -38,7 +38,7 @@ export default class LiteralResolver extends TypeResolver {
 
     resolve(negotiate: (ConstraintType) => ?TypeConstraint): void {
         // Get context for primitive resolution
-        const context = negotiate(ConstraintType.TransformationContext).primitives;
+        const context = negotiate(ConstraintType.TransformationContext);
 
         // Check the requested types of this ID
         const response = negotiate(ConstraintType.RequestedTypeResolutionConstraint);
@@ -55,27 +55,27 @@ export default class LiteralResolver extends TypeResolver {
         // to be a default candidate but for now they are hardcoded here
         switch (this.node.type) {
             case VSLTokenType.Integer:
-                literalTypeContext = context.get("Integer");
+                literalTypeContext = context.primitives.get("Integer");
                 break;
 
             case VSLTokenType.Decimal:
-                literalTypeContext = context.get("FloatingPoint");
+                literalTypeContext = context.primitives.get("FloatingPoint");
                 break;
 
             case VSLTokenType.String:
-                literalTypeContext = context.get("String");
+                literalTypeContext = context.primitives.get("String");
                 break;
 
             case VSLTokenType.ByteSequence:
-                literalTypeContext = context.get("ByteSequence");
+                literalTypeContext = context.primitives.get("ByteSequence");
                 break;
 
             case VSLTokenType.Boolean:
-                literalTypeContext = context.get("Boolean");
+                literalTypeContext = context.primitives.get("Boolean");
                 break;
 
             case VSLTokenType.Regex:
-                literalTypeContext = context.get("Regex");
+                literalTypeContext = context.primitives.get("Regex");
                 break;
 
             default: throw new TypeError(`Undeductable literal of type ${this.node.type}`);
@@ -109,7 +109,7 @@ export default class LiteralResolver extends TypeResolver {
         // Match literal type to context-based candidates
         if (response !== null) {
             // Actual type intersect
-            this.mutableIntersect([response], typeCandidates)
+            typeCandidates = this.typeIntersect(typeCandidates, [response], context);
         }
 
         // Okay if this is 0 that means you have conflicting things
@@ -118,11 +118,10 @@ export default class LiteralResolver extends TypeResolver {
         if (typeCandidates.length === 0) {
             if (requireType) {
                 this.emit(
-                    `This literal would need to be a type which it cannot be in\n` +
-                    `order for everything to work. Candidates would include: \n\n` +
-                    typeList.map(i => "    • " + i.toString()).join("\n") +
-                    `\n\nHowever none of these are actually a type this literal could\n` +
-                    `represent.${response ? ` Contextualy this must be ${response}` : ''}`,
+                    `This literal cannot resolve to a working type based on the\n` +
+                    `contextual constraints (${response}). Possible literal types `+
+                    `include: \n\n` +
+                    typeList.map(i => "    • " + i.toString()).join("\n"),
                     e.NO_VALID_TYPE
                 );
             } else {

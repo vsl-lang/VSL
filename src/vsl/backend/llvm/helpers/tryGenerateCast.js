@@ -1,4 +1,5 @@
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
+import { wrapInOptional } from './OptionalHelpers';
 import { getObjectForValue } from './RTTI';
 import toLLVMType from './toLLVMType';
 import * as llvm from 'llvm-node';
@@ -14,6 +15,32 @@ import * as llvm from 'llvm-node';
  * @throws {TypeError} if something is wrong
  */
 export default function tryGenerateCast(value, valueTy, targetTy, context) {
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //                                                                        //
+    //                          Optional-Casting                              //
+    //                                                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    const optionalType = context.transformationContext.isOptionalType(targetTy);
+
+    // If target is `Optional<T>` and `value is T`. T is optionalType
+    if (optionalType && context.castableTo(valueTy, optionalType)) {
+        const castedInnerValue = tryGenerateCast(value, valueTy, optionalType, context);
+        return wrapInOptional(castedInnerValue, optionalType, context);
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //                                                                        //
+    //                             OO-Casting                                 //
+    //                                                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
     if (!valueTy.castableTo(targetTy) && targetTy !== ScopeTypeItem.RootClass) {
         throw new TypeError(
             `Attempted to generate unrelated upcast from ${valueTy} to ` +

@@ -240,7 +240,7 @@ EnumerationItem
 # TODO: add _ after Modifier if it doesnt cause ambiguities
 
 ClassStatement
-   -> Annotations Modifier "class" _ Identifier (_ genericDeclaration {% nth(1) %}):? _ (":" _ ExtensionList _
+   -> Annotations Modifier ("class" | "struct") _ Identifier (_ genericDeclaration {% nth(1) %}):? _ (":" _ ExtensionList _
             {% nth(2) %}):? "{" ClassItems "}" {%
         (d, l) => new t.ClassStatement(
             d[1], // access
@@ -249,6 +249,7 @@ ClassStatement
             d[7], // superclasses
             d[9], // statements
             d[0], // annotations
+            d[2][0].value === "struct", // isStructure
             l // location
         )
     %}

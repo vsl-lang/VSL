@@ -31,6 +31,7 @@ export default class LLVMPropertyExpression extends BackendWatcher {
 
         const value = regen('head', node, context);
 
+
         // If 'propRef' isn't an alias then something is wrong
         if (!(propRef instanceof ScopeAliasItem)) {
             this.emit(
@@ -103,10 +104,10 @@ export default class LLVMPropertyExpression extends BackendWatcher {
             if (asLValue) {
                 return new LValueRef({
                     self: value,
-                    property: new ValueRef(propPtr, { isPtr: true })
+                    property: propPtr
                 });
             } else {
-                return context.builder.createLoad(propPtr);
+                return propPtr.generate(context);
             }
         }
     }

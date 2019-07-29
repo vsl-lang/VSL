@@ -101,6 +101,7 @@ export default class ScopeGenericSpecialization extends ScopeTypeItem {
             isInterface: genericClass.isInterface,
             staticScope: genericClass.staticScope,
             subscope: genericClass.subscope,
+            isByValue: genericClass.isByValue,
             mockType: genericClass.mockType,
             defaultInitializer: genericClass.defaultInitializer
         });

@@ -80,7 +80,7 @@ export default function toLLVMType(type, context) {
 
         return backingType;
     } else {
-        return layoutType(ty, context).getPointerTo();
+        return layoutType(ty, context);
 
         throw new BackendError(
             `Not sure how to compile this type.`,

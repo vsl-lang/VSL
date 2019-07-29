@@ -17,9 +17,10 @@ export default class ClassStatement extends DeclarationStatement {
      * @param {Identifier[]} superclasses - The superclasses to inherit or implement
      * @param {CodeBlock} statements - The class's body
      * @param {Annotation[]} annotations - The annotations of the class
+     * @param {boolean} isStructure - If it is a `struct` i.e. by value
      * @param {Object} position - a position from nearley
      */
-    constructor(access, name, generics, superclasses, statements, annotations, position) {
+    constructor(access, name, generics, superclasses, statements, annotations, isStructure, position) {
         super(access, position);
 
         /** @type {Identifier} */
@@ -39,6 +40,9 @@ export default class ClassStatement extends DeclarationStatement {
 
         /** @type {?ScopeTypeItem} */
         this.reference = null;
+
+        /** @type {boolean} */
+        this.isStructure = isStructure;
 
         /**
          * Associated mock type attribute

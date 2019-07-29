@@ -3,8 +3,8 @@ import toLLVMType from './toLLVMType';
 import ScopeGenericSpecialization from '../../../scope/items/scopeGenericSpecialization';
 import ScopeDynFieldItem from '../../../scope/items/scopeDynFieldItem';
 import ScopeTypeItem from '../../../scope/items/scopeTypeItem';
-import tryGenerateCast from './tryGenerateCast';
 import { getVTableTy } from './VTable';
+import ValueRef from '../ValueRef';
 
 /**
  * Creates the LLVM layout for a {@link ScopeTypeItem}. This specifically
@@ -66,7 +66,11 @@ export default function layoutType(type, context) {
         false
     );
 
-    return structType;
+    if (type.isByValue) {
+        return structType;
+    } else {
+        return structType.getPointerTo();
+    }
 }
 
 /**
@@ -96,38 +100,49 @@ export function getVTableOffset(value, type, context) {
 }
 
 /**
- * Returns the offset of a field in a type
+ * Returns the offset of a field in a POINTER-BASED type.
  * @param {llvm.Value} value - Input value
  * @param {ScopeTypeItem} type - Type of input value
  * @param {ScopeAliasItem} field - field reference
  * @param {LLVMContext} context - Same context to build in
- * @return {llvm.Value} value of field pointer
+ * @return {ValueRef} value of field pointer
  * @throws {TypeError} if field is not found.
  */
 export function getTypeOffset(value, type, field, context) {
-    // Get field owner
+    // Get field owner (the class that declares it, e.g. might be superclass of type)
     const fieldType = field.owner.owner;
 
-    let rootOffset = 0;
-
-    if (fieldType.hasSuperClass)
-        rootOffset += 1;
-
-    if (type.dynamicDispatch)
-        rootOffset += 1;
-
-    const offset = rootOffset + fieldType.subscope
+    // Get the relative field offset
+    const relativeFieldOffset = fieldType.subscope
         .aliases
         .filter(alias => !(alias instanceof ScopeDynFieldItem))
         .indexOf(field);
 
-    const fieldPtr = context.builder.createInBoundsGEP(
-        value,
-        [
-            llvm.ConstantInt.get(context.ctx, 0),
-            llvm.ConstantInt.get(context.ctx, offset)
-        ]
-    );
+    // Structs are more simple
+    if (type.isByValue) {
+        // Extract the appropriate value
+        return new ValueRef(value, { aggrIdx: relativeFieldOffset });
+    } else {
+        let rootOffset = 0;
 
-    return fieldPtr;
+        // Shift for superclass as first value is superclass ptr
+        if (fieldType.hasSuperClass)
+            rootOffset += 1;
+
+        // Offset the vtable reference.
+        if (type.dynamicDispatch)
+            rootOffset += 1;
+
+        const offset = rootOffset + relativeFieldOffset;
+
+        const fieldPtr = context.builder.createInBoundsGEP(
+            value,
+            [
+                llvm.ConstantInt.get(context.ctx, 0),
+                llvm.ConstantInt.get(context.ctx, offset)
+            ]
+        );
+
+        return new ValueRef(fieldPtr, { isPtr: true });
+    }
 }

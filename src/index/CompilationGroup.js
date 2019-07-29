@@ -391,7 +391,8 @@ export default class CompilationGroup {
 
         // Run it through the backend
         if (backend) {
-            backend.run(block.statements);
+            const units = block.statements;
+            backend.run(units, this.context);
         }
         return;
     }

@@ -21,6 +21,7 @@ import Scope from '../scope';
  *     so ensure that it is not possible to declare fields.
  * @property {Scope} data.subscope - The scope the class manages.
  * @property {ScopeItemResolver} data.resolver - Function to resolve if node.
+ * @property {boolean} data.isByValue - If type represents a by-value type
  * @property {string} data.mockType - A property for backends if the type needs
  *                                  to act like a native type. ANY fields will
  *                                  likely be ignored.
@@ -132,6 +133,7 @@ export default class ScopeTypeItem extends ScopeItem {
         mockType = null,
         staticScope,
         subscope,
+        isByValue = false,
         source = null,
         dynamicDispatch = null,
         defaultInitializer = null,
@@ -166,6 +168,12 @@ export default class ScopeTypeItem extends ScopeItem {
          * @type {Boolean}
          */
         this.isInterface = isInterface;
+
+        /**
+         * If the type is a by-value type,
+         * @type {boolean}
+         */
+        this.isByValue = isByValue;
 
         /**
          * Specifies static scope for a type

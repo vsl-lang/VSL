@@ -31,7 +31,7 @@ export default function getDefaultInit(ty, context, regen) {
     // NoRecurse InlineHint
     const init = llvm.Function.create(
         llvm.FunctionType.get(
-            llvm.Type.getVoidTy(context.ctx),
+            llvmTy,
             [llvmTy],
             false
         ),
@@ -83,10 +83,8 @@ export default function getDefaultInit(ty, context, regen) {
         if (fieldNode?.value) {
             let fieldValue = regen('value', fieldNode, defaultCtx);
 
-            let storeInst = defaultBuilder.createStore(
-                fieldValue,
-                getTypeOffset(self, ty, defaultField, defaultCtx)
-            );
+            getTypeOffset(self, ty, defaultField, defaultCtx)
+                .setValueTo(fieldValue);
         }
     }
 
@@ -130,7 +128,7 @@ export default function getDefaultInit(ty, context, regen) {
 
     }
 
-    defaultBuilder.createRetVoid();
+    defaultBuilder.createRet(self);
 
     return init;
 }

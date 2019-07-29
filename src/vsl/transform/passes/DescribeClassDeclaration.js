@@ -90,6 +90,7 @@ export default class DescribeClassDeclaration extends Transformation {
             superclass: superclass,
             staticScope: staticSubscope,
             isScopeRestricted: tool.isPrivate,
+            isByValue: node.isStructure,
             genericInfo: new GenericInfo({
                 parameters: genericParameters
             }),

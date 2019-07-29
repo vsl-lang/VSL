@@ -112,9 +112,8 @@ export default class TransformationContext {
         // #defined(Optional)
         // Optional is #contextType(optional)
         // T is #parameter(U, 0)
-        if (this.optionalType &&
-            targetType.genericClass === this.optionalType &&
-            valueType.castableTo(targetType.parameters[0])) {
+        const optionalType = this.isOptionalType(targetType);
+        if (optionalType && valueType.castableTo(optionalType)) {
             return true;
         }
 
@@ -122,6 +121,22 @@ export default class TransformationContext {
         // The castableTo only checks for an valid OO cast.
 
         return false;
+    }
+
+    /**
+     * Checks if a type is an optional type in this context. Returns the
+     * parameter type in context otherwise returns null.
+     *
+     * @param {ScopeTypeItem} type
+     * @return {boolean}
+     */
+    isOptionalType(type) {
+        const isOptionalType = this.optionalType && type.genericClass === this.optionalType;
+        if (isOptionalType) {
+            return type.parameters[0];
+        } else {
+            return null;
+        }
     }
 
     /**

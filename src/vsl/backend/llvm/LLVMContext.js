@@ -10,8 +10,9 @@ export const Key = {
 export default class LLVMContext {
     /**
      * @param {LLVMContext} backend LLVM backend.
+     * @param {TransformationContext} transformationContext Transformation Context
      */
-    constructor(backend) {
+    constructor(backend, transformationContext) {
         /** @type {LLVMBackend} */
         this.backend = backend;
 
@@ -23,6 +24,9 @@ export default class LLVMContext {
 
         /** @type {?llvm.Value} */
         this.selfReference = null;
+
+        /** @type {TransformationContex} */
+        this.transformationContext = transformationContext;
 
         this._keys = new Map();
 
@@ -40,6 +44,13 @@ export default class LLVMContext {
      * @type {?llvm.IRBuilder}
      */
     set builder(newBuilder) { this._builder = newBuilder; }
+
+    /**
+     * See {@link TransformationContext#contextuallyCastable}
+     */
+    castableTo(...args) {
+        return this.transformationContext.contextuallyCastable(...args);
+    }
 
     /**
      * Returns the type context.
@@ -97,7 +108,7 @@ export default class LLVMContext {
      * @return {LLVMContext}
      */
     bare() {
-        return new LLVMContext(this.backend);
+        return new LLVMContext(this.backend, this.transformationContext);
     }
 
     /**
@@ -112,6 +123,7 @@ export default class LLVMContext {
         context.parentFunc = this.parentFunc;
         context.typeContext = this.typeContext;
         context.selfReference = this.selfReference;
+        context.transformationContext = this.transformationContext;
         return context;
     }
 }

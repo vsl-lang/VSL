@@ -51,12 +51,6 @@ export default class ASTTool {
         /** @private */
         this.transformer = transformer;
 
-        /** @private */
-        this.replacement = null;
-
-        /** @private */
-        this.sourceQualifier = this.fragment.queueQualifier;
-
         /**
          * The context which created this ASTTool, non-nil for items such
          *
@@ -275,6 +269,26 @@ export default class ASTTool {
 
         // TODO: implement
         // this.transformer.nodeQueue.splice(relativeQueueQualifier, 1);
+    }
+
+    /**
+     * This identifies the stream containing the current node. Null if not
+     * found
+     * @type {?CompilationStream}
+     */
+    get parentStream() {
+        let node = this.fragment;
+
+        do {
+            if (node.stream) {
+                return node.stream;
+            }
+        } while(
+            node.rootScope !== true &&
+            (node = node.parentScope)
+        );
+
+        return null;
     }
 
     /**

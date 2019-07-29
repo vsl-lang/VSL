@@ -134,6 +134,22 @@ export default class TypeResolver {
      * Performs a set-intersection between two types, you can specify error
      * handling to centralize errors caused.
      *
+     * Previously this used to be a bit more complex but since then the type
+     * system has been modified and some simplifications have been made.
+     *
+     * To understand this:
+     *
+     * ```
+     * let t: rootType = appliedType
+     * ```
+     *
+     * Now it is possible to have a situation where the rootType and the
+     * appliedType is ambiguous. What this does is you provide it the
+     * possible rootTypes and the possible appliedTypes and this returns the
+     * valid appliedTypes.
+     *
+     * (ignore everything below)
+     *
      * ## Problem
      *
      * Type intersection is a little on the complex side so I've attempted to
@@ -186,56 +202,41 @@ export default class TypeResolver {
      * on \\(D_3\\). Solution? That's a good question, so that is what we attempt
      * to do here.
      *
-     * @param  {?ScopeTypeItem[]} rootSet    The base set which to perform
+     * @param  {TypeCandidate[]} targetSet   The base set which to perform
      *                                       matching against. This means a item
      *                                       from an appliedSet could be upcast
      *                                       to match this, but not the other
      *                                       way. This is generally the static
      *                                       set, e.g. the function arg list.
-     * @param  {?ScopeTypeItem[]} appliedSet This is the deductee set which will
+     * @param  {TypeCandidate[]} appliedSet  This is the deductee set which will
      *                                       be matched to a rootSet.
+     * @param {TransformationContext} ctx    The negotiated transformation
+     *                                       context.
+     * @return {ScopeTypeItem[]} the appropriate types from the **appliedSet**
      */
-    mutableIntersect(rootSet, appliedSet) {
-        let derivedCandidates = this._intersect(rootSet, appliedSet);
-        if (derivedCandidates === null) return null;
+    typeIntersect(appliedSet, targetSet, ctx) {
+        const validTypes = [];
 
-        // Clear both arrays
-        appliedSet.splice(0, appliedSet.length)
+        main:
+        for (let i = 0; i < appliedSet.length; i++) {
+            const appliedCandidate = appliedSet[i];
 
-        // Reapply types
-        for (let i = 0; i < derivedCandidates.length; i++) {
-            appliedSet.push(derivedCandidates[i].value);
-        }
-    }
+            for (let j = 0; j < targetSet.length; j++) {
+                const targetType = targetSet[j].candidate;
 
-    /**
-     * Please reference `mutableIntersect` for information. This merely also
-     * mutates the root.
-     *
-     * @param  {?ScopeTypeItem[]} rootSet    The base set which to perform
-     *                                       matching against. This means a item
-     *                                       from an appliedSet could be upcast
-     *                                       to match this, but not the other
-     *                                       way. This is generally the static
-     *                                       set, e.g. the function arg list.
-     * @param  {?ScopeTypeItem[]} appliedSet This is the deductee set which will
-     *                                       be matched to a rootSet.
-     */
-    dualPlaneIntersection(rootSet, appliedSet) {
-        let derivedCandidates = this._intersect(rootSet, appliedSet);
-        if (derivedCandidates === null) return null;
+                if (ctx.contextuallyCastable(appliedCandidate.candidate, targetType)) {
+                    validTypes.push(appliedCandidate);
 
-        // Clear both arrays
-        rootSet.splice(0, rootSet.length);
-        appliedSet.splice(0, appliedSet.length)
-
-        // Reapply types
-        for (let i = 0; i < derivedCandidates.length; i++) {
-            rootSet.push(derivedCandidates[i].type);
-            appliedSet.push(derivedCandidates[i].value);
+                    // We already found that this appliedType can work so we
+                    // don't need to check the others
+                    continue main;
+                }
+            }
         }
 
+        return validTypes;
     }
+
 
     /**
      * Resolves types for a given node.

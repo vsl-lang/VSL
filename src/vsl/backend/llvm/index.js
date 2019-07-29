@@ -182,10 +182,13 @@ export default class LLVMBackend extends Backend {
 
     /**
      * Add init code
+     * @param {LLVMContext} context
+     * @override
+     * @protected
      */
-    postgen() {
-        generatePriorityMap(this.initTasks, this, 'llvm.global_ctors', 'init');
-        generatePriorityMap(this.deinitTasks, this, 'llvm.global_dtors', 'deinit');
+    postgen(context) {
+        generatePriorityMap(this.initTasks, context, 'llvm.global_ctors', 'init');
+        generatePriorityMap(this.deinitTasks, context, 'llvm.global_dtors', 'deinit');
     }
 
     /**
@@ -205,16 +208,17 @@ export default class LLVMBackend extends Backend {
     }
 
     /**
-     * Begins generation.
-     * @param {CodeBlock} input
-     * @abstract
+    * Creates initial context object
+    * @param {TransformationContext} transformationContext
+    * @return {Object} anything
+    * @protected
+    * @override
      */
-    start(input) {
-        for (let i = 0; i < input.statements.length; i++) {
-            this.generate(i, input.statements, new LLVMContext(
-                this
-            ));
-        }
+    createInitialContext(transformationContext) {
+        return new LLVMContext(
+            this,
+            transformationContext
+        );
     }
 }
 

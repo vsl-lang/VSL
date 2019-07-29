@@ -26,9 +26,13 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
         const typeContext = context.typeContext;
 
+
         // Class being initalized. We try to see if there is a generic specialization
         // otherwise we'll load the non-generic class type.
         const parentClass = scopeItem.initializingType.selfType.contextualType(typeContext);
+
+        // If class is a struct (by value)
+        const isByValue = parentClass.isByValue;
 
         // Class being initalized in LLVM
         const selfType = toLLVMType(parentClass, context);
@@ -46,19 +50,21 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             // Since this will be the same lets not bother with making another.
             return defaultInit;
         } else {
+
+            // Get argument type list
+            const argTys = args.map(
+                arg => toLLVMType(arg.type.contextualType(typeContext), context)
+            );
+
+            // Add self if applicable
+            if (isByValue) {
+                argTys.unshift(selfType)
+            }
+
             // Get the function type by mapping each arg ref to a respective type.
             // Additionally the first argument is the class the initalizer
             // represents along with the return value.
-            let functionType = llvm.FunctionType.get(
-                llvm.Type.getVoidTy(context.ctx),
-                [
-                    selfType,
-                    ...args.map(
-                        arg => toLLVMType(arg.type.contextualType(typeContext), context)
-                    )
-                ],
-                false
-            );
+            let functionType = llvm.FunctionType.get(selfType, argTys, false);
 
             // Stores the LLVM function Constant* which will be the return value of
             // this fnuction
@@ -71,7 +77,6 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             );
 
             const llvmFuncArgs = func.getArguments();
-            const self = llvmFuncArgs[0];
 
             // Add the refs to each arg.
             for (let i = 0; i < node.params.length; i++) {
@@ -90,6 +95,12 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             );
 
             let builder = new llvm.IRBuilder(entryBlock);
+
+            // Create the self really quickly if applicable
+            const self = isByValue ?
+                builder.createLoad(builder.createAlloca(selfType)) :
+                llvmFuncArgs[0];
+
             let newContext = context.clone();
             newContext.builder = builder;
             newContext.parentFunc = func;
@@ -99,7 +110,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
 
             regen('statements', node, newContext);
 
-            builder.createRetVoid();
+            builder.createRet(self);
             return func;
         }
     }

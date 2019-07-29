@@ -59,8 +59,8 @@ export default class LLVMInitializerCall extends BackendWatcher {
         // Type of the class in LLVM.
         const classType = toLLVMType(classRef, context);
 
-        // Size of the class in bytes
-        const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);
+        // See if is a by-value type
+        const isByValue = classRef.isByValue;
 
         // Get args which should use default param
         const argPositionsTreatedOptional = node.argPositionsTreatedOptional;
@@ -82,11 +82,8 @@ export default class LLVMInitializerCall extends BackendWatcher {
         }
 
 
-        // Allocate space for struct
-        const instance = alloc(sizeOfClass, classType, node, context);
-
         // Compile the arguments
-        let compiledArgs = [instance];
+        let compiledArgs = [];
         for (let i = 0, k = 0; i < initRef.args.length; i++, k++) {
             let value;
             if (argPositionsTreatedOptional.includes(i)) {
@@ -107,7 +104,14 @@ export default class LLVMInitializerCall extends BackendWatcher {
         }
 
 
-        context.builder.createCall(callee, compiledArgs);
-        return instance;
+        if (isByValue) {
+            return context.builder.createCall(callee, compiledArgs);
+        } else {
+            // Size of the class in bytes
+            const sizeOfClass = backend.module.dataLayout.getTypeStoreSize(classType.elementType);
+            const instance = alloc(sizeOfClass, classType, node, context);
+
+            return context.builder.createCall(callee, [instance, ...compiledArgs]);
+        }
     }
 }
