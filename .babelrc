@@ -26,6 +26,7 @@
                 "node": "6.11"
             },
             "useBuiltIns": "usage",
+            "corejs": 3,
             "include": ["proposal-object-rest-spread"]
         }]
     ],
