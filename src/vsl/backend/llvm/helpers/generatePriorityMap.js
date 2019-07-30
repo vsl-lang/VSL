@@ -52,13 +52,13 @@ export default function generatePriorityMap(tasks, context, name, prefix) {
         const taskBuilder = new llvm.IRBuilder(taskBlock);
 
         // Create init
-        const context = context.bare();
-        context.builder = taskBuilder;
-        context.parentFunc = taskFunc;
+        const initCtx = context.bare();
+        initCtx.builder = taskBuilder;
+        initCtx.parentFunc = taskFunc;
 
         // Go backwards
         for (let i = 0; i < funcs.length; i++) {
-            funcs[i](context);
+            funcs[i](initCtx);
         }
 
         taskBuilder.createRetVoid();

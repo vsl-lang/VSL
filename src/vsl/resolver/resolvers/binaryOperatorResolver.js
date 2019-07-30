@@ -39,6 +39,9 @@ export default class BinaryOperatorResolver extends TypeResolver {
         const lhs = this.getChild(this.node.lhs);
         const rhs = this.getChild(this.node.rhs);
 
+        // Transformation Context
+        const context = negotiate(ConstraintType.TransformationContext);
+
         // Get requested resolution constraint
         const requestedType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
 
@@ -111,7 +114,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                 if (candidates[j].args.length === 2) {
                     // If provided, check if requestedType matches. If it does
                     //  not, skip it.
-                    if (requestedType && !candidates[j].returnType.castableTo(requestedType)) {
+                    if (requestedType && !context.contextuallyCastable(candidates[j].returnType, requestedType)) {
                         continue;
                     }
 
@@ -125,7 +128,7 @@ export default class BinaryOperatorResolver extends TypeResolver {
                         // candidate. The second arg (.args[1]) refers to the
                         // RHS as the format is +(lhs, rhs)
                         const rhsCandidate = rhsTypes[k].candidate.resolved();
-                        if (rhsCandidate.castableTo(candidates[j].args[1].type)) {
+                        if (context.contextuallyCastable(rhsCandidate, candidates[j].args[1].type)) {
                             // Only resolve prec stuff if we are doing prec
                             // simplification.
 

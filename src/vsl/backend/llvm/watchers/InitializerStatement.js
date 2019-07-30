@@ -57,7 +57,7 @@ export default class LLVMInitializerStatement extends BackendWatcher {
             );
 
             // Add self if applicable
-            if (isByValue) {
+            if (!isByValue) {
                 argTys.unshift(selfType)
             }
 

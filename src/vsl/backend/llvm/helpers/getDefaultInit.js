@@ -61,18 +61,15 @@ export default function getDefaultInit(ty, context, regen) {
 
     if (ty.hasSuperClass) {
         const superclassInit = getDefaultInit(ty.superclass, context, regen);
-        defaultBuilder.createCall(
-            superclassInit,
+        const superclassObject = defaultBuilder.createInBoundsGEP(
+            self,
             [
-                defaultBuilder.createInBoundsGEP(
-                    self,
-                    [
-                        llvm.ConstantInt.get(backend.context, 0),
-                        llvm.ConstantInt.get(backend.context, 0)
-                    ]
-                )
+                llvm.ConstantInt.get(backend.context, 0),
+                llvm.ConstantInt.get(backend.context, 0)
             ]
         );
+
+        defaultBuilder.createCall(superclassInit, [superclassObject]);
     }
 
     // Run default init for all fields with default value
@@ -84,7 +81,7 @@ export default function getDefaultInit(ty, context, regen) {
             let fieldValue = regen('value', fieldNode, defaultCtx);
 
             getTypeOffset(self, ty, defaultField, defaultCtx)
-                .setValueTo(fieldValue);
+                .setValueTo(fieldValue, defaultCtx);
         }
     }
 

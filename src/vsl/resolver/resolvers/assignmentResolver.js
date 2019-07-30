@@ -35,8 +35,14 @@ export default class AssignmentResolver extends TypeResolver {
         const target = this.getChild(this.node.target);
         const value = this.getChild(this.node.value);
 
+        // Transformation Context
+        const context = negotiate(ConstraintType.TransformationContext);
+
         // Resolves conditional expressions seperately.
         const resultType = negotiate(ConstraintType.RequestedTypeResolutionConstraint)?.candidate.resolved();
+
+        // If at least one type is expected
+        const requireType = negotiate(ConstraintType.RequireType);
 
         // Get the type that the assignment is.
         const [ targetType ] = target.resolve((type) => {
@@ -49,11 +55,15 @@ export default class AssignmentResolver extends TypeResolver {
 
         const targetTy = targetType.candidate;
 
-        if (resultType && !targetTy.castableTo(resultType)) {
-            this.emit(
-                `Assignment must resolve to ${resultType} in this context ` +
-                `however is of type ${targetType}.`
-            );
+        if (resultType && !context.contextuallyCastable(targetTy, resultType)) {
+            if (requireType) {
+                this.emit(
+                    `Assignment must resolve to ${resultType} in this context ` +
+                    `however is of type ${targetType}.`
+                );
+            } else {
+                return [];
+            }
         }
 
         const valueTypes = value.resolve((type) => {

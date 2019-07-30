@@ -80,11 +80,7 @@ export default function toLLVMType(type, context) {
 
         return backingType;
     } else {
-        return layoutType(ty, context);
-
-        throw new BackendError(
-            `Not sure how to compile this type.`,
-            ty.source
-        );
+        const type = layoutType(ty, context);
+        return type;
     }
 }

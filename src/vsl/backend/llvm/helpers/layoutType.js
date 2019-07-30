@@ -25,51 +25,61 @@ import ValueRef from '../ValueRef';
  * @param {LLVMContext} context
  */
 export default function layoutType(type, context) {
+    const structType = layoutUnderlyingType(type, context);
+    const resultTy = type.isByValue ? structType : structType.getPointerTo();
+    return resultTy;
+}
+
+/**
+ * Obtains the underlying structure type behind a type
+ * @param {ScopeTypeItem} type - type to layout
+ * @param {LLVMContext} context
+ * @return {llvm.StructType}
+ */
+export function layoutUnderlyingType(type, context) {
     const { context: ctx, module } = context.backend;
     const typeName = type.uniqueName;
     const typeContext = type.getTypeContext();
 
-    let existingType = module.getTypeByName(typeName);
-    if (existingType) return existingType;
-
-    let structType = llvm.StructType.create(
-        ctx,
-        typeName
-    );
-
-    const fieldTypes = type.subscope.aliases
-        .filter(alias => !(alias instanceof ScopeDynFieldItem))
-        .map(
-            alias => alias.type.contextualType(typeContext))
-        .map(
-            fieldType => toLLVMType(fieldType, context));
-
-
-    const superClassTypes = type.hasSuperClass ? [
-        layoutType(
-            type.superclass.contextualType(type.getTypeContext()),
-            context
-        )
-    ] : [];
-
-    const vtableTypes = type.dynamicDispatch ? [getVTableTy(type, context)] : [];
-
-    // Convert all fields to LLVM types.
-    let layout = [
-        ...superClassTypes,
-        ...vtableTypes,
-        ...fieldTypes
-    ];
-
-    structType.setBody(
-        layout,
-        false
-    );
-
-    if (type.isByValue) {
-        return structType;
+    const existingType = module.getTypeByName(typeName);
+    if (existingType) {
+        return existingType;
     } else {
-        return structType.getPointerTo();
+        const structType = llvm.StructType.create(
+            ctx,
+            typeName
+        );
+
+        const fieldTypes = type.subscope.aliases
+            .filter(alias => !(alias instanceof ScopeDynFieldItem))
+            .map(
+                alias => alias.type.contextualType(typeContext))
+            .map(
+                fieldType => toLLVMType(fieldType, context));
+
+
+        const superClassTypes = type.hasSuperClass ? [
+            layoutUnderlyingType(
+                type.superclass.contextualType(type.getTypeContext()),
+                context
+            )
+        ] : [];
+
+        const vtableTypes = type.dynamicDispatch ? [getVTableTy(type, context)] : [];
+
+        // Convert all fields to LLVM types.
+        let layout = [
+            ...superClassTypes,
+            ...vtableTypes,
+            ...fieldTypes
+        ];
+
+        structType.setBody(
+            layout,
+            false
+        );
+
+        return structType;
     }
 }
 

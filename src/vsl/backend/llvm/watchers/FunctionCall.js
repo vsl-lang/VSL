@@ -152,7 +152,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
 
         // Uncomment to debug function calls
 
-        // console.log(`Calling ${functionRef.toString()}`)
+        // console.log(`Calling ${functionRef.toString()} where ${typeContext}`)
         // console.log(node.argumentReferences.map(a=>a.contextualType(parentTypeContext).toString()));
         // console.log(functionRef.args.map(a=>a.type.contextualType(typeContext).toString()));
         // console.log(compiledArgs.map(x=>x.type.toString()));
@@ -161,7 +161,7 @@ export default class LLVMFunctionCall extends BackendWatcher {
         // console.log(node.typeContext.toString());
 
         // Do a check that the types are equal
-        // if (callee.getParameters().length !== compiledArgs.length) {
+        // if (callee.getArguments().length !== compiledArgs.length) {
         //     throw new TypeError(`attempted to create call with mismatch arg counts`);
         // }
         //

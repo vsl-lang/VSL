@@ -13,7 +13,23 @@ llvm.initializeAllTargetInfos();
 llvm.initializeAllAsmParsers();
 llvm.initializeAllAsmPrinters();
 
-// Uncomment following lines to debug bad calls:
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//                           DEBUGGING NOTICE                                 //
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Debugging can be difficult since this uses native bindings. First, to identify
+// the source of LLVM issues run node with LLDB:
+//
+// $ lldb -- node ./lib/cli/vsl.js build test.vsl -ir
+// ...
+// (lldb) r
+// ...
+// (lldb) bt
+//
+// which will provide a stack trace of the LLVM call.
+//
+//// Uncomment following lines to debug bad calls in JS.
 // ((c) => {
 //     llvm.IRBuilder.prototype.createInBoundsGEP = function() {
 //         console.trace();
