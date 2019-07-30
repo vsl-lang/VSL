@@ -101,27 +101,6 @@ export default class ASTTool {
     }
 
     /**
-     * Returns attached stream
-     * @type {?CompilationStream}
-     */
-    get stream() {
-        let stream = null;
-        let trackingNode = this.parent[this.name];
-
-        do {
-            if (trackingNode.stream) {
-                stream = trackingNode.stream;
-                break;
-            }
-        } while(
-            trackingNode.rootScope !== true &&
-            (trackingNode = trackingNode.parentScope)
-        );
-
-        return stream;
-    }
-
-    /**
      * Gets the parent declaration for a declaration. I.e. if this is a method,
      * field, etc. this will give the class/itf/etc. node.
      * @type {DeclarationStatement}

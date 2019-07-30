@@ -7,7 +7,7 @@ import generateTrap from './generateTrap';
  *
  * @param {number} size - Size in bytes of memory to alloc.
  * @param {llvm.Type} type - The type that allocation should return.
- * @param {Node} node - The node causing error.
+ * @param {Node} node - The node triggering allocation.
  * @param {LLVMContext} context
  */
 export function alloc(size, type, node, context) {

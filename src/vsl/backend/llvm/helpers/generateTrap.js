@@ -32,7 +32,7 @@ export default function generateTrap(string, returnTy, node, context) {
         llvm.LinkageTypes.ExternalLinkage
     );
 
-    const stream = ASTTool.getToolFor(node).stream?.sourceName || "<unknown>";
+    const stream = ASTTool.getToolFor(node).parentStream?.sourceName || "<unknown>";
 
     const llvmStr = context.builder.createGlobalStringPtr(`vsl abort: ${string} (${stream}:${node.position.line}:${node.position.column})`);
     context.builder.createCall(puts, [ llvmStr ]);
