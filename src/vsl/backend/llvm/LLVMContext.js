@@ -77,6 +77,12 @@ export default class LLVMContext {
     get module() { return this.backend.module; }
 
     /**
+     * Returns the module's datalayout
+     * @type {llvm.DataLayout}
+     */
+    get dataLayout() { return this.backend.module.dataLayout; }
+
+    /**
      * Pushes a value for a key
      * @param {Symbol} key
      * @param {Object} value

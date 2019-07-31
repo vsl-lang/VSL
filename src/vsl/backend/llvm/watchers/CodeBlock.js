@@ -24,7 +24,5 @@ export default class LLVMCodeBlock extends BackendWatcher {
         for (let i = 0; i < node.statements.length; i++) {
             regen(i, node.statements, context);
         }
-
-        manager.memory.downrefScope();
     }
 }

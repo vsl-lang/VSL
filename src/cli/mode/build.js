@@ -86,8 +86,10 @@ export default class Build extends CompilerCLI {
                                            "relevent FIX-ITs from activating",       { warn: false }],
                 ["-Wd"                   , "Disables a specific warning by name",    { warn: 2, arg: "name" }],
                 ["-fno-dynamic"          , "Disabled dynamic dispatch, runtime casts, " +
-                                           "and other dynamic features. Applicable in " +
-                                           "application with specific ABI.",         { compilerOption: "disableDynamic", value: true }],
+                                           "and other dynamic features. Limited use " +
+                                           "case since the VSL compiler does not " +
+                                           "generate unused synthesized dynamic " +
+                                           "code.",                                  { compilerOption: "disableDynamic", value: true }],
                 ["-fno-free-memop"       , "Prevents the memory optimizer from " +
                                            "inserting free() operations. This should " +
                                            "only be used to identify issues caused" +
@@ -95,7 +97,11 @@ export default class Build extends CompilerCLI {
                                            "allocated memory will be cleaned. Allocations operations " +
                                            "moved to stack may still take place.",   { compilerOption: "disableMemopFree", value: true }],
                 ["-fno-rtti"             , "Disables RTTI. Any reflection operations " +
-                                           "will segfault",                          { compilerOption: "disableRTTI", value: true }],
+                                           "will segfault. By enabling, undefined  " +
+                                           "behavior is introduced on RTTI operations. " +
+                                           "Do note that the VSL compiler already does " +
+                                           "not generate RTTI code unless it is needed, " +
+                                           "so the use-case for this is limited.",   { compilerOption: "disableRTTI", value: true }],
                 ["-fparallel"            , "Enables support for parallelism and " +
                                            "thread-safe code within the compiler. This " +
                                            "means synthesized code will use the " +
