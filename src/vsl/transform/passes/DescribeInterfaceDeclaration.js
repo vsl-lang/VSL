@@ -29,7 +29,7 @@ export default class DescribeInterfaceDeclaration extends Transformation {
     modify(node: Node, tool: ASTTool) {
         let scope = tool.assignmentScope;
         let semanticSubscope = node.statements.scope;
-        let className = node.name.value;
+        let typeName = node.name.value;
 
         const subscope = new Scope();
         const staticSubscope = new Scope();
@@ -48,8 +48,8 @@ export default class DescribeInterfaceDeclaration extends Transformation {
             genericParameters.push(genericParameter);
             if (semanticSubscope.set(genericParameter) === false) {
                 throw new TransformError(
-                    `Generic parameter ${genericDeclNode.name} for class ` +
-                    `${className} already has another item with the name the ` +
+                    `Generic parameter ${genericDeclNode.name} for interface ` +
+                    `${typeName} already has another item with the name the ` +
                     `parameter would take.`,
                     genericDeclNode,
                     e.DUPLICATE_DECLARATION
@@ -60,12 +60,13 @@ export default class DescribeInterfaceDeclaration extends Transformation {
         // Get the superclasses/interfaces
         const interfaces = node.superclasses;
 
-        let opts = {
+        // Create all the options for the scope item
+        const opts = {
             isInterface: true,
             subscope: subscope,
             source: node,
             interfaces: interfaces,
-            superclass: superclass,
+            superclass: null,
             staticScope: staticSubscope,
             isScopeRestricted: tool.isPrivate,
             genericInfo: new GenericInfo({
@@ -77,27 +78,22 @@ export default class DescribeInterfaceDeclaration extends Transformation {
                     // If we don't have a ref to the interface yet then we'll
                     // do that.
                     const interfaceNode = self.interfaces[i];
-                    const interfaceName = interfaceNode.value;
 
-                    // Resolve superclass
-                    const scopeItem = scope.getAsDelegate(
-                        new ScopeTypeItem(ScopeForm.query, interfaceName),
-                        interfaceNode
-                    );
+                    // Resolve the interface
+                    const scopeItem = new TypeLookup(interfaceNode, vslGetTypeChild).resolve(semanticSubscope);
 
                     if (!scopeItem) {
                         throw new TransformError(
-                            `No interface with name \`${interfaceName}\` in this scope.`,
+                            `No interface with name \`${interfaceNode}\` in this scope.`,
                             interfaceNode,
                             e.UNDECLARED_IDENTIFIER
                         );
                     }
 
-
                     if (!scopeItem.isInterface) {
                         throw new TransformError(
-                            `The type \`${interfaceName}\` was not an ` +
-                            `interface. Interfaces cannot extend a superclass.`,
+                            `The type \`${interfaceNode}\` was not an ` +
+                            `interface. Interfaces cannot extend a class.`,
                             interfaceNode,
                             e.INTERFACE_CANNOT_INHERIT_CLASS
                         );
@@ -120,7 +116,7 @@ export default class DescribeInterfaceDeclaration extends Transformation {
 
         const type = new ScopeTypeItem(
             ScopeForm.indefinite,
-            className,
+            typeName,
             opts
         );
 
@@ -130,7 +126,7 @@ export default class DescribeInterfaceDeclaration extends Transformation {
 
         if (scope.set(type) === false) {
             throw new TransformError(
-                `Duplicate declaration of class ${className}. In this scope ` +
+                `Duplicate declaration of interface ${typeName}. In this scope ` +
                 `there is already another class with that name.`,
                 node, e.DUPLICATE_DECLARATION
             );

@@ -6,6 +6,19 @@ import { Readable } from 'stream';
  */
 export default class CompilationStream extends Readable {
     /**
+     * Creates a compilation stream with a string value.
+     * @param {string} buffer - The string to start compilation stream with.
+     * @param {string} [streamName='<buffer>'] - The name of the stream
+     * @return {CompilationStream}
+     */
+    static createConstantStream(buffer, streamName = '<buffer>') {
+        const stream = new CompilationStream();
+        stream.sourceName = streamName;
+        stream.send(buffer);
+        return stream;
+    }
+
+    /**
      * Create a compilation stream. You can use the methods to send/recieve
      * data. UTF8
      * @param {Object} options - nodejs readable stream options

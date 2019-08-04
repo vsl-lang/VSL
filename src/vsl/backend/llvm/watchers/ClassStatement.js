@@ -14,9 +14,11 @@ import TypeContextConnector from '../../../scope/TypeContextConnector';
 
 import * as llvm from 'llvm-node';
 
+// Watcher for TYPE statements. Unlike its name this generates for BOTH classes
+// AND interfaces.
 export default class LLVMClassStatement extends BackendWatcher {
     match(type) {
-        return type instanceof t.ClassStatement;
+        return type instanceof t.ClassStatement || type instanceof t.InterfaceStatement;
     }
 
     receive(node, tool, regen, context) {

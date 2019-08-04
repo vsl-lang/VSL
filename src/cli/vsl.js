@@ -10,6 +10,7 @@ subcommands["install"] = modes.Install;
 subcommands["bindgen"] = modes.Bindgen;
 subcommands["doctor"] = modes.Doctor;
 subcommands["parser-server"] = modes.ParserServer;
+subcommands["analysis"] = modes.Analysis;
 
 let args = process.argv.slice(2);
 let cmd = subcommands[args[0]];

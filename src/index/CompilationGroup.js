@@ -134,9 +134,17 @@ export default class CompilationGroup {
      */
     createStream() {
         let stream = new CompilationStream();
+        this.registerStream(stream);
+        return stream;
+    }
+
+    /**
+     * Takes an existing compilation stream and registers it here.
+     * @param {CompilationStream} stream - An existing stream
+     */
+    registerStream(stream) {
         stream.owningGroup = this;
         this.sources.push(stream);
-        return stream;
     }
 
     /**

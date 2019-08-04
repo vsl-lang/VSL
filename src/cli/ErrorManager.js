@@ -173,7 +173,7 @@ export default class ErrorManager {
         let startLine = Math.max(0, pos.line - 2);
         let endLine   = Math.min(lines.length - 1, pos.line + 2);
 
-        let prefix = this.setYellow(" | ");
+        let prefix = this.setYellow(" │ ");
         let lineIndicator = "> ";
 
         let maxLineLength = (endLine + "").length + 2;

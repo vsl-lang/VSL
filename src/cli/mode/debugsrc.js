@@ -52,7 +52,7 @@ export default class Debug extends CLIMode {
     }
 
     appInfo() {
-        return `Subcomamnds: ${this.subcommands.join(", ")}`
+        return `Deprecated VSL program runner. Please use vsl run or vsl analysis`
     }
 
     run(args, subcommands) {

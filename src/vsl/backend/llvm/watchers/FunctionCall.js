@@ -118,9 +118,10 @@ export default class LLVMFunctionCall extends BackendWatcher {
         }
 
 
-        // Compile arguments
+        // Compile the arguments. This handles optional arguments
         for (let i = 0, k = 0; i < functionRef.args.length; i++, k++) {
             let value;
+
             if (argPositionsTreatedOptional.includes(i)) {
                 // If the argument is optional...
                 const optionalContext = context.clone();

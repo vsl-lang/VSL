@@ -48,6 +48,7 @@ export default class ScopeFuncItem extends ScopeItem {
 
         this._shouldForceInline = false;
 
+        // If exists, the method which this overrides
         this._virtualParentMethod = null;
 
         /**
@@ -70,6 +71,7 @@ export default class ScopeFuncItem extends ScopeItem {
 
         this._overriddenBy = [];
 
+        // If they are no methods which override this
         this._isImplementationDefinite = true;
     }
 
@@ -89,7 +91,7 @@ export default class ScopeFuncItem extends ScopeItem {
     addFunctionWhichOverrides(func) {
         this._isImplementationDefinite = false;
 
-        // If there _this_ overrides _parent_ then _func_ actually overrides
+        // If _this_ func overrides _parent_ then _func_ actually overrides
         // _parent_
         if (this._virtualParentMethod) {
             this._virtualParentMethod.addFunctionWhichOverrides(func);

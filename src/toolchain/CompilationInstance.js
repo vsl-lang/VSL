@@ -37,6 +37,14 @@ export default class CompilationInstance {
     }
 
     /**
+     * Obtains the root code block representing this instance
+     * @type {?CodeBlock}
+     */
+    get rootCodeBlock() {
+        return this.index.root.globalScope;
+    }
+
+    /**
      * Returns if the instance has been compiled through the backend yet.
      * @type {bool}
      */

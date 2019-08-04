@@ -21,16 +21,27 @@ export default class RegisterFunctionDeclaration extends Transformation {
     }
 
     modify(node: Node, tool: ASTTool) {
-        let scope = tool.scope;
-        let name = node.name.value;
+        const scope = tool.scope;
+        const name = node.name.value;
 
-        let accessModifiers = node.access;
+        const accessModifiers = node.access;
 
-        let isPublic = accessModifiers.includes('public');
-        let isPrivate = accessModifiers.includes('private');
-        let isLocal = accessModifiers.includes('local');
+        const isPublic = accessModifiers.includes('public');
+        const isPrivate = accessModifiers.includes('private');
+        const isLocal = accessModifiers.includes('local');
+        const isStatic = tool.isStatic;
 
-        let subscope = node.statements.scope;
+        // Must either have body or be non static in interfaec
+        if (!(node.statements || (!isStatic && tool.declarationNode.reference?.isInterface))) {
+            throw new TransformError(
+                `Method must have body unless it is a non-static member of an ` +
+                `interface.`,
+                node
+            );
+        }
+
+
+        let subscope = node.statements?.scope;
 
         // Handle -> Void.
         const isVoid = node.returnType instanceof t.Identifier && node.returnType.value === "Void";
@@ -108,7 +119,9 @@ export default class RegisterFunctionDeclaration extends Transformation {
             );
         }
 
-        if (subscope) subscope.owner = type;
+        if (subscope) {
+            subscope.owner = type;
+        }
         node.reference = type;
     }
 }

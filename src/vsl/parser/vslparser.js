@@ -28,6 +28,46 @@ export default class VSLParser {
     }
 
     /**
+     * Parses based on a compilation stream and adds stream annotations where
+     * applicable. This internally constructs a parser and uses
+     * {@link VSLParser#feed}.
+     *
+     * @throws {ParserError} - thrown if an ambiguous string is encountered.
+     *     this should never happen and a bug report should be promptly
+     *     submitted when and if this ever happens.
+     *
+     * @throws {Error} - thrown if an input has an error. You can wrap in a
+     *     try { ... } catch(e) { ... } and use that to handle an error. It is
+     *     reccomended to use the `highlight` and `indicator` functions to
+     *     generate a nice string showing the parse error relative to the code.
+     *
+     * @param {CompilationStream} stream - Input stream.
+     * @return {Node} - If this is a non-empty arary, the result is an AST
+     *     with a `CodeBlock` which you can transform and all.
+
+     */
+    static async parseStream(stream) {
+        const parser = new VSLParser();
+        let dataBlock, ast;
+
+        while (null !== (dataBlock = await stream.receive())) {
+            try {
+                ast = parser.feed(dataBlock);
+            } catch(error) {
+                // Re-add sourceName if applicable
+                if (error instanceof ParserError)
+                    error.stream = stream;
+
+                // Rethrow error
+                throw error;
+            }
+            if (ast.length > 0) break;
+        }
+
+        return ast[0];
+    }
+
+    /**
      * Queues a string to be parsed. This will return something if the string
      * was properly parsed. This uses the generates `parser` file and
      * VSLTokenizer which is used to tokenize the strings. If you already have

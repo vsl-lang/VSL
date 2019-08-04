@@ -149,17 +149,13 @@ export default class DescribeClassDeclaration extends Transformation {
                     // If we don't have a ref to the interface yet then we'll
                     // do that.
                     const interfaceNode = self.interfaces[i];
-                    const interfaceName = interfaceNode.value;
 
                     // Resolve superclass
-                    const scopeItem = scope.getAsDelegate(
-                        new ScopeTypeItem(ScopeForm.query, interfaceName),
-                        interfaceNode
-                    );
+                    const scopeItem = new TypeLookup(interfaceNode, vslGetTypeChild).resolve(semanticSubscope);
 
                     if (!scopeItem) {
                         throw new TransformError(
-                            `No interface with name \`${interfaceName}\` in this scope.`,
+                            `No interface \`${interfaceNode}\` in this scope.`,
                             interfaceNode,
                             e.UNDECLARED_IDENTIFIER
                         );
@@ -169,7 +165,7 @@ export default class DescribeClassDeclaration extends Transformation {
                     if (!scopeItem.isInterface) {
                         if (self.superclass) {
                             throw new TransformError(
-                                `The type \`${interfaceName}\` is not an ` +
+                                `The type \`${interfaceNode}\` is not an ` +
                                 `interface. Multiple inheritance is not ` +
                                 `supported at the moment.`,
                                 interfaceNode,
@@ -177,7 +173,7 @@ export default class DescribeClassDeclaration extends Transformation {
                             );
                         } else {
                             throw new TransformError(
-                                `The type \`${interfaceName}\` was not an ` +
+                                `The type \`${interfaceNode}\` was not an ` +
                                 `interface. Did you mean to put this as the ` +
                                 `first parameter so it would be treated as a ` +
                                 `superclass?`,

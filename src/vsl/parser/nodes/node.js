@@ -94,13 +94,13 @@ export default class Node {
         for (let i = 0; i < children.length; i++) {
             let child = this[children[i]];
             let isLast = i === children.length - 1;
-            let connector = isLast ? ' └ ' : ' ├ '; // + `(${i} ${children.length - 1})`;
+            let connector = isLast ? ' ╰ ' : ' ├ '; // + `(${i} ${children.length - 1})`;
 
             if (child instanceof Array) {
                 string += connector + children[i] + '[]\n';
                 for (let j = 0; j < child.length; j++) {
                     let lastSub = j === child.length - 1;
-                    let subConnector = lastSub ? ' └ ' : ' ├ ';
+                    let subConnector = lastSub ? ' ╰ ' : ' ├ ';
                     let subchild = child[j];
 
                     string += '   ' + subConnector + addSpacing(indent(subchild.toAst(), lastSub));

@@ -1,5 +1,6 @@
 import pjson from '../../package.json';
 import ErrorManager from './ErrorManager';
+import tty from 'tty';
 
 export default class CLIMode {
     usage = "vsl ..."
@@ -23,7 +24,7 @@ export default class CLIMode {
                 .forEach(flag => this.allArgs[flag.length === 4 ? flag[1] : flag[0]] = flag)
         );
 
-        this.error = new ErrorManager();
+        this.error = new ErrorManager(tty.isatty(1));
     }
 
     run(stream) {
@@ -67,6 +68,10 @@ export default class CLIMode {
 
             return `${section[0]}:\n  ${res.join("\n  ")}`
         }).join("\n\n")
+    }
+
+    limitWordLength(string) {
+        return string.match(/.{1,60}( |$)/g).join("\n  ")
     }
 
     version() {
